@@ -362,6 +362,59 @@ class WebApp(db.Model):
         }
 
 
+# ============ EXPERIENCE ============
+
+class ExperienceListing(db.Model):
+    __tablename__ = 'experience_listings'
+
+    id = db.Column(db.Integer, primary_key=True)
+    site = db.Column(db.String(50), nullable=False)  # 'coupang_eats', 'danggeun', 'soomgo', etc.
+    title = db.Column(db.String(300), nullable=False)
+    url = db.Column(db.String(500), nullable=False)
+    deadline = db.Column(db.DateTime)
+    image_url = db.Column(db.String(500))
+    category = db.Column(db.String(100))
+    description = db.Column(db.Text)
+    reward = db.Column(db.String(200))
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'site': self.site,
+            'title': self.title,
+            'url': self.url,
+            'deadline': self.deadline.isoformat() if self.deadline else None,
+            'image_url': self.image_url,
+            'category': self.category,
+            'description': self.description,
+            'reward': self.reward,
+            'created_at': self.created_at.isoformat()
+        }
+
+
+class CrawlerLog(db.Model):
+    __tablename__ = 'crawler_logs'
+
+    id = db.Column(db.Integer, primary_key=True)
+    site = db.Column(db.String(50), nullable=False)
+    listing_count = db.Column(db.Integer, default=0)
+    last_crawl_time = db.Column(db.DateTime, default=datetime.utcnow)
+    status = db.Column(db.String(20), default='success')  # 'success', 'error'
+    error_message = db.Column(db.Text)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'site': self.site,
+            'listing_count': self.listing_count,
+            'last_crawl_time': self.last_crawl_time.isoformat(),
+            'status': self.status
+        }
+
+
 def init_db(app):
     """Initialize database with tables and seed data"""
     with app.app_context():

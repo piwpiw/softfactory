@@ -8,11 +8,13 @@ from .models import db, init_db
 from .auth import auth_bp
 from .payment import payment_bp
 from .platform import platform_bp
+from .jarvis_api import jarvis_bp
 from .services.coocook import coocook_bp
 from .services.sns_auto import sns_bp
 from .services.review import review_bp
 from .services.ai_automation import ai_automation_bp
 from .services.webapp_builder import webapp_builder_bp
+from .services.experience import experience_bp
 
 
 def create_app():
@@ -37,16 +39,75 @@ def create_app():
     app.register_blueprint(auth_bp)
     app.register_blueprint(payment_bp)
     app.register_blueprint(platform_bp)
+    app.register_blueprint(jarvis_bp)
     app.register_blueprint(coocook_bp)
     app.register_blueprint(sns_bp)
     app.register_blueprint(review_bp)
     app.register_blueprint(ai_automation_bp)
     app.register_blueprint(webapp_builder_bp)
+    app.register_blueprint(experience_bp)
 
     # Health check
     @app.route('/health')
     def health():
         return jsonify({'status': 'ok'}), 200
+
+    # Infrastructure health check endpoint
+    @app.route('/api/infrastructure/health')
+    def infrastructure_health():
+        """Comprehensive system health check"""
+        import time
+        from .models import User
+
+        try:
+            # Check database
+            db_status = 'ok'
+            try:
+                User.query.first()
+            except Exception:
+                db_status = 'error'
+
+            # Calculate uptime (placeholder)
+            uptime = '24h 15m'
+
+            return jsonify({
+                'overall_status': 'healthy' if db_status == 'ok' else 'degraded',
+                'api_status': 'ok',
+                'database_status': db_status,
+                'uptime': uptime,
+                'timestamp': time.time()
+            }), 200
+        except Exception as e:
+            return jsonify({
+                'overall_status': 'unhealthy',
+                'api_status': 'error',
+                'database_status': 'error',
+                'error': str(e)
+            }), 500
+
+    # Process list endpoint
+    @app.route('/api/infrastructure/processes')
+    def infrastructure_processes():
+        """Get active process information"""
+        try:
+            processes = []
+
+            # Current Python process (basic info)
+            processes.append({
+                'name': 'Flask API',
+                'pid': os.getpid(),
+                'status': 'running'
+            })
+
+            return jsonify({
+                'processes': processes,
+                'total_count': len(processes)
+            }), 200
+        except Exception as e:
+            return jsonify({
+                'processes': [],
+                'error': str(e)
+            }), 500
 
     # Serve static files
     web_dir = Path(__file__).parent.parent / 'web'

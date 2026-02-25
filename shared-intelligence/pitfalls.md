@@ -114,6 +114,30 @@
   print(f"Valid bookings: {cursor.fetchone()[0]}")
   ```
 
+### PF-007: Inconsistent Crawler Output Format
+- **Date:** 2026-02-25
+- **Agent:** 03-Architect, 05-Backend
+- **Task:** M-006 Experience Platform crawlers
+- **Pitfall:** Different crawlers return different field names/types (e.g., `expiration` vs `deadline`, datetime vs string). Service layer expects consistent format; inconsistent crawlers cause JSON serialization errors.
+- **Prevention:** Define `ExperienceCrawler.format_listings()` that normalizes all output to standard dict schema BEFORE saving. Validate with `validate_listing()` to ensure required keys exist.
+- **Files Fixed:** `scripts/crawlers/crawler_base.py` (abstract validation method), `backend/services/experience.py` (schema documentation)
+
+### PF-008: Mixing Dummy Data with Real Database Persistence
+- **Date:** 2026-02-25
+- **Agent:** 05-Backend
+- **Task:** M-006 Experience Platform MVP
+- **Pitfall:** If dummy data is embedded in service layer AND database layer saves to DB, later code cannot distinguish real data from test data. Causes "ghost listings" that never disappear.
+- **Prevention:** For MVP phase, keep all dummy data in service layer ONLY. Use decorator or environment variable to toggle: `if ENABLE_REAL_CRAWLERS: use_crawlers() else: use_dummy_data()`. Database layer is clean and ready for Phase 5.
+- **Files Fixed:** `backend/services/experience.py` (DUMMY_LISTINGS constant isolated)
+
+### PF-009: Silent Crawler Failures Without Logging
+- **Date:** 2026-02-25
+- **Agent:** 05-Backend, 06-QA
+- **Task:** M-006 crawler framework
+- **Pitfall:** Crawler fails to fetch page (timeout, 403, network error) but service returns empty list without logging. QA sees "no listings found" and debugs wrong area (service layer) instead of crawler.
+- **Prevention:** Every crawler must log errors to `CrawlerLog` table with status='error' and error_message. Service layer MUST check log before returning data. Crawler failures visible in `/api/experience/stats` response.
+- **Files Fixed:** `scripts/crawlers/crawler_base.py` (try/except with CrawlerLog), `backend/models.py` (CrawlerLog model)
+
 ---
 
 ## Template for New Entries

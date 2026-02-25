@@ -298,6 +298,138 @@ def _handle_reminder_command(self, chat_id: int, reminder_text: str):
 
 ---
 
+### PAT-006: Service-Layer Dummy Data for MVP
+```python
+# Pattern: Use hardcoded DUMMY_DATA in service layer for fast MVP
+# File: backend/services/experience.py
+
+DUMMY_LISTINGS = {
+    'site_name': [
+        {'title': '...', 'url': '...', 'deadline': '...'},
+    ]
+}
+
+@experience_bp.route('/listings')
+def get_listings():
+    site = request.args.get('site')
+    if site:
+        return jsonify(DUMMY_LISTINGS.get(site, []))
+    # ... merge all sites
+```
+
+**When to use:** MVP phase when real data source (crawlers) not ready yet.
+**Why:** 10-minute MVP delivery requires instant data; service layer decoupled from data source.
+**Phase 5:** Replace DUMMY_DATA with `CrawlerClass.crawl()` — API unchanged.
+**Files:** `backend/services/experience.py`, `scripts/crawlers/crawler_base.py`
+
+### PAT-007: Abstract Crawler Base Class
+```python
+# Pattern: All crawlers inherit from ExperienceCrawler ABC
+# File: scripts/crawlers/crawler_base.py
+
+class ExperienceCrawler(ABC):
+    def __init__(self, site_name):
+        self.site_name = site_name
+        self.listings = []
+
+    @abstractmethod
+    def crawl(self) -> list:
+        """Override in subclass with real scraping logic"""
+        pass
+
+    def run(self, db=None):
+        """Template method: crawl + validate + save + log"""
+        self.listings = self.crawl()
+        if db:
+            self.save_to_db(db)
+        return {'success': True, 'count': len(self.listings)}
+```
+
+**When to use:** Every new web scraper added (Coupang, Daangn, Soomgo, etc.).
+**Why:** Ensures consistent interface, logging, error handling across all crawlers.
+**Benefit:** Phase 5 can add real crawlers without changing service layer.
+**Files:** `scripts/crawlers/crawler_base.py`, `scripts/crawlers/*_crawler.py`
+
+### PAT-008: Deadline-Based Urgency Indicator (Frontend)
+```javascript
+// Pattern: Calculate days until deadline, show badge if < 3 days
+const daysUntilDeadline = (deadline) => {
+    const now = new Date();
+    const deadlineDate = new Date(deadline);
+    const diff = deadlineDate - now;
+    return Math.ceil(diff / (1000 * 60 * 60 * 24));
+};
+
+const isUrgent = daysUntilDeadline(listing.deadline) <= 3;
+
+// Render:
+${isUrgent ? '<span class="text-red-600 font-bold">긴급</span>' : ''}
+```
+
+**When to use:** Any experience/deal listing with expiration dates.
+**Why:** Highlights time-sensitive opportunities; improves engagement.
+**Files:** `web/experience/index.html`, `web/review/index.html` (etc.)
+
+### PAT-009: Responsive Dark Dashboard (Tailwind)
+```html
+<!-- Pattern: Dark theme grid dashboard with responsive columns -->
+<body class="bg-gray-900 text-gray-100">
+    <header class="bg-gradient-to-r from-purple-900 to-indigo-900">
+        <h1 class="text-4xl font-bold">Title</h1>
+    </header>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Cards auto-arrange: 1 col mobile, 2 col tablet, 3 col desktop -->
+        <div class="bg-gray-800 rounded-lg shadow-lg hover:shadow-2xl transition">
+            <!-- Card content -->
+        </div>
+    </div>
+</body>
+```
+
+**When to use:** Any data-heavy dashboard (listings, campaigns, analytics).
+**Why:** Dark mode reduces eye strain; responsive grid auto-adapts devices.
+**CDN:** `<script src="https://cdn.tailwindcss.com"></script>` (no build needed).
+**Files:** `web/experience/index.html`, `web/platform/*`
+
+### PAT-010: Multi-Level Filter UI
+```javascript
+// Pattern: Site filter + Category filter + Action buttons
+<div class="mb-6">
+    <h2 class="text-sm font-semibold mb-3">Site Filter</h2>
+    <div class="flex flex-wrap gap-2">
+        <button onclick="filterBySite('all')">All</button>
+        <button onclick="filterBySite('site1')">Site 1</button>
+        <!-- ... -->
+    </div>
+</div>
+
+<div class="mb-6">
+    <h2 class="text-sm font-semibold mb-3">Category Filter</h2>
+    <div id="categoryFilter"></div>
+</div>
+
+<script>
+let currentSiteFilter = 'all';
+let currentCategoryFilter = 'all';
+
+function filterBySite(site) {
+    currentSiteFilter = site;
+    loadData();
+}
+
+function filterByCategory(cat) {
+    currentCategoryFilter = cat;
+    loadData();
+}
+</script>
+```
+
+**When to use:** Multi-dimensional filtering (site, category, status, etc.).
+**Why:** Reduces API load; client-side filtering is instant.
+**Advanced:** Can combine filters: `?site=${site}&category=${cat}`.
+**Files:** `web/experience/index.html`
+
 ## Template for New Entries
 ```markdown
 ### PAT-XXX: [Short Title]
