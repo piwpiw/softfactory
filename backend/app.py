@@ -16,6 +16,9 @@ from .services.review import review_bp
 from .services.ai_automation import ai_automation_bp
 from .services.webapp_builder import webapp_builder_bp
 from .services.experience import experience_bp
+from .metrics import metrics_bp, increment_request_count, increment_error_count
+from .logging_config import setup_logging
+from .performance_monitor import PerformanceMonitor
 
 
 def create_app():
@@ -36,12 +39,17 @@ def create_app():
         "null"
     ]}})
 
+    # Initialize infrastructure
+    setup_logging(app)
+    performance_monitor = PerformanceMonitor()
+
     # Register blueprints
     app.register_blueprint(auth_bp)
     app.register_blueprint(payment_bp)
     app.register_blueprint(platform_bp)
     app.register_blueprint(jarvis_bp)
     app.register_blueprint(error_bp)
+    app.register_blueprint(metrics_bp)
     app.register_blueprint(coocook_bp)
     app.register_blueprint(sns_bp)
     app.register_blueprint(review_bp)
@@ -137,34 +145,61 @@ def create_app():
     @app.route('/')
     def index():
         """Serve main platform dashboard"""
-        platform_index = web_dir / 'platform' / 'index.html'
-        if platform_index.exists():
-            return send_file(str(platform_index))
-        return jsonify({'error': 'Platform index not found'}), 404
+        return '''
+        <!DOCTYPE html>
+        <html>
+        <head><title>SoftFactory - Home</title></head>
+        <body>
+            <h1>Welcome to SoftFactory</h1>
+            <p>Multi-Agent System Deployed Successfully</p>
+            <h2>Services:</h2>
+            <ul>
+                <li><a href="/coocook/">CooCook - Chef Booking</a></li>
+                <li><a href="/sns-auto/">SNS Auto - Social Media</a></li>
+                <li><a href="/review/">Review - Influencer Reviews</a></li>
+                <li><a href="/ai-automation/">AI Automation - AI Employees</a></li>
+                <li><a href="/webapp-builder/">WebApp Builder - Website Builder</a></li>
+            </ul>
+            <h2>API Endpoints:</h2>
+            <ul>
+                <li><a href="/health">/health</a> - Health Check</li>
+                <li><a href="/api/errors/recent">/api/errors/recent</a> - Recent Errors</li>
+                <li><a href="/api/metrics/prometheus">/api/metrics/prometheus</a> - Prometheus Metrics</li>
+            </ul>
+        </body>
+        </html>
+        '''
 
     @app.route('/<path:path>')
     def serve_main(path):
         """Serve files from web directory with fallback to index.html"""
         # Try exact file
         file_path = web_dir / path
-        if file_path.is_file():
-            return send_file(str(file_path))
+        try:
+            if file_path.is_file():
+                with open(str(file_path), 'r', encoding='utf-8', errors='ignore') as f:
+                    return f.read()
 
-        # Try directory with index.html
-        if file_path.is_dir():
-            index_file = file_path / 'index.html'
-            if index_file.is_file():
-                return send_file(str(index_file))
+            # Try directory with index.html
+            if file_path.is_dir():
+                index_file = file_path / 'index.html'
+                if index_file.is_file():
+                    with open(str(index_file), 'r', encoding='utf-8') as f:
+                        return f.read()
 
-        # Try with .html extension
-        html_file = file_path.parent / (file_path.name + '.html')
-        if html_file.is_file():
-            return send_file(str(html_file))
+            # Try with .html extension
+            html_file = file_path.parent / (file_path.name + '.html')
+            if html_file.is_file():
+                with open(str(html_file), 'r', encoding='utf-8') as f:
+                    return f.read()
 
-        # Fallback to main index for SPA routing
-        platform_index = web_dir / 'platform' / 'index.html'
-        if platform_index.exists():
-            return send_file(str(platform_index))
+            # Fallback to main index for SPA routing
+            platform_index = web_dir / 'platform' / 'index.html'
+            if platform_index.exists():
+                with open(str(platform_index), 'r', encoding='utf-8') as f:
+                    return f.read()
+        except Exception as e:
+            return jsonify({'error': str(e)}), 500
 
         return jsonify({'error': 'Not found'}), 404
 
