@@ -37,9 +37,12 @@ class TestProductModel:
 
     def test_product_prices(self, db):
         from backend.models import Product
+        import uuid
+        # Use a unique slug to avoid conflicts with existing products
+        unique_slug = f"test-product-{uuid.uuid4().hex[:8]}"
         product = Product(
-            name="SNS Auto",
-            slug="sns-auto",
+            name="Test Product",
+            slug=unique_slug,
             monthly_price=49000,
             annual_price=470400
         )

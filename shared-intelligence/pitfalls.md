@@ -99,6 +99,52 @@
 - **Prevention:** Use proper JSON parser (jq, python -m json.tool) when available. If scripting QA tests, prefer API client libraries over shell curl + grep.
 - **Workaround:** For bash, use Python: `python3 -c "import json, sys; print(json.load(sys.stdin)['id'])"`
 
+---
+
+## Docker / Migration
+
+### PF-012: Docker Desktop Daemon Check Must Happen Before Compose Commands
+- **Date:** 2026-02-25
+- **Agent:** DevOps (M-002 Phase 4)
+- **Task:** PostgreSQL Docker initialization
+- **Pitfall:** Running `docker-compose up -d db` when Docker Desktop is not running silently fails with cryptic error: `Cannot connect to Docker daemon at npipe:////./pipe/dockerDesktopLinuxEngine`. User thinks compose syntax is wrong, when Docker daemon is actually offline.
+- **Prevention:** **Always verify Docker daemon first:** `docker ps` (on Windows, this launches Docker Desktop if needed, but check output). If error mentions "pipe" or "daemon", start Docker Desktop GUI before retrying.
+- **Workaround:** Windows GUI: Start → "Docker Desktop" → wait 60 seconds for taskbar icon to stabilize → retry compose commands.
+
+### PF-013: PostgreSQL Container Initialization Time Not Awaited
+- **Date:** 2026-02-25
+- **Agent:** DevOps (M-002 Phase 4)
+- **Task:** SQLite → PostgreSQL migration setup
+- **Pitfall:** Running `docker-compose up -d db` followed immediately by `python scripts/migrate_to_postgres.py` fails with `Connection refused on port 5432`. PostgreSQL container is running, but `initdb` not yet complete (takes 10-15 seconds).
+- **Prevention:** After `docker-compose up -d db`, wait 15+ seconds OR loop-check: `docker logs project_db_1 | grep "ready to accept connections"`. Migration script should include retry logic with exponential backoff.
+- **Fixed in:** `scripts/migrate_to_postgres.py` v1.1 (adds 3 retry attempts with 5s delays)
+
+### PF-014: SQLite Source DB Must Be Closed Before Migration
+- **Date:** 2026-02-25
+- **Agent:** DevOps (M-002 Phase 4)
+- **Task:** SQLite → PostgreSQL migration
+- **Pitfall:** If Flask or other process has `platform.db` file open, migration script cannot read it cleanly. Result: partial migration or "database is locked" error.
+- **Prevention:** Ensure Flask is stopped: `docker-compose down` (if running). Check no other processes: `lsof | grep platform.db` (Linux/Mac) or Task Manager search `platform.db` (Windows). Then start fresh: `docker-compose up -d db && python scripts/migrate_to_postgres.py`.
+
+### PF-015: PostgreSQL Volume Persists After Container Removal
+- **Date:** 2026-02-25
+- **Agent:** DevOps (M-002 Phase 4)
+- **Task:** Docker cleanup after failed tests
+- **Pitfall:** Running `docker-compose down` removes containers but NOT volumes. If you want a fresh database, the old `postgres_data` volume still exists, and `docker-compose up` reattaches it (with old data). User expects "fresh start" but gets stale database.
+- **Prevention:** To fully reset: `docker-compose down -v` (removes volumes). To selectively remove: `docker volume rm project_postgres_data`. Always verify with `docker volume ls` before restart.
+
+---
+
+## Documentation / Deployment
+
+### PF-016: Deployment Checklist Must Cover Docker Desktop Detection
+- **Date:** 2026-02-25
+- **Agent:** DevOps (M-002 Phase 4)
+- **Task:** DEPLOYMENT_CHECKLIST.md creation
+- **Pitfall:** Initial checklist assumed Docker Desktop was running. First time following it, user was confused why `docker ps` fails. Doesn't teach WHERE to start Docker.
+- **Prevention:** Include explicit "Check Docker Desktop is Running" as Step 0 in all deployment guides. Provide screenshots or CLI commands to verify daemon status.
+- **File Updated:** `DEPLOYMENT_CHECKLIST.md` Part 2 (includes GUI + CLI startup methods)
+
 ### PF-012: Database Verification Without Query Tool Requires Python Fallback
 - **Date:** 2026-02-25
 - **Agent:** QA Engineer (Phase 3)

@@ -22,12 +22,13 @@ def app():
     os.environ["DATABASE_URL"] = TEST_DATABASE
     os.environ["JWT_SECRET"] = "test-secret-key"
 
-    app = create_app({
-        "TESTING": True,
-        "SQLALCHEMY_DATABASE_URI": TEST_DATABASE,
-        "JWT_SECRET_KEY": "test-secret-key",
-        "WTF_CSRF_ENABLED": False,
-    })
+    app = create_app()
+
+    # Apply test configuration after app creation
+    app.config["TESTING"] = True
+    app.config["SQLALCHEMY_DATABASE_URI"] = TEST_DATABASE
+    app.config["JWT_SECRET_KEY"] = "test-secret-key"
+    app.config["WTF_CSRF_ENABLED"] = False
 
     with app.app_context():
         _db.create_all()
