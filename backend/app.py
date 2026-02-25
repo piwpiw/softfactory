@@ -1,5 +1,5 @@
 """SoftFactory Flask Application"""
-from flask import Flask, jsonify, send_from_directory
+from flask import Flask, jsonify, send_from_directory, send_file
 from flask_cors import CORS
 import os
 from pathlib import Path
@@ -111,8 +111,62 @@ def create_app():
                 'error': str(e)
             }), 500
 
-    # Serve static files
-    web_dir = Path(__file__).parent.parent / 'web'
+    # Serve static files - use absolute Windows path
+    import sys
+    if sys.platform == 'win32':
+        # Windows path
+        web_dir = Path('D:\\Project\\web')
+    else:
+        # Unix path
+        current_dir = Path(__file__).parent.parent
+        web_dir = current_dir / 'web'
+
+    # Ensure path exists
+    if not web_dir.exists():
+        # Try alternative paths
+        alt_paths = [
+            Path('D:/Project/web'),
+            Path(__file__).parent.parent / 'web',
+            Path.cwd() / 'web'
+        ]
+        for alt in alt_paths:
+            if alt.exists():
+                web_dir = alt
+                break
+
+    @app.route('/')
+    def index():
+        """Serve main platform dashboard"""
+        platform_index = web_dir / 'platform' / 'index.html'
+        if platform_index.exists():
+            return send_file(str(platform_index))
+        return jsonify({'error': 'Platform index not found'}), 404
+
+    @app.route('/<path:path>')
+    def serve_main(path):
+        """Serve files from web directory with fallback to index.html"""
+        # Try exact file
+        file_path = web_dir / path
+        if file_path.is_file():
+            return send_file(str(file_path))
+
+        # Try directory with index.html
+        if file_path.is_dir():
+            index_file = file_path / 'index.html'
+            if index_file.is_file():
+                return send_file(str(index_file))
+
+        # Try with .html extension
+        html_file = file_path.parent / (file_path.name + '.html')
+        if html_file.is_file():
+            return send_file(str(html_file))
+
+        # Fallback to main index for SPA routing
+        platform_index = web_dir / 'platform' / 'index.html'
+        if platform_index.exists():
+            return send_file(str(platform_index))
+
+        return jsonify({'error': 'Not found'}), 404
 
     @app.route('/web/<path:path>')
     def serve_web(path):
