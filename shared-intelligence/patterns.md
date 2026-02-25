@@ -563,3 +563,61 @@ if manager.check_ready(m3.id):
 **Why:** [rationale]
 **Files:** [relevant file paths]
 ```
+
+## PAT-010: Query Optimization Patterns (2026-02-25)
+
+### Pattern: Aggregate with JOIN
+**Use:** Count related records without N+1
+```python
+from sqlalchemy import func
+from sqlalchemy.orm import joinedload
+
+# Get items with related counts in single query
+items = db.session.query(
+    Item,
+    func.count(RelatedItem.id).label('count')
+).outerjoin(RelatedItem,
+           Item.id == RelatedItem.item_id)\
+.group_by(Item.id)\
+.all()
+
+for item, count in items:
+    # Use count directly, no additional queries
+```
+
+### Pattern: Eager Load Relationships
+**Use:** Prevent N+1 when accessing relationships
+```python
+# Instead of: for item in items: print(item.related.name)  [N+1]
+# Use:
+items = Item.query.options(joinedload(Item.related)).all()
+for item in items:
+    print(item.related.name)  # No new query
+```
+
+### Pattern: Batch Counts
+**Use:** Multiple COUNT queries in one request
+```python
+# Instead of: [User.query.count(), Post.query.count(), ...]  [6 queries]
+# Use:
+stats = db.session.query(
+    func.count(User.id),
+    func.count(Post.id),
+    func.count(Comment.id),
+).first()
+```
+
+### Pattern: Partial Indexes
+**Use:** Index only active records (PostgreSQL)
+```sql
+CREATE INDEX idx_posts_active
+ON posts(created_at DESC)
+WHERE status IN ('draft', 'published');
+```
+
+### Performance Impact
+- N+1 fix: 40-80% faster
+- Eager load: 5-10x faster
+- Batch counts: 83% faster (6→1 query)
+- Indexes: 20-50% faster
+

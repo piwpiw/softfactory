@@ -1,0 +1,232 @@
+# Prometheus Alert Rules for SoftFactory
+# Version: 1.0
+# Updated: 2026-02-25
+#
+# Alert severity levels:
+#   - CRITICAL: requires immediate action (page on-call)
+#   - HIGH:     requires quick resolution (within 1 hour)
+#   - MEDIUM:   should be resolved soon (within 4 hours)
+#   - LOW:      informational, plan for next maintenance window
+
+groups:
+  - name: softfactory_alerts
+    interval: 15s
+    rules:
+      # ============ AVAILABILITY ALERTS ============
+
+      - alert: SoftFactoryDown
+        expr: softfactory_up == 0
+        for: 2m
+        labels:
+          severity: CRITICAL
+          component: api
+        annotations:
+          summary: "SoftFactory API is DOWN"
+          description: "Health check at {{ $labels.instance }} has failed for 2+ minutes"
+          action: "Check API logs: tail -f logs/app.log | grep ERROR"
+          runbook: "https://docs.softfactory.local/runbook/api-down"
+
+      - alert: SoftFactoryUnready
+        expr: up{job="softfactory-api"} == 0
+        for: 1m
+        labels:
+          severity: HIGH
+          component: api
+        annotations:
+          summary: "SoftFactory not responding to readiness probe"
+          description: "Readiness check failed for {{ $value }} minutes"
+          action: "Check if Flask is running: ps aux | grep flask"
+
+      # ============ PERFORMANCE ALERTS ============
+
+      - alert: HighErrorRate
+        expr: |
+          softfactory_errors_total / softfactory_requests_total > 0.05
+        for: 5m
+        labels:
+          severity: HIGH
+          component: api
+        annotations:
+          summary: "Error rate exceeds 5%"
+          description: |
+            Error rate: {{ $value | humanizePercentage }}
+            Total requests: {{ $labels.softfactory_requests_total }}
+            Total errors: {{ $labels.softfactory_errors_total }}
+          action: |
+            Check recent logs for patterns:
+            grep 'level":"ERROR' logs/app.log | tail -20
+          runbook: "https://docs.softfactory.local/runbook/high-error-rate"
+
+      - alert: SlowResponseTime
+        expr: |
+          histogram_quantile(0.95, rate(softfactory_request_latency_ms_bucket[5m])) > 1000
+        for: 5m
+        labels:
+          severity: MEDIUM
+          component: api
+        annotations:
+          summary: "95th percentile latency exceeds 1 second"
+          description: |
+            P95 latency: {{ $value }}ms
+            Path: {{ $labels.path }}
+            Method: {{ $labels.method }}
+          action: |
+            Check slow query logs and database performance:
+            SELECT * FROM sqlite_stat1 WHERE tbl LIKE 'bookings%'
+          runbook: "https://docs.softfactory.local/runbook/slow-queries"
+
+      # ============ RESOURCE ALERTS ============
+
+      - alert: HighMemoryUsage
+        expr: softfactory_memory_percent > 80
+        for: 5m
+        labels:
+          severity: HIGH
+          component: system
+        annotations:
+          summary: "Memory usage exceeds 80%"
+          description: |
+            Current memory: {{ $value }}%
+            RSS: {{ $labels.softfactory_memory_rss_mb }}MB
+          action: |
+            Check for memory leaks or high-memory processes:
+            ps aux --sort=-%mem | head -10
+          runbook: "https://docs.softfactory.local/runbook/memory-high"
+
+      - alert: CriticalMemoryUsage
+        expr: softfactory_memory_percent > 95
+        for: 2m
+        labels:
+          severity: CRITICAL
+          component: system
+        annotations:
+          summary: "Memory usage CRITICAL (95%+)"
+          description: "Immediate action required - memory at {{ $value }}%"
+          action: "Restart Flask immediately: sudo systemctl restart softfactory-api"
+
+      - alert: HighCPUUsage
+        expr: softfactory_cpu_percent > 80
+        for: 10m
+        labels:
+          severity: MEDIUM
+          component: system
+        annotations:
+          summary: "CPU usage exceeds 80% for 10 minutes"
+          description: "CPU: {{ $value }}%"
+          action: |
+            Identify high-CPU processes:
+            ps aux --sort=-%cpu | head -5
+          runbook: "https://docs.softfactory.local/runbook/cpu-high"
+
+      # ============ DATABASE ALERTS ============
+
+      - alert: DatabaseUnhealthy
+        expr: |
+          softfactory_database_status == 0
+        for: 2m
+        labels:
+          severity: CRITICAL
+          component: database
+        annotations:
+          summary: "Database connectivity lost"
+          description: "Cannot connect to database for 2+ minutes"
+          action: |
+            Check database status:
+            sudo systemctl status postgres
+            Verify connection string in .env
+          runbook: "https://docs.softfactory.local/runbook/database-down"
+
+      - alert: DatabaseSizeCritical
+        expr: |
+          softfactory_database_size_mb > 1000
+        for: 0m
+        labels:
+          severity: MEDIUM
+          component: database
+        annotations:
+          summary: "Database size exceeds 1GB"
+          description: "Database size: {{ $value }}MB"
+          action: |
+            Review and archive old data:
+            DELETE FROM logs WHERE created_at < DATE_SUB(NOW(), INTERVAL 90 DAY)
+          runbook: "https://docs.softfactory.local/runbook/database-size"
+
+      # ============ APPLICATION ALERTS ============
+
+      - alert: NoActiveUsers
+        expr: softfactory_active_users == 0
+        for: 30m
+        labels:
+          severity: LOW
+          component: application
+        annotations:
+          summary: "No active users for 30 minutes (unusual)"
+          description: "May indicate system outage or check if normal"
+
+      - alert: HighFailedPayments
+        expr: |
+          rate(softfactory_payments_failed_total[5m]) > 0.1
+        for: 5m
+        labels:
+          severity: HIGH
+          component: payments
+        annotations:
+          summary: "Payment failures detected"
+          description: "Failed payment rate: {{ $value }}/sec"
+          action: |
+            Check Stripe integration:
+            grep 'payment.*error' logs/app.log | tail -20
+          runbook: "https://docs.softfactory.local/runbook/payment-failures"
+
+      - alert: FailedDatabaseBackup
+        expr: |
+          (time() - softfactory_last_backup_timestamp) > 86400
+        for: 1m
+        labels:
+          severity: HIGH
+          component: backup
+        annotations:
+          summary: "No successful backup in 24+ hours"
+          description: "Last backup: {{ $value }} seconds ago"
+          action: |
+            Check backup logs and run manual backup:
+            /opt/softfactory/scripts/backup.sh
+          runbook: "https://docs.softfactory.local/runbook/backup-failed"
+
+      # ============ DEPLOYMENT ALERTS ============
+
+      - alert: ServiceRestart
+        expr: |
+          changes(softfactory_startup_time[5m]) > 0
+        for: 0m
+        labels:
+          severity: MEDIUM
+          component: deployment
+        annotations:
+          summary: "Service restarted unexpectedly"
+          description: "Flask API was restarted within last 5 minutes"
+          action: |
+            Check system logs:
+            journalctl -u softfactory-api -n 50
+            dmesg | tail -20
+
+      - alert: ConfigurationChanged
+        expr: |
+          softfactory_config_hash != softfactory_running_config_hash
+        for: 1m
+        labels:
+          severity: MEDIUM
+          component: deployment
+        annotations:
+          summary: "Configuration file changed but not reloaded"
+          description: "Config hash mismatch detected"
+          action: "Reload configuration: curl -X POST http://localhost:8000/api/admin/reload-config"
+
+# Optional: Define recording rules for pre-computed metrics
+# (improves dashboard performance for frequently-used queries)
+recording_rules:
+  - name: softfactory_request_latency_p95
+    expr: histogram_quantile(0.95, rate(softfactory_request_latency_ms_bucket[5m]))
+
+  - name: softfactory_error_rate_5m
+    expr: rate(softfactory_errors_total[5m]) / rate(softfactory_requests_total[5m])

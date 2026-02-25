@@ -1,0 +1,47 @@
+# Prometheus Configuration for SoftFactory Monitoring
+# Version: 1.0
+# Updated: 2026-02-25
+
+global:
+  # Scrape interval: how often to query targets
+  scrape_interval: 15s
+
+  # How long until a scrape request times out
+  scrape_timeout: 10s
+
+  # How often to evaluate alert rules
+  evaluation_interval: 15s
+
+  # External labels added to all time series
+  external_labels:
+    cluster: 'softfactory-prod'
+    environment: 'production'
+
+# Alert rules configuration
+rule_files:
+  - 'alert-rules.yml'
+
+# Scrape configurations
+scrape_configs:
+  # SoftFactory Flask API
+  - job_name: 'softfactory-api'
+    static_configs:
+      - targets: ['localhost:8000']
+    metrics_path: '/api/metrics/prometheus'
+    scrape_interval: 15s
+    scrape_timeout: 5s
+
+  # Optional: Prometheus self-monitoring
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+# Alert notification configuration
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: ['localhost:9093']
+
+# Optional: service discovery (uncomment for cloud deployments)
+# consul_sd_configs:
+#   - server: 'localhost:8500'

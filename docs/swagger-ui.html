@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SoftFactory API - Swagger UI</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+                'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica',
+                'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .swagger-ui {
+            background-color: #fafafa;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .topbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 8px 8px 0 0;
+            padding: 30px 20px;
+            color: white;
+        }
+
+        .topbar h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .topbar p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .swagger-ui .topbar {
+            background: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .information-container {
+            margin-bottom: 40px;
+        }
+
+        .info {
+            background: white;
+            padding: 20px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+
+        .info h2 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+
+        .info p {
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 10px;
+            font-size: 13px;
+        }
+
+        .auth-info {
+            background: #f0f7ff;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            border-radius: 4px;
+            margin-top: 20px;
+        }
+
+        .auth-info h3 {
+            color: #667eea;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .auth-info p {
+            color: #333;
+            font-size: 13px;
+            line-height: 1.6;
+            margin-bottom: 5px;
+        }
+
+        .auth-info code {
+            background: white;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Monaco', 'Courier New', monospace;
+            color: #d63384;
+        }
+
+        .servers-info {
+            background: white;
+            padding: 15px;
+            border-radius: 4px;
+            margin-top: 20px;
+        }
+
+        .servers-info h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .server-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+            font-size: 13px;
+        }
+
+        .server-item:last-child {
+            border-bottom: none;
+        }
+
+        .server-url {
+            font-family: 'Monaco', 'Courier New', monospace;
+            color: #666;
+            word-break: break-all;
+        }
+
+        .server-desc {
+            color: #999;
+            margin-left: 10px;
+            font-size: 12px;
+        }
+
+        .endpoints-summary {
+            background: white;
+            padding: 20px;
+            border-radius: 4px;
+            margin-top: 20px;
+        }
+
+        .endpoints-summary h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+
+        .endpoint-tags {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .tag-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 4px;
+        }
+
+        .tag-card h4 {
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .tag-count {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
+        .swagger-ui .topbar h1 {
+            color: #667eea;
+        }
+
+        .swagger-ui section.models {
+            display: none;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            color: white;
+            font-size: 12px;
+        }
+
+        .quick-links {
+            background: white;
+            padding: 20px;
+            border-radius: 4px;
+            margin-top: 20px;
+        }
+
+        .quick-links h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+
+        .links-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 10px;
+        }
+
+        .link-btn {
+            display: inline-block;
+            padding: 10px 15px;
+            background: #f5f5f5;
+            color: #667eea;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 13px;
+            border: 1px solid #e0e0e0;
+            transition: all 0.3s ease;
+        }
+
+        .link-btn:hover {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        #swagger-ui {
+            max-width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="topbar">
+            <h1>SoftFactory Platform API</h1>
+            <p>Interactive API Documentation &amp; Testing Console</p>
+        </div>
+
+        <div id="swagger-ui" class="swagger-ui"></div>
+
+        <div class="info">
+            <h2>About This API</h2>
+            <p>
+                SoftFactory is a comprehensive multi-service platform providing 5 specialized services:
+                <strong>CooCook</strong> (Chef Booking), <strong>SNS Auto</strong> (Social Media Automation),
+                <strong>Review</strong> (Influencer Campaigns), <strong>AI Automation</strong> (Business Automation),
+                and <strong>WebApp Builder</strong> (Educational Bootcamp).
+            </p>
+            <p>
+                This API documentation includes <strong>47+ endpoints</strong> across
+                <strong>10+ service modules</strong>, all protected by JWT authentication with optional demo mode support.
+            </p>
+
+            <div class="auth-info">
+                <h3>Authentication</h3>
+                <p>
+                    Most endpoints require a JWT bearer token in the Authorization header:
+                    <code>Authorization: Bearer {token}</code>
+                </p>
+                <p>
+                    For testing in demo mode, use the special token: <code>demo_token</code>
+                </p>
+                <p>
+                    Public endpoints (marked with 🔓) do not require authentication.
+                </p>
+            </div>
+
+            <div class="servers-info">
+                <h3>Server Endpoints</h3>
+                <div class="server-item">
+                    <div>
+                        <div class="server-url">http://localhost:8000</div>
+                        <div class="server-desc">Development Server</div>
+                    </div>
+                </div>
+                <div class="server-item">
+                    <div>
+                        <div class="server-url">https://api.softfactory.com</div>
+                        <div class="server-desc">Production Server</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="endpoints-summary">
+                <h3>API Coverage by Service</h3>
+                <div class="endpoint-tags">
+                    <div class="tag-card">
+                        <h4>Authentication</h4>
+                        <div class="tag-count">4 endpoints</div>
+                    </div>
+                    <div class="tag-card">
+                        <h4>Payment</h4>
+                        <div class="tag-count">5 endpoints</div>
+                    </div>
+                    <div class="tag-card">
+                        <h4>Platform</h4>
+                        <div class="tag-count">5 endpoints</div>
+                    </div>
+                    <div class="tag-card">
+                        <h4>CooCook</h4>
+                        <div class="tag-count">10 endpoints</div>
+                    </div>
+                    <div class="tag-card">
+                        <h4>SNS Auto</h4>
+                        <div class="tag-count">8 endpoints</div>
+                    </div>
+                    <div class="tag-card">
+                        <h4>Review Campaigns</h4>
+                        <div class="tag-count">8 endpoints</div>
+                    </div>
+                    <div class="tag-card">
+                        <h4>AI Automation</h4>
+                        <div class="tag-count">9 endpoints</div>
+                    </div>
+                    <div class="tag-card">
+                        <h4>WebApp Builder</h4>
+                        <div class="tag-count">8 endpoints</div>
+                    </div>
+                    <div class="tag-card">
+                        <h4>Experience Platform</h4>
+                        <div class="tag-count">6 endpoints</div>
+                    </div>
+                    <div class="tag-card">
+                        <h4>JARVIS Multi-Agent</h4>
+                        <div class="tag-count">5 endpoints</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="quick-links">
+                <h3>Quick Reference</h3>
+                <div class="links-grid">
+                    <a href="#/Authentication" class="link-btn">Authentication Flows</a>
+                    <a href="#/Payment" class="link-btn">Payment Integration</a>
+                    <a href="#/CooCook%20-%20Chef%20Booking" class="link-btn">CooCook Service</a>
+                    <a href="#/SNS%20Auto%20-%20Social%20Media" class="link-btn">SNS Automation</a>
+                    <a href="#/Review%20-%20Campaigns" class="link-btn">Review Campaigns</a>
+                    <a href="#/AI%20Automation" class="link-btn">AI Automation</a>
+                    <a href="#/WebApp%20Builder" class="link-btn">WebApp Builder</a>
+                    <a href="#/Platform" class="link-btn">Admin Dashboard</a>
+                    <a href="#/JARVIS%20-%20Multi-Agent%20System" class="link-btn">JARVIS System</a>
+                    <a href="#/Experience%20Platform" class="link-btn">Experience Platform</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>SoftFactory API v2.1.0 | Documentation generated 2026-02-25</p>
+            <p style="margin-top: 8px; opacity: 0.7;">
+                For issues or feedback, contact <strong>support@softfactory.com</strong>
+            </p>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui-bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui-standalone-preset.min.js"></script>
+    <script>
+        window.onload = function() {
+            const ui = SwaggerUIBundle({
+                url: './openapi.json',
+                dom_id: '#swagger-ui',
+                deepLinking: true,
+                presets: [
+                    SwaggerUIBundle.presets.apis,
+                    SwaggerUIStandalonePreset
+                ],
+                plugins: [
+                    SwaggerUIBundle.plugins.DownloadUrl
+                ],
+                layout: 'StandaloneLayout',
+                defaultModelsExpandDepth: 0,
+                docExpansion: 'list',
+                filter: true,
+                showRequestHeaders: true,
+                validatorUrl: null,
+                onComplete: function() {
+                    console.log('Swagger UI loaded successfully');
+                    // Add custom styling
+                    const style = document.createElement('style');
+                    style.textContent = `
+                        .swagger-ui .topbar {
+                            display: none;
+                        }
+                        .swagger-ui .scheme-container {
+                            background: #f5f5f5;
+                            border-radius: 4px;
+                            margin-bottom: 20px;
+                        }
+                        .swagger-ui .btn {
+                            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                            border-color: #667eea;
+                        }
+                        .swagger-ui .btn:hover {
+                            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+                        }
+                        .swagger-ui .operation {
+                            border-radius: 4px;
+                        }
+                    `;
+                    document.head.appendChild(style);
+                }
+            });
+            window.ui = ui;
+        }
+    </script>
+</body>
+</html>

@@ -184,6 +184,42 @@
 - **Prevention:** Every crawler must log errors to `CrawlerLog` table with status='error' and error_message. Service layer MUST check log before returning data. Crawler failures visible in `/api/experience/stats` response.
 - **Files Fixed:** `scripts/crawlers/crawler_base.py` (try/except with CrawlerLog), `backend/models.py` (CrawlerLog model)
 
+### PF-017: Missing Correlation IDs in Logs Makes Debugging Hard
+- **Date:** 2026-02-25
+- **Agent:** 04-DevOps / Monitoring
+- **Task:** M-004 Production Monitoring Setup
+- **Pitfall:** When an error occurs, logs for that request are scattered across many lines. Without a correlation ID (request_id), tracing a single user's request through database queries, API calls, and error handlers requires manual log grepping across timestamps. Result: 30-minute debugging that should take 5 minutes.
+- **Prevention:** Every Flask request must generate a unique request_id (UUID or incrementing counter) in `@app.before_request`. Inject into all log entries. Include in response headers (X-Request-Id). When debugging, grep logs for that single request_id to see full request lifecycle.
+- **Reference:** `backend/logging_config.py` — RequestIdFilter, request_logging_middleware functions
+- **Files Fixed:** `backend/logging_config.py` (new), `backend/metrics.py` (new)
+
+### PF-018: Prometheus Scrape Failures Silent When Metrics Endpoint Not Added
+- **Date:** 2026-02-25
+- **Agent:** 04-DevOps / Monitoring
+- **Task:** M-004 Production Monitoring Setup
+- **Pitfall:** Flask app running, all endpoints work, but Prometheus shows target as "DOWN" — seems to indicate service crash. Actually, the `/api/metrics/prometheus` endpoint was never registered. Prometheus retries silently every 15 seconds.
+- **Prevention:** Always verify metrics endpoints exist before starting Prometheus scrape job. Test endpoint manually: `curl http://localhost:8000/api/metrics/prometheus`. If 404, check that `app.register_blueprint(metrics_bp)` is called in create_app().
+- **Reference:** `backend/metrics.py` — Blueprint registration required
+- **Status:** Caught in Step 6 of MONITORING-INTEGRATION.md
+
+### PF-019: JSON Logs Without Proper Escaping Cause Kibana Parse Failures
+- **Date:** 2026-02-25
+- **Agent:** 04-DevOps / Monitoring
+- **Task:** M-004 Production Monitoring Setup
+- **Pitfall:** Application logs messages that contain newlines or quotes without escaping. Logstash attempts to parse as JSON but fails. Result: unparseable log entries in Elasticsearch, Kibana shows zero results.
+- **Prevention:** Use python-json-logger package which auto-escapes. Never manually construct JSON strings in logs. Always use logger.info('message', extra={'key': 'value'}) pattern. Test: `echo "message with \"quotes\"" | python -m json.tool`
+- **Reference:** `backend/logging_config.py` uses JSONFormatter from python-json-logger
+- **Testing:** Run: `tail logs/app.log | python -m json.tool` — should parse without errors
+
+### PF-020: Alert Rules With Wrong Metric Names Silent Fail
+- **Date:** 2026-02-25
+- **Agent:** 04-DevOps / Monitoring
+- **Task:** M-004 Production Monitoring Setup
+- **Pitfall:** Write alert rule like `expr: high_memory > 80` but metric is actually named `softfactory_memory_percent`. Prometheus silently evaluates to "no data" and never fires alert. No error in logs, no indication why alert not triggering.
+- **Prevention:** Before adding alert rule, verify metric exists: `curl http://localhost:8000/api/metrics/prometheus | grep metric_name`. Test PromQL query in Prometheus UI (localhost:9090/graph) before adding to alert-rules.yml.
+- **Reference:** `orchestrator/alert-rules.yml` — all metric names verified against actual exports
+- **Testing:** Script in MONITORING-SETUP.md validates all rule metrics
+
 ---
 
 ## Template for New Entries
@@ -197,3 +233,32 @@
 - **Prevention:** [concrete rule to prevent recurrence]
 - **Files Fixed:** [if applicable]
 ```
+
+## PF-008: Database Query N+1 Pattern (2026-02-25)
+**Severity:** HIGH | **Impact:** 40-60% performance degradation | **Detection:** Automated tests
+
+### Problem
+Multiple endpoints execute N+1 queries instead of single JOIN queries:
+- Campaign listing: 1 query + 12 COUNT queries (13 total, 42ms)
+- Dashboard stats: 6 separate COUNT queries (58ms)
+- SNS account counts: 1 query + 5 COUNT queries (25ms)
+
+### Root Cause
+Using nested loops with database queries:
+```python
+for campaign in campaigns:
+    count = CampaignApplication.query.filter_by(campaign_id=campaign.id).count()
+```
+
+### Prevention (Now Standard)
+1. Always use JOINs with GROUP BY for aggregations
+2. Use `joinedload()` for eager loading relationships
+3. Batch COUNT operations with single query
+4. Automated tests verify query count == 1
+
+### Reference
+- Report: `docs/database-optimization-report.md`
+- Quick fix: `docs/DATABASE_OPTIMIZATION_QUICKSTART.md`
+- Examples: `backend/query_optimization_examples.py`
+- Tests: `tests/test_database_performance.py`
+

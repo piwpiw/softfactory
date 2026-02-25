@@ -1,0 +1,2096 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "SoftFactory Platform API",
+    "description": "Comprehensive REST API for the SoftFactory multi-service platform. Includes authentication, payment, platform management, and 5 specialized services: CooCook, SNS Auto, Review Campaigns, AI Automation, and WebApp Builder.",
+    "version": "2.1.0",
+    "contact": {
+      "name": "SoftFactory Support",
+      "url": "https://softfactory.com"
+    },
+    "license": {
+      "name": "Proprietary",
+      "url": "https://softfactory.com/license"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8000",
+      "description": "Development Server"
+    },
+    {
+      "url": "https://api.softfactory.com",
+      "description": "Production Server"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "BearerToken": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "JWT access token. Use 'demo_token' for demo mode without authentication."
+      }
+    },
+    "schemas": {
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 1
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "user@softfactory.com"
+          },
+          "name": {
+            "type": "string",
+            "example": "John Doe"
+          },
+          "role": {
+            "type": "string",
+            "enum": ["user", "admin"],
+            "example": "user"
+          },
+          "is_active": {
+            "type": "boolean",
+            "example": true
+          }
+        }
+      },
+      "AuthTokens": {
+        "type": "object",
+        "properties": {
+          "access_token": {
+            "type": "string",
+            "description": "JWT access token (valid for 1 hour)"
+          },
+          "refresh_token": {
+            "type": "string",
+            "description": "JWT refresh token (valid for 30 days)"
+          }
+        }
+      },
+      "Product": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string",
+            "example": "CooCook"
+          },
+          "slug": {
+            "type": "string",
+            "example": "coocook"
+          },
+          "description": {
+            "type": "string"
+          },
+          "monthly_price": {
+            "type": "number",
+            "format": "float",
+            "example": 29900
+          },
+          "annual_price": {
+            "type": "number",
+            "format": "float",
+            "example": 299000
+          },
+          "is_active": {
+            "type": "boolean"
+          }
+        }
+      },
+      "Subscription": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "user_id": {
+            "type": "integer"
+          },
+          "product_id": {
+            "type": "integer"
+          },
+          "plan_type": {
+            "type": "string",
+            "enum": ["monthly", "annual"]
+          },
+          "status": {
+            "type": "string",
+            "enum": ["active", "canceled"],
+            "example": "active"
+          },
+          "current_period_end": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "Chef": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string",
+            "example": "Chef Marco"
+          },
+          "bio": {
+            "type": "string"
+          },
+          "cuisine_type": {
+            "type": "string",
+            "example": "Italian"
+          },
+          "location": {
+            "type": "string",
+            "example": "Seoul"
+          },
+          "price_per_session": {
+            "type": "number",
+            "format": "float",
+            "example": 100000
+          },
+          "rating": {
+            "type": "number",
+            "format": "float",
+            "example": 4.8
+          },
+          "rating_count": {
+            "type": "integer",
+            "example": 25
+          }
+        }
+      },
+      "Booking": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "chef_id": {
+            "type": "integer"
+          },
+          "user_id": {
+            "type": "integer"
+          },
+          "booking_date": {
+            "type": "string",
+            "format": "date"
+          },
+          "duration_hours": {
+            "type": "integer"
+          },
+          "total_price": {
+            "type": "number",
+            "format": "float"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["pending", "confirmed", "completed", "cancelled"]
+          },
+          "payment_status": {
+            "type": "string",
+            "enum": ["unpaid", "paid"]
+          },
+          "special_requests": {
+            "type": "string"
+          }
+        }
+      },
+      "SNSAccount": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "platform": {
+            "type": "string",
+            "enum": ["instagram", "tiktok", "youtube", "blog"],
+            "example": "instagram"
+          },
+          "account_name": {
+            "type": "string"
+          },
+          "is_active": {
+            "type": "boolean"
+          },
+          "post_count": {
+            "type": "integer"
+          }
+        }
+      },
+      "SNSPost": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "account_id": {
+            "type": "integer"
+          },
+          "content": {
+            "type": "string"
+          },
+          "platform": {
+            "type": "string"
+          },
+          "template_type": {
+            "type": "string",
+            "enum": ["card_news", "reel", "shorts", "carousel", "blog_post"]
+          },
+          "status": {
+            "type": "string",
+            "enum": ["draft", "scheduled", "published"]
+          },
+          "scheduled_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "Campaign": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "title": {
+            "type": "string"
+          },
+          "product_name": {
+            "type": "string"
+          },
+          "category": {
+            "type": "string"
+          },
+          "reward_type": {
+            "type": "string",
+            "enum": ["cash", "product", "mixed"]
+          },
+          "reward_value": {
+            "type": "number",
+            "format": "float"
+          },
+          "max_reviewers": {
+            "type": "integer"
+          },
+          "deadline": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["active", "closed"]
+          }
+        }
+      },
+      "AIEmployee": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "scenario_type": {
+            "type": "string",
+            "enum": ["email", "social", "customer_service", "data_entry", "scheduling"]
+          },
+          "status": {
+            "type": "string",
+            "enum": ["draft", "training", "active", "paused"]
+          },
+          "monthly_savings_hours": {
+            "type": "number",
+            "format": "float"
+          },
+          "deployed_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "security": [
+    {
+      "BearerToken": []
+    }
+  ],
+  "paths": {
+    "/health": {
+      "get": {
+        "tags": ["Infrastructure"],
+        "summary": "Health check",
+        "description": "Basic health check endpoint",
+        "operationId": "healthCheck",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Service is healthy"
+          }
+        }
+      }
+    },
+    "/api/infrastructure/health": {
+      "get": {
+        "tags": ["Infrastructure"],
+        "summary": "Comprehensive system health",
+        "description": "Get detailed system health status including database and uptime",
+        "operationId": "infrastructureHealth",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Health status"
+          },
+          "500": {
+            "description": "System error"
+          }
+        }
+      }
+    },
+    "/api/infrastructure/processes": {
+      "get": {
+        "tags": ["Infrastructure"],
+        "summary": "Active processes",
+        "description": "Get information about active processes",
+        "operationId": "getProcesses",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Process list"
+          }
+        }
+      }
+    },
+    "/api/auth/register": {
+      "post": {
+        "tags": ["Authentication"],
+        "summary": "Register new user",
+        "operationId": "register",
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["email", "password", "name"],
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email"
+                  },
+                  "password": {
+                    "type": "string",
+                    "minLength": 8
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User registered successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "access_token": {
+                      "type": "string"
+                    },
+                    "refresh_token": {
+                      "type": "string"
+                    },
+                    "user": {
+                      "$ref": "#/components/schemas/User"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input or email already registered"
+          }
+        }
+      }
+    },
+    "/api/auth/login": {
+      "post": {
+        "tags": ["Authentication"],
+        "summary": "Login user",
+        "operationId": "login",
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["email", "password"],
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email"
+                  },
+                  "password": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "access_token": {
+                      "type": "string"
+                    },
+                    "refresh_token": {
+                      "type": "string"
+                    },
+                    "user": {
+                      "$ref": "#/components/schemas/User"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid credentials"
+          }
+        }
+      }
+    },
+    "/api/auth/refresh": {
+      "post": {
+        "tags": ["Authentication"],
+        "summary": "Refresh access token",
+        "operationId": "refreshToken",
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["refresh_token"],
+                "properties": {
+                  "refresh_token": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Token refreshed"
+          },
+          "401": {
+            "description": "Invalid refresh token"
+          }
+        }
+      }
+    },
+    "/api/auth/me": {
+      "get": {
+        "tags": ["Authentication"],
+        "summary": "Get current user",
+        "operationId": "getCurrentUser",
+        "responses": {
+          "200": {
+            "description": "Current user info",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/api/payment/plans": {
+      "get": {
+        "tags": ["Payment"],
+        "summary": "Get all product plans",
+        "operationId": "getPaymentPlans",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "List of products",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Product"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/payment/checkout": {
+      "post": {
+        "tags": ["Payment"],
+        "summary": "Create Stripe checkout session",
+        "operationId": "createCheckout",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["product_id"],
+                "properties": {
+                  "product_id": {
+                    "type": "integer"
+                  },
+                  "plan_type": {
+                    "type": "string",
+                    "enum": ["monthly", "annual"],
+                    "default": "monthly"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Checkout session created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "checkout_url": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request or already subscribed"
+          }
+        }
+      }
+    },
+    "/api/payment/subscriptions": {
+      "get": {
+        "tags": ["Payment"],
+        "summary": "Get user subscriptions",
+        "operationId": "getSubscriptions",
+        "responses": {
+          "200": {
+            "description": "List of subscriptions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Subscription"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/payment/subscriptions/{subscription_id}": {
+      "delete": {
+        "tags": ["Payment"],
+        "summary": "Cancel subscription",
+        "operationId": "cancelSubscription",
+        "parameters": [
+          {
+            "name": "subscription_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Subscription canceled"
+          },
+          "404": {
+            "description": "Subscription not found"
+          }
+        }
+      }
+    },
+    "/api/platform/products": {
+      "get": {
+        "tags": ["Platform"],
+        "summary": "Get all active products",
+        "operationId": "getPlatformProducts",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "List of products"
+          }
+        }
+      }
+    },
+    "/api/platform/dashboard": {
+      "get": {
+        "tags": ["Platform"],
+        "summary": "Get user dashboard",
+        "operationId": "getDashboard",
+        "responses": {
+          "200": {
+            "description": "Dashboard data"
+          }
+        }
+      }
+    },
+    "/api/platform/admin/users": {
+      "get": {
+        "tags": ["Platform"],
+        "summary": "Get all users (admin only)",
+        "operationId": "getAdminUsers",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "name": "per_page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 20
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of users"
+          },
+          "403": {
+            "description": "Admin access required"
+          }
+        }
+      }
+    },
+    "/api/platform/admin/revenue": {
+      "get": {
+        "tags": ["Platform"],
+        "summary": "Get revenue statistics (admin only)",
+        "operationId": "getRevenue",
+        "responses": {
+          "200": {
+            "description": "Revenue data"
+          },
+          "403": {
+            "description": "Admin access required"
+          }
+        }
+      }
+    },
+    "/api/v1/teams": {
+      "get": {
+        "tags": ["JARVIS - Multi-Agent System"],
+        "summary": "Get all teams with progress",
+        "operationId": "getTeams",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Teams data"
+          }
+        }
+      }
+    },
+    "/api/v1/teams/{team_id}": {
+      "get": {
+        "tags": ["JARVIS - Multi-Agent System"],
+        "summary": "Get specific team details",
+        "operationId": "getTeam",
+        "security": [],
+        "parameters": [
+          {
+            "name": "team_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Team details"
+          },
+          "404": {
+            "description": "Team not found"
+          }
+        }
+      }
+    },
+    "/api/v1/teams/breakdown": {
+      "get": {
+        "tags": ["JARVIS - Multi-Agent System"],
+        "summary": "Get detailed team analysis",
+        "operationId": "getTeamsBreakdown",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Analysis data"
+          }
+        }
+      }
+    },
+    "/api/v1/teams/timeline": {
+      "get": {
+        "tags": ["JARVIS - Multi-Agent System"],
+        "summary": "Get milestone timeline",
+        "operationId": "getTeamsTimeline",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Timeline data"
+          }
+        }
+      }
+    },
+    "/api/v1/stats": {
+      "get": {
+        "tags": ["JARVIS - Multi-Agent System"],
+        "summary": "Get comprehensive statistics",
+        "operationId": "getStats",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Statistics"
+          }
+        }
+      }
+    },
+    "/api/coocook/chefs": {
+      "get": {
+        "tags": ["CooCook - Chef Booking"],
+        "summary": "List chefs with filters",
+        "operationId": "getChefs",
+        "security": [],
+        "parameters": [
+          {
+            "name": "cuisine",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "location",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "name": "per_page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 12
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of chefs"
+          }
+        }
+      },
+      "post": {
+        "tags": ["CooCook - Chef Booking"],
+        "summary": "Register as a chef",
+        "operationId": "registerChef",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["name", "cuisine_type", "location", "price_per_session"],
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "bio": {
+                    "type": "string"
+                  },
+                  "cuisine_type": {
+                    "type": "string"
+                  },
+                  "location": {
+                    "type": "string"
+                  },
+                  "price_per_session": {
+                    "type": "number",
+                    "format": "float"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Chef registered"
+          }
+        }
+      }
+    },
+    "/api/coocook/chefs/{chef_id}": {
+      "get": {
+        "tags": ["CooCook - Chef Booking"],
+        "summary": "Get chef details",
+        "operationId": "getChefDetail",
+        "security": [],
+        "parameters": [
+          {
+            "name": "chef_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Chef details"
+          },
+          "404": {
+            "description": "Chef not found"
+          }
+        }
+      }
+    },
+    "/api/coocook/chefs/{chef_id}/reviews": {
+      "get": {
+        "tags": ["CooCook - Chef Booking"],
+        "summary": "Get chef reviews",
+        "operationId": "getChefReviews",
+        "security": [],
+        "parameters": [
+          {
+            "name": "chef_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Chef reviews"
+          }
+        }
+      }
+    },
+    "/api/coocook/bookings": {
+      "get": {
+        "tags": ["CooCook - Chef Booking"],
+        "summary": "Get user's bookings",
+        "operationId": "getMyBookings",
+        "responses": {
+          "200": {
+            "description": "List of bookings"
+          }
+        }
+      },
+      "post": {
+        "tags": ["CooCook - Chef Booking"],
+        "summary": "Create a booking",
+        "operationId": "createBooking",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["chef_id", "booking_date", "duration_hours"],
+                "properties": {
+                  "chef_id": {
+                    "type": "integer"
+                  },
+                  "booking_date": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "duration_hours": {
+                    "type": "integer"
+                  },
+                  "special_requests": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Booking created"
+          }
+        }
+      }
+    },
+    "/api/coocook/bookings/{booking_id}": {
+      "get": {
+        "tags": ["CooCook - Chef Booking"],
+        "summary": "Get booking details",
+        "operationId": "getBooking",
+        "parameters": [
+          {
+            "name": "booking_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Booking details"
+          }
+        }
+      },
+      "put": {
+        "tags": ["CooCook - Chef Booking"],
+        "summary": "Update booking status",
+        "operationId": "updateBooking",
+        "parameters": [
+          {
+            "name": "booking_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Booking updated"
+          }
+        }
+      }
+    },
+    "/api/coocook/bookings/{booking_id}/pay": {
+      "post": {
+        "tags": ["CooCook - Chef Booking"],
+        "summary": "Process payment for booking",
+        "operationId": "processPayment",
+        "parameters": [
+          {
+            "name": "booking_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "amount": {
+                    "type": "number",
+                    "format": "float"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Payment processed"
+          }
+        }
+      }
+    },
+    "/api/coocook/bookings/{booking_id}/review": {
+      "post": {
+        "tags": ["CooCook - Chef Booking"],
+        "summary": "Submit review for booking",
+        "operationId": "submitReview",
+        "parameters": [
+          {
+            "name": "booking_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "rating": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 5
+                  },
+                  "comment": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Review submitted"
+          }
+        }
+      }
+    },
+    "/api/sns/accounts": {
+      "get": {
+        "tags": ["SNS Auto - Social Media"],
+        "summary": "Get user's SNS accounts",
+        "operationId": "getSNSAccounts",
+        "responses": {
+          "200": {
+            "description": "List of accounts"
+          }
+        }
+      },
+      "post": {
+        "tags": ["SNS Auto - Social Media"],
+        "summary": "Link SNS account",
+        "operationId": "createSNSAccount",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["platform", "account_name"],
+                "properties": {
+                  "platform": {
+                    "type": "string",
+                    "enum": ["instagram", "tiktok", "youtube", "blog"]
+                  },
+                  "account_name": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Account linked"
+          }
+        }
+      }
+    },
+    "/api/sns/accounts/{account_id}": {
+      "delete": {
+        "tags": ["SNS Auto - Social Media"],
+        "summary": "Unlink SNS account",
+        "operationId": "deleteSNSAccount",
+        "parameters": [
+          {
+            "name": "account_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Account unlinked"
+          }
+        }
+      }
+    },
+    "/api/sns/posts": {
+      "get": {
+        "tags": ["SNS Auto - Social Media"],
+        "summary": "Get user's SNS posts",
+        "operationId": "getSNSPosts",
+        "parameters": [
+          {
+            "name": "account_id",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of posts"
+          }
+        }
+      },
+      "post": {
+        "tags": ["SNS Auto - Social Media"],
+        "summary": "Create SNS post",
+        "operationId": "createSNSPost",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["account_id", "content", "template_type"],
+                "properties": {
+                  "account_id": {
+                    "type": "integer"
+                  },
+                  "content": {
+                    "type": "string"
+                  },
+                  "template_type": {
+                    "type": "string",
+                    "enum": ["card_news", "reel", "shorts", "carousel", "blog_post"]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Post created"
+          }
+        }
+      }
+    },
+    "/api/sns/posts/{post_id}/publish": {
+      "post": {
+        "tags": ["SNS Auto - Social Media"],
+        "summary": "Publish or schedule post",
+        "operationId": "publishSNSPost",
+        "parameters": [
+          {
+            "name": "post_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "scheduled_at": {
+                    "type": "string",
+                    "format": "date-time"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Post published/scheduled"
+          }
+        }
+      }
+    },
+    "/api/sns/posts/{post_id}": {
+      "delete": {
+        "tags": ["SNS Auto - Social Media"],
+        "summary": "Delete post",
+        "operationId": "deleteSNSPost",
+        "parameters": [
+          {
+            "name": "post_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Post deleted"
+          }
+        }
+      }
+    },
+    "/api/sns/templates": {
+      "get": {
+        "tags": ["SNS Auto - Social Media"],
+        "summary": "Get available templates",
+        "operationId": "getSNSTemplates",
+        "responses": {
+          "200": {
+            "description": "Template list"
+          }
+        }
+      }
+    },
+    "/api/review/campaigns": {
+      "get": {
+        "tags": ["Review - Campaigns"],
+        "summary": "List campaigns with filters",
+        "operationId": "getCampaigns",
+        "security": [],
+        "parameters": [
+          {
+            "name": "category",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of campaigns"
+          }
+        }
+      },
+      "post": {
+        "tags": ["Review - Campaigns"],
+        "summary": "Create campaign",
+        "operationId": "createCampaign",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["title", "product_name", "category", "reward_type", "reward_value", "max_reviewers", "deadline"],
+                "properties": {
+                  "title": {
+                    "type": "string"
+                  },
+                  "product_name": {
+                    "type": "string"
+                  },
+                  "category": {
+                    "type": "string"
+                  },
+                  "reward_type": {
+                    "type": "string",
+                    "enum": ["cash", "product", "mixed"]
+                  },
+                  "reward_value": {
+                    "type": "number",
+                    "format": "float"
+                  },
+                  "max_reviewers": {
+                    "type": "integer"
+                  },
+                  "deadline": {
+                    "type": "string",
+                    "format": "date-time"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Campaign created"
+          }
+        }
+      }
+    },
+    "/api/review/campaigns/{campaign_id}": {
+      "get": {
+        "tags": ["Review - Campaigns"],
+        "summary": "Get campaign details",
+        "operationId": "getCampaignDetail",
+        "security": [],
+        "parameters": [
+          {
+            "name": "campaign_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Campaign details"
+          }
+        }
+      }
+    },
+    "/api/review/campaigns/{campaign_id}/apply": {
+      "post": {
+        "tags": ["Review - Campaigns"],
+        "summary": "Apply to campaign",
+        "operationId": "applyCampaign",
+        "parameters": [
+          {
+            "name": "campaign_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["message"],
+                "properties": {
+                  "message": {
+                    "type": "string"
+                  },
+                  "sns_link": {
+                    "type": "string"
+                  },
+                  "follower_count": {
+                    "type": "integer"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Application submitted"
+          }
+        }
+      }
+    },
+    "/api/review/my-campaigns": {
+      "get": {
+        "tags": ["Review - Campaigns"],
+        "summary": "Get user's created campaigns",
+        "operationId": "getMyCampaigns",
+        "responses": {
+          "200": {
+            "description": "List of campaigns"
+          }
+        }
+      }
+    },
+    "/api/review/my-applications": {
+      "get": {
+        "tags": ["Review - Campaigns"],
+        "summary": "Get user's applications",
+        "operationId": "getMyApplications",
+        "responses": {
+          "200": {
+            "description": "List of applications"
+          }
+        }
+      }
+    },
+    "/api/review/campaigns/{campaign_id}/applications": {
+      "get": {
+        "tags": ["Review - Campaigns"],
+        "summary": "Get campaign applications (creator only)",
+        "operationId": "getCampaignApplications",
+        "parameters": [
+          {
+            "name": "campaign_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of applications"
+          }
+        }
+      }
+    },
+    "/api/review/applications/{application_id}": {
+      "put": {
+        "tags": ["Review - Campaigns"],
+        "summary": "Approve or reject application",
+        "operationId": "updateApplication",
+        "parameters": [
+          {
+            "name": "application_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "type": "string",
+                    "enum": ["pending", "approved", "rejected"]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Application updated"
+          }
+        }
+      }
+    },
+    "/api/ai-automation/plans": {
+      "get": {
+        "tags": ["AI Automation"],
+        "summary": "Get subscription plans",
+        "operationId": "getAIPlans",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Plan list"
+          }
+        }
+      }
+    },
+    "/api/ai-automation/scenarios": {
+      "get": {
+        "tags": ["AI Automation"],
+        "summary": "Get automation scenarios",
+        "operationId": "getScenarios",
+        "security": [],
+        "parameters": [
+          {
+            "name": "category",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Scenario list"
+          }
+        }
+      }
+    },
+    "/api/ai-automation/scenarios/{scenario_id}": {
+      "get": {
+        "tags": ["AI Automation"],
+        "summary": "Get scenario details",
+        "operationId": "getScenarioDetail",
+        "security": [],
+        "parameters": [
+          {
+            "name": "scenario_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Scenario details"
+          }
+        }
+      }
+    },
+    "/api/ai-automation/employees": {
+      "get": {
+        "tags": ["AI Automation"],
+        "summary": "Get user's AI employees",
+        "operationId": "getAIEmployees",
+        "responses": {
+          "200": {
+            "description": "List of AI employees"
+          }
+        }
+      },
+      "post": {
+        "tags": ["AI Automation"],
+        "summary": "Create new AI employee",
+        "operationId": "createAIEmployee",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["name", "scenario_type"],
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "scenario_type": {
+                    "type": "string",
+                    "enum": ["email", "social", "customer_service", "data_entry", "scheduling"]
+                  },
+                  "description": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "AI employee created"
+          }
+        }
+      }
+    },
+    "/api/ai-automation/employees/{employee_id}": {
+      "get": {
+        "tags": ["AI Automation"],
+        "summary": "Get AI employee details",
+        "operationId": "getAIEmployee",
+        "parameters": [
+          {
+            "name": "employee_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "AI employee details"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["AI Automation"],
+        "summary": "Delete AI employee",
+        "operationId": "deleteAIEmployee",
+        "parameters": [
+          {
+            "name": "employee_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "AI employee deleted"
+          }
+        }
+      }
+    },
+    "/api/ai-automation/employees/{employee_id}/deploy": {
+      "post": {
+        "tags": ["AI Automation"],
+        "summary": "Deploy AI employee",
+        "operationId": "deployAIEmployee",
+        "parameters": [
+          {
+            "name": "employee_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "savings_hours": {
+                    "type": "number",
+                    "format": "float"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "AI employee deployed"
+          }
+        }
+      }
+    },
+    "/api/ai-automation/employees/{employee_id}/activate": {
+      "post": {
+        "tags": ["AI Automation"],
+        "summary": "Activate AI employee",
+        "operationId": "activateAIEmployee",
+        "parameters": [
+          {
+            "name": "employee_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "AI employee activated"
+          }
+        }
+      }
+    },
+    "/api/ai-automation/dashboard": {
+      "get": {
+        "tags": ["AI Automation"],
+        "summary": "Get automation dashboard",
+        "operationId": "getAIDashboard",
+        "responses": {
+          "200": {
+            "description": "Dashboard data"
+          }
+        }
+      }
+    },
+    "/api/webapp-builder/plans": {
+      "get": {
+        "tags": ["WebApp Builder"],
+        "summary": "Get bootcamp plans",
+        "operationId": "getWebAppPlans",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Plan list"
+          }
+        }
+      }
+    },
+    "/api/webapp-builder/courses": {
+      "get": {
+        "tags": ["WebApp Builder"],
+        "summary": "Get bootcamp courses",
+        "operationId": "getWebAppCourses",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Course list"
+          }
+        }
+      }
+    },
+    "/api/webapp-builder/enroll": {
+      "post": {
+        "tags": ["WebApp Builder"],
+        "summary": "Enroll in bootcamp",
+        "operationId": "enrollBootcamp",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["plan_type"],
+                "properties": {
+                  "plan_type": {
+                    "type": "string",
+                    "enum": ["weekday", "weekend"]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Enrollment created"
+          }
+        }
+      }
+    },
+    "/api/webapp-builder/enrollments": {
+      "get": {
+        "tags": ["WebApp Builder"],
+        "summary": "Get user's bootcamp enrollments",
+        "operationId": "getBootcampEnrollments",
+        "responses": {
+          "200": {
+            "description": "List of enrollments"
+          }
+        }
+      }
+    },
+    "/api/webapp-builder/webapps": {
+      "get": {
+        "tags": ["WebApp Builder"],
+        "summary": "Get user's webapps",
+        "operationId": "getWebApps",
+        "responses": {
+          "200": {
+            "description": "List of webapps"
+          }
+        }
+      },
+      "post": {
+        "tags": ["WebApp Builder"],
+        "summary": "Create webapp project",
+        "operationId": "createWebApp",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["name"],
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "description": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "WebApp created"
+          }
+        }
+      }
+    },
+    "/api/webapp-builder/webapps/{webapp_id}": {
+      "get": {
+        "tags": ["WebApp Builder"],
+        "summary": "Get webapp details",
+        "operationId": "getWebApp",
+        "parameters": [
+          {
+            "name": "webapp_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "WebApp details"
+          }
+        }
+      }
+    },
+    "/api/webapp-builder/webapps/{webapp_id}/deploy": {
+      "post": {
+        "tags": ["WebApp Builder"],
+        "summary": "Deploy webapp to live",
+        "operationId": "deployWebApp",
+        "parameters": [
+          {
+            "name": "webapp_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "url": {
+                    "type": "string"
+                  },
+                  "repo": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "WebApp deployed"
+          }
+        }
+      }
+    },
+    "/api/webapp-builder/dashboard": {
+      "get": {
+        "tags": ["WebApp Builder"],
+        "summary": "Get bootcamp dashboard",
+        "operationId": "getWebAppDashboard",
+        "responses": {
+          "200": {
+            "description": "Dashboard data"
+          }
+        }
+      }
+    },
+    "/api/experience/listings": {
+      "get": {
+        "tags": ["Experience Platform"],
+        "summary": "Get experience listings",
+        "operationId": "getListings",
+        "security": [],
+        "parameters": [
+          {
+            "name": "site",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "category",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of listings"
+          }
+        }
+      }
+    },
+    "/api/experience/listings/{listing_id}": {
+      "get": {
+        "tags": ["Experience Platform"],
+        "summary": "Get listing details",
+        "operationId": "getListingDetail",
+        "security": [],
+        "parameters": [
+          {
+            "name": "listing_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Listing details"
+          }
+        }
+      }
+    },
+    "/api/experience/stats": {
+      "get": {
+        "tags": ["Experience Platform"],
+        "summary": "Get platform statistics",
+        "operationId": "getExperienceStats",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Statistics"
+          }
+        }
+      }
+    },
+    "/api/experience/categories": {
+      "get": {
+        "tags": ["Experience Platform"],
+        "summary": "Get available categories",
+        "operationId": "getExperienceCategories",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Category list"
+          }
+        }
+      }
+    },
+    "/api/experience/sites": {
+      "get": {
+        "tags": ["Experience Platform"],
+        "summary": "Get available sites",
+        "operationId": "getExperienceSites",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Site list"
+          }
+        }
+      }
+    },
+    "/api/experience/crawl": {
+      "post": {
+        "tags": ["Experience Platform"],
+        "summary": "Trigger crawler",
+        "operationId": "triggerCrawl",
+        "security": [],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "site": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Crawl triggered"
+          }
+        }
+      }
+    }
+  }
+}
