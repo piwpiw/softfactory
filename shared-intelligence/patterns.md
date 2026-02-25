@@ -430,6 +430,129 @@ function filterByCategory(cat) {
 **Advanced:** Can combine filters: `?site=${site}&category=${cat}`.
 **Files:** `web/experience/index.html`
 
+---
+
+## Agent Collaboration Patterns
+
+### PAT-007: Agent Communication via Consultation Bus
+
+```python
+# Pattern: All inter-agent communication goes through async message bus
+# File: core/consultation_bus.py
+
+from core.consultation_bus import get_bus, MessageType, MessagePriority
+
+bus = get_bus()
+
+# Agent A asks Agent B a question
+msg_id = bus.request(
+    from_agent="dev-lead-1",
+    to_agent="qa-engineer-2",
+    subject="Code ready for testing?",
+    payload={"modules": ["auth", "api"]}
+)
+
+# Agent B responds
+bus.reply(
+    to_message_id=msg_id,
+    from_agent="qa-engineer-2",
+    payload={"ready": True, "test_count": 47},
+    is_decision=False
+)
+
+# Agent C escalates to orchestrator
+bus.ask_question(
+    from_agent="backend-dev-1",
+    subject="Token budget exceeded?",
+    payload={"used": 28000, "budget": 25000},
+    requires_decision=True
+)
+```
+
+**When to use:** Any agent-to-agent communication, questions, alerts
+**Why:** Decouples agents, enables async execution, audit trail maintained
+**Files:** core/consultation_bus.py, core/agent_spawner.py, core/mission_manager.py
+**Trade-off:** Message overhead ~50-100 tokens per communication (acceptable for coordination)
+
+### PAT-008: Dynamic Agent Spawning with Authority Matrix
+
+```python
+# Pattern: Orchestrator spawns agents with defined authority boundaries
+# File: core/agent_spawner.py
+
+from core.agent_spawner import get_spawner, AgentRole, AgentCapability, AgentAuthority
+
+spawner = get_spawner()
+
+# Spawn backend dev with limited authority
+dev = spawner.spawn(
+    role=AgentRole.DEVELOPER,
+    capabilities=[...],
+    token_budget=10000,
+    parent_id="orchestrator-1"
+)
+
+# Spawn sub-agent (if needed)
+specialist = spawner.spawn(
+    role=AgentRole.SPECIALIST,
+    capabilities=[...],
+    parent_id=dev.id,  # Dev can now spawn this
+    token_budget=2000
+)
+
+# Check authority
+if dev.authority.can_spawn_agents:
+    # Can create sub-agents
+    pass
+
+# Enforce authority
+if "delete_database" in dev.authority.forbidden_actions:
+    # Prevent this action
+    pass
+```
+
+**When to use:** Project startup, workload scaling, dynamic team formation
+**Why:** Agents are first-class resources (like team members), authority prevents mistakes
+**Files:** core/agent_spawner.py, orchestrator/agent-registry.md
+**Limit:** Max 20 concurrent agents (depends on token budget)
+
+### PAT-009: Mission Dependency Graph for Parallelization
+
+```python
+# Pattern: Auto-detect parallel groups via dependency resolution
+# File: core/mission_manager.py
+
+from core.mission_manager import get_mission_manager, MissionPhase
+
+manager = get_mission_manager()
+
+# Create missions
+m1 = manager.create_mission("Research", MissionPhase.RESEARCH, agent_id="analyst-1")
+m2 = manager.create_mission("Planning", MissionPhase.PLANNING, agent_id="strategist-1")
+m3 = manager.create_mission("Design", MissionPhase.DESIGN, agent_id="architect-1")
+
+# Define dependencies
+manager.add_dependency(m2.id, m1.id)  # Planning blocks on Research
+manager.add_dependency(m3.id, m2.id)  # Design blocks on Planning
+
+# Get parallelizable groups
+groups = manager.get_parallelizable_missions()
+# Result: [[m1], [m2], [m3]] — sequential
+# But if m2 & m3 had no dependency: [[m1], [m2, m3]] — parallel
+
+# Check readiness
+if manager.check_ready(m3.id):
+    # All dependencies met, assign to agent
+    pass
+```
+
+**When to use:** Multi-phase projects (Research→Plan→Code→Test)
+**Why:** Eliminates manual sequencing, auto-parallelizes safe tasks
+**Files:** core/mission_manager.py, orchestrator/orchestration-engine.md
+**Benefit:** 50-70% time savings through parallelization
+
+---
+
 ## Template for New Entries
 ```markdown
 ### PAT-XXX: [Short Title]

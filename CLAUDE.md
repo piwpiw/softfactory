@@ -10,15 +10,37 @@
 ## 🔗 **IMPORTS** (모든 에이전트 — 액션 전 필독)
 
 ```
-# → .claude/agents/orchestrator.md        (Master Agent constitution)
+# LAYER 1: Governance
+# → orchestrator/README.md                (Master integration guide — START HERE)
+# → CLAUDE.md Section 17                  (15 Enterprise Governance Principles)
+
+# LAYER 2: Shared Intelligence
 # → shared-intelligence/patterns.md       (Reusable solutions — reuse first)
 # → shared-intelligence/decisions.md      (ADR log — check before deciding)
 # → shared-intelligence/pitfalls.md       (Failure prevention — check before coding)
-# → orchestrator/mcp-registry.md          (All external connections — MCP only)
-# → orchestrator/agent-registry.md        (Authority boundaries — no agent acts outside scope)
+
+# LAYER 3: Execution System
+# → orchestrator/phase-structure-v4.md    (7 phases: Research→Plan→Req→Doc→Design→Code→Test)
+# → orchestrator/prompt-templates.md      (7 fixed prompts, parameter injection)
+# → orchestrator/orchestration-engine.md  (Task dependency graph, smart parallelization)
+# → orchestrator/agent-registry.md        (Authority matrix — prevent unauthorized actions)
+# → orchestrator/mcp-registry.md          (10 MCP connections — no ad-hoc APIs)
+
+# LAYER 4: Agent Collaboration
+# → core/AGENT_COLLABORATION_LAYER.md     (Agent spawner, consultation bus, mission manager)
+# → core/agent_spawner.py                 (Dynamic agent creation, authority enforcement)
+# → core/consultation_bus.py              (Inter-agent async communication)
+# → core/mission_manager.py               (Task state machine, dependencies, parallelization)
+
+# LAYER 5: Operational Excellence
+# → orchestrator/lean-execution-protocol.md   (Append-only docs, context auto-compact)
+# → shared-intelligence/token-budget-strategy.md (Prediction, allocation, monitoring)
+# → shared-intelligence/cost-log.md       (Real-time token tracking)
 ```
 
-**Rule:** Every agent reads its scoped constitution (`#` import chain) before any action. No exceptions.
+**Rule:** Every agent reads layers 1-5 (`#` import chain) before any action.
+- Critical path: orchestrator/README.md → phase-structure → prompt-templates → core/ ← START HERE
+- Never skip: Authority validation (agent-registry.md), Reuse check (patterns.md), Pitfall review (pitfalls.md)
 
 ---
 
