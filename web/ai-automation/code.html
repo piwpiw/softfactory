@@ -6,14 +6,41 @@
     <title>커스텀 코드 에디터 — SoftFactory</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/highlight.js/highlight.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/highlight.js/languages/javascript.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js/styles/atom-one-dark.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/ace-builds@1.4.13/src-min-noconflict/ace.js"></script>
     <script src="../platform/api.js"></script>
     <style>
         body { font-family: 'Inter', sans-serif; }
-        .editor { font-family: 'Monaco', 'Menlo', monospace; }
+        .editor { font-family: 'Monaco', 'Menlo', 'Courier New', monospace; }
         .code-line { line-height: 1.6; }
         hljs { background: #1e1e1e !important; }
+        #editor-container { position: relative; width: 100%; height: 100%; }
+        .status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .status-success { background-color: rgba(34, 197, 94, 0.1); color: #22c55e; }
+        .status-error { background-color: rgba(239, 68, 68, 0.1); color: #ef4444; }
+        .status-info { background-color: rgba(59, 130, 246, 0.1); color: #3b82f6; }
+        .console-entry {
+            padding: 0.5rem;
+            border-bottom: 1px solid rgba(100, 116, 139, 0.1);
+            font-family: 'Monaco', monospace;
+        }
+        .template-tag {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            background-color: rgba(6, 182, 212, 0.1);
+            color: #06b6d4;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            margin-right: 0.5rem;
+        }
     </style>
 </head>
 <body class="bg-slate-950 text-slate-100">
@@ -124,28 +151,13 @@ main();</textarea>
 
                 <!-- Right Panel: Help & Output -->
                 <div class="w-80 flex flex-col gap-4 overflow-hidden">
-                    <!-- API Reference -->
+                    <!-- Templates Sidebar -->
                     <div class="flex-1 bg-slate-800 rounded-lg border border-slate-700 overflow-hidden flex flex-col">
-                        <div class="bg-slate-900 border-b border-slate-700 px-4 py-3 font-semibold text-cyan-400">
-                            📚 API 레퍼런스
+                        <div class="bg-slate-900 border-b border-slate-700 px-4 py-3 font-semibold text-cyan-400 flex items-center justify-between">
+                            <span>📚 코드 템플릿</span>
                         </div>
-                        <div class="flex-1 overflow-y-auto p-4 space-y-3 text-sm">
-                            <div class="bg-slate-900 p-3 rounded border border-slate-700">
-                                <div class="text-cyan-400 font-mono text-xs">GET /api/data</div>
-                                <p class="text-slate-400 text-xs mt-1">데이터 소스에서 항목 불러오기</p>
-                            </div>
-                            <div class="bg-slate-900 p-3 rounded border border-slate-700">
-                                <div class="text-cyan-400 font-mono text-xs">POST /api/workflow/result</div>
-                                <p class="text-slate-400 text-xs mt-1">처리 결과 저장하기</p>
-                            </div>
-                            <div class="bg-slate-900 p-3 rounded border border-slate-700">
-                                <div class="text-cyan-400 font-mono text-xs">PUT /api/workflow/status</div>
-                                <p class="text-slate-400 text-xs mt-1">워크플로우 상태 업데이트</p>
-                            </div>
-                            <div class="bg-slate-900 p-3 rounded border border-slate-700">
-                                <div class="text-cyan-400 font-mono text-xs">DELETE /api/workflow/task/{id}</div>
-                                <p class="text-slate-400 text-xs mt-1">작업 취소하기</p>
-                            </div>
+                        <div class="flex-1 overflow-y-auto p-3 space-y-2 text-sm" id="templatesList">
+                            <div class="text-slate-500 px-3 py-2">로딩 중...</div>
                         </div>
                     </div>
 
@@ -168,91 +180,214 @@ main();</textarea>
         requireAuth();
 
         const editor = document.getElementById('codeEditor');
-        const highlight = document.getElementById('highlight');
-        const highlightPre = document.getElementById('highlightPre');
         const consoleOutput = document.getElementById('console');
+        const templatesList = document.getElementById('templatesList');
+        let isExecuting = false;
 
-        // Sync scroll between editor and highlight
-        editor.addEventListener('scroll', () => {
-            highlightPre.scrollTop = editor.scrollTop;
-            highlightPre.scrollLeft = editor.scrollLeft;
-        });
+        // API endpoints
+        const API_BASE = '/api/ai-automation';
 
-        // Update highlighting as user types
-        editor.addEventListener('input', () => {
+        // Load templates
+        async function loadTemplates() {
+            try {
+                const response = await fetch(`${API_BASE}/code/templates`, {
+                    headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+                });
+                const data = await response.json();
+
+                if (data.templates && data.templates.length > 0) {
+                    templatesList.innerHTML = data.templates.map(template => `
+                        <div onclick="loadTemplate('${template.id}')" class="bg-slate-900 p-3 rounded border border-slate-700 cursor-pointer hover:border-cyan-500 transition">
+                            <div class="text-cyan-400 font-medium text-sm">${template.name}</div>
+                            <p class="text-slate-400 text-xs mt-1">${template.description}</p>
+                        </div>
+                    `).join('');
+                } else {
+                    templatesList.innerHTML = '<div class="text-slate-500 px-3 py-2">템플릿이 없습니다</div>';
+                }
+            } catch (error) {
+                console.error('Failed to load templates:', error);
+                templatesList.innerHTML = '<div class="text-red-400 px-3 py-2">템플릿 로딩 실패</div>';
+            }
+        }
+
+        // Load specific template
+        async function loadTemplate(templateId) {
+            try {
+                const response = await fetch(`${API_BASE}/code/templates/${templateId}`, {
+                    headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+                });
+                const template = await response.json();
+
+                editor.value = template.code;
+                updateHighlight();
+                addConsoleLog(`📚 템플릿 로드됨: ${template.name}`, 'info');
+            } catch (error) {
+                addConsoleLog(`❌ 템플릿 로딩 실패: ${error.message}`, 'error');
+            }
+        }
+
+        // Update code highlighting
+        function updateHighlight() {
             const code = editor.value;
-            highlight.textContent = code;
-            hljs.highlightElement(highlight);
-
-            // Update line number
-            const lines = editor.value.substring(0, editor.selectionStart).split('\n');
+            const lines = code.substring(0, editor.selectionStart).split('\n');
             document.getElementById('lineNumber').textContent = lines.length;
             document.getElementById('colNumber').textContent = lines[lines.length - 1].length + 1;
+        }
+
+        // Sync scroll
+        editor.addEventListener('scroll', () => {
+            const highlight = document.getElementById('highlightPre');
+            highlight.scrollTop = editor.scrollTop;
+            highlight.scrollLeft = editor.scrollLeft;
+        });
+
+        // Update highlight on input
+        editor.addEventListener('input', () => {
+            const code = editor.value;
+            const highlight = document.getElementById('highlight');
+            highlight.textContent = code;
+            hljs.highlightElement(highlight);
+            updateHighlight();
         });
 
         // Track cursor position
-        editor.addEventListener('keyup', () => {
-            const lines = editor.value.substring(0, editor.selectionStart).split('\n');
-            document.getElementById('lineNumber').textContent = lines.length;
-            document.getElementById('colNumber').textContent = lines[lines.length - 1].length + 1;
-        });
+        editor.addEventListener('keyup', updateHighlight);
 
         // Initial highlight
-        highlight.textContent = editor.value;
-        hljs.highlightElement(highlight);
+        editor.addEventListener('input', () => {});
+        const code = editor.value;
+        document.getElementById('highlight').textContent = code;
+        hljs.highlightElement(document.getElementById('highlight'));
 
         function addConsoleLog(message, type = 'info') {
             const timestamp = new Date().toLocaleTimeString();
+            const typeEmoji = {
+                'info': '•',
+                'success': '✅',
+                'error': '❌',
+                'warning': '⚠',
+                'log': '📝'
+            };
             const colors = {
                 'info': 'text-slate-400',
                 'success': 'text-green-400',
                 'error': 'text-red-400',
-                'warning': 'text-yellow-400'
+                'warning': 'text-yellow-400',
+                'log': 'text-blue-400'
             };
             const color = colors[type] || colors.info;
+            const emoji = typeEmoji[type] || '•';
 
             const line = document.createElement('div');
-            line.className = color;
-            line.textContent = `[${timestamp}] ${message}`;
+            line.className = `console-entry ${color}`;
+            line.textContent = `[${timestamp}] ${emoji} ${message}`;
             consoleOutput.appendChild(line);
             consoleOutput.scrollTop = consoleOutput.scrollHeight;
         }
 
         function clearConsole() {
-            consoleOutput.innerHTML = '<div class="text-slate-500">• 콘솔 초기화됨</div>';
+            consoleOutput.innerHTML = '<div class="text-slate-500 console-entry">• 콘솔 초기화됨</div>';
         }
 
         function saveCode() {
             const code = editor.value;
             localStorage.setItem('customCode', code);
-            addConsoleLog('✅ 코드가 저장되었습니다.', 'success');
+            addConsoleLog('코드가 로컬에 저장되었습니다', 'success');
         }
 
-        function runCode() {
+        async function runCode() {
+            if (isExecuting) {
+                addConsoleLog('실행 중입니다. 잠시 기다려주세요.', 'warning');
+                return;
+            }
+
+            const code = editor.value;
+            if (!code || !code.trim()) {
+                addConsoleLog('실행할 코드가 없습니다', 'error');
+                return;
+            }
+
             clearConsole();
-            addConsoleLog('🚀 코드 실행 시작...', 'info');
+            isExecuting = true;
+            addConsoleLog('코드 실행 시작...', 'info');
+            document.querySelector('button:contains("실행")').disabled = true;
 
             try {
-                // Parse and validate code
-                new Function(editor.value);
-                addConsoleLog('✅ 문법 검사 통과', 'success');
+                // Validate code first
+                const validateResponse = await fetch(`${API_BASE}/code/validate`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    },
+                    body: JSON.stringify({ code })
+                });
 
-                // Simulate execution
-                setTimeout(() => {
-                    addConsoleLog('📊 데이터 로드: 42개 항목', 'info');
-                }, 500);
+                const validateData = await validateResponse.json();
+                if (!validateData.valid) {
+                    addConsoleLog(`문법 검사 오류: ${validateData.error}`, 'error');
+                    isExecuting = false;
+                    return;
+                }
 
-                setTimeout(() => {
-                    addConsoleLog('⚙ 처리 중...', 'info');
-                }, 1000);
+                addConsoleLog('문법 검사 완료', 'success');
 
-                setTimeout(() => {
-                    addConsoleLog('💾 결과 저장 완료', 'success');
-                    addConsoleLog('⏱ 실행 시간: 2.34s', 'info');
-                    addConsoleLog('✅ 워크플로우 완료', 'success');
-                }, 1500);
+                // Execute code
+                const response = await fetch(`${API_BASE}/code/execute`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    },
+                    body: JSON.stringify({
+                        code,
+                        timeout_ms: 5000
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.status === 'success') {
+                    addConsoleLog('코드 실행 성공', 'success');
+
+                    // Display console logs
+                    if (result.console_logs && result.console_logs.length > 0) {
+                        result.console_logs.forEach(log => {
+                            if (log.startsWith('[ERROR]')) {
+                                addConsoleLog(log, 'error');
+                            } else if (log.startsWith('[WARN]')) {
+                                addConsoleLog(log, 'warning');
+                            } else if (log.startsWith('[INFO]')) {
+                                addConsoleLog(log, 'info');
+                            } else {
+                                addConsoleLog(log, 'log');
+                            }
+                        });
+                    }
+
+                    // Display execution time
+                    addConsoleLog(`실행 시간: ${result.execution_time}초`, 'info');
+
+                    // Display return value if exists
+                    if (result.return_value && Object.keys(result.return_value).length > 0) {
+                        addConsoleLog(`결과: ${JSON.stringify(result.return_value)}`, 'success');
+                    }
+                } else if (result.status === 'timeout') {
+                    addConsoleLog('실행 시간 초과 (5초)', 'error');
+                } else if (result.status === 'validation_error') {
+                    addConsoleLog(`문법 오류: ${result.error}`, 'error');
+                } else {
+                    addConsoleLog(`실행 오류: ${result.error || 'Unknown error'}`, 'error');
+                    if (result.console_logs && result.console_logs.length > 0) {
+                        result.console_logs.forEach(log => addConsoleLog(log, 'log'));
+                    }
+                }
             } catch (error) {
-                addConsoleLog(`❌ 문법 오류: ${error.message}`, 'error');
+                addConsoleLog(`통신 오류: ${error.message}`, 'error');
+            } finally {
+                isExecuting = false;
+                document.querySelectorAll('button').forEach(btn => btn.disabled = false);
             }
         }
 
@@ -260,9 +395,12 @@ main();</textarea>
         const savedCode = localStorage.getItem('customCode');
         if (savedCode) {
             editor.value = savedCode;
-            highlight.textContent = savedCode;
-            hljs.highlightElement(highlight);
+            document.getElementById('highlight').textContent = savedCode;
+            hljs.highlightElement(document.getElementById('highlight'));
         }
+
+        // Initialize
+        loadTemplates();
     </script>
 </body>
 </html>

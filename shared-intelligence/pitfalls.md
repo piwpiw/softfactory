@@ -516,3 +516,167 @@ for campaign in campaigns:
 - **Prevention:** (1) Match CI database version to production version. (2) Test migrations against production DB snapshot (sanitized). (3) Always test rollback: `migrate up; migrate down; migrate up`. (4) Document minimum version support: "PostgreSQL 13+".
 - **Reference:** `.github/workflows/test.yml` line 25: `postgres:15` — should match production version
 
+
+---
+
+## PF-008: ngrok Tunnel Issues (2026-02-25)
+
+**Category:** Infrastructure / Networking
+**Severity:** HIGH
+**Discovered:** Network Access Agent
+**Status:** DOCUMENTED
+
+### Problem
+ngrok tunnels can disconnect unexpectedly due to:
+- Network interruption (WiFi drop, VPN disconnect)
+- ngrok API rate limits (free tier: 20 tunnels/40h)
+- Auth token expiration or revocation
+- Firewall/proxy interference
+- Local port conflicts
+
+### Prevention
+1. **Use monitoring mode:** `bash scripts/ngrok-start.sh --monitor`
+   - Enables auto-reconnect (max 5 attempts, 10s intervals)
+   - Health checks every 30 seconds
+   - Fallback to localtunnel if ngrok fails
+
+2. **Set auth token:** Reduces API rate limits and prevents URL hijacking
+   - Get token: https://dashboard.ngrok.com/get-started/your-authtoken
+   - Set via: `export NGROK_AUTHTOKEN="..."`
+
+3. **Check prerequisites:**
+   - Flask app running on port 8000: `curl http://localhost:8000/health`
+   - ngrok in PATH: `ngrok version`
+   - Firewall allows outbound HTTPS (port 443)
+
+4. **Monitor tunnel status:**
+   - Check ngrok web inspector: http://127.0.0.1:4040
+   - Query ngrok API: `curl http://127.0.0.1:4041/api/tunnels | jq`
+   - Check log file: `tail logs/ngrok.log`
+
+### Recovery
+```bash
+# Immediate: Stop and restart
+bash scripts/ngrok-start.sh --monitor
+
+# Fallback: Use localtunnel
+bash scripts/localtunnel-start.sh
+
+# Investigate: Check logs
+tail -50 logs/ngrok.log | grep -i "error\|disconnect"
+```
+
+### Reference
+- Prevention: `docs/PUBLIC_ACCESS_GUIDE.md` Section 3-4
+- Troubleshooting: `docs/PUBLIC_ACCESS_GUIDE.md` Section 10
+
+---
+
+## PF-009: Access Logs Disk Usage (2026-02-25)
+
+**Category:** Operations / Storage
+**Severity:** MEDIUM
+**Discovered:** Network Access Agent
+**Status:** DOCUMENTED
+
+### Problem
+Access logs grow continuously:
+- ~1KB per request (JSON log entry)
+- 10K requests/day = 10MB/day
+- 1 year of logs = 3.65GB
+
+Without cleanup, disk fills up and logging stops.
+
+### Prevention
+1. **Implement log rotation:**
+   ```bash
+   # Delete logs older than 30 days
+   find logs/ -name "access*.log*" -mtime +30 -delete
+   
+   # Archive by month
+   tar -czf logs/archive-$(date +%Y%m).tar.gz logs/access*.log
+   ```
+
+2. **Set cron job:**
+   ```bash
+   # Add to crontab (runs daily at 2 AM)
+   0 2 * * * cd /home/user/Project && bash scripts/cleanup-logs.sh
+   ```
+
+3. **Monitor disk usage:**
+   ```bash
+   # Check log directory size
+   du -sh logs/
+   
+   # Alert if > 1GB
+   if [ $(du -s logs | cut -f1) -gt 1048576 ]; then
+     # Send alert
+   fi
+   ```
+
+### Recovery
+```bash
+# Delete old logs immediately
+find logs/ -name "*.log" -mtime +7 -delete
+
+# Compress metrics to free space
+gzip logs/metrics.json
+
+# Archive and delete incident logs
+tar -czf logs/incidents-archive.tar.gz logs/incidents.jsonl
+rm logs/incidents.jsonl
+```
+
+### Reference
+- Cleanup script: `scripts/cleanup-logs.sh` (create if needed)
+- Monitoring: `docs/PUBLIC_ACCESS_GUIDE.md` Section 7
+
+---
+
+## PF-010: CORS Whitelist Out of Sync (2026-02-25)
+
+**Category:** Integration / Configuration
+**Severity:** MEDIUM
+**Discovered:** Network Access Agent
+**Status:** DOCUMENTED
+
+### Problem
+When ngrok URL changes:
+- Old URL in CORS whitelist causes issues
+- New URL not in whitelist = CORS errors
+- Users get "Cross-Origin Request Blocked"
+
+### Prevention
+1. **Dynamic CORS configuration:**
+   - Don't hardcode ngrok URLs
+   - Fetch dynamically from `get_public_url()`
+   - See: `docs/PUBLIC_ACCESS_INTEGRATION.md` Step 3
+
+2. **Auto-update CORS:**
+   - Run `bash scripts/update-public-urls.sh` after tunnel starts
+   - Script notifies Flask app of new URL
+   - Flask updates CORS allowlist automatically
+
+3. **Test CORS after restart:**
+   ```bash
+   # After starting ngrok
+   PUBLIC_URL=$(cat logs/ngrok-url.txt)
+   curl -H "Origin: $PUBLIC_URL" \
+     -H "Access-Control-Request-Method: POST" \
+     http://localhost:8000/api/health
+   ```
+
+### Recovery
+```bash
+# Immediate: Restart Flask app
+python start_platform.py
+
+# Or manually update CORS
+curl -X POST http://localhost:8000/api/admin/public-url-update \
+  -d '{"url": "'$PUBLIC_URL'", "type": "ngrok"}'
+```
+
+### Reference
+- Integration guide: `docs/PUBLIC_ACCESS_INTEGRATION.md` Step 3
+- Update script: `scripts/update-public-urls.sh`
+

@@ -807,3 +807,278 @@ docker stats --no-stream
 **When to use:** Post-deployment verification, monitoring probes, incident response.
 **Integration:** Export to monitoring as `./scripts/health-check.sh --json` for alerts.
 
+
+## Performance Optimization Patterns (2026-02-25)
+
+### PAT-010: Database Connection Pooling
+**Problem:** New connection per request exhausts resources under load.
+**Solution:**
+```python
+from sqlalchemy.pool import QueuePool
+
+app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
+    'poolclass': QueuePool,
+    'pool_size': 10,
+    'max_overflow': 20,
+    'pool_pre_ping': True,
+    'pool_recycle': 3600
+}
+```
+**When to use:** All Flask apps with SQLAlchemy.
+**Impact:** 15-20% connection overhead reduction, prevents "too many connections" errors.
+**Files:** `backend/app.py`
+
+### PAT-011: SQLite WAL Mode for Concurrency
+**Problem:** SQLite locks database on writes, blocking all reads.
+**Solution:**
+```python
+def init_db(app):
+    with app.app_context():
+        db.create_all()
+        with db.engine.connect() as conn:
+            conn.execute(text("PRAGMA journal_mode=WAL"))
+            conn.execute(text("PRAGMA synchronous=NORMAL"))
+            conn.execute(text("PRAGMA cache_size=10000"))
+```
+**When to use:** All SQLite databases.
+**Impact:** 2-3x write throughput, reads don't block on writes.
+**Files:** `backend/models.py`
+
+### PAT-012: Application-Level Caching with TTL
+**Problem:** Repeated database queries for unchanged data.
+**Solution:**
+```python
+from backend.caching_config import cached, cache_bust
+
+@app.route('/api/products')
+@cached('products:all', ttl_seconds=3600)
+def get_products():
+    return jsonify([p.to_dict() for p in Product.query.all()])
+
+@app.route('/api/products', methods=['POST'])
+@cache_bust('products:')  # Invalidate on write
+def create_product():
+    # Create logic
+    return jsonify(new_product.to_dict()), 201
+```
+**When to use:** Read-heavy endpoints with infrequent writes.
+**Impact:** 80-90% response time on cached endpoints, 75%+ cache hit rate.
+**Files:** `backend/caching_config.py`, `backend/app.py`
+
+### PAT-013: GZIP Response Compression
+**Problem:** Large JSON responses consume bandwidth.
+**Solution:**
+```python
+from flask_compress import Compress
+
+Compress(app)
+app.config['COMPRESS_MIN_SIZE'] = 500
+app.config['COMPRESS_LEVEL'] = 6
+```
+**When to use:** All Flask apps serving JSON.
+**Impact:** 50-70% response size reduction.
+**Files:** `backend/app.py`, `requirements.txt` (add flask-compress)
+
+### PAT-014: HTTP Caching Headers & ETag
+**Problem:** Browser doesn't cache responses, repeats same request.
+**Solution:**
+```python
+@app.after_request
+def add_caching_headers(response):
+    if request.method == 'GET':
+        add_cache_headers(response, 'public, max-age=3600')
+    add_etag(response)
+    return response
+```
+**When to use:** All GET endpoints.
+**Impact:** 80% cache hit rate on repeat requests (browser doesn't re-request).
+**Files:** `backend/caching_config.py`
+
+### PAT-015: Eager Loading to Fix N+1 Queries
+**Problem:** Loop over results causes 1+N database queries.
+**Solution:**
+```python
+# BEFORE: 9 queries (1 base + 8 related)
+bookings = Booking.query.all()
+for booking in bookings:
+    print(booking.chef.name)  # Executes query per booking
+
+# AFTER: 1 query with join
+from sqlalchemy.orm import joinedload
+bookings = Booking.query.options(joinedload(Booking.chef)).all()
+for booking in bookings:
+    print(booking.chef.name)  # Already loaded
+```
+**When to use:** Any endpoint that accesses related records in loops.
+**Impact:** 40-60% query time reduction.
+**Detection:** Count SQL queries in logs. If >3, likely N+1 problem.
+
+### PAT-016: Database Indexing Strategy
+**Problem:** Slow queries on frequently filtered columns.
+**Solution:**
+```python
+class User(db.Model):
+    email = db.Column(db.String(120), unique=True, index=True)
+    is_active = db.Column(db.Boolean, index=True)
+    created_at = db.Column(db.DateTime, index=True)
+
+# Composite indices for common WHERE clauses
+from sqlalchemy import Index
+Index('idx_user_email_active', User.email, User.is_active)
+Index('idx_booking_user_status', Booking.user_id, Booking.status)
+```
+**When to use:** Columns used in WHERE, JOIN, ORDER BY clauses.
+**Impact:** 35-45% query speed improvement on indexed columns.
+**Files:** `backend/models.py`
+
+### PAT-017: Performance Monitoring Decorator
+**Problem:** No visibility into endpoint performance.
+**Solution:**
+```python
+from backend.performance_monitor import monitor_performance
+
+@app.route('/api/dashboard')
+@monitor_performance
+@require_auth
+def get_dashboard():
+    return jsonify(dashboard_data)
+
+# Access metrics: curl http://localhost:8000/api/monitoring/metrics
+```
+**When to use:** All API endpoints.
+**Impact:** Real-time metrics collection, identifies slow endpoints.
+**Files:** `backend/performance_monitor.py`
+
+### PAT-018: Image Lazy Loading (Frontend)
+**Problem:** All images load on page load, even below-the-fold.
+**Solution:**
+```html
+<!-- Native lazy loading (simplest) -->
+<img src="/images/chef.jpg" loading="lazy" alt="Chef" />
+
+<!-- With Intersection Observer (fallback for older browsers) -->
+<img src="/placeholder.jpg" data-src="/images/chef.jpg" class="lazy-image" alt="Chef" />
+<script>
+const images = document.querySelectorAll('img.lazy-image');
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.src = entry.target.dataset.src;
+            observer.unobserve(entry.target);
+        }
+    });
+}, { rootMargin: '50px' });
+images.forEach(img => observer.observe(img));
+</script>
+```
+**When to use:** Pages with 5+ images.
+**Impact:** 30-40% page load improvement.
+**Files:** `web/**/*.html`
+
+### PAT-019: JavaScript Code Splitting
+**Problem:** Load all JavaScript upfront, unused on current page.
+**Solution:**
+```html
+<button id="charts-btn">Show Analytics</button>
+<script>
+document.getElementById('charts-btn').addEventListener('click', async () => {
+    const { Chart } = await import('/js/modules/charts.js');
+    Chart.init();
+});
+</script>
+```
+**When to use:** Heavy modules not needed on initial page load.
+**Impact:** 20-30% faster initial page load.
+**Files:** `web/**/*.html`
+
+### PAT-020: Load Testing with Locust
+**Problem:** No visibility into how system behaves under load.
+**Solution:**
+```bash
+# Run Locust load test
+locust -f scripts/load_test.py \
+  --host=http://localhost:8000 \
+  --users=200 \
+  --spawn-rate=50 \
+  --run-time=10m \
+  --headless \
+  --csv=docs/load_test_results
+```
+**When to use:** Before each performance optimization.
+**Metrics:** Track response times, error rates, throughput under load.
+**Files:** `scripts/load_test.py`
+
+---
+
+---
+
+## Public Access / Networking Patterns
+
+### PAT-013: ngrok Tunnel Auto-Reconnect Pattern (2026-02-25)
+
+**Category:** Infrastructure / Networking
+**Status:** PRODUCTION
+**Usage:** `scripts/ngrok-start.sh --monitor`
+
+Pattern for reliable tunnel management with automatic recovery:
+- Monitor process with PID file
+- Health check every 30 seconds
+- Auto-reconnect on failure (max 5 attempts, 10s delay)
+- Graceful cleanup on exit
+- Web inspector integration (http://127.0.0.1:4040)
+
+**When to use:** Any system requiring stable public access
+**Reference:** `scripts/ngrok-start.sh`, `docs/PUBLIC_ACCESS_GUIDE.md` Section 3
+
+### PAT-014: Public URL Discovery and Management (2026-02-25)
+
+**Category:** Infrastructure / Configuration
+**Status:** PRODUCTION
+**Usage:** `from backend.public_access_handler import get_access_manager`
+
+Multi-source URL discovery with fallback:
+1. Try file first (logs/ngrok-url.txt) — fastest (~1ms)
+2. Query ngrok API (http://127.0.0.1:4040/api/tunnels) — fallback
+3. Return cached URL — last resort
+
+Enables dynamic CORS updates without app restart.
+
+**When to use:** Any system with dynamic public URLs
+**Reference:** `backend/public_access_handler.py`, `docs/PUBLIC_ACCESS_INTEGRATION.md`
+
+### PAT-015: JSON Lines Access Logging (2026-02-25)
+
+**Category:** Monitoring / Logging
+**Status:** PRODUCTION
+**Usage:** Append-only JSON log files (logs/access.log)
+
+One JSON object per line, stream-friendly format:
+- Queryable with jq
+- No locking issues (append-only)
+- Partial corruption survivable (each line independent)
+- Human-readable with tail -f
+
+Supports:
+- Real-time streaming
+- Batch analysis
+- Aggregation/grouping
+- Time-windowed queries
+
+**When to use:** High-volume audit logging
+**Reference:** `monitoring/access_logging.py`, `docs/PUBLIC_ACCESS_GUIDE.md` Section 7
+
+### PAT-016: IP Whitelist Enforcement (2026-02-25)
+
+**Category:** Security / Access Control
+**Status:** PRODUCTION
+**Usage:** `access_whitelist.json`, `@require_public_access` decorator
+
+Optional IP-based access control:
+- Enable/disable at runtime
+- Accounts for reverse proxies (X-Forwarded-For header)
+- All requests logged (even blocked ones)
+- Supports CIDR notation
+
+**When to use:** Restrict public access to known IPs
+**Reference:** `backend/public_access_handler.py`, `access_whitelist.json`
+

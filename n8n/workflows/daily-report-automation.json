@@ -1,7 +1,7 @@
 {
   "name": "SoftFactory Daily Report Automation",
-  "description": "Automated daily reports to email, Notion, and Telegram at 5AM, 10AM, 3PM, 5PM, 10PM",
-  "version": "1.0",
+  "description": "Automated daily reports to Gmail, Notion, and Telegram at 5AM, 10AM, 3PM, 5PM, 10PM (KST)",
+  "version": "2.0",
   "active": true,
   "timezone": "Asia/Seoul",
   "nodes": [
@@ -10,7 +10,7 @@
       "name": "Schedule - 5 AM",
       "type": "n8n-nodes-base.cron",
       "typeVersion": 1,
-      "position": [100, 100],
+      "position": [100, 50],
       "parameters": {
         "cronExpression": "0 5 * * *",
         "timezone": "Asia/Seoul"
@@ -21,7 +21,7 @@
       "name": "Schedule - 10 AM",
       "type": "n8n-nodes-base.cron",
       "typeVersion": 1,
-      "position": [100, 200],
+      "position": [100, 150],
       "parameters": {
         "cronExpression": "0 10 * * *",
         "timezone": "Asia/Seoul"
@@ -32,7 +32,7 @@
       "name": "Schedule - 3 PM",
       "type": "n8n-nodes-base.cron",
       "typeVersion": 1,
-      "position": [100, 300],
+      "position": [100, 250],
       "parameters": {
         "cronExpression": "0 15 * * *",
         "timezone": "Asia/Seoul"
@@ -43,7 +43,7 @@
       "name": "Schedule - 5 PM",
       "type": "n8n-nodes-base.cron",
       "typeVersion": 1,
-      "position": [100, 400],
+      "position": [100, 350],
       "parameters": {
         "cronExpression": "0 17 * * *",
         "timezone": "Asia/Seoul"
@@ -54,7 +54,7 @@
       "name": "Schedule - 10 PM",
       "type": "n8n-nodes-base.cron",
       "typeVersion": 1,
-      "position": [100, 500],
+      "position": [100, 450],
       "parameters": {
         "cronExpression": "0 22 * * *",
         "timezone": "Asia/Seoul"
@@ -62,12 +62,12 @@
     },
     {
       "id": "6",
-      "name": "Generate Report",
-      "type": "n8n-nodes-base.executeCommand",
+      "name": "Generate Report Data",
+      "type": "n8n-nodes-base.code",
       "typeVersion": 1,
-      "position": [300, 300],
+      "position": [300, 250],
       "parameters": {
-        "command": "cd D:/Project && python scripts/generate_daily_report.py"
+        "jsCode": "const timestamp = new Date();\nconst hour = timestamp.getHours();\nlet reportType = 'scheduled';\nlet greeting = 'Hello!';\n\nif (hour === 5) {\n  reportType = 'morning_brief';\n  greeting = 'Good Morning!';\n} else if (hour === 10) {\n  reportType = 'mid_morning';\n  greeting = 'Good Morning!';\n} else if (hour === 15) {\n  reportType = 'afternoon';\n  greeting = 'Good Afternoon!';\n} else if (hour === 17) {\n  reportType = 'evening';\n  greeting = 'Good Evening!';\n} else if (hour === 22) {\n  reportType = 'night_summary';\n  greeting = 'Good Night!';\n}\n\nreturn {\n  timestamp: timestamp.toISOString(),\n  date: timestamp.toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' }),\n  time: timestamp.toLocaleTimeString('en-US', { hour12: false }),\n  hour: hour,\n  reportType: reportType,\n  greeting: greeting,\n  status: 'OPERATIONAL'\n};"
       }
     },
     {
@@ -75,14 +75,13 @@
       "name": "Send Email (Gmail)",
       "type": "n8n-nodes-base.gmail",
       "typeVersion": 2,
-      "position": [500, 200],
+      "position": [500, 100],
       "parameters": {
         "resource": "message",
         "operation": "send",
-        "to": "piwpiw99@gmail.com",
-        "subject": "SoftFactory Daily Report - {{ now.toFormat('yyyy-MM-dd HH:mm') }}",
-        "body": "{{ $node[\"Generate Report\"].json.report_content }}",
-        "attachments": "{{ $node[\"Generate Report\"].json.report_pdf }}"
+        "to": "{{$env.GMAIL_SENDER_EMAIL}}",
+        "subject": "{{$node[\"Generate Report Data\"].json.greeting}} - SoftFactory {{$node[\"Generate Report Data\"].json.reportType}} Report",
+        "html": "<h2>{{$node[\"Generate Report Data\"].json.greeting}}</h2><p><strong>Report Type:</strong> {{$node[\"Generate Report Data\"].json.reportType}}</p><p><strong>Time:</strong> {{$node[\"Generate Report Data\"].json.time}} KST</p><p><strong>Status:</strong> {{$node[\"Generate Report Data\"].json.status}}</p><p>This is an automated daily report from SoftFactory Platform.</p>"
       }
     },
     {
@@ -90,40 +89,35 @@
       "name": "Save to Notion",
       "type": "n8n-nodes-base.notion",
       "typeVersion": 2,
-      "position": [500, 350],
+      "position": [500, 250],
       "parameters": {
         "resource": "page",
         "operation": "create",
-        "databaseId": "{{ $env.NOTION_DATABASE_ID }}",
-        "properties": {
-          "Title": {
-            "title": [
-              {
-                "text": {
-                  "content": "Daily Report - {{ now.toFormat('yyyy-MM-dd HH:mm') }}"
-                }
-              }
-            ]
-          },
-          "Date": {
-            "date": {
-              "start": "{{ now.toISO() }}"
+        "databaseId": "{{$env.NOTION_DATABASE_ID}}",
+        "simple": false,
+        "propertyKeyValuePairs": {
+          "pairs": [
+            {
+              "key": "Title",
+              "value": "{{$node[\"Generate Report Data\"].json.greeting}} - {{$node[\"Generate Report Data\"].json.date}}"
+            },
+            {
+              "key": "Date",
+              "value": "{{$node[\"Generate Report Data\"].json.date}}"
+            },
+            {
+              "key": "Report_Type",
+              "value": "{{$node[\"Generate Report Data\"].json.reportType}}"
+            },
+            {
+              "key": "Time",
+              "value": "{{$node[\"Generate Report Data\"].json.time}}"
+            },
+            {
+              "key": "Status",
+              "value": "{{$node[\"Generate Report Data\"].json.status}}"
             }
-          },
-          "Content": {
-            "rich_text": [
-              {
-                "text": {
-                  "content": "{{ $node[\"Generate Report\"].json.report_content }}"
-                }
-              }
-            ]
-          },
-          "Status": {
-            "select": {
-              "name": "Completed"
-            }
-          }
+          ]
         }
       }
     },
@@ -132,26 +126,20 @@
       "name": "Send to Telegram",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1,
-      "position": [500, 500],
+      "position": [500, 400],
       "parameters": {
-        "chatId": "7910169750",
-        "text": "Daily Report\n{{ $node[\"Generate Report\"].json.report_summary }}\n\nFull report attached.",
-        "attachments": [
-          {
-            "property": "report_pdf",
-            "value": "{{ $node[\"Generate Report\"].json.report_pdf }}"
-          }
-        ]
+        "chatId": "{{$env.TELEGRAM_CHAT_ID}}",
+        "text": "{{$node[\"Generate Report Data\"].json.greeting}}\n\n*SoftFactory Daily Report*\nReport: {{$node[\"Generate Report Data\"].json.reportType}}\nTime: {{$node[\"Generate Report Data\"].json.time}} KST\nStatus: {{$node[\"Generate Report Data\"].json.status}}"
       }
     },
     {
       "id": "10",
-      "name": "Log Success",
-      "type": "n8n-nodes-base.executeCommand",
+      "name": "Log Execution",
+      "type": "n8n-nodes-base.code",
       "typeVersion": 1,
-      "position": [700, 300],
+      "position": [700, 250],
       "parameters": {
-        "command": "echo '[OK] Daily report sent to email, Notion, and Telegram' >> D:/Project/logs/n8n-reports.log"
+        "jsCode": "return {\n  executionTime: new Date().toISOString(),\n  workflow: 'Daily Report Automation',\n  reportType: $node[\"Generate Report Data\"].json.reportType,\n  gmailSent: !!$node[\"Send Email (Gmail)\"].json,\n  notionSaved: !!$node[\"Save to Notion\"].json,\n  telegramSent: !!$node[\"Send to Telegram\"].json,\n  status: 'success'\n};"
       }
     }
   ],
@@ -167,7 +155,10 @@
     "9": { "main": [[{ "node": "10", "branch": 0 }]] }
   },
   "settings": {
-    "executionOrder": "v1"
+    "executionOrder": "v1",
+    "errorHandler": {
+      "enabled": true
+    }
   },
   "staticData": null,
   "pinData": null

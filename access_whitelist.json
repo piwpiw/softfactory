@@ -1,0 +1,20 @@
+{
+  "enabled": false,
+  "ips": [
+    "127.0.0.1",
+    "::1"
+  ],
+  "updated_at": "2026-02-25T00:00:00",
+  "description": "SoftFactory IP Whitelist for Public Access Control",
+  "notes": "Set 'enabled' to true to enforce IP-based access restrictions. Add your IP addresses to the 'ips' array.",
+  "example_ips": [
+    "1.2.3.4",
+    "5.6.7.8",
+    "192.168.1.0/24"
+  ],
+  "maintenance": {
+    "last_reviewed": "2026-02-25",
+    "review_frequency": "monthly",
+    "administrator": "DevOps"
+  }
+}

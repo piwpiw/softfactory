@@ -1,0 +1,51 @@
+# ngrok configuration file for SoftFactory
+# This file configures ngrok tunneling to expose the Flask API publicly
+# Generated: 2026-02-25
+
+version: "3"
+
+# Tunnel definitions
+tunnels:
+  softfactory:
+    proto: http
+    addr: 8000
+    domain: "" # Leave empty for random subdomain; set to custom domain if using Pro plan
+    bind-tls: true
+
+    # Headers to pass through
+    headers:
+      - "X-Forwarded-Proto: https"
+      - "X-Forwarded-For: ${CLIENT_IP}"
+
+    # IP whitelist (optional - set empty to allow all)
+    # Uncomment to restrict access to specific IPs
+    # ip-policy-add: "0.0.0.0/0"
+    # ip-policy-remove: ""
+
+# Global ngrok settings
+authtoken: "" # Set via NGROK_AUTHTOKEN environment variable or ngrok authtoken <token>
+
+# Log settings
+log: "stdout"
+log-level: "info"
+
+# Metrics (requires Pro)
+# metrics:
+#   enabled: true
+#   addr: "127.0.0.1:4040"
+
+# Web interface (inspect requests)
+web_addr: "127.0.0.1:4040"
+
+# Tunnel session reconnection settings
+heartbeat-interval: 25
+heartbeat-tolerance: 5
+
+# API server (for programmatic control)
+api_addr: "127.0.0.1:4041"
+
+# Metadata
+metadata:
+  project: "SoftFactory"
+  environment: "development"
+  created: "2026-02-25"

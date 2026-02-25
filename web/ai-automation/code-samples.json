@@ -1,0 +1,144 @@
+{
+  "templates": [
+    {
+      "id": "hello_world",
+      "name": "Hello World",
+      "category": "basics",
+      "difficulty": "easy",
+      "description": "Simple console output - perfect for testing",
+      "code": "console.log('Hello, World!');",
+      "tags": ["console", "output"]
+    },
+    {
+      "id": "fetch_data",
+      "name": "Fetch Data from API",
+      "category": "api",
+      "difficulty": "easy",
+      "description": "Fetch data from an API endpoint and process it",
+      "code": "// Fetch data from API\nconst response = await fetch('/api/data');\nconst data = await response.json();\nconsole.log('Fetched items:', data.length);\nresults.data = data;",
+      "tags": ["api", "fetch", "async", "await"]
+    },
+    {
+      "id": "process_array",
+      "name": "Process Array Data",
+      "category": "data",
+      "difficulty": "easy",
+      "description": "Transform and filter array data",
+      "code": "// Process array data\nconst items = [\n    { id: 1, name: 'Item 1', value: 100 },\n    { id: 2, name: 'Item 2', value: 200 },\n    { id: 3, name: 'Item 3', value: 150 }\n];\n\nconst processed = items\n    .filter(item => item.value > 100)\n    .map(item => ({\n        id: item.id,\n        name: item.name.toUpperCase(),\n        doubled_value: item.value * 2\n    }));\n\nconsole.log('Processed items:', JSON.stringify(processed, null, 2));\nresults.processed = processed;",
+      "tags": ["array", "map", "filter", "transform"]
+    },
+    {
+      "id": "loop_example",
+      "name": "Loop Examples",
+      "category": "control-flow",
+      "difficulty": "easy",
+      "description": "Iterate over data with loops and control flow",
+      "code": "// Loop example\nconst numbers = [1, 2, 3, 4, 5];\nlet sum = 0;\n\nfor (const num of numbers) {\n    sum += num;\n    if (num % 2 === 0) {\n        console.log(`${num} is even`);\n    }\n}\n\nconsole.log('Sum:', sum);\nresults.sum = sum;",
+      "tags": ["loop", "for", "iteration", "control-flow"]
+    },
+    {
+      "id": "error_handling",
+      "name": "Error Handling",
+      "category": "advanced",
+      "difficulty": "medium",
+      "description": "Handle errors gracefully with try-catch",
+      "code": "// Error handling example\ntry {\n    const data = JSON.parse('{\"invalid json\"');\n} catch (error) {\n    console.error('JSON parse error:', error.message);\n    results.error = error.message;\n}\n\ntry {\n    const response = await fetch('https://api.example.com/data');\n    if (!response.ok) {\n        throw new Error(`HTTP ${response.status}`);\n    }\n    const data = await response.json();\n    console.log('Success:', data);\n} catch (error) {\n    console.error('Fetch failed:', error.message);\n}",
+      "tags": ["try-catch", "error", "exception"]
+    },
+    {
+      "id": "conditional_logic",
+      "name": "Conditional Logic",
+      "category": "control-flow",
+      "difficulty": "easy",
+      "description": "Use if/else conditions for decision making",
+      "code": "// Conditional logic\nconst score = 85;\n\nif (score >= 90) {\n    console.log('Grade: A');\n    results.grade = 'A';\n} else if (score >= 80) {\n    console.log('Grade: B');\n    results.grade = 'B';\n} else if (score >= 70) {\n    console.log('Grade: C');\n    results.grade = 'C';\n} else {\n    console.log('Grade: F');\n    results.grade = 'F';\n}",
+      "tags": ["if-else", "conditional", "decision"]
+    },
+    {
+      "id": "data_validation",
+      "name": "Data Validation",
+      "category": "utilities",
+      "difficulty": "medium",
+      "description": "Validate and sanitize input data",
+      "code": "// Data validation\nconst validateEmail = (email) => {\n    const regex = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/;\n    return regex.test(email);\n};\n\nconst validatePhoneNumber = (phone) => {\n    const regex = /^[0-9\\-+\\s()]{7,}$/;\n    return regex.test(phone);\n};\n\nconst testEmails = ['user@example.com', 'invalid.email', 'test@domain.co.uk'];\nconst testPhones = ['123-456-7890', '(123) 456 7890', 'invalid'];\n\nresults.emailValidation = testEmails.map(email => ({\n    email,\n    valid: validateEmail(email)\n}));\n\nresults.phoneValidation = testPhones.map(phone => ({\n    phone,\n    valid: validatePhoneNumber(phone)\n}));\n\nconsole.log('Validation complete');",
+      "tags": ["validation", "regex", "input", "sanitize"]
+    },
+    {
+      "id": "data_aggregation",
+      "name": "Data Aggregation",
+      "category": "data",
+      "difficulty": "medium",
+      "description": "Aggregate and summarize data",
+      "code": "// Data aggregation\nconst sales = [\n    { product: 'A', amount: 100, date: '2024-01-01' },\n    { product: 'B', amount: 150, date: '2024-01-01' },\n    { product: 'A', amount: 200, date: '2024-01-02' },\n    { product: 'C', amount: 75, date: '2024-01-02' }\n];\n\nconst byProduct = sales.reduce((acc, sale) => {\n    if (!acc[sale.product]) {\n        acc[sale.product] = { total: 0, count: 0 };\n    }\n    acc[sale.product].total += sale.amount;\n    acc[sale.product].count += 1;\n    return acc;\n}, {});\n\nconst summary = Object.entries(byProduct).map(([product, data]) => ({\n    product,\n    total_sales: data.total,\n    average_sale: (data.total / data.count).toFixed(2),\n    transaction_count: data.count\n}));\n\nconsole.log('Sales Summary:', JSON.stringify(summary, null, 2));\nresults.summary = summary;",
+      "tags": ["reduce", "aggregate", "summary", "group"]
+    },
+    {
+      "id": "async_await",
+      "name": "Async/Await Pattern",
+      "category": "advanced",
+      "difficulty": "medium",
+      "description": "Use async/await for asynchronous operations",
+      "code": "// Async/await pattern\nasync function processMultipleAPIs() {\n    try {\n        // Fetch from multiple endpoints\n        const [users, posts] = await Promise.all([\n            fetch('/api/users').then(r => r.json()),\n            fetch('/api/posts').then(r => r.json())\n        ]);\n        \n        console.log('Users:', users.length);\n        console.log('Posts:', posts.length);\n        \n        results.users = users;\n        results.posts = posts;\n    } catch (error) {\n        console.error('Failed to fetch data:', error.message);\n    }\n}\n\nawait processMultipleAPIs();",
+      "tags": ["async", "await", "promise", "concurrent"]
+    },
+    {
+      "id": "object_manipulation",
+      "name": "Object Manipulation",
+      "category": "data",
+      "difficulty": "medium",
+      "description": "Transform and manipulate objects",
+      "code": "// Object manipulation\nconst person = {\n    name: 'John Doe',\n    age: 30,\n    email: 'john@example.com',\n    skills: ['JavaScript', 'Python', 'SQL']\n};\n\n// Add new property\nperson.city = 'New York';\n\n// Update nested property\nperson.contact = {\n    email: person.email,\n    phone: '+1-234-567-8900'\n};\n\n// Extract specific fields\nconst { name, age, skills } = person;\n\nconsole.log('Name:', name);\nconsole.log('Age:', age);\nconsole.log('Skills:', skills.join(', '));\n\nresults.person = person;\nresults.name = name;\nresults.skills = skills;",
+      "tags": ["object", "destructure", "properties", "manipulation"]
+    },
+    {
+      "id": "string_operations",
+      "name": "String Operations",
+      "category": "utilities",
+      "difficulty": "easy",
+      "description": "Perform string manipulations and transformations",
+      "code": "// String operations\nconst text = 'Hello, World!';\n\n// Case transformations\nconst upper = text.toUpperCase();\nconst lower = text.toLowerCase();\n\n// String methods\nconst reversed = text.split('').reverse().join('');\nconst words = text.split(' ');\nconst trimmed = '  spaces  '.trim();\n\n// String interpolation\nconst name = 'Alice';\nconst greeting = `Hello, ${name}!`;\n\nconsole.log('Original:', text);\nconsole.log('Upper:', upper);\nconsole.log('Lower:', lower);\nconsole.log('Reversed:', reversed);\n\nresults.transformations = {\n    original: text,\n    upper,\n    lower,\n    reversed,\n    words\n};",
+      "tags": ["string", "text", "manipulation", "formatting"]
+    },
+    {
+      "id": "mathematical_operations",
+      "name": "Mathematical Operations",
+      "category": "utilities",
+      "difficulty": "easy",
+      "description": "Perform mathematical calculations",
+      "code": "// Mathematical operations\nconst numbers = [5, 2, 8, 1, 9, 3];\n\n// Basic calculations\nconst sum = numbers.reduce((a, b) => a + b, 0);\nconst product = numbers.reduce((a, b) => a * b, 1);\nconst average = sum / numbers.length;\n\n// Sorting and statistics\nconst sorted = [...numbers].sort((a, b) => a - b);\nconst max = Math.max(...numbers);\nconst min = Math.min(...numbers);\n\n// Math functions\nconst sqrtSum = Math.sqrt(sum);\nconst rounded = Math.round(average * 100) / 100;\n\nconsole.log('Sum:', sum);\nconsole.log('Average:', rounded);\nconsole.log('Max:', max);\nconsole.log('Min:', min);\n\nresults.statistics = {\n    sum,\n    average: rounded,\n    max,\n    min,\n    count: numbers.length\n};",
+      "tags": ["math", "calculation", "statistics", "numbers"]
+    }
+  ],
+  "categories": [
+    {
+      "id": "basics",
+      "name": "기초",
+      "description": "기본 JavaScript 개념"
+    },
+    {
+      "id": "api",
+      "name": "API",
+      "description": "API 호출 및 데이터 페칭"
+    },
+    {
+      "id": "data",
+      "name": "데이터 처리",
+      "description": "배열, 객체, 데이터 변환"
+    },
+    {
+      "id": "control-flow",
+      "name": "제어 흐름",
+      "description": "조건문, 반복문, 로직"
+    },
+    {
+      "id": "advanced",
+      "name": "고급",
+      "description": "비동기, 에러 처리 등"
+    },
+    {
+      "id": "utilities",
+      "name": "유틸리티",
+      "description": "검증, 문자열, 수학 연산"
+    }
+  ]
+}
