@@ -116,7 +116,8 @@ class ConsultationBus:
             with self.lock:
                 # Convert priority to queue priority (lower = higher priority)
                 priority_value = message.priority.value
-                self.queue.put((priority_value, message.created_at, message), block=False)
+                # Use message ID as tiebreaker to avoid comparing Message objects
+                self.queue.put((priority_value, message.created_at, message.id, message), block=False)
                 self.messages[message.id] = message
 
                 # Log
@@ -142,7 +143,7 @@ class ConsultationBus:
         """
         try:
             while True:
-                _, _, message = self.queue.get(timeout=timeout)
+                _, _, _, message = self.queue.get(timeout=timeout)
 
                 # Check if message is for this agent
                 if message.to_agent is None:  # Broadcast
@@ -152,7 +153,7 @@ class ConsultationBus:
                 # Not for this agent, re-queue
                 else:
                     self.queue.put(
-                        (message.priority.value, message.created_at, message)
+                        (message.priority.value, message.created_at, message.id, message)
                     )
         except Empty:
             return None
