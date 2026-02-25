@@ -1,5 +1,7 @@
-"""SoftFactory Database Models"""
+"""SoftFactory Database Models (v2.0 — Optimized with Indexes & Relationships)"""
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import Index, func
+from sqlalchemy.orm import joinedload, selectinload
 from datetime import datetime, timedelta
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -9,9 +11,18 @@ db = SQLAlchemy()
 
 class User(db.Model):
     __tablename__ = 'users'
+    __table_args__ = (
+        # Single-column indexes (lookup, OAuth)
+        Index('idx_email', 'email'),
+        Index('idx_oauth_id', 'oauth_id'),
+        # Composite index (user creation timeline queries)
+        Index('idx_created_at', 'created_at'),
+        # Status-based queries
+        Index('idx_is_active', 'is_active'),
+    )
 
     id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(120), unique=True, nullable=False, index=True)
+    email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(255), nullable=False)
     name = db.Column(db.String(120), nullable=False)
     role = db.Column(db.String(20), default='user')  # 'user' or 'admin'
@@ -21,20 +32,31 @@ class User(db.Model):
     is_locked = db.Column(db.Boolean, default=False)  # Account locked due to failed login attempts
     locked_until = db.Column(db.DateTime, nullable=True)  # When lockout expires
     password_changed_at = db.Column(db.DateTime, default=datetime.utcnow)  # Track password age
+    # OAuth fields (added 2026-02-26)
+    oauth_provider = db.Column(db.String(20), nullable=True)  # 'google', 'facebook', 'kakao', etc.
+    oauth_id = db.Column(db.String(255), nullable=True, unique=True)  # Platform-specific user ID
+    avatar_url = db.Column(db.String(500), nullable=True)  # Profile picture URL
 
-    subscriptions = db.relationship('Subscription', backref='user', lazy=True, cascade='all, delete-orphan')
-    payments = db.relationship('Payment', backref='user', lazy=True, cascade='all, delete-orphan')
-    bookings = db.relationship('Booking', backref='user', lazy=True, cascade='all, delete-orphan')
-    sns_accounts = db.relationship('SNSAccount', backref='user', lazy=True, cascade='all, delete-orphan')
-    sns_posts = db.relationship('SNSPost', backref='user', lazy=True, cascade='all, delete-orphan')
-    sns_campaigns = db.relationship('SNSCampaign', backref='user', lazy=True, cascade='all, delete-orphan')
-    sns_templates = db.relationship('SNSTemplate', backref='user', lazy=True, cascade='all, delete-orphan')
-    sns_analytics = db.relationship('SNSAnalytics', backref='user', lazy=True, cascade='all, delete-orphan')
-    sns_inbox = db.relationship('SNSInboxMessage', backref='user', lazy=True, cascade='all, delete-orphan')
-    sns_settings = db.relationship('SNSSettings', backref='user', lazy=True, cascade='all, delete-orphan', uselist=False)
-    campaigns = db.relationship('Campaign', backref='creator', lazy=True, cascade='all, delete-orphan', foreign_keys='Campaign.creator_id')
-    campaign_applications = db.relationship('CampaignApplication', backref='user', lazy=True, cascade='all, delete-orphan')
-    ai_employees = db.relationship('AIEmployee', backref='user', lazy=True, cascade='all, delete-orphan')
+    # Relationships with optimized lazy loading
+    subscriptions = db.relationship('Subscription', backref='user', lazy='select', cascade='all, delete-orphan')
+    payments = db.relationship('Payment', backref='user', lazy='select', cascade='all, delete-orphan')
+    bookings = db.relationship('Booking', backref='user', lazy='select', cascade='all, delete-orphan')
+    sns_accounts = db.relationship('SNSAccount', backref='user', lazy='select', cascade='all, delete-orphan')
+    sns_posts = db.relationship('SNSPost', backref='user', lazy='select', cascade='all, delete-orphan')
+    sns_campaigns = db.relationship('SNSCampaign', backref='user', lazy='select', cascade='all, delete-orphan')
+    sns_templates = db.relationship('SNSTemplate', backref='user', lazy='select', cascade='all, delete-orphan')
+    sns_analytics = db.relationship('SNSAnalytics', backref='user', lazy='select', cascade='all, delete-orphan')
+    sns_inbox = db.relationship('SNSInboxMessage', backref='user', lazy='select', cascade='all, delete-orphan')
+    sns_settings = db.relationship('SNSSettings', backref='user', lazy='select', cascade='all, delete-orphan', uselist=False)
+    sns_link_in_bios = db.relationship('SNSLinkInBio', backref='user', lazy='select', cascade='all, delete-orphan')
+    sns_automates = db.relationship('SNSAutomate', backref='user', lazy='select', cascade='all, delete-orphan')
+    campaigns = db.relationship('Campaign', backref='creator', lazy='select', cascade='all, delete-orphan', foreign_keys='Campaign.creator_id')
+    campaign_applications = db.relationship('CampaignApplication', backref='user', lazy='select', cascade='all, delete-orphan')
+    review_accounts = db.relationship('ReviewAccount', backref='user', lazy='select', cascade='all, delete-orphan')
+    review_auto_rules = db.relationship('ReviewAutoRule', backref='user', lazy='select', cascade='all, delete-orphan')
+    ai_employees = db.relationship('AIEmployee', backref='user', lazy='select', cascade='all, delete-orphan')
+    bootcamp_enrollments = db.relationship('BootcampEnrollment', backref='user', lazy='select', cascade='all, delete-orphan')
+    webapps = db.relationship('WebApp', backref='user', lazy='select', cascade='all, delete-orphan')
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -48,7 +70,8 @@ class User(db.Model):
             'email': self.email,
             'name': self.name,
             'role': self.role,
-            'created_at': self.created_at.isoformat()
+            'avatar_url': self.avatar_url,
+            'created_at': self.created_at.isoformat() if self.created_at else None
         }
 
 
@@ -200,12 +223,22 @@ class BookingReview(db.Model):
 class SNSAccount(db.Model):
     """SNS Account with expanded OAuth & analytics fields"""
     __tablename__ = 'sns_accounts'
+    __table_args__ = (
+        # User-platform lookup
+        Index('idx_user_platform', 'user_id', 'platform'),
+        # Platform status queries (active accounts per platform)
+        Index('idx_platform_status', 'platform', 'is_active'),
+        # User active accounts
+        Index('idx_user_active', 'user_id', 'is_active'),
+        # OAuth lookup
+        Index('idx_platform_user_id', 'platform', 'platform_user_id'),
+    )
 
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    platform = db.Column(db.String(50), nullable=False, index=True)  # instagram, facebook, twitter, linkedin, tiktok, youtube, pinterest, threads, youtube_shorts
+    platform = db.Column(db.String(50), nullable=False)  # instagram, facebook, twitter, linkedin, tiktok, youtube, pinterest, threads, youtube_shorts
     account_name = db.Column(db.String(120), nullable=False)
-    is_active = db.Column(db.Boolean, default=True, index=True)
+    is_active = db.Column(db.Boolean, default=True)
 
     # OAuth fields (v2.0 new)
     access_token = db.Column(db.Text)  # Encrypted in production
@@ -243,6 +276,22 @@ class SNSAccount(db.Model):
 class SNSPost(db.Model):
     """SNS Post with analytics and campaign tracking"""
     __tablename__ = 'sns_posts'
+    __table_args__ = (
+        # User post timeline (most common query)
+        Index('idx_user_created', 'user_id', 'created_at'),
+        # Platform status queries (filter by status & platform)
+        Index('idx_platform_status', 'platform', 'status'),
+        # Scheduled posts (APScheduler job queue)
+        Index('idx_scheduled_at', 'scheduled_at'),
+        # User-platform posts
+        Index('idx_user_platform', 'user_id', 'platform'),
+        # Campaign posts
+        Index('idx_campaign_id', 'campaign_id'),
+        # Account posts (N+1 prevention)
+        Index('idx_account_created', 'account_id', 'created_at'),
+        # Published posts (analytics queries)
+        Index('idx_user_published', 'user_id', 'status'),
+    )
 
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
@@ -250,9 +299,9 @@ class SNSPost(db.Model):
     campaign_id = db.Column(db.Integer, db.ForeignKey('sns_campaigns.id'), nullable=True)
 
     content = db.Column(db.Text, nullable=False)
-    platform = db.Column(db.String(50), nullable=False, index=True)
-    status = db.Column(db.String(20), default='draft', index=True)  # 'draft', 'scheduled', 'published', 'failed'
-    scheduled_at = db.Column(db.DateTime, index=True)
+    platform = db.Column(db.String(50), nullable=False)
+    status = db.Column(db.String(20), default='draft')  # 'draft', 'scheduled', 'published', 'failed'
+    scheduled_at = db.Column(db.DateTime)
     published_at = db.Column(db.DateTime)
     template_type = db.Column(db.String(50))  # 'card_news', 'blog_post', 'reel', 'shorts', 'carousel'
 
@@ -348,11 +397,19 @@ class SNSTemplate(db.Model):
 class SNSAnalytics(db.Model):
     """Daily SNS Analytics snapshot"""
     __tablename__ = 'sns_analytics'
+    __table_args__ = (
+        # Time-series analytics (date range queries)
+        Index('idx_account_date', 'account_id', 'date'),
+        # User analytics timeline
+        Index('idx_user_date', 'user_id', 'date'),
+        # Daily update queries
+        Index('idx_date', 'date'),
+    )
 
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     account_id = db.Column(db.Integer, db.ForeignKey('sns_accounts.id'), nullable=False)
-    date = db.Column(db.Date, nullable=False, index=True)
+    date = db.Column(db.Date, nullable=False)
     followers = db.Column(db.Integer, default=0)
     total_engagement = db.Column(db.Integer, default=0)  # likes + comments + shares
     total_reach = db.Column(db.Integer, default=0)
@@ -372,6 +429,16 @@ class SNSAnalytics(db.Model):
 class SNSInboxMessage(db.Model):
     """Unified SNS Inbox (DMs, comments, mentions)"""
     __tablename__ = 'sns_inbox_messages'
+    __table_args__ = (
+        # User inbox (unread first, then by date)
+        Index('idx_user_status', 'user_id', 'status'),
+        # Unread messages timeline
+        Index('idx_user_unread_created', 'user_id', 'status', 'created_at'),
+        # Account messages
+        Index('idx_account_created', 'account_id', 'created_at'),
+        # External ID lookup (platform message sync)
+        Index('idx_external_id', 'external_id'),
+    )
 
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
@@ -379,7 +446,7 @@ class SNSInboxMessage(db.Model):
     sender_name = db.Column(db.String(200), nullable=False)
     message_text = db.Column(db.Text, nullable=False)
     message_type = db.Column(db.String(50))  # 'dm', 'comment', 'mention'
-    status = db.Column(db.String(20), default='unread', index=True)  # 'unread', 'read', 'replied'
+    status = db.Column(db.String(20), default='unread')  # 'unread', 'read', 'replied'
     external_id = db.Column(db.String(255))  # Platform-specific message ID
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
@@ -397,12 +464,18 @@ class SNSInboxMessage(db.Model):
 class SNSOAuthState(db.Model):
     """OAuth state token tracking (CSRF prevention)"""
     __tablename__ = 'sns_oauth_states'
+    __table_args__ = (
+        # State token lookup (CSRF verification)
+        Index('idx_state_token', 'state_token'),
+        # Expired state cleanup
+        Index('idx_expires_at', 'expires_at'),
+    )
 
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     platform = db.Column(db.String(50), nullable=False)
-    state_token = db.Column(db.String(255), nullable=False, unique=True, index=True)
-    expires_at = db.Column(db.DateTime, nullable=False, index=True)
+    state_token = db.Column(db.String(255), nullable=False, unique=True)
+    expires_at = db.Column(db.DateTime, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
 
@@ -424,6 +497,238 @@ class SNSSettings(db.Model):
             'engagement_notifications': self.engagement_notifications,
             'auto_reply_enabled': self.auto_reply_enabled,
             'banned_keywords': self.banned_keywords,
+        }
+
+
+class SNSLinkInBio(db.Model):
+    """SNS Link In Bio — Single landing page with multiple links"""
+    __tablename__ = 'sns_link_in_bios'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    slug = db.Column(db.String(100), unique=True, nullable=False)
+    title = db.Column(db.String(255))
+    links = db.Column(db.JSON, default=[])  # [{url, label, icon}, ...]
+    theme = db.Column(db.String(50), default='light')  # 'light', 'dark', custom theme name
+    click_count = db.Column(db.Integer, default=0)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'slug': self.slug,
+            'title': self.title,
+            'links': self.links,
+            'theme': self.theme,
+            'click_count': self.click_count,
+            'created_at': self.created_at.isoformat() if self.created_at else None,
+        }
+
+
+class SNSAutomate(db.Model):
+    """SNS Automation Rule — Auto-posting to multiple platforms"""
+    __tablename__ = 'sns_automates'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    name = db.Column(db.String(255), nullable=False)
+    topic = db.Column(db.String(500))  # e.g., "AI news", "Product tips"
+    purpose = db.Column(db.String(500))  # '홍보' (promotion), '판매' (sales), '커뮤니티' (community)
+    platforms = db.Column(db.JSON, default=[])  # ['instagram', 'twitter', 'tiktok', ...]
+    frequency = db.Column(db.String(50), default='daily')  # 'daily', 'weekly', 'custom'
+    next_run = db.Column(db.DateTime)
+    is_active = db.Column(db.Boolean, default=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'topic': self.topic,
+            'purpose': self.purpose,
+            'platforms': self.platforms,
+            'frequency': self.frequency,
+            'next_run': self.next_run.isoformat() if self.next_run else None,
+            'is_active': self.is_active,
+            'created_at': self.created_at.isoformat() if self.created_at else None,
+        }
+
+
+class ReviewListing(db.Model):
+    """Review Listing — Brand review opportunities from various platforms"""
+    __tablename__ = 'review_listings'
+    __table_args__ = (
+        # Platform scraping (fetch new listings)
+        Index('idx_source_platform_scraped', 'source_platform', 'scraped_at'),
+        # Active listings (filtering & pagination)
+        Index('idx_category_deadline', 'category', 'deadline'),
+        # Reward range queries
+        Index('idx_reward_value', 'reward_value'),
+        # Status filtering (active, closed, ended)
+        Index('idx_status_created', 'status', 'scraped_at'),
+        # Duplicate prevention (external_id lookup)
+        Index('idx_external_id_platform', 'external_id', 'source_platform'),
+        # Deadline queries (expired listings cleanup)
+        Index('idx_deadline', 'deadline'),
+    )
+
+    id = db.Column(db.Integer, primary_key=True)
+    source_platform = db.Column(db.String(50), nullable=False)  # 'revu', 'reviewplace', 'wible', ...
+    external_id = db.Column(db.String(255), unique=True, nullable=False)
+    title = db.Column(db.String(500), nullable=False)
+    brand = db.Column(db.String(255))
+    category = db.Column(db.String(100))
+    reward_type = db.Column(db.String(50))  # '상품' (product), '금전' (cash), '경험' (experience)
+    reward_value = db.Column(db.Integer)  # KRW amount
+    requirements = db.Column(db.JSON, default={})  # {follower_min, tags, demographics, etc.}
+    deadline = db.Column(db.DateTime)
+    max_applicants = db.Column(db.Integer)
+    current_applicants = db.Column(db.Integer, default=0)
+    url = db.Column(db.String(500))
+    image_url = db.Column(db.String(500))
+    applied_accounts = db.Column(db.JSON, default=[])  # [account_ids]
+    status = db.Column(db.String(50), default='active')  # 'active', 'closed', 'ended'
+    scraped_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    applications = db.relationship('ReviewApplication', backref='listing', lazy=True, cascade='all, delete-orphan')
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'source_platform': self.source_platform,
+            'external_id': self.external_id,
+            'title': self.title,
+            'brand': self.brand,
+            'category': self.category,
+            'reward_type': self.reward_type,
+            'reward_value': self.reward_value,
+            'deadline': self.deadline.isoformat() if self.deadline else None,
+            'max_applicants': self.max_applicants,
+            'current_applicants': self.current_applicants,
+            'url': self.url,
+            'image_url': self.image_url,
+            'status': self.status,
+            'created_at': self.scraped_at.isoformat() if self.scraped_at else None,
+        }
+
+
+class ReviewBookmark(db.Model):
+    """Review Bookmark — User bookmarked review listing"""
+    __tablename__ = 'review_bookmarks'
+    __table_args__ = (
+        # User bookmarks
+        Index('idx_user_listing', 'user_id', 'listing_id'),
+        # Listing bookmarks count
+        Index('idx_listing_id', 'listing_id'),
+    )
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    listing_id = db.Column(db.Integer, db.ForeignKey('review_listings.id'), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'listing_id': self.listing_id,
+            'created_at': self.created_at.isoformat(),
+        }
+
+
+class ReviewAccount(db.Model):
+    """Review Account — User's account for review applications"""
+    __tablename__ = 'review_accounts'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    platform = db.Column(db.String(50), nullable=False)  # 'naver', 'instagram', 'blog', 'youtube', 'tiktok'
+    account_name = db.Column(db.String(255), nullable=False)
+    credentials_enc = db.Column(db.String(1000))  # Encrypted credentials (base64)
+    follower_count = db.Column(db.Integer, default=0)
+    category_tags = db.Column(db.JSON, default=[])  # ['패션' (fashion), '뷰티' (beauty), ...]
+    success_rate = db.Column(db.Float, default=0.0)  # 0.0-1.0 (percentage of successful applications)
+    is_active = db.Column(db.Boolean, default=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    applications = db.relationship('ReviewApplication', backref='account', lazy=True, cascade='all, delete-orphan')
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'platform': self.platform,
+            'account_name': self.account_name,
+            'follower_count': self.follower_count,
+            'category_tags': self.category_tags,
+            'success_rate': self.success_rate,
+            'is_active': self.is_active,
+            'created_at': self.created_at.isoformat() if self.created_at else None,
+        }
+
+
+class ReviewApplication(db.Model):
+    """Review Application — User applying for a review listing"""
+    __tablename__ = 'review_applications'
+    __table_args__ = (
+        # User application history
+        Index('idx_account_created', 'account_id', 'applied_at'),
+        # Listing applications (check if user already applied)
+        Index('idx_listing_account', 'listing_id', 'account_id'),
+        # User progress (active applications)
+        Index('idx_user_status', 'account_id', 'status'),
+        # Status timeline
+        Index('idx_status_created', 'status', 'applied_at'),
+    )
+
+    id = db.Column(db.Integer, primary_key=True)
+    listing_id = db.Column(db.Integer, db.ForeignKey('review_listings.id'), nullable=False)
+    account_id = db.Column(db.Integer, db.ForeignKey('review_accounts.id'), nullable=False)
+    applied_at = db.Column(db.DateTime, default=datetime.utcnow)
+    status = db.Column(db.String(50), default='pending')  # 'pending', 'selected', 'rejected', 'completed'
+    result = db.Column(db.String(500))  # Summary of application result
+    review_url = db.Column(db.String(500))  # URL to posted review
+    review_posted_at = db.Column(db.DateTime)
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'listing_id': self.listing_id,
+            'account_id': self.account_id,
+            'applied_at': self.applied_at.isoformat() if self.applied_at else None,
+            'status': self.status,
+            'result': self.result,
+            'review_url': self.review_url,
+            'review_posted_at': self.review_posted_at.isoformat() if self.review_posted_at else None,
+        }
+
+
+class ReviewAutoRule(db.Model):
+    """Review Automation Rule — Auto-apply to matching review listings"""
+    __tablename__ = 'review_auto_rules'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    name = db.Column(db.String(255), nullable=False)
+    categories = db.Column(db.JSON, default=[])  # ['패션', '뷰티', ...]
+    min_reward = db.Column(db.Integer, default=0)  # Minimum reward value in KRW
+    max_applicants_ratio = db.Column(db.Float, default=0.5)  # Max applicant ratio threshold (0.0-1.0)
+    preferred_accounts = db.Column(db.JSON, default=[])  # [account_ids] to prefer for applications
+    is_active = db.Column(db.Boolean, default=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'categories': self.categories,
+            'min_reward': self.min_reward,
+            'max_applicants_ratio': self.max_applicants_ratio,
+            'preferred_accounts': self.preferred_accounts,
+            'is_active': self.is_active,
+            'created_at': self.created_at.isoformat() if self.created_at else None,
         }
 
 
@@ -531,8 +836,6 @@ class BootcampEnrollment(db.Model):
     progress = db.Column(db.Integer, default=0)  # 0-100%
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
-    user = db.relationship('User', backref='bootcamp_enrollments')
-
     def to_dict(self):
         return {
             'id': self.id,
@@ -558,8 +861,6 @@ class WebApp(db.Model):
     code_repo = db.Column(db.String(500))  # GitHub URL
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     deployed_at = db.Column(db.DateTime)
-
-    user = db.relationship('User', backref='webapps')
 
     def to_dict(self):
         return {

@@ -1586,3 +1586,540 @@ async function optimizeSNSContent(content, platform) {
     });
     return response.json();
 }
+
+// ============ REVIEW SERVICE - Campaign Management ============
+
+/**
+ * Get all active campaigns (public listing)
+ * @param {number} page - Page number
+ * @param {string} category - Filter by category (optional)
+ * @param {string} sort - Sort by: latest, deadline, reward (default: latest)
+ * @returns {Promise<{campaigns: [...], total, pages, current_page}>}
+ */
+async function getReviewCampaigns(page = 1, category = '', sort = 'latest') {
+    let query = `?page=${page}&sort=${sort}`;
+    if (category) query += `&category=${category}`;
+    const response = await apiFetch(`/api/review/campaigns${query}`);
+    return response.json();
+}
+
+/**
+ * Get campaign detail
+ * @param {number} campaignId - Campaign ID
+ * @returns {Promise<{id, title, description, product_name, category, reward_type, reward_value, max_reviewers, applications_count, spots_available, deadline, status, created_at}>}
+ */
+async function getReviewCampaignDetail(campaignId) {
+    const response = await apiFetch(`/api/review/campaigns/${campaignId}`);
+    return response.json();
+}
+
+/**
+ * Apply to a campaign (reviewer/influencer)
+ * @param {number} campaignId - Campaign ID
+ * @param {string} message - Application message
+ * @param {string} snsLink - SNS profile link (optional)
+ * @param {number} followerCount - Follower count (optional)
+ * @returns {Promise<{id, message}>}
+ */
+async function applyToReviewCampaign(campaignId, message, snsLink = '', followerCount = 0) {
+    const response = await apiFetch(`/api/review/campaigns/${campaignId}/apply`, {
+        method: 'POST',
+        body: JSON.stringify({
+            message,
+            sns_link: snsLink,
+            follower_count: followerCount
+        })
+    });
+    return response.json();
+}
+
+/**
+ * Get user's created campaigns (campaign creator)
+ * @returns {Promise<[{id, title, product_name, category, max_reviewers, applications_count, deadline, status}]>}
+ */
+async function getReviewMyCampaigns() {
+    const response = await apiFetch('/api/review/my-campaigns');
+    return response.json();
+}
+
+/**
+ * Get user's campaign applications (reviewer/influencer)
+ * @returns {Promise<[{id, campaign_title, product_name, reward_value, status, applied_at}]>}
+ */
+async function getReviewMyApplications() {
+    const response = await apiFetch('/api/review/my-applications');
+    return response.json();
+}
+
+/**
+ * Get applications for a specific campaign (creator only)
+ * @param {number} campaignId - Campaign ID
+ * @returns {Promise<[{id, user_name, user_email, message, sns_link, follower_count, status}]>}
+ */
+async function getReviewCampaignApplications(campaignId) {
+    const response = await apiFetch(`/api/review/campaigns/${campaignId}/applications`);
+    return response.json();
+}
+
+/**
+ * Create a new campaign (creator only)
+ * @param {Object} payload - Campaign data
+ * @param {string} payload.title - Campaign title
+ * @param {string} payload.description - Campaign description
+ * @param {string} payload.product_name - Product name
+ * @param {string} payload.category - Category
+ * @param {string} payload.reward_type - Type: cash, product, discount
+ * @param {number} payload.reward_value - Reward amount
+ * @param {number} payload.max_reviewers - Max reviewers
+ * @param {string} payload.deadline - Deadline ISO string
+ * @returns {Promise<{id, message}>}
+ */
+async function createReviewCampaign(payload) {
+    const response = await apiFetch('/api/review/campaigns', {
+        method: 'POST',
+        body: JSON.stringify(payload)
+    });
+    return response.json();
+}
+
+/**
+ * Update campaign application status (creator only)
+ * @param {number} applicationId - Application ID
+ * @param {string} status - Status: pending, approved, rejected
+ * @returns {Promise<{success, message}>}
+ */
+async function updateReviewApplicationStatus(applicationId, status) {
+    const response = await apiFetch(`/api/review/applications/${applicationId}`, {
+        method: 'PUT',
+        body: JSON.stringify({ status })
+    });
+    return response.json();
+}
+
+// ============ REVIEW SERVICE - Enhanced Functions (v2.0) ============
+
+/**
+ * Get aggregated listings across all campaigns
+ * @param {Object} filters - Filter options
+ * @param {string} sort - Sort by: latest, deadline, popular
+ * @param {number} page - Page number
+ * @returns {Promise<{listings: [...], total, pages}>}
+ */
+async function getReviewAggregatedListings(filters = {}, sort = 'latest', page = 1) {
+    const params = new URLSearchParams({
+        ...filters,
+        sort,
+        page,
+        limit: 50
+    });
+    const response = await apiFetch(`/api/review/aggregated?${params}`);
+    return response.json();
+}
+
+/**
+ * Trigger immediate scrape of new campaigns
+ * @returns {Promise<{success, count, message}>}
+ */
+async function triggerReviewScrapeNow() {
+    const response = await apiFetch('/api/review/scrape/now', {
+        method: 'POST'
+    });
+    return response.json();
+}
+
+/**
+ * Toggle bookmark on a listing
+ * @param {number} listingId - Listing ID
+ * @returns {Promise<{success, bookmarked}>}
+ */
+async function toggleReviewBookmark(listingId) {
+    const response = await apiFetch(`/api/review/listings/${listingId}/bookmark`, {
+        method: 'POST'
+    });
+    return response.json();
+}
+
+/**
+ * Remove bookmark from listing
+ * @param {number} listingId - Listing ID
+ * @returns {Promise<{success}>}
+ */
+async function removeReviewBookmark(listingId) {
+    const response = await apiFetch(`/api/review/listings/${listingId}/bookmark`, {
+        method: 'DELETE'
+    });
+    return response.json();
+}
+
+/**
+ * Get user's review accounts (for profile management)
+ * @returns {Promise<[{id, username, platform, followers, verified}]>}
+ */
+async function getReviewAccounts() {
+    const response = await apiFetch('/api/review/accounts');
+    return response.json();
+}
+
+/**
+ * Create/add new review account
+ * @param {Object} data - Account data
+ * @param {string} data.username - Account username
+ * @param {string} data.platform - Platform: instagram, tiktok, youtube, etc.
+ * @param {number} data.follower_count - Follower count
+ * @returns {Promise<{id, message}>}
+ */
+async function createReviewAccount(data) {
+    const response = await apiFetch('/api/review/accounts', {
+        method: 'POST',
+        body: JSON.stringify(data)
+    });
+    return response.json();
+}
+
+/**
+ * Update review account
+ * @param {number} id - Account ID
+ * @param {Object} data - Updated data
+ * @returns {Promise<{success, message}>}
+ */
+async function updateReviewAccount(id, data) {
+    const response = await apiFetch(`/api/review/accounts/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify(data)
+    });
+    return response.json();
+}
+
+/**
+ * Delete review account
+ * @param {number} id - Account ID
+ * @returns {Promise<{success, message}>}
+ */
+async function deleteReviewAccount(id) {
+    const response = await apiFetch(`/api/review/accounts/${id}`, {
+        method: 'DELETE'
+    });
+    return response.json();
+}
+
+/**
+ * Get user's review applications with filters
+ * @param {Object} filters - Filter options (status, category, etc.)
+ * @returns {Promise<[{id, campaign_title, status, reward_value, applied_at, review_status}]>}
+ */
+async function getReviewApplications(filters = {}) {
+    const params = new URLSearchParams(filters);
+    const response = await apiFetch(`/api/review/applications?${params}`);
+    return response.json();
+}
+
+/**
+ * Get automatic application rules
+ * @returns {Promise<[{id, name, criteria, status}]>}
+ */
+async function getReviewAutoRules() {
+    const response = await apiFetch('/api/review/auto-apply/rules');
+    return response.json();
+}
+
+/**
+ * Create automatic application rule
+ * @param {Object} data - Rule configuration
+ * @param {string} data.name - Rule name
+ * @param {Object} data.criteria - Matching criteria
+ * @returns {Promise<{id, message}>}
+ */
+async function createReviewAutoRule(data) {
+    const response = await apiFetch('/api/review/auto-apply/rules', {
+        method: 'POST',
+        body: JSON.stringify(data)
+    });
+    return response.json();
+}
+
+/**
+ * Run automatic campaign application now
+ * @returns {Promise<{success, applications_made, message}>}
+ */
+async function runReviewAutoApplyNow() {
+    const response = await apiFetch('/api/review/auto-apply/run', {
+        method: 'POST'
+    });
+    return response.json();
+}
+
+/**
+ * Get review dashboard statistics
+ * @returns {Promise<{total_campaigns, active_campaigns, my_applications, applications_count, acceptance_rate}>}
+ */
+async function getReviewDashboardStats() {
+    const response = await apiFetch('/api/review/dashboard');
+    return response.json();
+}
+
+/**
+ * Get review analytics
+ * @param {string} period - Period: week, month, all
+ * @returns {Promise<{earnings, applications_count, acceptance_rate, trends}>}
+ */
+async function getReviewAnalytics(period = 'month') {
+    const response = await apiFetch(`/api/review/analytics?period=${period}`);
+    return response.json();
+}
+
+// ============ REVIEW SERVICE - Aggregated Listings (체험단 모음) ============
+
+/**
+ * Get aggregated review listings from all platforms
+ * @param {Object} filters - Filter options (category, min_reward, max_reward, platforms, sort, page, limit)
+ * @param {string} filters.category - Category filter (optional)
+ * @param {number} filters.min_reward - Minimum reward value (optional)
+ * @param {number} filters.max_reward - Maximum reward value (optional)
+ * @param {string} filters.sort - Sort by: latest (default), reward_high, applicants_few
+ * @param {number} filters.page - Page number (default: 1)
+ * @param {number} filters.limit - Items per page (default: 50, max: 100)
+ * @returns {Promise<{success, data: {listings, total, page, limit, pages, filters_applied}}>}
+ */
+async function getAggregatedListings(filters = {}, sort = 'latest', page = 1) {
+    const params = new URLSearchParams();
+    if (filters.category) params.append('category', filters.category);
+    if (filters.min_reward) params.append('min_reward', filters.min_reward);
+    if (filters.max_reward) params.append('max_reward', filters.max_reward);
+    if (filters.platforms) params.append('platforms', filters.platforms.join(','));
+    params.append('sort', sort);
+    params.append('page', page);
+    params.append('limit', filters.limit || 50);
+
+    const response = await apiFetch(`/api/review/aggregated?${params}`);
+    return response.json();
+}
+
+/**
+ * Trigger immediate scraping of review platforms
+ * @returns {Promise<{success, task_id, status, message}>}
+ */
+async function triggerReviewScrape() {
+    const response = await apiFetch('/api/review/scrape/now', {
+        method: 'POST'
+    });
+    return response.json();
+}
+
+/**
+ * Get status of current/recent scraping tasks
+ * @returns {Promise<{success, data: {current_job, last_scrape, total_listings, active_listings}}>}
+ */
+async function getReviewScrapeStatus() {
+    const response = await apiFetch('/api/review/scrape/status');
+    return response.json();
+}
+
+/**
+ * Toggle bookmark on a listing
+ * @param {number} listingId - Listing ID
+ * @returns {Promise<{success, message}>}
+ */
+async function toggleBookmark(listingId) {
+    const response = await apiFetch(`/api/review/listings/${listingId}/bookmark`, {
+        method: 'POST'
+    });
+    return response.json();
+}
+
+/**
+ * Add listing to bookmarks
+ * @param {number} listingId - Listing ID
+ * @returns {Promise<{success, message}>}
+ */
+async function addBookmark(listingId) {
+    const response = await apiFetch(`/api/review/listings/${listingId}/bookmark`, {
+        method: 'POST'
+    });
+    return response.json();
+}
+
+/**
+ * Remove listing from bookmarks
+ * @param {number} listingId - Listing ID
+ * @returns {Promise<{success, message}>}
+ */
+async function removeBookmark(listingId) {
+    const response = await apiFetch(`/api/review/listings/${listingId}/bookmark`, {
+        method: 'DELETE'
+    });
+    return response.json();
+}
+
+/**
+ * Get user's bookmarked listings
+ * @param {number} page - Page number (default: 1)
+ * @param {number} limit - Items per page (default: 50)
+ * @returns {Promise<{success, data: {listings, total, page, limit}}>}
+ */
+async function getBookmarkedListings(page = 1, limit = 50) {
+    const response = await apiFetch(`/api/review/bookmarks?page=${page}&limit=${limit}`);
+    return response.json();
+}
+
+/**
+ * Get user's review accounts
+ * @returns {Promise<{success, data: [{id, platform, account_name, account_url, follower_count, is_active, success_rate, category_tags}]}>}
+ */
+async function getReviewAccounts() {
+    const response = await apiFetch('/api/review/accounts');
+    return response.json();
+}
+
+/**
+ * Create a new review account
+ * @param {Object} data - Account data
+ * @param {string} data.platform - Platform (naver-blog, tistory, instagram, youtube, tiktok)
+ * @param {string} data.account_name - Account name
+ * @param {string} data.account_url - Account URL (optional)
+ * @param {number} data.follower_count - Follower count (optional)
+ * @returns {Promise<{success, data: {...}}>}
+ */
+async function createReviewAccount(data) {
+    const response = await apiFetch('/api/review/accounts', {
+        method: 'POST',
+        body: JSON.stringify(data)
+    });
+    return response.json();
+}
+
+/**
+ * Update review account
+ * @param {number} accountId - Account ID
+ * @param {Object} data - Update data
+ * @returns {Promise<{success, data: {...}}>}
+ */
+async function updateReviewAccount(accountId, data) {
+    const response = await apiFetch(`/api/review/accounts/${accountId}`, {
+        method: 'PUT',
+        body: JSON.stringify(data)
+    });
+    return response.json();
+}
+
+/**
+ * Delete review account
+ * @param {number} accountId - Account ID
+ * @returns {Promise<{success, message}>}
+ */
+async function deleteReviewAccount(accountId) {
+    const response = await apiFetch(`/api/review/accounts/${accountId}`, {
+        method: 'DELETE'
+    });
+    return response.json();
+}
+
+/**
+ * Get user's review applications
+ * @param {Object} filters - Filter options (status, date_from, date_to, page, limit)
+ * @returns {Promise<{success, data: {applications, total, page, limit}}>}
+ */
+async function getUserReviewApplications(filters = {}) {
+    const params = new URLSearchParams();
+    if (filters.status) params.append('status', filters.status);
+    if (filters.date_from) params.append('date_from', filters.date_from);
+    if (filters.date_to) params.append('date_to', filters.date_to);
+    params.append('page', filters.page || 1);
+    params.append('limit', filters.limit || 50);
+
+    const response = await apiFetch(`/api/review/applications?${params}`);
+    return response.json();
+}
+
+/**
+ * Create a review application
+ * @param {Object} data - Application data
+ * @param {number} data.listing_id - Listing ID
+ * @param {number} data.account_id - Account ID
+ * @param {string} data.notes - Optional notes
+ * @returns {Promise<{success, data: {...}}>}
+ */
+async function createReviewApplication(data) {
+    const response = await apiFetch('/api/review/applications', {
+        method: 'POST',
+        body: JSON.stringify(data)
+    });
+    return response.json();
+}
+
+/**
+ * Update review application
+ * @param {number} applicationId - Application ID
+ * @param {Object} data - Update data (status, notes, result, review_url, review_posted_at)
+ * @returns {Promise<{success, data: {...}}>}
+ */
+async function updateReviewApplication(applicationId, data) {
+    const response = await apiFetch(`/api/review/applications/${applicationId}`, {
+        method: 'PUT',
+        body: JSON.stringify(data)
+    });
+    return response.json();
+}
+
+/**
+ * Get auto-apply rules
+ * @returns {Promise<{success, data: [{id, name, categories, min_reward, max_applicants_ratio, preferred_accounts, is_active}]}>}
+ */
+async function getAutoApplyRules() {
+    const response = await apiFetch('/api/review/auto-apply/rules');
+    return response.json();
+}
+
+/**
+ * Create auto-apply rule
+ * @param {Object} data - Rule data
+ * @param {string} data.name - Rule name
+ * @param {Array} data.categories - Categories to match
+ * @param {number} data.min_reward - Minimum reward value
+ * @param {number} data.max_applicants_ratio - Max applicants ratio (0-1)
+ * @param {Array} data.preferred_accounts - Preferred account IDs
+ * @returns {Promise<{success, data: {...}}>}
+ */
+async function createAutoApplyRule(data) {
+    const response = await apiFetch('/api/review/auto-apply/rules', {
+        method: 'POST',
+        body: JSON.stringify(data)
+    });
+    return response.json();
+}
+
+/**
+ * Update auto-apply rule
+ * @param {number} ruleId - Rule ID
+ * @param {Object} data - Update data
+ * @returns {Promise<{success, data: {...}}>}
+ */
+async function updateAutoApplyRule(ruleId, data) {
+    const response = await apiFetch(`/api/review/auto-apply/rules/${ruleId}`, {
+        method: 'PUT',
+        body: JSON.stringify(data)
+    });
+    return response.json();
+}
+
+/**
+ * Delete auto-apply rule
+ * @param {number} ruleId - Rule ID
+ * @returns {Promise<{success, message}>}
+ */
+async function deleteAutoApplyRule(ruleId) {
+    const response = await apiFetch(`/api/review/auto-apply/rules/${ruleId}`, {
+        method: 'DELETE'
+    });
+    return response.json();
+}
+
+/**
+ * Run auto-apply immediately
+ * @returns {Promise<{success, applied_count, task_id, message}>}
+ */
+async function runAutoApplyNow() {
+    const response = await apiFetch('/api/review/auto-apply/run', {
+        method: 'POST'
+    });
+    return response.json();
+}

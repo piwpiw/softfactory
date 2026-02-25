@@ -221,6 +221,30 @@ def setup_metrics_collection(app):
     return metrics
 
 
+def setup_logging(app):
+    """
+    Setup logging for the Flask application
+
+    Args:
+        app: Flask application instance
+    """
+    # Configure JSON logging
+    json_handler = logging.StreamHandler()
+    json_formatter = JSONFormatter('%(timestamp)s %(level)s %(name)s %(message)s')
+    json_handler.setFormatter(json_formatter)
+    json_handler.addFilter(RequestIdFilter())
+
+    # Add handlers to app logger
+    if app.logger.hasHandlers() is False:
+        app.logger.addHandler(json_handler)
+        app.logger.setLevel(logging.INFO)
+
+    # Setup metrics collection
+    setup_metrics_collection(app)
+
+    return app
+
+
 def get_logger(name):
     """
     Get a configured logger for a module

@@ -184,4 +184,16 @@ sns_scheduler = SNSScheduler()
 def init_scheduler(app: Flask):
     """Initialize and start the scheduler in Flask app context"""
     sns_scheduler.start(app)
-    logger.info("SNS Scheduler initialized and started")
+
+    # Add review scraper job - runs every 4 hours
+    sns_scheduler.scheduler.add_job(
+        func=scrape_review_listings,
+        args=[app],
+        trigger="interval",
+        hours=4,
+        id='scrape_review_listings',
+        name='Scrape review listings from platforms',
+        replace_existing=True
+    )
+
+    logger.info("SNS Scheduler initialized with review scraper job (every 4 hours)")

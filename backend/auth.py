@@ -10,6 +10,7 @@ from .security_middleware import (
     LoginAttemptTracker, SecurityEventLogger, require_rate_limit,
     log_security_event_decorator, sanitize_login_response
 )
+from .oauth import OAuthProvider
 
 auth_bp = Blueprint('auth', __name__, url_prefix='/api/auth')
 
@@ -258,3 +259,165 @@ def refresh():
 def get_me():
     """Get current user info"""
     return jsonify(g.user.to_dict()), 200
+
+
+# ============ OAUTH ENDPOINTS ============
+
+@auth_bp.route('/oauth/<provider>/url', methods=['GET'])
+@require_rate_limit
+def get_oauth_url(provider):
+    """
+    Get OAuth authorization URL for social login
+    GET /api/auth/oauth/google/url
+    GET /api/auth/oauth/facebook/url
+    GET /api/auth/oauth/kakao/url
+    """
+    if provider not in ['google', 'facebook', 'kakao']:
+        return jsonify({'error': 'Invalid OAuth provider'}), 400
+
+    # Generate state token for CSRF protection
+    state_token = OAuthProvider.generate_state_token()
+
+    # Build redirect URI (callback URL)
+    base_url = os.getenv('PLATFORM_URL', 'http://localhost:8000')
+    redirect_uri = f'{base_url}/api/auth/oauth/{provider}/callback'
+
+    # Get authorization URL from provider
+    result = OAuthProvider.get_auth_url(provider, state_token, redirect_uri)
+
+    if 'error' in result:
+        return jsonify(result), 400
+
+    # Store state token in session or return to client for verification
+    # Client will pass it back in callback
+    return jsonify({
+        'auth_url': result['auth_url'],
+        'state': state_token,
+        'mock_mode': result.get('mock_mode', False)
+    }), 200
+
+
+@auth_bp.route('/oauth/<provider>/callback', methods=['GET'])
+@require_rate_limit
+def oauth_callback(provider):
+    """
+    OAuth callback handler - exchange code for tokens
+    GET /api/auth/oauth/google/callback?code=...&state=...
+    GET /api/auth/oauth/facebook/callback?code=...&state=...
+    GET /api/auth/oauth/kakao/callback?code=...&state=...
+    """
+    if provider not in ['google', 'facebook', 'kakao']:
+        return jsonify({'error': 'Invalid OAuth provider'}), 400
+
+    code = request.args.get('code')
+    state = request.args.get('state')
+    error = request.args.get('error')
+
+    # Check for OAuth provider errors
+    if error:
+        error_description = request.args.get('error_description', error)
+        return jsonify({
+            'error': 'OAuth provider error',
+            'details': error_description
+        }), 400
+
+    # Validate state parameter (CSRF protection)
+    if not code or not state:
+        return jsonify({'error': 'Missing code or state parameter'}), 400
+
+    # Build redirect URI
+    base_url = os.getenv('PLATFORM_URL', 'http://localhost:8000')
+    redirect_uri = f'{base_url}/api/auth/oauth/{provider}/callback'
+
+    # Exchange code for access token
+    token_response = OAuthProvider.exchange_code_for_token(provider, code, redirect_uri)
+
+    if 'error' in token_response:
+        return jsonify({
+            'error': 'Failed to exchange authorization code',
+            'details': token_response['error']
+        }), 400
+
+    access_token = token_response.get('access_token')
+    if not access_token:
+        return jsonify({'error': 'No access token in response'}), 400
+
+    # Fetch user info from OAuth provider
+    user_info = OAuthProvider.get_user_info(provider, access_token)
+
+    if 'error' in user_info:
+        return jsonify({
+            'error': 'Failed to fetch user information',
+            'details': user_info['error']
+        }), 400
+
+    # Extract user data
+    oauth_id = user_info.get('id')
+    email = user_info.get('email')
+    name = user_info.get('name', 'User')
+    avatar_url = user_info.get('picture')
+    is_mock = user_info.get('mock_mode', False)
+
+    if not oauth_id:
+        return jsonify({'error': 'Failed to extract user ID from OAuth provider'}), 400
+
+    # Find or create user
+    user = None
+
+    # First, try to find by oauth_id + provider
+    user = User.query.filter_by(oauth_id=oauth_id, oauth_provider=provider).first()
+
+    # If not found, try to find by email (existing user linking OAuth)
+    if not user and email:
+        user = User.query.filter_by(email=email).first()
+
+        if user:
+            # Link OAuth to existing account
+            user.oauth_provider = provider
+            user.oauth_id = oauth_id
+            user.avatar_url = avatar_url or user.avatar_url
+            db.session.commit()
+            SecurityEventLogger.log_event('OAUTH_LINKED', user_id=user.id, email=email, provider=provider)
+
+    # Create new user if not found
+    if not user:
+        # Generate a unique email if not provided by OAuth provider
+        if not email:
+            email = f'{oauth_id}@{provider}.local'
+
+        user = User(
+            email=email,
+            name=name,
+            oauth_provider=provider,
+            oauth_id=oauth_id,
+            avatar_url=avatar_url,
+            is_active=True
+        )
+
+        # Set a random password for OAuth-only accounts
+        user.set_password(os.urandom(32).hex())
+        db.session.add(user)
+        db.session.commit()
+
+        SecurityEventLogger.log_event('USER_CREATED_OAUTH', user_id=user.id, email=email, provider=provider)
+
+    # Verify user account
+    if not user.is_active:
+        return jsonify({'error': 'Account is inactive'}), 403
+
+    # Create JWT tokens
+    access_token_jwt, refresh_token_jwt = create_tokens(user.id, user.role)
+
+    SecurityEventLogger.log_event('LOGIN_SUCCESS_OAUTH', user_id=user.id, email=user.email, provider=provider)
+
+    user_dict = user.to_dict()
+    user_dict = sanitize_login_response(user_dict)
+
+    return jsonify({
+        'access_token': access_token_jwt,
+        'refresh_token': refresh_token_jwt,
+        'user': user_dict,
+        'oauth_provider': provider,
+        'is_new_user': user.created_at.timestamp() > (datetime.utcnow().timestamp() - 60),  # Created within 60 seconds
+        'mock_mode': is_mock
+    }), 200

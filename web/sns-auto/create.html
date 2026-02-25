@@ -12,6 +12,14 @@
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #0f172a; }
         ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+        .tab-btn { @apply px-4 py-2.5 font-medium text-sm transition rounded-lg; }
+        .tab-btn.active { @apply bg-pink-600 text-white; }
+        .tab-btn:not(.active) { @apply bg-slate-800 text-slate-300 hover:bg-slate-700; }
+        .tab-content { @apply hidden; }
+        .tab-content.active { @apply block; }
+        .platform-badge { @apply inline-block px-3 py-1 rounded-full text-xs font-medium; }
+        .char-warning { @apply text-red-500; }
+        .char-caution { @apply text-yellow-500; }
     </style>
 </head>
 <body class="bg-slate-950 text-slate-100 antialiased">
@@ -54,9 +62,9 @@
             <header class="h-16 bg-slate-900 border-b border-slate-800 px-6 flex items-center justify-between shrink-0">
                 <div>
                     <h2 class="text-xl font-bold text-white">✍️ 포스트 작성</h2>
-                    <p class="text-xs text-slate-400">새로운 SNS 포스트를 작성하세요</p>
+                    <p class="text-xs text-slate-400">3가지 방식으로 SNS 포스트를 작성하세요</p>
                 </div>
-                <div class="flex gap-2">
+                <div id="publish-buttons" class="flex gap-2">
                     <button onclick="publishPost('draft')" class="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-slate-100 rounded-lg text-sm">
                         💾 임시저장
                     </button>
@@ -69,77 +77,351 @@
                 </div>
             </header>
 
-            <main class="flex-1 overflow-hidden grid grid-cols-2 gap-0">
-                <!-- Left: Editor -->
-                <div class="flex flex-col overflow-hidden border-r border-slate-800 p-6">
-                    <h3 class="text-lg font-bold text-white mb-4">포스트 편집</h3>
-                    <div class="flex-1 overflow-y-auto space-y-4">
-                        <div>
-                            <label class="block text-sm font-medium text-slate-300 mb-2">발행 계정</label>
-                            <select id="accountId" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white focus:border-pink-500 focus:outline-none">
-                                <option value="">선택하세요</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-slate-300 mb-2">템플릿 선택</label>
-                            <select id="template" onchange="updatePreview()" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white focus:border-pink-500 focus:outline-none">
-                                <option value="card_news">📇 카드 뉴스</option>
-                                <option value="blog_post">📝 블로그 포스트</option>
-                                <option value="reel">🎬 릴스</option>
-                                <option value="shorts">📱 쇼츠</option>
-                            </select>
-                        </div>
-                        <div>
-                            <div class="flex justify-between items-center mb-2">
-                                <label class="block text-sm font-medium text-slate-300">본문</label>
-                                <span id="charCount" class="text-xs text-slate-400">0 / 2200</span>
-                            </div>
-                            <textarea id="content" oninput="updatePreview(); updateCharCount()" placeholder="포스트 내용을 입력하세요..." class="w-full h-40 bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white placeholder-slate-500 focus:border-pink-500 focus:outline-none resize-none"></textarea>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-slate-300 mb-2">해시태그</label>
-                            <div class="flex gap-2">
-                                <input type="text" id="hashtags" placeholder="#hashtag1 #hashtag2" class="flex-1 bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white placeholder-slate-500 focus:border-pink-500 focus:outline-none">
-                                <button onclick="generateHashtags()" class="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-medium">AI 생성</button>
-                            </div>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-slate-300 mb-2">미디어 업로드</label>
-                            <input type="file" id="mediaFile" accept="image/*,video/*" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-slate-300 text-sm">
-                            <div id="mediaPreview" class="mt-2 flex gap-2 flex-wrap"></div>
-                        </div>
-                        <div id="scheduleDiv" class="space-y-3 pt-3 border-t border-slate-700">
-                            <div class="flex items-center gap-2">
-                                <input type="checkbox" id="scheduleToggle" onchange="toggleSchedule()" class="w-4 h-4">
-                                <label class="text-sm font-medium text-slate-300">예약 발행</label>
-                            </div>
-                            <div id="scheduleForm" class="hidden space-y-3">
+            <main class="flex-1 overflow-hidden flex flex-col">
+                <!-- Tab Navigation -->
+                <div class="bg-slate-900 border-b border-slate-800 px-6 py-3 flex gap-2 shrink-0">
+                    <button class="tab-btn active" onclick="switchTab('direct')">✍️ 직접 작성</button>
+                    <button class="tab-btn" onclick="switchTab('ai')">🤖 AI 생성</button>
+                    <button class="tab-btn" onclick="switchTab('automate')">⚡ 자동화 등록</button>
+                </div>
+
+                <div class="flex-1 overflow-hidden grid grid-cols-2 gap-0">
+                    <!-- Tab 1: 직접 작성 (Direct Writing) -->
+                    <div id="direct-tab" class="tab-content active col-span-2 grid grid-cols-2 gap-0">
+                        <!-- Left: Editor -->
+                        <div class="flex flex-col overflow-hidden border-r border-slate-800 p-6">
+                            <h3 class="text-lg font-bold text-white mb-4">포스트 편집</h3>
+                            <div class="flex-1 overflow-y-auto space-y-4">
+                                <!-- Account Selection -->
                                 <div>
-                                    <label class="block text-sm font-medium text-slate-300 mb-1">발행 날짜</label>
-                                    <input type="date" id="scheduleDate" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white focus:border-pink-500 focus:outline-none">
+                                    <label class="block text-sm font-medium text-slate-300 mb-2">발행 계정</label>
+                                    <select id="accountId" onchange="updatePreview(); updatePlatformSettings()" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white focus:border-pink-500 focus:outline-none">
+                                        <option value="">선택하세요</option>
+                                    </select>
                                 </div>
+
+                                <!-- Dynamic Platform Settings -->
+                                <div id="platform-settings" class="hidden space-y-4 pt-3 border-t border-slate-700">
+                                    <!-- Instagram Settings -->
+                                    <div id="instagram-settings" class="hidden space-y-3">
+                                        <div>
+                                            <label class="block text-sm font-medium text-slate-300 mb-2">콘텐츠 타입</label>
+                                            <select id="insta-type" onchange="updatePreview()" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white focus:border-pink-500 focus:outline-none text-sm">
+                                                <option value="feed">📸 피드</option>
+                                                <option value="reel">🎬 릴스</option>
+                                                <option value="story">📖 스토리</option>
+                                                <option value="carousel">🎪 캐러셀</option>
+                                            </select>
+                                        </div>
+                                        <p class="text-xs text-slate-400">💡 권장: 해시태그 5-10개, 최대 30개</p>
+                                    </div>
+
+                                    <!-- Twitter Settings -->
+                                    <div id="twitter-settings" class="hidden space-y-2">
+                                        <label class="flex items-center gap-2 text-sm font-medium text-slate-300 cursor-pointer">
+                                            <input type="checkbox" id="twitter-thread" onchange="updatePreview()" class="w-4 h-4">
+                                            스레드 모드 (연속 트윗)
+                                        </label>
+                                        <label class="flex items-center gap-2 text-sm font-medium text-slate-300 cursor-pointer">
+                                            <input type="checkbox" id="twitter-poll" onchange="updatePreview()" class="w-4 h-4">
+                                            폴 추가
+                                        </label>
+                                        <p class="text-xs text-slate-400">💡 280자 제한</p>
+                                    </div>
+
+                                    <!-- LinkedIn Settings -->
+                                    <div id="linkedin-settings" class="hidden space-y-3">
+                                        <div>
+                                            <label class="block text-sm font-medium text-slate-300 mb-2">톤</label>
+                                            <select id="linkedin-tone" onchange="updatePreview()" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white focus:border-pink-500 focus:outline-none text-sm">
+                                                <option value="professional">👔 전문가</option>
+                                                <option value="casual">😊 캐주얼</option>
+                                                <option value="thought-leadership">💡 리더십</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <!-- YouTube Settings -->
+                                    <div id="youtube-settings" class="hidden space-y-3">
+                                        <div>
+                                            <label class="block text-sm font-medium text-slate-300 mb-2">제목 (100자 제한)</label>
+                                            <input type="text" id="youtube-title" maxlength="100" onchange="updatePreview()" placeholder="영상 제목" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white placeholder-slate-500 focus:border-pink-500 focus:outline-none text-sm">
+                                            <span id="youtube-title-count" class="text-xs text-slate-400">0 / 100</span>
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-slate-300 mb-2">설명 (5000자 제한)</label>
+                                            <textarea id="youtube-desc" maxlength="5000" onchange="updatePreview(); updateYoutubeDes()" placeholder="영상 설명" class="w-full h-20 bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white placeholder-slate-500 focus:border-pink-500 focus:outline-none resize-none text-sm"></textarea>
+                                            <span id="youtube-desc-count" class="text-xs text-slate-400">0 / 5000</span>
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-slate-300 mb-2">태그 (쉼표로 구분)</label>
+                                            <input type="text" id="youtube-tags" onchange="updatePreview()" placeholder="tag1, tag2, tag3" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white placeholder-slate-500 focus:border-pink-500 focus:outline-none text-sm">
+                                        </div>
+                                    </div>
+
+                                    <!-- TikTok Settings -->
+                                    <div id="tiktok-settings" class="hidden space-y-3">
+                                        <p class="text-xs text-yellow-400">⚠️ TikTok은 영상 전용입니다. 영상 파일을 업로드하세요.</p>
+                                    </div>
+
+                                    <!-- Pinterest Settings -->
+                                    <div id="pinterest-settings" class="hidden space-y-3">
+                                        <div>
+                                            <label class="block text-sm font-medium text-slate-300 mb-2">보드 선택</label>
+                                            <select id="pinterest-board" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white focus:border-pink-500 focus:outline-none text-sm">
+                                                <option value="">보드를 선택하세요</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Template Selection -->
                                 <div>
-                                    <label class="block text-sm font-medium text-slate-300 mb-1">발행 시간</label>
-                                    <input type="time" id="scheduleTime" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white focus:border-pink-500 focus:outline-none">
+                                    <label class="block text-sm font-medium text-slate-300 mb-2">템플릿 선택</label>
+                                    <select id="template" onchange="updatePreview()" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white focus:border-pink-500 focus:outline-none">
+                                        <option value="card_news">📇 카드 뉴스</option>
+                                        <option value="blog_post">📝 블로그 포스트</option>
+                                        <option value="reel">🎬 릴스</option>
+                                        <option value="shorts">📱 쇼츠</option>
+                                    </select>
+                                </div>
+
+                                <!-- Content Area -->
+                                <div>
+                                    <div class="flex justify-between items-center mb-2">
+                                        <label class="block text-sm font-medium text-slate-300">본문</label>
+                                        <span id="charCount" class="text-xs text-slate-400">0 / 2200</span>
+                                    </div>
+                                    <textarea id="content" oninput="updatePreview(); updateCharCount()" placeholder="포스트 내용을 입력하세요..." class="w-full h-32 bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white placeholder-slate-500 focus:border-pink-500 focus:outline-none resize-none"></textarea>
+                                </div>
+
+                                <!-- Hashtags -->
+                                <div>
+                                    <label class="block text-sm font-medium text-slate-300 mb-2">해시태그</label>
+                                    <div class="flex gap-2">
+                                        <input type="text" id="hashtags" oninput="updatePreview(); updateHashtagCount()" placeholder="#hashtag1 #hashtag2" class="flex-1 bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white placeholder-slate-500 focus:border-pink-500 focus:outline-none">
+                                        <button onclick="generateHashtags()" class="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-medium">🤖 AI생성</button>
+                                    </div>
+                                    <span id="hashtagCount" class="text-xs text-slate-400 mt-1">0개</span>
+                                </div>
+
+                                <!-- Media Upload -->
+                                <div>
+                                    <label class="block text-sm font-medium text-slate-300 mb-2">미디어 업로드</label>
+                                    <input type="file" id="mediaFile" accept="image/*,video/*" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-slate-300 text-sm">
+                                    <div id="mediaPreview" class="mt-2 flex gap-2 flex-wrap"></div>
+                                </div>
+
+                                <!-- Schedule Settings -->
+                                <div class="space-y-3 pt-3 border-t border-slate-700">
+                                    <div class="flex items-center gap-2">
+                                        <input type="checkbox" id="scheduleToggle" onchange="toggleSchedule()" class="w-4 h-4">
+                                        <label class="text-sm font-medium text-slate-300">예약 발행</label>
+                                    </div>
+                                    <div id="scheduleForm" class="hidden space-y-3">
+                                        <div>
+                                            <label class="block text-sm font-medium text-slate-300 mb-1">발행 날짜</label>
+                                            <input type="date" id="scheduleDate" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white focus:border-pink-500 focus:outline-none">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-slate-300 mb-1">발행 시간</label>
+                                            <input type="time" id="scheduleTime" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white focus:border-pink-500 focus:outline-none">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right: Preview -->
+                        <div class="flex flex-col overflow-hidden bg-slate-900 p-6">
+                            <h3 class="text-lg font-bold text-white mb-4">📱 미리보기</h3>
+                            <div class="flex-1 overflow-y-auto flex flex-col items-center justify-center">
+                                <div class="bg-gradient-to-br from-pink-900/30 to-pink-900/10 rounded-xl p-6 border-2 border-pink-600 max-w-sm w-full">
+                                    <div class="bg-slate-700 rounded-lg h-40 flex items-center justify-center mb-4">
+                                        <div class="text-4xl" id="previewIcon">📷</div>
+                                    </div>
+                                    <p class="text-white font-medium mb-4 text-sm" id="previewContent">포스트 내용이 여기 표시됩니다</p>
+                                    <p class="text-pink-400 text-xs mb-4" id="previewHashtags">#SoftFactory</p>
+                                    <div id="previewMetrics" class="text-xs text-slate-400 mb-4 space-y-1">
+                                        <p>📊 글자수: <span id="previewCharCount">0</span></p>
+                                        <p>🏷️ 해시태그: <span id="previewHashtagNum">0</span></p>
+                                    </div>
+                                    <div class="mt-6 flex gap-3 text-sm">
+                                        <button class="flex-1 bg-pink-600 hover:bg-pink-700 text-white py-2 rounded-lg font-medium">❤️ 좋아요</button>
+                                        <button class="flex-1 bg-slate-700 hover:bg-slate-600 text-slate-100 py-2 rounded-lg">💬 댓글</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- Right: Preview -->
-                <div class="flex flex-col overflow-hidden bg-slate-900 p-6">
-                    <h3 class="text-lg font-bold text-white mb-4">📱 미리보기</h3>
-                    <div class="flex-1 overflow-y-auto flex flex-col items-center justify-center">
-                        <div class="bg-gradient-to-br from-pink-900/30 to-pink-900/10 rounded-xl p-6 border-2 border-pink-600 max-w-sm w-full">
-                            <div class="bg-slate-700 rounded-lg h-40 flex items-center justify-center mb-4">
-                                <div class="text-4xl" id="previewIcon">📷</div>
+                    <!-- Tab 2: AI Generation -->
+                    <div id="ai-tab" class="tab-content col-span-2 flex flex-col overflow-hidden p-6">
+                        <div class="max-w-2xl mx-auto w-full">
+                            <h3 class="text-lg font-bold text-white mb-6">🤖 AI로 SNS 콘텐츠 생성</h3>
+
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-slate-300 mb-2">주제</label>
+                                    <input type="text" id="ai-topic" placeholder="예: 새로운 제품 출시, 이벤트 공지, 일상 팁" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white placeholder-slate-500 focus:border-pink-500 focus:outline-none">
+                                </div>
+
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-slate-300 mb-2">톤</label>
+                                        <select id="ai-tone" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white focus:border-pink-500 focus:outline-none text-sm">
+                                            <option value="professional">👔 전문가</option>
+                                            <option value="casual">😊 캐주얼</option>
+                                            <option value="humorous">😄 유머러스</option>
+                                            <option value="inspirational">✨ 영감</option>
+                                            <option value="promotional">🎯 홍보</option>
+                                        </select>
+                                    </div>
+
+                                    <div>
+                                        <label class="block text-sm font-medium text-slate-300 mb-2">언어</label>
+                                        <select id="ai-language" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white focus:border-pink-500 focus:outline-none text-sm">
+                                            <option value="ko">🇰🇷 한국어</option>
+                                            <option value="en">🇬🇧 English</option>
+                                            <option value="ja">🇯🇵 日本語</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium text-slate-300 mb-2">플랫폼 선택</label>
+                                    <select id="ai-platform" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white focus:border-pink-500 focus:outline-none text-sm">
+                                        <option value="">선택하세요</option>
+                                        <option value="instagram">📷 Instagram</option>
+                                        <option value="twitter">🐦 Twitter</option>
+                                        <option value="facebook">👍 Facebook</option>
+                                        <option value="linkedin">💼 LinkedIn</option>
+                                        <option value="tiktok">🎵 TikTok</option>
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium text-slate-300 mb-2">추가 설정 (선택)</label>
+                                    <textarea id="ai-context" placeholder="추가 정보, 키워드 등..." class="w-full h-20 bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white placeholder-slate-500 focus:border-pink-500 focus:outline-none resize-none text-sm"></textarea>
+                                </div>
+
+                                <button onclick="generateWithAI()" class="w-full px-6 py-3 bg-gradient-to-r from-pink-600 to-pink-700 hover:from-pink-700 hover:to-pink-800 text-white rounded-lg font-medium transition">
+                                    ✨ AI로 생성하기
+                                </button>
                             </div>
-                            <p class="text-white font-medium mb-4" id="previewContent">포스트 내용이 여기 표시됩니다</p>
-                            <p class="text-pink-400 text-sm" id="previewHashtags">#SoftFactory</p>
-                            <div class="mt-6 flex gap-3 text-sm">
-                                <button class="flex-1 bg-pink-600 hover:bg-pink-700 text-white py-2 rounded-lg font-medium">❤️ 좋아요</button>
-                                <button class="flex-1 bg-slate-700 hover:bg-slate-600 text-slate-100 py-2 rounded-lg">💬 댓글</button>
+
+                            <!-- AI Preview Section -->
+                            <div id="ai-preview" class="hidden mt-8 pt-8 border-t border-slate-700">
+                                <h4 class="text-base font-semibold text-white mb-4">생성된 콘텐츠</h4>
+                                <div class="space-y-4">
+                                    <div>
+                                        <p class="text-xs font-medium text-slate-400 mb-2">📝 콘텐츠</p>
+                                        <div class="bg-slate-700 border border-slate-600 rounded-lg px-4 py-3 text-white text-sm" id="ai-content-preview">로딩 중...</div>
+                                    </div>
+
+                                    <div>
+                                        <p class="text-xs font-medium text-slate-400 mb-2">🏷️ 제안 해시태그</p>
+                                        <div class="bg-slate-700 border border-slate-600 rounded-lg px-4 py-3" id="ai-hashtags-preview">
+                                            <span class="inline-block px-2 py-1 bg-pink-600 text-white text-xs rounded-full mr-2 mb-2">#trending</span>
+                                            <span class="inline-block px-2 py-1 bg-pink-600 text-white text-xs rounded-full mr-2 mb-2">#viral</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <button onclick="acceptAI()" class="px-4 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium text-sm">
+                                            ✅ 사용하기
+                                        </button>
+                                        <button onclick="regenerateAI()" class="px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium text-sm">
+                                            🔄 다시 생성
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tab 3: Automation Registration -->
+                    <div id="automate-tab" class="tab-content col-span-2 flex flex-col overflow-hidden p-6">
+                        <div class="grid grid-cols-2 gap-6 flex-1">
+                            <!-- Left: Form -->
+                            <div class="flex flex-col overflow-y-auto">
+                                <h3 class="text-lg font-bold text-white mb-6">⚡ 자동화 스케줄 등록</h3>
+
+                                <div class="space-y-4 flex-1">
+                                    <div>
+                                        <label class="block text-sm font-medium text-slate-300 mb-2">주제</label>
+                                        <input type="text" id="auto-topic" placeholder="자동 게시할 주제 또는 키워드" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white placeholder-slate-500 focus:border-pink-500 focus:outline-none">
+                                    </div>
+
+                                    <div>
+                                        <label class="block text-sm font-medium text-slate-300 mb-2">목적</label>
+                                        <select id="auto-purpose" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white focus:border-pink-500 focus:outline-none text-sm">
+                                            <option value="promotion">🎯 홍보</option>
+                                            <option value="engagement">💬 소통</option>
+                                            <option value="education">📚 교육</option>
+                                            <option value="community">👥 커뮤니티</option>
+                                            <option value="news">📰 뉴스 공유</option>
+                                        </select>
+                                    </div>
+
+                                    <div>
+                                        <label class="block text-sm font-medium text-slate-300 mb-2">발행 주기</label>
+                                        <select id="auto-frequency" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white focus:border-pink-500 focus:outline-none text-sm">
+                                            <option value="daily">📆 매일</option>
+                                            <option value="weekly">📅 주 1회</option>
+                                            <option value="biweekly">📋 격주</option>
+                                            <option value="monthly">📌 월 1회</option>
+                                        </select>
+                                    </div>
+
+                                    <div>
+                                        <label class="block text-sm font-medium text-slate-300 mb-3">발행할 플랫폼 (다중 선택)</label>
+                                        <div class="space-y-2">
+                                            <label class="flex items-center gap-3 cursor-pointer text-slate-300 hover:text-white transition">
+                                                <input type="checkbox" value="instagram" class="auto-platform w-4 h-4" />
+                                                <span class="text-sm">📷 Instagram</span>
+                                            </label>
+                                            <label class="flex items-center gap-3 cursor-pointer text-slate-300 hover:text-white transition">
+                                                <input type="checkbox" value="twitter" class="auto-platform w-4 h-4" />
+                                                <span class="text-sm">🐦 Twitter</span>
+                                            </label>
+                                            <label class="flex items-center gap-3 cursor-pointer text-slate-300 hover:text-white transition">
+                                                <input type="checkbox" value="facebook" class="auto-platform w-4 h-4" />
+                                                <span class="text-sm">👍 Facebook</span>
+                                            </label>
+                                            <label class="flex items-center gap-3 cursor-pointer text-slate-300 hover:text-white transition">
+                                                <input type="checkbox" value="linkedin" class="auto-platform w-4 h-4" />
+                                                <span class="text-sm">💼 LinkedIn</span>
+                                            </label>
+                                            <label class="flex items-center gap-3 cursor-pointer text-slate-300 hover:text-white transition">
+                                                <input type="checkbox" value="tiktok" class="auto-platform w-4 h-4" />
+                                                <span class="text-sm">🎵 TikTok</span>
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <label class="block text-sm font-medium text-slate-300 mb-2">톤 (선택)</label>
+                                        <select id="auto-tone" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white focus:border-pink-500 focus:outline-none text-sm">
+                                            <option value="">기본</option>
+                                            <option value="professional">👔 전문가</option>
+                                            <option value="casual">😊 캐주얼</option>
+                                            <option value="humorous">😄 유머러스</option>
+                                        </select>
+                                    </div>
+
+                                    <button onclick="createAutomate()" class="w-full px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-lg font-medium transition mt-6">
+                                        ✅ 자동화 등록
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Right: Active Automations List -->
+                            <div class="flex flex-col overflow-hidden bg-slate-900 rounded-lg p-6 border border-slate-800">
+                                <h4 class="text-base font-semibold text-white mb-4">📅 등록된 자동화</h4>
+                                <div id="automate-list" class="flex-1 overflow-y-auto space-y-2">
+                                    <p class="text-sm text-slate-400">등록된 자동화가 없습니다.</p>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -149,7 +431,20 @@
     </div>
 
     <script>
+        // ============ INITIALIZATION ============
         requireAuth();
+
+        // Platform specifications
+        const PLATFORM_SPECS = {
+            instagram: { charLimit: 2200, hashtagLimit: 30, types: ['feed', 'reel', 'story', 'carousel'], icon: '📷' },
+            twitter: { charLimit: 280, types: ['tweet', 'thread', 'poll'], icon: '🐦' },
+            facebook: { charLimit: 63206, types: ['post', 'reel', 'story'], icon: '👍' },
+            tiktok: { charLimit: 4000, types: ['video'], videoOnly: true, icon: '🎵' },
+            linkedin: { charLimit: 3000, types: ['post', 'article', 'poll'], icon: '💼' },
+            youtube: { titleLimit: 100, descLimit: 5000, types: ['video', 'short'], icon: '▶️' },
+            pinterest: { charLimit: 500, types: ['pin', 'idea_pin'], icon: '📌' },
+            threads: { charLimit: 500, types: ['post'], icon: '🧵' }
+        };
 
         async function init() {
             try {
@@ -158,24 +453,118 @@
                 (accountsData.accounts || []).forEach(acc => {
                     const opt = document.createElement('option');
                     opt.value = acc.id;
+                    opt.dataset.platform = acc.platform;
                     opt.textContent = `${acc.account_name} (${acc.platform})`;
                     select.appendChild(opt);
                 });
+
+                loadAutomations();
             } catch (error) {
                 showError('계정 로드 실패');
             }
         }
 
+        // ============ TAB SWITCHING ============
+        function switchTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Remove active class from all buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // Show selected tab
+            document.getElementById(`${tabName}-tab`).classList.add('active');
+
+            // Activate corresponding button
+            event.target.classList.add('active');
+
+            // Show/hide publish buttons (only show on direct writing tab)
+            const publishButtons = document.getElementById('publish-buttons');
+            if (tabName === 'direct') {
+                publishButtons.style.display = 'flex';
+            } else {
+                publishButtons.style.display = 'none';
+            }
+        }
+
+        // ============ DIRECT WRITING TAB ============
+        function updatePlatformSettings() {
+            const accountId = document.getElementById('accountId').value;
+            const select = document.getElementById('accountId');
+            const platform = select.options[select.selectedIndex]?.dataset?.platform;
+
+            // Hide all platform settings
+            document.querySelectorAll('[id*="-settings"][id!="platform-settings"]').forEach(el => {
+                el.style.display = 'none';
+            });
+
+            // Show/hide platform settings container
+            const settingsDiv = document.getElementById('platform-settings');
+            if (platform && PLATFORM_SPECS[platform]) {
+                settingsDiv.style.display = 'block';
+                document.getElementById(`${platform}-settings`)?.style.display ?
+                    document.getElementById(`${platform}-settings`).style.display = 'block' : null;
+                updateCharLimit(platform);
+            } else {
+                settingsDiv.style.display = 'none';
+            }
+
+            updatePreview();
+        }
+
+        function updateCharLimit(platform) {
+            const spec = PLATFORM_SPECS[platform];
+            if (!spec) return;
+
+            const charCountEl = document.getElementById('charCount');
+            const limit = spec.charLimit || 2200;
+            charCountEl.textContent = `0 / ${limit}`;
+        }
+
         function updateCharCount() {
             const content = document.getElementById('content').value;
+            const accountId = document.getElementById('accountId').value;
+            const select = document.getElementById('accountId');
+            const platform = select.options[select.selectedIndex]?.dataset?.platform;
+            const spec = PLATFORM_SPECS[platform];
+            const limit = spec?.charLimit || 2200;
             const count = content.length;
-            const limit = 2200;
-            document.getElementById('charCount').textContent = `${count} / ${limit}`;
+
+            const charCountEl = document.getElementById('charCount');
+            charCountEl.textContent = `${count} / ${limit}`;
+
+            // Update preview
+            document.getElementById('previewCharCount').textContent = count;
+
+            // Color warning
             if (count > limit) {
-                document.getElementById('charCount').classList.add('text-red-500');
+                charCountEl.classList.remove('text-yellow-500');
+                charCountEl.classList.add('text-red-500');
             } else if (count > limit * 0.8) {
-                document.getElementById('charCount').classList.add('text-yellow-500');
+                charCountEl.classList.remove('text-red-500');
+                charCountEl.classList.add('text-yellow-500');
+            } else {
+                charCountEl.classList.remove('text-red-500', 'text-yellow-500');
+                charCountEl.classList.add('text-slate-400');
             }
+        }
+
+        function updateHashtagCount() {
+            const hashtags = document.getElementById('hashtags').value;
+            const count = (hashtags.match(/#\w+/g) || []).length;
+            document.getElementById('hashtagCount').textContent = `${count}개`;
+            document.getElementById('previewHashtagNum').textContent = count;
+        }
+
+        function updateYoutubeDes() {
+            const title = document.getElementById('youtube-title')?.value || '';
+            const desc = document.getElementById('youtube-desc')?.value || '';
+            document.getElementById('youtube-title-count').textContent = `${title.length} / 100`;
+            document.getElementById('youtube-desc-count').textContent = `${desc.length} / 5000`;
         }
 
         function updatePreview() {
@@ -188,9 +577,11 @@
                 reel: '🎬',
                 shorts: '📱'
             };
+
             document.getElementById('previewIcon').textContent = icons[template] || '📷';
             document.getElementById('previewContent').textContent = content.substring(0, 100) + (content.length > 100 ? '...' : '');
             document.getElementById('previewHashtags').textContent = hashtags;
+            document.getElementById('previewCharCount').textContent = content.length;
         }
 
         function toggleSchedule() {
@@ -206,12 +597,19 @@
                     showWarning('내용을 입력하세요');
                     return;
                 }
+
+                const accountId = document.getElementById('accountId').value;
+                const select = document.getElementById('accountId');
+                const platform = select.options[select.selectedIndex]?.dataset?.platform || 'instagram';
+
                 const result = await apiFetch('/api/sns/ai/hashtags', {
                     method: 'POST',
-                    body: JSON.stringify({ topic, platform: 'instagram' })
+                    body: JSON.stringify({ topic, platform: platform })
                 }).then(r => r.json());
 
-                document.getElementById('hashtags').value = (result.hashtags || []).join(' ');
+                const hashtags = result.hashtags || result.platform_specific || [];
+                document.getElementById('hashtags').value = hashtags.join(' ');
+                updateHashtagCount();
                 updatePreview();
                 showSuccess('해시태그가 생성되었습니다');
             } catch (error) {
@@ -219,7 +617,7 @@
             }
         }
 
-        document.getElementById('mediaFile').addEventListener('change', async (e) => {
+        document.getElementById('mediaFile')?.addEventListener('change', async (e) => {
             const file = e.target.files[0];
             if (!file) return;
 
@@ -227,23 +625,170 @@
             formData.append('file', file);
 
             try {
-                const result = await fetch('/api/sns/media/upload', {
+                const result = await apiFetch('/api/sns/media/upload', {
                     method: 'POST',
-                    headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` },
                     body: formData
                 }).then(r => r.json());
 
                 const preview = document.getElementById('mediaPreview');
                 const img = document.createElement('img');
-                img.src = result.url;
+                img.src = result.url || '/uploads/media.jpg';
                 img.className = 'w-20 h-20 rounded-lg object-cover border border-slate-600';
                 preview.appendChild(img);
-                showSuccess('이미지가 업로드되었습니다');
+                showSuccess('미디어가 업로드되었습니다');
             } catch (error) {
-                showError('이미지 업로드 실패');
+                showError('미디어 업로드 실패');
             }
         });
 
+        // ============ AI GENERATION TAB ============
+        async function generateWithAI() {
+            try {
+                const topic = document.getElementById('ai-topic').value;
+                const tone = document.getElementById('ai-tone').value;
+                const language = document.getElementById('ai-language').value;
+                const platform = document.getElementById('ai-platform').value;
+                const context = document.getElementById('ai-context').value;
+
+                if (!topic) {
+                    showWarning('주제를 입력하세요');
+                    return;
+                }
+
+                showInfo('AI가 콘텐츠를 생성 중입니다...');
+
+                const result = await apiFetch('/api/sns/ai/generate', {
+                    method: 'POST',
+                    body: JSON.stringify({ topic, tone, language, platform, context })
+                }).then(r => r.json());
+
+                const content = result.generated_content?.[0] || result;
+                document.getElementById('ai-content-preview').textContent = content.text || content.generated_content || '생성된 콘텐츠';
+
+                const hashtags = content.hashtags || content.suggested_hashtags || [];
+                const hashtagHtml = hashtags.map(tag =>
+                    `<span class="inline-block px-2 py-1 bg-pink-600 text-white text-xs rounded-full mr-2 mb-2">${tag}</span>`
+                ).join('');
+                document.getElementById('ai-hashtags-preview').innerHTML = hashtagHtml;
+                document.getElementById('ai-preview').classList.remove('hidden');
+
+                showSuccess('콘텐츠가 생성되었습니다!');
+            } catch (error) {
+                showError('AI 생성 실패: ' + error.message);
+            }
+        }
+
+        function regenerateAI() {
+            document.getElementById('ai-topic').focus();
+            generateWithAI();
+        }
+
+        function acceptAI() {
+            const content = document.getElementById('ai-content-preview').textContent;
+            const hashtagsHtml = document.getElementById('ai-hashtags-preview').innerHTML;
+            const hashtags = (hashtagsHtml.match(/>([^<]+)<\/span>/g) || []).map(h => h.replace(/.*>([^<]+)<.*/, '$1')).join(' ');
+
+            // Switch to direct tab
+            document.getElementById('direct-tab').classList.add('active');
+            document.getElementById('ai-tab').classList.remove('active');
+            document.querySelectorAll('.tab-btn')[0].classList.add('active');
+            document.querySelectorAll('.tab-btn')[1].classList.remove('active');
+
+            // Fill form
+            document.getElementById('content').value = content;
+            document.getElementById('hashtags').value = hashtags;
+            updateCharCount();
+            updateHashtagCount();
+            updatePreview();
+
+            showSuccess('콘텐츠가 에디터에 복사되었습니다!');
+        }
+
+        // ============ AUTOMATION TAB ============
+        async function createAutomate() {
+            try {
+                const topic = document.getElementById('auto-topic').value;
+                const purpose = document.getElementById('auto-purpose').value;
+                const frequency = document.getElementById('auto-frequency').value;
+                const tone = document.getElementById('auto-tone').value;
+
+                const platforms = Array.from(document.querySelectorAll('.auto-platform:checked'))
+                    .map(el => el.value);
+
+                if (!topic) {
+                    showWarning('주제를 입력하세요');
+                    return;
+                }
+
+                if (platforms.length === 0) {
+                    showWarning('최소 1개 이상의 플랫폼을 선택하세요');
+                    return;
+                }
+
+                const result = await apiFetch('/api/sns/automate', {
+                    method: 'POST',
+                    body: JSON.stringify({ topic, purpose, frequency, platforms, tone })
+                }).then(r => r.json());
+
+                if (result.success || result.id) {
+                    showSuccess('자동화가 등록되었습니다!');
+                    document.getElementById('auto-topic').value = '';
+                    document.getElementById('auto-purpose').value = 'promotion';
+                    document.getElementById('auto-frequency').value = 'weekly';
+                    document.getElementById('auto-tone').value = '';
+                    document.querySelectorAll('.auto-platform').forEach(el => el.checked = false);
+                    loadAutomations();
+                } else {
+                    showError('자동화 등록 실패');
+                }
+            } catch (error) {
+                showError('자동화 등록 오류: ' + error.message);
+            }
+        }
+
+        async function loadAutomations() {
+            try {
+                const result = await apiFetch('/api/sns/automations').then(r => r.json()).catch(() => ({ automations: [] }));
+
+                const list = document.getElementById('automate-list');
+                const automations = result.automations || [];
+
+                if (automations.length === 0) {
+                    list.innerHTML = '<p class="text-sm text-slate-400">등록된 자동화가 없습니다.</p>';
+                    return;
+                }
+
+                list.innerHTML = automations.map(auto => `
+                    <div class="bg-slate-800 rounded-lg p-3 border border-slate-700">
+                        <div class="flex justify-between items-start mb-2">
+                            <div>
+                                <p class="text-sm font-medium text-white">${auto.topic || auto.title || '자동화'}</p>
+                                <p class="text-xs text-slate-400">${auto.purpose} • ${auto.frequency}</p>
+                            </div>
+                            <button onclick="deleteAutomate(${auto.id})" class="text-red-400 hover:text-red-300 text-xs">✕</button>
+                        </div>
+                        <div class="flex gap-1 flex-wrap">
+                            ${(auto.platforms || []).map(p => `<span class="text-xs bg-pink-600 text-white px-2 py-1 rounded">${p}</span>`).join('')}
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.log('No automations API or empty list');
+            }
+        }
+
+        async function deleteAutomate(automateId) {
+            try {
+                await apiFetch(`/api/sns/automations/${automateId}`, { method: 'DELETE' })
+                    .then(r => r.json());
+                showSuccess('자동화가 삭제되었습니다');
+                loadAutomations();
+            } catch (error) {
+                showError('삭제 실패');
+            }
+        }
+
+        // ============ PUBLISH ============
         async function publishPost(status) {
             try {
                 const accountId = document.getElementById('accountId').value;
