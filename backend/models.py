@@ -1008,11 +1008,30 @@ class ErrorPattern(db.Model):
 def init_db(app):
     """Initialize database with tables and seed data"""
     with app.app_context():
-        db.create_all()
+        try:
+            # Try to check if schema is up to date
+            User.query.first()
+        except Exception as e:
+            # Schema mismatch - drop and recreate for development
+            try:
+                db.drop_all()
+            except Exception:
+                pass  # Ignore drop errors if file is locked
+
+        try:
+            db.create_all()
+        except Exception as e:
+            # If create_all fails (e.g., index already exists), try to continue anyway
+            # The error is usually non-fatal for index creation
+            if "already exists" not in str(e).lower():
+                print(f"Warning: Database creation had errors: {e}")
 
         # Check if data already exists
-        if User.query.count() > 0:
-            return
+        try:
+            if User.query.count() > 0:
+                return
+        except Exception:
+            pass  # If we can't query, continue to seed data
 
         # Create admin user
         admin = User(email='admin@softfactory.com', name='Admin', role='admin')

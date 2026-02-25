@@ -181,6 +181,36 @@ def send_telegram_notification(app: Flask, user_id: int, message: str):
 sns_scheduler = SNSScheduler()
 
 
+def scrape_review_listings(app: Flask):
+    """
+    Background job to scrape review listings from multiple platforms every 4 hours.
+
+    This aggregates listings from review platforms like MoaView, Inflexer, ReviewPlace, etc.
+    and stores them in the database for users to discover and apply to.
+    """
+    from backend.services.review_scrapers import aggregate_all_listings
+    from datetime import datetime
+
+    try:
+        with app.app_context():
+            logger.info("[SCRAPER] Starting review listing aggregation")
+            start_time = datetime.utcnow()
+
+            # Run aggregation with max 3 concurrent scrapers
+            results = aggregate_all_listings(max_workers=3)
+
+            elapsed = (datetime.utcnow() - start_time).total_seconds()
+            total_listings = sum(results.values())
+
+            logger.info(f"[SCRAPER] Aggregation completed in {elapsed:.1f}s")
+            logger.info(f"[SCRAPER] Total listings processed: {total_listings}")
+            for platform, count in results.items():
+                logger.info(f"[SCRAPER]   {platform}: {count} listings")
+
+    except Exception as e:
+        logger.error(f"[SCRAPER] Error during review listing aggregation: {e}", exc_info=True)
+
+
 def init_scheduler(app: Flask):
     """Initialize and start the scheduler in Flask app context"""
     sns_scheduler.start(app)
