@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>신청 현황 — SoftFactory</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="../platform/api.js"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 0.375rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .status-applied { background-color: #1e40af; color: #dbeafe; }
+        .status-selected { background-color: #059669; color: #d1fae5; }
+        .status-rejected { background-color: #991b1b; color: #fee2e2; }
+        .status-completed { background-color: #7c3aed; color: #ede9fe; }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100">
+    <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-slate-900 border-r border-slate-800 flex flex-col shrink-0">
+            <div class="p-6 border-b border-slate-800">
+                <a href="../platform/dashboard.html" class="flex items-center gap-3">
+                    <span class="text-2xl">🏭</span>
+                    <div><h1 class="font-bold text-white text-sm">SoftFactory</h1><p class="text-xs text-slate-400">← Back</p></div>
+                </a>
+            </div>
+            <nav class="flex-1 p-6 space-y-2 overflow-y-auto">
+                <p class="text-xs font-semibold text-slate-400 uppercase px-4 mb-3">⭐ Review</p>
+                <a href="index.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">🎯 캠페인 탐색</a>
+                <a href="my-campaigns.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">📋 내 신청</a>
+                <a href="aggregator.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">🔗 체험단 모음</a>
+                <a href="accounts.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">👤 계정 관리</a>
+                <a href="applications.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg bg-amber-600 text-white font-medium">📊 신청 현황</a>
+                <a href="auto-apply.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">⚡ 자동 신청</a>
+            </nav>
+            <div class="p-6 border-t border-slate-800">
+                <div class="flex items-center justify-between">
+                    <p class="text-sm font-medium text-white">Demo User</p>
+                    <button onclick="logout()" class="p-2 hover:bg-slate-800 rounded-lg">🚪</button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <header class="h-16 bg-slate-900 border-b border-slate-800 px-6 flex items-center justify-between shrink-0">
+                <div>
+                    <h2 class="text-xl font-bold text-white">📊 신청 현황</h2>
+                    <p class="text-xs text-slate-400">당신의 체험단 신청 현황을 확인하세요</p>
+                </div>
+            </header>
+
+            <main class="flex-1 overflow-y-auto p-6">
+                <!-- Filters -->
+                <div class="bg-slate-800 border border-slate-700 rounded-lg p-4 mb-6">
+                    <h3 class="font-semibold text-white mb-4">🔍 필터</h3>
+                    <div class="flex gap-4 flex-wrap">
+                        <select id="status-filter" onchange="loadApplications()" class="bg-slate-700 border border-slate-600 rounded px-3 py-2 text-white text-sm focus:border-amber-500 focus:outline-none">
+                            <option value="">모든 상태</option>
+                            <option value="applied">🔍 검토중</option>
+                            <option value="selected">✅ 선정</option>
+                            <option value="rejected">❌ 탈락</option>
+                            <option value="completed">✔️ 완료</option>
+                        </select>
+                        <input type="date" id="date-from" onchange="loadApplications()" class="bg-slate-700 border border-slate-600 rounded px-3 py-2 text-white text-sm focus:border-amber-500 focus:outline-none">
+                        <input type="date" id="date-to" onchange="loadApplications()" class="bg-slate-700 border border-slate-600 rounded px-3 py-2 text-white text-sm focus:border-amber-500 focus:outline-none">
+                        <button onclick="loadApplications()" class="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded font-medium text-sm">검색</button>
+                    </div>
+                </div>
+
+                <!-- Stats -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                    <div class="bg-slate-800 border border-slate-700 rounded-lg p-4">
+                        <p class="text-slate-400 text-sm mb-2">총 신청</p>
+                        <p id="stat-total" class="text-2xl font-bold text-white">0</p>
+                    </div>
+                    <div class="bg-slate-800 border border-slate-700 rounded-lg p-4">
+                        <p class="text-slate-400 text-sm mb-2">선정</p>
+                        <p id="stat-selected" class="text-2xl font-bold text-green-400">0</p>
+                    </div>
+                    <div class="bg-slate-800 border border-slate-700 rounded-lg p-4">
+                        <p class="text-slate-400 text-sm mb-2">검토중</p>
+                        <p id="stat-pending" class="text-2xl font-bold text-blue-400">0</p>
+                    </div>
+                    <div class="bg-slate-800 border border-slate-700 rounded-lg p-4">
+                        <p class="text-slate-400 text-sm mb-2">선정률</p>
+                        <p id="stat-rate" class="text-2xl font-bold text-amber-400">0%</p>
+                    </div>
+                </div>
+
+                <!-- Table -->
+                <div class="bg-slate-800 border border-slate-700 rounded-lg overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="bg-slate-700 border-b border-slate-600">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-sm font-semibold text-white">제목</th>
+                                    <th class="px-6 py-3 text-left text-sm font-semibold text-white">계정</th>
+                                    <th class="px-6 py-3 text-left text-sm font-semibold text-white">신청일</th>
+                                    <th class="px-6 py-3 text-left text-sm font-semibold text-white">상태</th>
+                                    <th class="px-6 py-3 text-left text-sm font-semibold text-white">보상</th>
+                                    <th class="px-6 py-3 text-left text-sm font-semibold text-white">액션</th>
+                                </tr>
+                            </thead>
+                            <tbody id="applications-table" class="divide-y divide-slate-700">
+                                <tr class="hover:bg-slate-700/50">
+                                    <td colspan="6" class="px-6 py-8 text-center text-slate-400">로드 중...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Pagination -->
+                <div class="mt-6 flex justify-center items-center gap-4">
+                    <button id="prev-btn" onclick="previousPage()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded font-medium text-sm">← 이전</button>
+                    <span id="page-info" class="text-slate-300 font-medium">1 / 1</span>
+                    <button id="next-btn" onclick="nextPage()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded font-medium text-sm">다음 →</button>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast" class="fixed bottom-4 right-4 bg-green-600 text-white px-4 py-3 rounded-lg shadow-lg hidden"></div>
+
+    <!-- Modal -->
+    <div id="modal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+        <div class="bg-slate-800 border border-slate-700 rounded-lg p-6 max-w-md w-full mx-4">
+            <h3 id="modal-title" class="text-lg font-bold text-white mb-4"></h3>
+            <p id="modal-content" class="text-slate-300 mb-6"></p>
+            <div id="modal-review-url" class="mb-6 hidden">
+                <label class="text-sm text-slate-300 block mb-2">리뷰 URL</label>
+                <input type="url" id="review-url-input" placeholder="https://..." class="w-full bg-slate-700 border border-slate-600 rounded px-3 py-2 text-white text-sm">
+            </div>
+            <div class="flex gap-2">
+                <button onclick="closeModal()" class="flex-1 px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded font-medium">취소</button>
+                <button id="modal-confirm" onclick="confirmModal()" class="flex-1 px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded font-medium">확인</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentPage = 1;
+        let totalPages = 1;
+        let modalCallback = null;
+        let selectedApplicationId = null;
+
+        async function loadApplications() {
+            const statusFilter = document.getElementById('status-filter').value;
+            const dateFrom = document.getElementById('date-from').value;
+            const dateTo = document.getElementById('date-to').value;
+
+            const params = new URLSearchParams();
+            if (statusFilter) params.append('status', statusFilter);
+            if (dateFrom) params.append('date_from', dateFrom);
+            if (dateTo) params.append('date_to', dateTo);
+            params.append('page', currentPage);
+            params.append('limit', 10);
+
+            try {
+                const response = await apiFetch(`/api/review/applications?${params.toString()}`);
+                const result = await response.json();
+
+                if (!result.success) {
+                    showToast('데이터 로드 실패', 'error');
+                    return;
+                }
+
+                const tbody = document.getElementById('applications-table');
+                tbody.innerHTML = '';
+
+                if (result.data.applications.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" class="px-6 py-8 text-center text-slate-400">신청 내역이 없습니다</td></tr>';
+                } else {
+                    result.data.applications.forEach(app => {
+                        const row = document.createElement('tr');
+                        row.className = 'hover:bg-slate-700/50 transition-colors';
+                        row.innerHTML = `
+                            <td class="px-6 py-4 text-sm text-white">${app.listing_title || 'N/A'}</td>
+                            <td class="px-6 py-4 text-sm text-slate-300">${app.account_name || 'Account'}</td>
+                            <td class="px-6 py-4 text-sm text-slate-400">${new Date(app.applied_at).toLocaleDateString('ko-KR')}</td>
+                            <td class="px-6 py-4">
+                                <span class="status-badge status-${app.status}">${getStatusLabel(app.status)}</span>
+                            </td>
+                            <td class="px-6 py-4 text-sm font-semibold text-amber-400">${(app.reward_value || 0).toLocaleString()}원</td>
+                            <td class="px-6 py-4">
+                                <div class="flex gap-2">
+                                    ${app.status === 'selected' ? `<button onclick="markComplete(${app.id})" class="px-3 py-1 bg-green-600 hover:bg-green-700 text-white rounded text-xs font-medium">완료</button>` : ''}
+                                    ${app.status === 'selected' ? `<button onclick="openReviewModal(${app.id})" class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs font-medium">리뷰</button>` : ''}
+                                    <a href="${app.review_url}" target="_blank" ${app.review_url ? '' : 'style="pointer-events: none; opacity: 0.5;"'} class="px-3 py-1 bg-slate-700 hover:bg-slate-600 text-slate-300 rounded text-xs font-medium">링크</a>
+                                </div>
+                            </td>
+                        `;
+                        tbody.appendChild(row);
+                    });
+                }
+
+                // Update stats
+                const totalApps = result.data.total;
+                const selectedCount = result.data.applications.filter(a => a.status === 'selected').length;
+                const pendingCount = result.data.applications.filter(a => a.status === 'applied').length;
+                const selectRate = totalApps > 0 ? (selectedCount / totalApps * 100).toFixed(1) : 0;
+
+                document.getElementById('stat-total').textContent = totalApps;
+                document.getElementById('stat-selected').textContent = selectedCount;
+                document.getElementById('stat-pending').textContent = pendingCount;
+                document.getElementById('stat-rate').textContent = selectRate + '%';
+
+                totalPages = Math.ceil(result.data.total / 10);
+                updatePagination();
+            } catch (error) {
+                console.error('Error:', error);
+                showToast('오류가 발생했습니다', 'error');
+            }
+        }
+
+        function getStatusLabel(status) {
+            const labels = {
+                'applied': '검토중',
+                'selected': '선정',
+                'rejected': '탈락',
+                'completed': '완료'
+            };
+            return labels[status] || status;
+        }
+
+        function previousPage() {
+            if (currentPage > 1) {
+                currentPage--;
+                loadApplications();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        function nextPage() {
+            if (currentPage < totalPages) {
+                currentPage++;
+                loadApplications();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        function updatePagination() {
+            document.getElementById('page-info').textContent = `${currentPage} / ${totalPages}`;
+            document.getElementById('prev-btn').disabled = currentPage === 1;
+            document.getElementById('next-btn').disabled = currentPage === totalPages;
+        }
+
+        function openReviewModal(applicationId) {
+            selectedApplicationId = applicationId;
+            document.getElementById('modal-title').textContent = '리뷰 URL 등록';
+            document.getElementById('modal-content').textContent = '신청을 완료했나요? 리뷰 URL을 등록해주세요.';
+            document.getElementById('modal-review-url').classList.remove('hidden');
+            document.getElementById('modal').classList.remove('hidden');
+            modalCallback = () => submitReview(applicationId);
+        }
+
+        async function submitReview(applicationId) {
+            const reviewUrl = document.getElementById('review-url-input').value;
+            if (!reviewUrl) {
+                showToast('URL을 입력해주세요', 'error');
+                return;
+            }
+
+            try {
+                const response = await apiFetch(`/api/review/applications/${applicationId}`, {
+                    method: 'PUT',
+                    body: JSON.stringify({
+                        status: 'completed',
+                        review_url: reviewUrl,
+                        review_posted_at: new Date().toISOString()
+                    })
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    showToast('리뷰가 등록되었습니다');
+                    closeModal();
+                    loadApplications();
+                } else {
+                    showToast('등록 실패: ' + (result.error || '알 수 없는 오류'), 'error');
+                }
+            } catch (error) {
+                showToast('오류가 발생했습니다', 'error');
+            }
+        }
+
+        async function markComplete(applicationId) {
+            try {
+                const response = await apiFetch(`/api/review/applications/${applicationId}`, {
+                    method: 'PUT',
+                    body: JSON.stringify({ status: 'completed' })
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    showToast('완료 표시되었습니다');
+                    loadApplications();
+                } else {
+                    showToast('실패: ' + (result.error || '알 수 없는 오류'), 'error');
+                }
+            } catch (error) {
+                showToast('오류가 발생했습니다', 'error');
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.add('hidden');
+            document.getElementById('review-url-input').value = '';
+            document.getElementById('modal-review-url').classList.add('hidden');
+            modalCallback = null;
+        }
+
+        function confirmModal() {
+            if (modalCallback) modalCallback();
+        }
+
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `fixed bottom-4 right-4 px-4 py-3 rounded-lg shadow-lg text-white ${type === 'error' ? 'bg-red-600' : 'bg-green-600'}`;
+            setTimeout(() => toast.classList.add('hidden'), 3000);
+        }
+
+        // Initial load
+        loadApplications();
+    </script>
+</body>
+</html>

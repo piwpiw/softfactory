@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>체험단 수집 — SoftFactory</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="../platform/api.js"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .listing-card {
+            transition: all 0.2s ease;
+        }
+        .listing-card:hover {
+            transform: translateY(-4px);
+        }
+        .listings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        .loading-spinner {
+            display: inline-block;
+            width: 1rem;
+            height: 1rem;
+            border: 3px solid rgba(107, 114, 128, 0.3);
+            border-radius: 50%;
+            border-top-color: #fbbf24;
+            animation: spin 0.6s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100">
+    <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-slate-900 border-r border-slate-800 flex flex-col shrink-0">
+            <div class="p-6 border-b border-slate-800">
+                <a href="../platform/dashboard.html" class="flex items-center gap-3">
+                    <span class="text-2xl">🏭</span>
+                    <div><h1 class="font-bold text-white text-sm">SoftFactory</h1><p class="text-xs text-slate-400">← Back</p></div>
+                </a>
+            </div>
+            <nav class="flex-1 p-6 space-y-2 overflow-y-auto">
+                <p class="text-xs font-semibold text-slate-400 uppercase px-4 mb-3">⭐ Review</p>
+                <a href="index.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">🎯 캠페인 탐색</a>
+                <a href="my-campaigns.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">📋 내 신청</a>
+                <a href="aggregator.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg bg-amber-600 text-white font-medium">🔗 체험단 모음</a>
+                <a href="accounts.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">👤 계정 관리</a>
+                <a href="applications.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">📊 신청 현황</a>
+                <a href="auto-apply.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">⚡ 자동 신청</a>
+            </nav>
+            <div class="p-6 border-t border-slate-800">
+                <div class="flex items-center justify-between">
+                    <p class="text-sm font-medium text-white">Demo User</p>
+                    <button onclick="logout()" class="p-2 hover:bg-slate-800 rounded-lg">🚪</button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <header class="h-16 bg-slate-900 border-b border-slate-800 px-6 flex items-center justify-between shrink-0">
+                <div>
+                    <h2 class="text-xl font-bold text-white">🔗 체험단 수집</h2>
+                    <p class="text-xs text-slate-400">전문 플랫폼의 체험단 공고를 한곳에서 검색하세요</p>
+                </div>
+                <button onclick="triggerScrape()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium text-sm flex items-center gap-2">
+                    <span>🔄</span> 새로고침
+                </button>
+            </header>
+
+            <main class="flex-1 overflow-y-auto p-6">
+                <!-- Filters Section -->
+                <div class="bg-slate-800 border border-slate-700 rounded-lg p-4 mb-6">
+                    <h3 class="font-semibold text-white mb-4">🔍 검색 및 필터</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div>
+                            <label class="text-sm text-slate-300 block mb-2">검색</label>
+                            <input type="text" id="search-input" placeholder="제목, 브랜드..." class="w-full bg-slate-700 border border-slate-600 rounded px-3 py-2 text-white placeholder-slate-500 focus:border-amber-500 focus:outline-none text-sm">
+                        </div>
+                        <div>
+                            <label class="text-sm text-slate-300 block mb-2">카테고리</label>
+                            <select id="category-filter" class="w-full bg-slate-700 border border-slate-600 rounded px-3 py-2 text-white text-sm focus:border-amber-500 focus:outline-none">
+                                <option value="">모든 카테고리</option>
+                                <option value="fashion">👗 패션</option>
+                                <option value="beauty">💄 뷰티</option>
+                                <option value="food">🍔 음식</option>
+                                <option value="travel">✈️ 여행</option>
+                                <option value="tech">⌚ 기술</option>
+                                <option value="home">🏠 생활용품</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="text-sm text-slate-300 block mb-2">보상금액</label>
+                            <select id="reward-filter" class="w-full bg-slate-700 border border-slate-600 rounded px-3 py-2 text-white text-sm focus:border-amber-500 focus:outline-none">
+                                <option value="">모든 금액</option>
+                                <option value="0-50000">0 ~ 50,000원</option>
+                                <option value="50000-100000">50,000 ~ 100,000원</option>
+                                <option value="100000-500000">100,000 ~ 500,000원</option>
+                                <option value="500000-">500,000원 이상</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="text-sm text-slate-300 block mb-2">정렬</label>
+                            <select id="sort-select" class="w-full bg-slate-700 border border-slate-600 rounded px-3 py-2 text-white text-sm focus:border-amber-500 focus:outline-none">
+                                <option value="latest">⏱️ 최신순</option>
+                                <option value="reward_high">💰 보상높은순</option>
+                                <option value="applicants_few">📉 신청적은순</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mt-4 flex gap-2">
+                        <button onclick="applyFilters()" class="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded font-medium text-sm">검색</button>
+                        <button onclick="resetFilters()" class="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-slate-300 rounded font-medium text-sm">초기화</button>
+                    </div>
+                </div>
+
+                <!-- Status Bar -->
+                <div id="status-bar" class="hidden bg-blue-900 border border-blue-700 rounded-lg p-3 mb-6 text-blue-200 text-sm">
+                    <span class="loading-spinner mr-2"></span>데이터를 로드하고 있습니다...
+                </div>
+
+                <!-- Listings Grid -->
+                <div id="listings-container" class="listings-grid">
+                    <!-- Placeholder Cards -->
+                    <div class="bg-slate-800 rounded-lg p-6 border border-slate-700 animate-pulse">
+                        <div class="h-40 bg-slate-700 rounded mb-4"></div>
+                        <div class="h-6 bg-slate-700 rounded mb-2 w-3/4"></div>
+                        <div class="h-4 bg-slate-700 rounded mb-4 w-1/2"></div>
+                        <div class="h-4 bg-slate-700 rounded"></div>
+                    </div>
+                    <div class="bg-slate-800 rounded-lg p-6 border border-slate-700 animate-pulse">
+                        <div class="h-40 bg-slate-700 rounded mb-4"></div>
+                        <div class="h-6 bg-slate-700 rounded mb-2 w-3/4"></div>
+                        <div class="h-4 bg-slate-700 rounded mb-4 w-1/2"></div>
+                        <div class="h-4 bg-slate-700 rounded"></div>
+                    </div>
+                    <div class="bg-slate-800 rounded-lg p-6 border border-slate-700 animate-pulse">
+                        <div class="h-40 bg-slate-700 rounded mb-4"></div>
+                        <div class="h-6 bg-slate-700 rounded mb-2 w-3/4"></div>
+                        <div class="h-4 bg-slate-700 rounded mb-4 w-1/2"></div>
+                        <div class="h-4 bg-slate-700 rounded"></div>
+                    </div>
+                </div>
+
+                <!-- Pagination -->
+                <div class="mt-8 flex justify-center items-center gap-4">
+                    <button id="prev-btn" onclick="previousPage()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded font-medium text-sm">← 이전</button>
+                    <span id="page-info" class="text-slate-300 font-medium">1 / 10</span>
+                    <button id="next-btn" onclick="nextPage()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded font-medium text-sm">다음 →</button>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Bookmark Toast -->
+    <div id="toast" class="fixed bottom-4 right-4 bg-green-600 text-white px-4 py-3 rounded-lg shadow-lg hidden"></div>
+
+    <script>
+        let currentPage = 1;
+        let currentFilters = {};
+        let totalPages = 1;
+
+        async function loadListings() {
+            const statusBar = document.getElementById('status-bar');
+            statusBar.classList.remove('hidden');
+
+            try {
+                const params = new URLSearchParams();
+                if (currentFilters.category) params.append('category', currentFilters.category);
+                if (currentFilters.min_reward) params.append('min_reward', currentFilters.min_reward);
+                if (currentFilters.max_reward) params.append('max_reward', currentFilters.max_reward);
+                params.append('sort', currentFilters.sort || 'latest');
+                params.append('page', currentPage);
+                params.append('limit', 12);
+
+                const response = await apiFetch(`/api/review/aggregated?${params.toString()}`);
+                const result = await response.json();
+
+                if (!result.success) {
+                    showToast('데이터 로드 실패: ' + (result.error || '알 수 없는 오류'), 'error');
+                    statusBar.classList.add('hidden');
+                    return;
+                }
+
+                const container = document.getElementById('listings-container');
+                container.innerHTML = '';
+
+                if (result.data.listings.length === 0) {
+                    container.innerHTML = '<div class="col-span-full text-center py-12"><p class="text-slate-400">검색 결과가 없습니다</p></div>';
+                } else {
+                    result.data.listings.forEach(listing => {
+                        const card = document.createElement('div');
+                        card.className = 'listing-card bg-slate-800 rounded-lg border border-slate-700 overflow-hidden hover:border-amber-500';
+                        card.innerHTML = `
+                            <div class="aspect-video bg-slate-700 flex items-center justify-center text-3xl overflow-hidden">
+                                ${listing.image_url || '📦'}
+                            </div>
+                            <div class="p-4">
+                                <h3 class="font-semibold text-white mb-1 truncate">${listing.title || 'No Title'}</h3>
+                                <p class="text-sm text-slate-400 mb-2 truncate">${listing.brand || 'Brand'}</p>
+                                <div class="flex justify-between items-center mb-3">
+                                    <span class="text-lg font-bold text-amber-400">${(listing.reward_value || 0).toLocaleString()}원</span>
+                                    <span class="text-xs bg-slate-700 text-slate-300 px-2 py-1 rounded">${listing.source_platform || 'Platform'}</span>
+                                </div>
+                                <p class="text-xs text-slate-500 mb-4">마감: ${new Date(listing.deadline).toLocaleDateString('ko-KR')}</p>
+                                <div class="flex gap-2">
+                                    <button onclick="toggleBookmark(${listing.id})" class="flex-1 px-3 py-2 bg-slate-700 hover:bg-slate-600 text-slate-300 rounded text-sm font-medium">❤️ 북마크</button>
+                                    <a href="${listing.url}" target="_blank" class="flex-1 px-3 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded text-sm font-medium text-center">보기 →</a>
+                                </div>
+                            </div>
+                        `;
+                        container.appendChild(card);
+                    });
+                }
+
+                totalPages = result.data.pages;
+                updatePagination();
+            } catch (error) {
+                console.error('Load error:', error);
+                showToast('로드 중 오류가 발생했습니다', 'error');
+            } finally {
+                statusBar.classList.add('hidden');
+            }
+        }
+
+        function applyFilters() {
+            currentPage = 1;
+            currentFilters = {
+                category: document.getElementById('category-filter').value,
+                sort: document.getElementById('sort-select').value,
+            };
+
+            const rewardFilter = document.getElementById('reward-filter').value;
+            if (rewardFilter) {
+                const [min, max] = rewardFilter.split('-');
+                if (min) currentFilters.min_reward = parseInt(min);
+                if (max) currentFilters.max_reward = parseInt(max);
+            }
+
+            loadListings();
+        }
+
+        function resetFilters() {
+            document.getElementById('search-input').value = '';
+            document.getElementById('category-filter').value = '';
+            document.getElementById('reward-filter').value = '';
+            document.getElementById('sort-select').value = 'latest';
+            currentPage = 1;
+            currentFilters = {};
+            loadListings();
+        }
+
+        function previousPage() {
+            if (currentPage > 1) {
+                currentPage--;
+                loadListings();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        function nextPage() {
+            if (currentPage < totalPages) {
+                currentPage++;
+                loadListings();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        function updatePagination() {
+            document.getElementById('page-info').textContent = `${currentPage} / ${totalPages}`;
+            document.getElementById('prev-btn').disabled = currentPage === 1;
+            document.getElementById('next-btn').disabled = currentPage === totalPages;
+        }
+
+        async function toggleBookmark(listingId) {
+            if (!isDemoMode()) {
+                try {
+                    const isBookmarked = await checkBookmarked(listingId);
+                    if (isBookmarked) {
+                        await removeBookmark(listingId);
+                        showToast('북마크가 제거되었습니다');
+                    } else {
+                        await addBookmark(listingId);
+                        showToast('북마크되었습니다');
+                    }
+                } catch (error) {
+                    showToast('북마크 처리 중 오류가 발생했습니다', 'error');
+                }
+            } else {
+                showToast('북마크되었습니다');
+            }
+        }
+
+        async function triggerScrape() {
+            const btn = event.target;
+            btn.disabled = true;
+            btn.innerHTML = '<span class="loading-spinner mr-2 inline-block"></span> 로딩 중...';
+
+            try {
+                await apiFetch('/api/review/scrape/now', { method: 'POST' });
+                showToast('새로고침이 시작되었습니다');
+                setTimeout(() => loadListings(), 2000);
+            } catch (error) {
+                showToast('새로고침 중 오류가 발생했습니다', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<span>🔄</span> 새로고침';
+            }
+        }
+
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `fixed bottom-4 right-4 px-4 py-3 rounded-lg shadow-lg text-white ${type === 'error' ? 'bg-red-600' : 'bg-green-600'}`;
+            setTimeout(() => toast.classList.add('hidden'), 3000);
+        }
+
+        async function checkBookmarked(listingId) {
+            const bookmarks = await apiFetch('/api/review/bookmarks');
+            const data = await bookmarks.json();
+            return data.data.listings.some(l => l.id === listingId);
+        }
+
+        async function addBookmark(listingId) {
+            const response = await apiFetch(`/api/review/listings/${listingId}/bookmark`, { method: 'POST' });
+            return response.json();
+        }
+
+        async function removeBookmark(listingId) {
+            const response = await apiFetch(`/api/review/listings/${listingId}/bookmark`, { method: 'DELETE' });
+            return response.json();
+        }
+
+        // Initial load
+        loadListings();
+    </script>
+</body>
+</html>
