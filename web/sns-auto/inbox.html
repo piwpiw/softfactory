@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>통합 인박스 — SNS Auto | SoftFactory</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="../platform/api.js"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 antialiased">
+    <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-slate-900 border-r border-slate-800 flex flex-col shrink-0">
+            <div class="p-6 border-b border-slate-800">
+                <a href="../platform/dashboard.html" class="flex items-center gap-3">
+                    <span class="text-2xl">🏭</span>
+                    <div>
+                        <h1 class="font-bold text-white text-sm">SoftFactory</h1>
+                        <p class="text-xs text-slate-400">← Back</p>
+                    </div>
+                </a>
+            </div>
+            <nav class="flex-1 p-6 space-y-2 overflow-y-auto">
+                <p class="text-xs font-semibold text-slate-400 uppercase px-4 mb-3">📱 SNS Auto</p>
+                <a href="index.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 transition">
+                    <span>📊</span> 대시보드
+                </a>
+                <a href="accounts.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 transition">
+                    <span>🔗</span> 계정 연동
+                </a>
+                <a href="create.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 transition">
+                    <span>✍️</span> 포스트 작성
+                </a>
+                <a href="schedule.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 transition">
+                    <span>📅</span> 예약 관리
+                </a>
+                <a href="inbox.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg bg-pink-600 text-white font-medium">
+                    <span>💬</span> 인박스
+                </a>
+                <a href="campaigns.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 transition">
+                    <span>📢</span> 캠페인
+                </a>
+            </nav>
+            <div class="p-6 border-t border-slate-800">
+                <div class="flex items-center justify-between">
+                    <p class="text-sm font-medium text-white">Demo User</p>
+                    <button onclick="logout()" class="p-2 hover:bg-slate-800 rounded-lg transition">🚪</button>
+                </div>
+            </div>
+        </aside>
+
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <header class="h-16 bg-slate-900 border-b border-slate-800 px-6 flex items-center justify-between shrink-0">
+                <div>
+                    <h2 class="text-xl font-bold text-white">💬 통합 인박스</h2>
+                    <p class="text-xs text-slate-400">모든 SNS 메시지를 한곳에서 관리하세요</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <span id="unreadCount" class="px-3 py-1 bg-pink-600 text-white text-xs rounded-full font-medium">0 미읽음</span>
+                    <button onclick="markAllAsRead()" class="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-slate-100 rounded-lg text-sm">
+                        모두 읽음
+                    </button>
+                </div>
+            </header>
+
+            <main class="flex-1 overflow-hidden flex gap-0">
+                <!-- Filters (Left) -->
+                <div class="w-64 bg-slate-900 border-r border-slate-800 overflow-y-auto p-4 space-y-4">
+                    <div>
+                        <h3 class="text-sm font-semibold text-slate-400 uppercase mb-3">상태 필터</h3>
+                        <div class="space-y-2">
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="radio" name="status" value="" checked onchange="loadInbox()" class="w-4 h-4">
+                                <span class="text-sm text-slate-300">전체</span>
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="radio" name="status" value="unread" onchange="loadInbox()" class="w-4 h-4">
+                                <span class="text-sm text-slate-300">미읽음</span>
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="radio" name="status" value="read" onchange="loadInbox()" class="w-4 h-4">
+                                <span class="text-sm text-slate-300">읽음</span>
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="radio" name="status" value="replied" onchange="loadInbox()" class="w-4 h-4">
+                                <span class="text-sm text-slate-300">답변함</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3 class="text-sm font-semibold text-slate-400 uppercase mb-3">메시지 유형</h3>
+                        <div class="space-y-2">
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="checkbox" name="messageType" value="" checked onchange="loadInbox()" class="w-4 h-4">
+                                <span class="text-sm text-slate-300">전체</span>
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="checkbox" name="messageType" value="dm" onchange="loadInbox()" class="w-4 h-4">
+                                <span class="text-sm text-slate-300">DM</span>
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="checkbox" name="messageType" value="comment" onchange="loadInbox()" class="w-4 h-4">
+                                <span class="text-sm text-slate-300">댓글</span>
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="checkbox" name="messageType" value="mention" onchange="loadInbox()" class="w-4 h-4">
+                                <span class="text-sm text-slate-300">멘션</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Messages (Right) -->
+                <div class="flex-1 flex flex-col overflow-hidden">
+                    <div class="flex-1 overflow-y-auto p-6 space-y-3" id="messagesList">
+                        <!-- Messages loaded here -->
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Reply Modal -->
+    <div id="replyModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div class="bg-slate-800 border border-slate-700 rounded-xl max-w-2xl w-full max-h-96 flex flex-col">
+            <div class="p-6 border-b border-slate-700">
+                <h3 class="text-xl font-bold text-white">메시지에 답장하기</h3>
+                <p id="replyToSender" class="text-sm text-slate-400 mt-2"></p>
+            </div>
+            <div class="flex-1 overflow-y-auto p-6">
+                <textarea id="replyText" placeholder="답장 메시지를 입력하세요..." class="w-full h-32 bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white placeholder-slate-500 focus:border-pink-500 focus:outline-none resize-none"></textarea>
+            </div>
+            <div class="p-6 border-t border-slate-700 flex gap-3 justify-end">
+                <button onclick="closeReplyModal()" class="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-slate-100 rounded-lg">
+                    취소
+                </button>
+                <button onclick="sendReply()" class="px-4 py-2 bg-pink-600 hover:bg-pink-700 text-white rounded-lg font-medium">
+                    답장 전송
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        requireAuth();
+        let currentReplyMessageId = null;
+
+        async function init() {
+            loadInbox();
+        }
+
+        async function loadInbox() {
+            try {
+                const status = document.querySelector('input[name="status"]:checked').value;
+                const query = status ? `?status=${status}` : '';
+                const result = await apiFetch(`/api/sns/inbox${query}`).then(r => r.json());
+
+                const messages = result.messages || [];
+                const container = document.getElementById('messagesList');
+
+                // Update unread count
+                document.getElementById('unreadCount').textContent = `${result.unread_count || 0} 미읽음`;
+
+                if (messages.length === 0) {
+                    container.innerHTML = '<div class="text-slate-400 text-center py-12">메시지가 없습니다</div>';
+                    return;
+                }
+
+                container.innerHTML = messages.map(msg => `
+                    <div class="bg-slate-800 rounded-lg p-4 border ${msg.status === 'unread' ? 'border-pink-600' : 'border-slate-700'} hover:border-pink-600 transition cursor-pointer">
+                        <div class="flex items-start justify-between mb-2">
+                            <div>
+                                <p class="font-medium text-white">${msg.sender}</p>
+                                <p class="text-xs text-slate-400 mt-1">
+                                    <span class="inline-block px-2 py-1 bg-slate-700 rounded text-xs mr-2">
+                                        ${msg.type === 'dm' ? '💬 DM' : msg.type === 'comment' ? '💭 댓글' : '👋 멘션'}
+                                    </span>
+                                    ${new Date(msg.created_at).toLocaleString('ko-KR')}
+                                </p>
+                            </div>
+                            <div class="flex gap-2">
+                                ${msg.status === 'unread' ? `<button onclick="markAsRead(${msg.id})" class="text-xs px-2 py-1 bg-slate-700 hover:bg-slate-600 text-slate-300 rounded">읽음</button>` : ''}
+                                <button onclick="openReplyModal(${msg.id}, '${msg.sender}')" class="text-xs px-2 py-1 bg-pink-600 hover:bg-pink-700 text-white rounded">답장</button>
+                            </div>
+                        </div>
+                        <p class="text-slate-300 text-sm mt-3">${msg.text}</p>
+                    </div>
+                `).join('');
+            } catch (error) {
+                document.getElementById('messagesList').innerHTML = '<div class="text-red-400 text-center py-12">메시지 로드 실패</div>';
+            }
+        }
+
+        async function markAsRead(messageId) {
+            try {
+                await apiFetch(`/api/sns/inbox/${messageId}/read`, {
+                    method: 'PUT'
+                }).then(r => r.json());
+                loadInbox();
+                showSuccess('메시지를 읽음으로 표시했습니다');
+            } catch (error) {
+                showError('실패');
+            }
+        }
+
+        async function markAllAsRead() {
+            // Note: API doesn't have bulk mark operation yet, mark visible ones
+            const messageIds = document.querySelectorAll('[data-message-id]');
+            for (let elem of messageIds) {
+                const id = elem.dataset.messageId;
+                try {
+                    await apiFetch(`/api/sns/inbox/${id}/read`, { method: 'PUT' });
+                } catch (e) {}
+            }
+            loadInbox();
+        }
+
+        function openReplyModal(messageId, senderName) {
+            currentReplyMessageId = messageId;
+            document.getElementById('replyToSender').textContent = `${senderName}님에게 답장`;
+            document.getElementById('replyText').value = '';
+            document.getElementById('replyModal').classList.remove('hidden');
+        }
+
+        function closeReplyModal() {
+            document.getElementById('replyModal').classList.add('hidden');
+            currentReplyMessageId = null;
+        }
+
+        async function sendReply() {
+            try {
+                const replyText = document.getElementById('replyText').value;
+                if (!replyText.trim()) {
+                    showWarning('답장 내용을 입력하세요');
+                    return;
+                }
+
+                await apiFetch(`/api/sns/inbox/${currentReplyMessageId}/reply`, {
+                    method: 'POST',
+                    body: JSON.stringify({ reply_text: replyText })
+                }).then(r => r.json());
+
+                showSuccess('답장이 전송되었습니다!');
+                closeReplyModal();
+                loadInbox();
+            } catch (error) {
+                showError('답장 전송 실패: ' + error.message);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>

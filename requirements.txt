@@ -14,6 +14,12 @@ python-engineio==4.7.1
 pyjwt==2.8.1
 stripe==5.4.0
 
+# Background Scheduling (SNS Auto v2.0)
+APScheduler==3.10.4
+
+# Media Processing (SNS Auto v2.0)
+Pillow==10.0.0
+
 # Monitoring & Logging
 python-json-logger==2.0.7
 psutil==5.9.6

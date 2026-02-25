@@ -27,6 +27,11 @@ class User(db.Model):
     bookings = db.relationship('Booking', backref='user', lazy=True, cascade='all, delete-orphan')
     sns_accounts = db.relationship('SNSAccount', backref='user', lazy=True, cascade='all, delete-orphan')
     sns_posts = db.relationship('SNSPost', backref='user', lazy=True, cascade='all, delete-orphan')
+    sns_campaigns = db.relationship('SNSCampaign', backref='user', lazy=True, cascade='all, delete-orphan')
+    sns_templates = db.relationship('SNSTemplate', backref='user', lazy=True, cascade='all, delete-orphan')
+    sns_analytics = db.relationship('SNSAnalytics', backref='user', lazy=True, cascade='all, delete-orphan')
+    sns_inbox = db.relationship('SNSInboxMessage', backref='user', lazy=True, cascade='all, delete-orphan')
+    sns_settings = db.relationship('SNSSettings', backref='user', lazy=True, cascade='all, delete-orphan', uselist=False)
     campaigns = db.relationship('Campaign', backref='creator', lazy=True, cascade='all, delete-orphan', foreign_keys='Campaign.creator_id')
     campaign_applications = db.relationship('CampaignApplication', backref='user', lazy=True, cascade='all, delete-orphan')
     ai_employees = db.relationship('AIEmployee', backref='user', lazy=True, cascade='all, delete-orphan')
@@ -190,33 +195,236 @@ class BookingReview(db.Model):
             "comment": self.comment,
             "created_at": self.created_at.isoformat() if self.created_at else None,
         }
-# ============ SNS AUTO ============
+# ============ SNS AUTO (v2.0) ============
 
 class SNSAccount(db.Model):
+    """SNS Account with expanded OAuth & analytics fields"""
     __tablename__ = 'sns_accounts'
 
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    platform = db.Column(db.String(50))  # 'instagram', 'blog', 'tiktok', 'youtube_shorts'
+    platform = db.Column(db.String(50), nullable=False, index=True)  # instagram, facebook, twitter, linkedin, tiktok, youtube, pinterest, threads, youtube_shorts
     account_name = db.Column(db.String(120), nullable=False)
-    is_active = db.Column(db.Boolean, default=True)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    is_active = db.Column(db.Boolean, default=True, index=True)
 
+    # OAuth fields (v2.0 new)
+    access_token = db.Column(db.Text)  # Encrypted in production
+    refresh_token = db.Column(db.Text)  # Encrypted in production
+    token_expires_at = db.Column(db.DateTime)
+    platform_user_id = db.Column(db.String(255))  # Platform-specific user ID
+    profile_picture_url = db.Column(db.String(500))
+    account_type = db.Column(db.String(50), default='personal')  # 'personal' or 'business'
+
+    # Analytics fields (v2.0 new)
+    followers_count = db.Column(db.Integer, default=0)
+    following_count = db.Column(db.Integer, default=0)
+    permissions_json = db.Column(db.JSON, default={})  # {read, write, analytics, messaging, ...}
+
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
     posts = db.relationship('SNSPost', backref='account', lazy=True, cascade='all, delete-orphan')
+    analytics = db.relationship('SNSAnalytics', backref='account', lazy=True, cascade='all, delete-orphan')
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'platform': self.platform,
+            'account_name': self.account_name,
+            'is_active': self.is_active,
+            'platform_user_id': self.platform_user_id,
+            'profile_picture_url': self.profile_picture_url,
+            'account_type': self.account_type,
+            'followers_count': self.followers_count,
+            'following_count': self.following_count,
+            'token_expires_at': self.token_expires_at.isoformat() if self.token_expires_at else None,
+            'created_at': self.created_at.isoformat(),
+        }
 
 
 class SNSPost(db.Model):
+    """SNS Post with analytics and campaign tracking"""
     __tablename__ = 'sns_posts'
 
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     account_id = db.Column(db.Integer, db.ForeignKey('sns_accounts.id'), nullable=False)
+    campaign_id = db.Column(db.Integer, db.ForeignKey('sns_campaigns.id'), nullable=True)
+
     content = db.Column(db.Text, nullable=False)
-    platform = db.Column(db.String(50))
-    status = db.Column(db.String(20), default='draft')  # 'draft', 'scheduled', 'published', 'failed'
-    scheduled_at = db.Column(db.DateTime)
-    template_type = db.Column(db.String(50))  # 'card_news', 'blog_post', 'reel', 'shorts'
+    platform = db.Column(db.String(50), nullable=False, index=True)
+    status = db.Column(db.String(20), default='draft', index=True)  # 'draft', 'scheduled', 'published', 'failed'
+    scheduled_at = db.Column(db.DateTime, index=True)
+    published_at = db.Column(db.DateTime)
+    template_type = db.Column(db.String(50))  # 'card_news', 'blog_post', 'reel', 'shorts', 'carousel'
+
+    # Media & metadata (v2.0 new)
+    media_urls = db.Column(db.JSON, default=[])  # List of image/video URLs
+    hashtags = db.Column(db.JSON, default=[])  # List of hashtags
+    link_url = db.Column(db.String(500))  # External URL in post
+
+    # Platform fields (v2.0 new)
+    external_post_id = db.Column(db.String(255))  # Platform-specific post ID
+    likes_count = db.Column(db.Integer, default=0)
+    comments_count = db.Column(db.Integer, default=0)
+    views_count = db.Column(db.Integer, default=0)
+    reach = db.Column(db.Integer, default=0)
+
+    # Error handling (v2.0 new)
+    error_message = db.Column(db.Text)
+    retry_count = db.Column(db.Integer, default=0)
+
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'account_id': self.account_id,
+            'campaign_id': self.campaign_id,
+            'platform': self.platform,
+            'content': self.content[:100] + ('...' if len(self.content) > 100 else ''),
+            'status': self.status,
+            'scheduled_at': self.scheduled_at.isoformat() if self.scheduled_at else None,
+            'published_at': self.published_at.isoformat() if self.published_at else None,
+            'likes': self.likes_count,
+            'comments': self.comments_count,
+            'views': self.views_count,
+            'reach': self.reach,
+            'created_at': self.created_at.isoformat(),
+        }
+
+
+class SNSCampaign(db.Model):
+    """SNS Campaign — multi-post coordinated promotion"""
+    __tablename__ = 'sns_campaigns'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    name = db.Column(db.String(200), nullable=False)
+    description = db.Column(db.Text)
+    target_platforms = db.Column(db.JSON, default=[])  # ['instagram', 'tiktok', ...]
+    status = db.Column(db.String(20), default='active', index=True)  # 'active', 'paused', 'completed'
+    start_date = db.Column(db.DateTime, nullable=False)
+    end_date = db.Column(db.DateTime, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    posts = db.relationship('SNSPost', backref='campaign', lazy=True, cascade='all, delete-orphan', foreign_keys='SNSPost.campaign_id')
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'description': self.description,
+            'target_platforms': self.target_platforms,
+            'status': self.status,
+            'start_date': self.start_date.isoformat(),
+            'end_date': self.end_date.isoformat(),
+            'post_count': len(self.posts),
+            'created_at': self.created_at.isoformat(),
+        }
+
+
+class SNSTemplate(db.Model):
+    """Reusable SNS content templates"""
+    __tablename__ = 'sns_templates'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)  # NULL = system template
+    name = db.Column(db.String(200), nullable=False)
+    platform = db.Column(db.String(50), nullable=False)  # specific platform or 'all'
+    content_template = db.Column(db.Text, nullable=False)  # Content with {placeholders}
+    hashtag_template = db.Column(db.Text)  # Hashtag with {placeholders}
+    category = db.Column(db.String(50))  # 'promotional', 'educational', 'engagement', 'announcement'
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'platform': self.platform,
+            'category': self.category,
+            'content_template': self.content_template[:100],
+        }
+
+
+class SNSAnalytics(db.Model):
+    """Daily SNS Analytics snapshot"""
+    __tablename__ = 'sns_analytics'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    account_id = db.Column(db.Integer, db.ForeignKey('sns_accounts.id'), nullable=False)
+    date = db.Column(db.Date, nullable=False, index=True)
+    followers = db.Column(db.Integer, default=0)
+    total_engagement = db.Column(db.Integer, default=0)  # likes + comments + shares
+    total_reach = db.Column(db.Integer, default=0)
+    total_impressions = db.Column(db.Integer, default=0)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def to_dict(self):
+        return {
+            'date': self.date.isoformat(),
+            'followers': self.followers,
+            'engagement': self.total_engagement,
+            'reach': self.total_reach,
+            'impressions': self.total_impressions,
+        }
+
+
+class SNSInboxMessage(db.Model):
+    """Unified SNS Inbox (DMs, comments, mentions)"""
+    __tablename__ = 'sns_inbox_messages'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    account_id = db.Column(db.Integer, db.ForeignKey('sns_accounts.id'), nullable=False)
+    sender_name = db.Column(db.String(200), nullable=False)
+    message_text = db.Column(db.Text, nullable=False)
+    message_type = db.Column(db.String(50))  # 'dm', 'comment', 'mention'
+    status = db.Column(db.String(20), default='unread', index=True)  # 'unread', 'read', 'replied'
+    external_id = db.Column(db.String(255))  # Platform-specific message ID
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'sender': self.sender_name,
+            'text': self.message_text,
+            'type': self.message_type,
+            'status': self.status,
+            'created_at': self.created_at.isoformat(),
+        }
+
+
+class SNSOAuthState(db.Model):
+    """OAuth state token tracking (CSRF prevention)"""
+    __tablename__ = 'sns_oauth_states'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    platform = db.Column(db.String(50), nullable=False)
+    state_token = db.Column(db.String(255), nullable=False, unique=True, index=True)
+    expires_at = db.Column(db.DateTime, nullable=False, index=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+
+class SNSSettings(db.Model):
+    """User SNS Settings"""
+    __tablename__ = 'sns_settings'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False, unique=True)
+    auto_optimal_time = db.Column(db.Boolean, default=True)  # Auto-post at optimal time
+    engagement_notifications = db.Column(db.Boolean, default=True)  # Notify on new engagement
+    auto_reply_enabled = db.Column(db.Boolean, default=False)  # Auto-reply to comments
+    banned_keywords = db.Column(db.JSON, default=[])  # Keywords to avoid in posts
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def to_dict(self):
+        return {
+            'auto_optimal_time': self.auto_optimal_time,
+            'engagement_notifications': self.engagement_notifications,
+            'auto_reply_enabled': self.auto_reply_enabled,
+            'banned_keywords': self.banned_keywords,
+        }
 
 
 # ============ REVIEW CAMPAIGNS ============

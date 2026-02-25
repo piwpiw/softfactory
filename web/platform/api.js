@@ -211,6 +211,156 @@ function generateMockData(path, options) {
         return { id: 1, status: 'published', message: 'Post published successfully!' };
     }
 
+    // SNS OAuth
+    if (path.match(/\/api\/sns\/oauth\/[\w]+\/authorize/)) {
+        const platform = path.match(/\/api\/sns\/oauth\/([\w]+)/)[1];
+        return { auth_url: `https://${platform}.com/oauth/authorize?client_id=demo&redirect_uri=http://localhost:8000/oauth/callback` };
+    }
+    if (path.match(/\/api\/sns\/oauth\/[\w]+\/(callback|simulate-callback)/)) {
+        const platform = path.match(/\/api\/sns\/oauth\/([\w]+)/)[1];
+        return { account_id: 1, platform, account_name: `demo_${platform}`, access_token: 'demo_token', followers: 2540 };
+    }
+
+    // SNS Account detail
+    if (path.match(/\/api\/sns\/accounts\/\d+$/) && !path.includes('reconnect')) {
+        return { account: { id: 1, platform: 'instagram', account_name: '@demo_user', followers: 2540, access_token_expires_at: '2026-03-24T00:00:00' } };
+    }
+    if (path.match(/\/api\/sns\/accounts\/\d+\/reconnect/)) {
+        return { success: true, message: 'Account reconnected successfully', account: { id: 1, platform: 'instagram', access_token_expires_at: '2026-04-24T00:00:00' } };
+    }
+
+    // SNS Post update/delete/retry/metrics
+    if (path.match(/\/api\/sns\/posts\/\d+$/) && options.method === 'PUT') {
+        return { post: { id: 1, status: 'scheduled', content: 'Updated content' } };
+    }
+    if (path.match(/\/api\/sns\/posts\/\d+$/) && options.method === 'DELETE') {
+        return { success: true, message: 'Post deleted successfully' };
+    }
+    if (path.match(/\/api\/sns\/posts\/\d+\/retry/)) {
+        return { post: { id: 1, status: 'published' }, status: 'published', message: 'Post published after retry' };
+    }
+    if (path.match(/\/api\/sns\/posts\/\d+\/metrics/)) {
+        return { post: { id: 1 }, metrics: { likes: 234, comments: 12, shares: 5, views: 1240, reach: 892 } };
+    }
+
+    // SNS bulk create
+    if (path === '/api/sns/posts/bulk' && options.method === 'POST') {
+        return { posts: [{ id: 2 }, { id: 3 }], created_count: 2, failed_count: 0 };
+    }
+
+    // SNS Analytics
+    if (path.match(/\/api\/sns\/analytics/)) {
+        if (path.includes('/accounts/')) {
+            return { account: { id: 1 }, metrics: { posts: 24, engagement: 8450, followers_growth: 125, reach: 45000 } };
+        }
+        if (path.includes('/optimal-time/')) {
+            return { account_id: 1, optimal_hour: 19, optimal_day: 'Wednesday', confidence_score: 0.87, recommendation: 'Post at 7 PM on Wednesdays' };
+        }
+        return {
+            total_posts: 24, total_engagement: 8450, platform_breakdown: [
+                { platform: 'Instagram', posts: 16, engagement: 5200 },
+                { platform: 'TikTok', posts: 8, engagement: 3250 }
+            ], trend_data: [{ day: 'Feb 24', posts: 3, engagement: 420 }]
+        };
+    }
+
+    // SNS Media
+    if (path === '/api/sns/media/upload' && options.method === 'POST') {
+        return { media_id: 1, url: '/uploads/sns/media_001.jpg', type: 'image', size: 245000, width: 1080, height: 1080 };
+    }
+    if (path.match(/\/api\/sns\/media/) && !path.includes('upload')) {
+        return { media: [{ id: 1, url: '/uploads/sns/media_001.jpg', type: 'image', uploaded_at: '2026-02-24T10:30:00', size: 245000 }] };
+    }
+
+    // SNS Templates additional
+    if (path === '/api/sns/templates' && options.method === 'POST') {
+        return { template: { id: 5, name: 'Custom Template', platform: 'instagram', category: 'custom' } };
+    }
+    if (path.match(/\/api\/sns\/templates\/\d+$/) && options.method === 'PUT') {
+        return { template: { id: 1, name: 'Updated Template' } };
+    }
+    if (path.match(/\/api\/sns\/templates\/\d+$/) && options.method === 'DELETE') {
+        return { success: true, message: 'Template deleted' };
+    }
+
+    // SNS Inbox
+    if (path === '/api/sns/inbox' || path.startsWith('/api/sns/inbox?')) {
+        return {
+            messages: [
+                { id: 1, sender: 'John Doe', type: 'dm', text: 'Love your post!', status: 'unread', created_at: '2026-02-24T10:30:00' },
+                { id: 2, sender: 'Jane Smith', type: 'comment', text: 'Great content!', status: 'read', created_at: '2026-02-24T09:15:00' }
+            ], unread_count: 1
+        };
+    }
+    if (path.match(/\/api\/sns\/inbox\/\d+\/reply/)) {
+        return { message: { id: 1 }, reply_id: 101, status: 'sent' };
+    }
+    if (path.match(/\/api\/sns\/inbox\/\d+\/read/)) {
+        return { message_id: 1, status: 'read' };
+    }
+
+    // SNS Calendar
+    if (path.match(/\/api\/sns\/calendar/)) {
+        return {
+            year: 2026, month: 2, days: [
+                { day: 24, posts: [{ id: 1, content: 'Post 1' }] },
+                { day: 25, posts: [{ id: 2, content: 'Post 2' }] }
+            ]
+        };
+    }
+
+    // SNS Campaigns
+    if (path === '/api/sns/campaigns') {
+        return {
+            campaigns: [
+                { id: 1, name: 'Spring Campaign', status: 'active', start_date: '2026-03-01', end_date: '2026-03-31', post_count: 5 },
+                { id: 2, name: 'Summer Promo', status: 'paused', start_date: '2026-06-01', end_date: '2026-08-31', post_count: 12 }
+            ]
+        };
+    }
+    if (path.match(/\/api\/sns\/campaigns\/\d+$/) && !path.includes('campaigns')) {
+        return { campaign: { id: 1, name: 'Spring Campaign', status: 'active', start_date: '2026-03-01', end_date: '2026-03-31', post_count: 5 } };
+    }
+    if (path === '/api/sns/campaigns' && options.method === 'POST') {
+        return { campaign: { id: 3, name: 'New Campaign', status: 'active' } };
+    }
+    if (path.match(/\/api\/sns\/campaigns\/\d+/) && options.method === 'PUT') {
+        return { campaign: { id: 1, name: 'Updated Campaign', status: 'paused' } };
+    }
+    if (path.match(/\/api\/sns\/campaigns\/\d+/) && options.method === 'DELETE') {
+        return { success: true, message: 'Campaign deleted' };
+    }
+
+    // SNS Settings
+    if (path === '/api/sns/settings' && options.method !== 'PUT') {
+        return {
+            settings: {
+                auto_optimal_time: true,
+                engagement_notifications: true,
+                auto_reply_enabled: false,
+                banned_keywords: ['spam', 'advertisement']
+            }
+        };
+    }
+    if (path === '/api/sns/settings' && options.method === 'PUT') {
+        return { settings: { auto_optimal_time: true, engagement_notifications: true }, message: 'Settings updated' };
+    }
+
+    // SNS AI
+    if (path === '/api/sns/ai/generate') {
+        return {
+            generated_content: [
+                { text: 'Check out our amazing new product! 🎉 Perfect for your lifestyle.', hashtags: ['#NewProduct', '#Innovation', '#LifestyleGoal'], emoji_suggestions: ['🎉', '✨', '🚀'] }
+            ]
+        };
+    }
+    if (path === '/api/sns/ai/hashtags') {
+        return { hashtags: ['#trending', '#viral', '#content'], trending: ['#foryou', '#explore'], platform_specific: ['#instadaily', '#igtiktok'] };
+    }
+    if (path === '/api/sns/ai/optimize') {
+        return { optimized_content: 'Optimized version of content...', suggestions: ['Add emoji for better engagement', 'Use power words like "amazing"'], character_count: 156, estimated_engagement: 0.89 };
+    }
+
     // Review Campaigns
     if (path.startsWith('/api/review/campaigns') && !path.includes('/')) {
         return {
@@ -1017,5 +1167,422 @@ async function submitBookingReview(bookingId, rating, comment) {
 // Get reviews for a chef
 async function getChefReviews(chefId) {
     const response = await apiFetch(`/api/coocook/chefs/${chefId}/reviews`);
+    return response.json();
+}
+
+// ============ SNS AUTO — EXPANDED (25 NEW FUNCTIONS) ============
+
+// OAuth & Authentication (3)
+/**
+ * Get OAuth authorization URL for SNS platform
+ * @param {string} platform - Platform: instagram, facebook, twitter, linkedin, tiktok, youtube, pinterest, threads
+ * @returns {Promise<{auth_url: string}>}
+ */
+async function getSNSOAuthUrl(platform) {
+    const response = await apiFetch(`/api/sns/oauth/${platform}/authorize`);
+    return response.json();
+}
+
+/**
+ * Exchange OAuth code for access token
+ * @param {string} platform - Platform name
+ * @param {string} code - OAuth authorization code
+ * @param {string} state - CSRF state token
+ * @returns {Promise<{access_token, refresh_token, expires_at}>}
+ */
+async function exchangeSNSOAuthCode(platform, code, state) {
+    const response = await apiFetch(`/api/sns/oauth/${platform}/callback`, {
+        method: 'POST',
+        body: JSON.stringify({ code, state })
+    });
+    return response.json();
+}
+
+/**
+ * Simulate OAuth callback (for demo mode)
+ * @param {string} platform - Platform name
+ * @returns {Promise<{account_id, platform, account_name, access_token}>}
+ */
+async function simulateSNSOAuthCallback(platform) {
+    const response = await apiFetch(`/api/sns/oauth/${platform}/simulate-callback`, {
+        method: 'POST'
+    });
+    return response.json();
+}
+
+// Account Management (2 additional)
+/**
+ * Get single SNS account details
+ * @param {number} accountId - Account ID
+ * @returns {Promise<{account: {id, platform, account_name, followers, access_token_expires_at}}>}
+ */
+async function getSNSAccount(accountId) {
+    const response = await apiFetch(`/api/sns/accounts/${accountId}`);
+    return response.json();
+}
+
+/**
+ * Reconnect expired SNS account
+ * @param {number} accountId - Account ID
+ * @returns {Promise<{success, message, account}>}
+ */
+async function reconnectSNSAccount(accountId) {
+    const response = await apiFetch(`/api/sns/accounts/${accountId}/reconnect`, {
+        method: 'POST'
+    });
+    return response.json();
+}
+
+// Posts & Publishing (5 additional)
+/**
+ * Update existing SNS post
+ * @param {number} postId - Post ID
+ * @param {Object} payload - {content, template_type, scheduled_at, hashtags}
+ * @returns {Promise<{post: {...}}>}
+ */
+async function updateSNSPost(postId, payload) {
+    const response = await apiFetch(`/api/sns/posts/${postId}`, {
+        method: 'PUT',
+        body: JSON.stringify(payload)
+    });
+    return response.json();
+}
+
+/**
+ * Delete SNS post
+ * @param {number} postId - Post ID
+ * @returns {Promise<{success, message}>}
+ */
+async function deleteSNSPost(postId) {
+    const response = await apiFetch(`/api/sns/posts/${postId}`, {
+        method: 'DELETE'
+    });
+    return response.json();
+}
+
+/**
+ * Retry publishing failed SNS post
+ * @param {number} postId - Post ID
+ * @returns {Promise<{post: {...}, status, message}>}
+ */
+async function retrySNSPost(postId) {
+    const response = await apiFetch(`/api/sns/posts/${postId}/retry`, {
+        method: 'POST'
+    });
+    return response.json();
+}
+
+/**
+ * Get SNS post analytics/metrics
+ * @param {number} postId - Post ID
+ * @returns {Promise<{post: {...}, metrics: {likes, comments, shares, views, reach}}>}
+ */
+async function getSNSPostMetrics(postId) {
+    const response = await apiFetch(`/api/sns/posts/${postId}/metrics`);
+    return response.json();
+}
+
+/**
+ * Create multiple SNS posts at once
+ * @param {Array} posts - [{account_id, content, template_type, scheduled_at}...]
+ * @returns {Promise<{posts: [...], created_count, failed_count}>}
+ */
+async function bulkCreateSNSPosts(posts) {
+    const response = await apiFetch('/api/sns/posts/bulk', {
+        method: 'POST',
+        body: JSON.stringify({ posts })
+    });
+    return response.json();
+}
+
+// Analytics (3)
+/**
+ * Get aggregated SNS analytics across all accounts
+ * @param {string} startDate - ISO date format (2026-02-01)
+ * @param {string} endDate - ISO date format (2026-02-28)
+ * @param {number} accountId - Optional: filter by account
+ * @returns {Promise<{total_posts, total_engagement, platform_breakdown, trend_data}>}
+ */
+async function getSNSAnalytics(startDate, endDate, accountId = null) {
+    let path = `/api/sns/analytics?start_date=${startDate}&end_date=${endDate}`;
+    if (accountId) path += `&account_id=${accountId}`;
+    const response = await apiFetch(path);
+    return response.json();
+}
+
+/**
+ * Get analytics for specific SNS account
+ * @param {number} accountId - Account ID
+ * @param {string} startDate - ISO date (2026-02-01)
+ * @param {string} endDate - ISO date (2026-02-28)
+ * @returns {Promise<{account: {...}, metrics: {posts, engagement, followers_growth, reach}}>}
+ */
+async function getSNSAccountAnalytics(accountId, startDate, endDate) {
+    const path = `/api/sns/analytics/accounts/${accountId}?start_date=${startDate}&end_date=${endDate}`;
+    const response = await apiFetch(path);
+    return response.json();
+}
+
+/**
+ * Get optimal posting time for SNS account
+ * @param {number} accountId - Account ID
+ * @returns {Promise<{account_id, optimal_hour, optimal_day, confidence_score, recommendation}>}
+ */
+async function getSNSOptimalPostingTime(accountId) {
+    const response = await apiFetch(`/api/sns/analytics/optimal-time/${accountId}`);
+    return response.json();
+}
+
+// Media Management (2)
+/**
+ * Upload media (image/video) for SNS post
+ * @param {File} file - Media file
+ * @param {string} type - 'image' or 'video'
+ * @returns {Promise<{media_id, url, type, size, width, height}>}
+ */
+async function uploadSNSMedia(file, type = 'image') {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('type', type);
+
+    const response = await apiFetch('/api/sns/media/upload', {
+        method: 'POST',
+        headers: {}, // Don't set Content-Type for FormData
+        body: formData
+    });
+    return response.json();
+}
+
+/**
+ * Get media files for account
+ * @param {number} accountId - Account ID (optional)
+ * @returns {Promise<{media: [{id, url, type, uploaded_at, size}...]}>}
+ */
+async function getSNSMedia(accountId = null) {
+    let path = '/api/sns/media';
+    if (accountId) path += `?account_id=${accountId}`;
+    const response = await apiFetch(path);
+    return response.json();
+}
+
+// Templates (3 additional)
+/**
+ * Create custom SNS template
+ * @param {Object} payload - {name, platform, content_template, hashtag_template, category}
+ * @returns {Promise<{template: {...}}>}
+ */
+async function createSNSTemplate(payload) {
+    const response = await apiFetch('/api/sns/templates', {
+        method: 'POST',
+        body: JSON.stringify(payload)
+    });
+    return response.json();
+}
+
+/**
+ * Update SNS template
+ * @param {number} templateId - Template ID
+ * @param {Object} payload - {name, content_template, hashtag_template}
+ * @returns {Promise<{template: {...}}>}
+ */
+async function updateSNSTemplate(templateId, payload) {
+    const response = await apiFetch(`/api/sns/templates/${templateId}`, {
+        method: 'PUT',
+        body: JSON.stringify(payload)
+    });
+    return response.json();
+}
+
+/**
+ * Delete SNS template
+ * @param {number} templateId - Template ID
+ * @returns {Promise<{success, message}>}
+ */
+async function deleteSNSTemplate(templateId) {
+    const response = await apiFetch(`/api/sns/templates/${templateId}`, {
+        method: 'DELETE'
+    });
+    return response.json();
+}
+
+// Inbox & Messages (3)
+/**
+ * Get unified SNS inbox messages
+ * @param {string} status - Filter: 'unread', 'read', 'replied', or empty for all
+ * @param {string} messageType - Filter: 'dm', 'comment', 'mention', or empty for all
+ * @returns {Promise<{messages: [{id, sender, type, text, status, created_at}...], unread_count}>}
+ */
+async function getSNSInbox(status = '', messageType = '') {
+    let path = '/api/sns/inbox';
+    const params = [];
+    if (status) params.push(`status=${status}`);
+    if (messageType) params.push(`type=${messageType}`);
+    if (params.length > 0) path += '?' + params.join('&');
+
+    const response = await apiFetch(path);
+    return response.json();
+}
+
+/**
+ * Reply to SNS inbox message
+ * @param {number} messageId - Message ID
+ * @param {string} replyText - Reply text
+ * @returns {Promise<{message: {...}, reply_id, status}>}
+ */
+async function replySNSInboxMessage(messageId, replyText) {
+    const response = await apiFetch(`/api/sns/inbox/${messageId}/reply`, {
+        method: 'POST',
+        body: JSON.stringify({ reply_text: replyText })
+    });
+    return response.json();
+}
+
+/**
+ * Mark SNS inbox message as read
+ * @param {number} messageId - Message ID
+ * @returns {Promise<{message_id, status: 'read'>}
+ */
+async function markSNSInboxAsRead(messageId) {
+    const response = await apiFetch(`/api/sns/inbox/${messageId}/read`, {
+        method: 'PUT'
+    });
+    return response.json();
+}
+
+// Calendar View (1)
+/**
+ * Get monthly SNS calendar with scheduled posts
+ * @param {number} year - Year (2026)
+ * @param {number} month - Month (1-12)
+ * @returns {Promise<{year, month, days: [{day, posts: [...]}...]}>}
+ */
+async function getSNSCalendar(year, month) {
+    const response = await apiFetch(`/api/sns/calendar?year=${year}&month=${month}`);
+    return response.json();
+}
+
+// Campaigns (3)
+/**
+ * Get all SNS campaigns
+ * @returns {Promise<{campaigns: [{id, name, status, start_date, end_date, post_count}...]}>}
+ */
+async function getSNSCampaigns() {
+    const response = await apiFetch('/api/sns/campaigns');
+    return response.json();
+}
+
+/**
+ * Get single SNS campaign
+ * @param {number} campaignId - Campaign ID
+ * @returns {Promise<{campaign: {...}}>}
+ */
+async function getSNSCampaign(campaignId) {
+    const response = await apiFetch(`/api/sns/campaigns/${campaignId}`);
+    return response.json();
+}
+
+/**
+ * Create SNS campaign
+ * @param {Object} payload - {name, description, target_platforms, start_date, end_date, status}
+ * @returns {Promise<{campaign: {...}}>}
+ */
+async function createSNSCampaign(payload) {
+    const response = await apiFetch('/api/sns/campaigns', {
+        method: 'POST',
+        body: JSON.stringify(payload)
+    });
+    return response.json();
+}
+
+/**
+ * Update SNS campaign
+ * @param {number} campaignId - Campaign ID
+ * @param {Object} payload - {name, description, target_platforms, start_date, end_date, status}
+ * @returns {Promise<{campaign: {...}}>}
+ */
+async function updateSNSCampaign(campaignId, payload) {
+    const response = await apiFetch(`/api/sns/campaigns/${campaignId}`, {
+        method: 'PUT',
+        body: JSON.stringify(payload)
+    });
+    return response.json();
+}
+
+/**
+ * Delete SNS campaign
+ * @param {number} campaignId - Campaign ID
+ * @returns {Promise<{success, message}>}
+ */
+async function deleteSNSCampaign(campaignId) {
+    const response = await apiFetch(`/api/sns/campaigns/${campaignId}`, {
+        method: 'DELETE'
+    });
+    return response.json();
+}
+
+// Settings (1 additional)
+/**
+ * Get SNS user settings
+ * @returns {Promise<{settings: {auto_optimal_time, engagement_notifications, auto_reply_enabled, banned_keywords}}>}
+ */
+async function getSNSSettings() {
+    const response = await apiFetch('/api/sns/settings');
+    return response.json();
+}
+
+/**
+ * Update SNS user settings
+ * @param {Object} payload - {auto_optimal_time, engagement_notifications, auto_reply_enabled, banned_keywords}
+ * @returns {Promise<{settings: {...}, message}>}
+ */
+async function updateSNSSettings(payload) {
+    const response = await apiFetch('/api/sns/settings', {
+        method: 'PUT',
+        body: JSON.stringify(payload)
+    });
+    return response.json();
+}
+
+// AI Content Generation (3)
+/**
+ * Generate SNS content using Claude AI
+ * @param {string} topic - Topic for content generation (max 500 chars)
+ * @param {string} platform - Target platform: instagram, twitter, linkedin, tiktok, etc.
+ * @param {number} count - Number of variations to generate (1-5)
+ * @returns {Promise<{generated_content: [{text, hashtags, emoji_suggestions}...]}>}
+ */
+async function generateSNSContent(topic, platform, count = 1) {
+    const response = await apiFetch('/api/sns/ai/generate', {
+        method: 'POST',
+        body: JSON.stringify({ topic, platform, count })
+    });
+    return response.json();
+}
+
+/**
+ * Generate hashtags for SNS post
+ * @param {string} topic - Topic or post content
+ * @param {string} platform - Platform: instagram, twitter, linkedin, tiktok
+ * @returns {Promise<{hashtags: [...], trending: [...], platform_specific: [...]}>}
+ */
+async function generateSNSHashtags(topic, platform) {
+    const response = await apiFetch('/api/sns/ai/hashtags', {
+        method: 'POST',
+        body: JSON.stringify({ topic, platform })
+    });
+    return response.json();
+}
+
+/**
+ * Optimize SNS content for platform
+ * @param {string} content - Content to optimize
+ * @param {string} platform - Target platform
+ * @returns {Promise<{optimized_content, suggestions, character_count, estimated_engagement}>}
+ */
+async function optimizeSNSContent(content, platform) {
+    const response = await apiFetch('/api/sns/ai/optimize', {
+        method: 'POST',
+        body: JSON.stringify({ content, platform })
+    });
     return response.json();
 }

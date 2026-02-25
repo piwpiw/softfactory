@@ -62,6 +62,39 @@
             </header>
 
             <main class="flex-1 overflow-y-auto p-6">
+                <!-- Connect New Accounts -->
+                <div class="mb-8">
+                    <h3 class="text-lg font-bold text-white mb-4">새로운 계정 연결</h3>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+                        <button onclick="connectOAuth('instagram')" class="bg-gradient-to-br from-pink-600 to-rose-600 hover:from-pink-700 hover:to-rose-700 text-white rounded-lg p-4 text-center transition">
+                            <div class="text-2xl mb-2">📷</div>
+                            <div class="text-xs font-medium">Instagram</div>
+                        </button>
+                        <button onclick="connectOAuth('facebook')" class="bg-blue-600 hover:bg-blue-700 text-white rounded-lg p-4 text-center transition">
+                            <div class="text-2xl mb-2">📘</div>
+                            <div class="text-xs font-medium">Facebook</div>
+                        </button>
+                        <button onclick="connectOAuth('twitter')" class="bg-sky-600 hover:bg-sky-700 text-white rounded-lg p-4 text-center transition">
+                            <div class="text-2xl mb-2">𝕏</div>
+                            <div class="text-xs font-medium">Twitter</div>
+                        </button>
+                        <button onclick="connectOAuth('linkedin')" class="bg-blue-700 hover:bg-blue-800 text-white rounded-lg p-4 text-center transition">
+                            <div class="text-2xl mb-2">💼</div>
+                            <div class="text-xs font-medium">LinkedIn</div>
+                        </button>
+                        <button onclick="connectOAuth('tiktok')" class="bg-slate-700 hover:bg-slate-600 text-white rounded-lg p-4 text-center transition">
+                            <div class="text-2xl mb-2">🎵</div>
+                            <div class="text-xs font-medium">TikTok</div>
+                        </button>
+                        <button onclick="connectOAuth('youtube')" class="bg-red-600 hover:bg-red-700 text-white rounded-lg p-4 text-center transition">
+                            <div class="text-2xl mb-2">📺</div>
+                            <div class="text-xs font-medium">YouTube</div>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Connected Accounts -->
+                <h3 class="text-lg font-bold text-white mb-4">연결된 계정</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="accountsGrid">
                     <div class="bg-slate-800 rounded-lg p-6 border border-slate-700 animate-pulse">
                         <div class="h-6 bg-slate-700 rounded mb-4 w-3/4"></div>
@@ -185,6 +218,26 @@
                 } catch (error) {
                     showError('삭제 실패');
                 }
+            }
+        }
+
+        async function connectOAuth(platform) {
+            try {
+                // Option 1: Real OAuth (commented for dev)
+                // const result = await apiFetch(`/api/sns/oauth/${platform}/authorize`).then(r => r.json());
+                // window.location.href = result.auth_url;
+
+                // Option 2: Simulation mode (for demo)
+                const result = await apiFetch(`/api/sns/oauth/${platform}/simulate-callback`, {
+                    method: 'GET'
+                }).then(r => r.json());
+
+                if (result.account) {
+                    showSuccess(`${platform} 계정이 연결되었습니다!`);
+                    init();
+                }
+            } catch (error) {
+                showError(`${platform} 연결 실패: ` + error.message);
             }
         }
 

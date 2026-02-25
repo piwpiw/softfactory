@@ -38,6 +38,25 @@
                 <div><h2 class="text-xl font-bold text-white">📈 분석</h2><p class="text-xs text-slate-400">SNS 성과 분석</p></div>
             </header>
             <main class="flex-1 overflow-y-auto p-6 space-y-6">
+                <!-- Filters -->
+                <div class="bg-slate-800 rounded-lg p-4 border border-slate-700 flex gap-4 flex-wrap items-end">
+                    <div>
+                        <label class="block text-xs font-medium text-slate-400 mb-2">시작 날짜</label>
+                        <input type="date" id="startDate" class="bg-slate-700 border border-slate-600 rounded px-3 py-2 text-white text-sm" onchange="loadAnalytics()">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-400 mb-2">종료 날짜</label>
+                        <input type="date" id="endDate" class="bg-slate-700 border border-slate-600 rounded px-3 py-2 text-white text-sm" onchange="loadAnalytics()">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-400 mb-2">계정 선택</label>
+                        <select id="accountFilter" class="bg-slate-700 border border-slate-600 rounded px-3 py-2 text-white text-sm" onchange="loadAnalytics()">
+                            <option value="">전체 계정</option>
+                        </select>
+                    </div>
+                    <button onclick="loadAnalytics()" class="px-4 py-2 bg-pink-600 hover:bg-pink-700 text-white rounded text-sm">새로고침</button>
+                </div>
+
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     <div class="bg-slate-800 rounded-xl p-6 border border-slate-700">
                         <p class="text-slate-400 text-sm mb-2">총 포스트</p>

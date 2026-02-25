@@ -19,6 +19,7 @@ from .services.experience import experience_bp
 from .metrics import metrics_bp, increment_request_count, increment_error_count
 from .logging_config import setup_logging
 from .performance_monitor import PerformanceMonitor
+from .scheduler import init_scheduler
 
 
 def create_app():
@@ -218,6 +219,8 @@ def create_app():
     # Initialize database
     with app.app_context():
         init_db(app)
+        # Initialize SNS Scheduler for publishing scheduled posts
+        init_scheduler(app)
 
     return app
 
