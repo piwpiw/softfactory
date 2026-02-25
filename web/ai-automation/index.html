@@ -24,6 +24,7 @@
                 <a href="index.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg bg-cyan-600 text-white font-medium">📊 대시보드</a>
                 <a href="scenarios.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">📋 시나리오</a>
                 <a href="create.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">✨ 생성</a>
+                <a href="code.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800"><span class="relative">💻 커스텀 코드<span class="absolute -top-2 -right-2 bg-cyan-500 text-white text-xs px-2 py-1 rounded-full">NEW</span></span></a>
                 <a href="analytics.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">📈 분석</a>
             </nav>
             <div class="p-6 border-t border-slate-800">
@@ -55,6 +56,25 @@
                     </div>
                 </div>
 
+                <!-- AI Suggestions Section -->
+                <div class="bg-gradient-to-r from-amber-900/40 to-orange-900/40 rounded-lg p-6 border border-amber-600/50 mb-6">
+                    <div class="flex items-start gap-4">
+                        <span class="text-2xl">💡</span>
+                        <div class="flex-1">
+                            <h3 class="text-lg font-bold text-white mb-2">🤖 AI 제안</h3>
+                            <p class="text-sm text-slate-300 mb-3">당신의 업무 패턴을 분석한 AI의 추천입니다.</p>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                <button class="text-left px-4 py-2 bg-slate-800/50 hover:bg-slate-800 rounded-lg text-sm text-slate-200 border border-slate-700 transition">
+                                    💼 CRM 데이터 동기화 자동화 (월 30시간 절약)
+                                </button>
+                                <button class="text-left px-4 py-2 bg-slate-800/50 hover:bg-slate-800 rounded-lg text-sm text-slate-200 border border-slate-700 transition">
+                                    📊 리포트 생성 스케줄링 (월 20시간 절약)
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div>
                     <h3 class="text-lg font-bold text-white mb-4">🤖 AI 직원</h3>
                     <div class="space-y-4" id="employeesList">
@@ -68,6 +88,31 @@
                             </div>
                             <p class="text-sm text-slate-300 mt-4">절약: 15시간/월 • ₩150만/연</p>
                         </div>
+                    </div>
+                </div>
+
+                <!-- Custom Code Section -->
+                <div class="mt-8">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                            <span>💻</span>
+                            커스텀 코드 에디터
+                            <span class="inline-block bg-cyan-500 text-white text-xs px-2 py-1 rounded-full">NEW</span>
+                        </h3>
+                        <a href="code.html" class="text-cyan-400 hover:text-cyan-300 text-sm font-medium">자세히 보기 →</a>
+                    </div>
+                    <div class="bg-slate-800/50 rounded-lg p-6 border border-slate-700">
+                        <p class="text-slate-300 text-sm mb-4">AI 직원의 동작을 완벽하게 제어할 수 있습니다.</p>
+                        <div class="bg-slate-900 rounded p-3 font-mono text-xs text-slate-400 mb-4 overflow-x-auto">
+                            <div class="text-cyan-400">// 커스텀 API 연동</div>
+                            <div>const response = await fetch()</div>
+                            <div>if (response.status === 200) {</div>
+                            <div class="pl-4 text-amber-400">// 자동 처리</div>
+                            <div>}</div>
+                        </div>
+                        <button class="px-4 py-2 bg-cyan-600 hover:bg-cyan-700 text-white rounded-lg font-medium text-sm transition">
+                            + 코드 작성 시작
+                        </button>
                     </div>
                 </div>
             </main>

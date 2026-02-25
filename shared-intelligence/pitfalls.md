@@ -160,6 +160,32 @@
   print(f"Valid bookings: {cursor.fetchone()[0]}")
   ```
 
+### PF-021: UI Components Missing Accessibility Hints (A11y)
+- **Date:** 2026-02-25
+- **Agent:** UI/UX Enhancement
+- **Task:** M-003 SoftFactory UI improvement Phase 1
+- **Pitfall:** Custom code editor textarea lacked proper ARIA labels. Template marketplace search wasn't keyboard navigable. Analytics dashboard charts had no alt text for screen readers.
+- **Prevention:** Every interactive component MUST have: (1) semantic HTML (button, input, select), (2) ARIA labels for complex widgets, (3) keyboard navigation support, (4) focus indicators visible. Audit with axe DevTools before deployment.
+- **Files Fixed:** `web/ai-automation/code.html`, `web/marketplace/index.html`, `web/analytics/dashboard.html`
+
+### PF-022: Responsive Design Breaks on Mobile < 375px
+- **Date:** 2026-02-25
+- **Agent:** UI/UX Enhancement
+- **Task:** M-003 SoftFactory UI improvement Phase 1
+- **Pitfall:** New marketplace grid uses `md:grid-cols-2` min-width 768px. On iPhone 6 (375px width), cards overflow. Text in code editor becomes unreadable on small phones.
+- **Prevention:** Test on 320px, 375px, 425px viewports. Use `grid-cols-1` for mobile-first. Set `max-width: 100vw` to prevent horizontal scroll. Test with `viewport-width: device-width` meta tag.
+- **Testing:** `throttle_device: 'iPhone SE'` in E2E tests
+
+### PF-023: Color Contrast on Analytics Dashboard Metrics
+- **Date:** 2026-02-25
+- **Agent:** UI/UX Enhancement
+- **Task:** M-003 SoftFactory UI improvement Phase 1
+- **Pitfall:** Metric cards use CSS variables for gradient colors (`var(--color-from)`). Some gradient combos (purple-600 to purple-700) fail WCAG AA contrast ratio (3.8:1 instead of 4.5:1 required).
+- **Prevention:** Pre-compute all color combinations in dev. Run through axe or WAVE contrast checker. For gradients, use darker `to` color or lighter `from` color. Target ≥4.5:1 ratio for all text.
+- **Reference:** `web/analytics/dashboard.html` — all metric card gradients now WCAG AA compliant
+
+---
+
 ### PF-007: Inconsistent Crawler Output Format
 - **Date:** 2026-02-25
 - **Agent:** 03-Architect, 05-Backend

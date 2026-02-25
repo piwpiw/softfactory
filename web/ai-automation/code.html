@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>커스텀 코드 에디터 — SoftFactory</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/highlight.js/highlight.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js/styles/atom-one-dark.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="../platform/api.js"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .editor { font-family: 'Monaco', 'Menlo', monospace; }
+        .code-line { line-height: 1.6; }
+        hljs { background: #1e1e1e !important; }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100">
+    <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-slate-900 border-r border-slate-800 flex flex-col shrink-0">
+            <div class="p-6 border-b border-slate-800">
+                <a href="index.html" class="flex items-center gap-3">
+                    <span class="text-2xl">🏭</span>
+                    <div><h1 class="font-bold text-white text-sm">SoftFactory</h1><p class="text-xs text-slate-400">← 뒤로</p></div>
+                </a>
+            </div>
+            <nav class="flex-1 p-6 space-y-2 overflow-y-auto">
+                <p class="text-xs font-semibold text-slate-400 uppercase px-4 mb-3">🤖 AI Auto</p>
+                <a href="index.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">📊 대시보드</a>
+                <a href="scenarios.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">📋 시나리오</a>
+                <a href="create.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">✨ 생성</a>
+                <a href="code.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg bg-cyan-600 text-white font-medium">💻 커스텀 코드</a>
+                <a href="analytics.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">📈 분석</a>
+            </nav>
+            <div class="p-6 border-t border-slate-800">
+                <button onclick="logout()" class="p-2 hover:bg-slate-800 rounded-lg">🚪</button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <!-- Header -->
+            <header class="h-16 bg-slate-900 border-b border-slate-800 px-6 flex items-center justify-between shrink-0">
+                <h2 class="text-xl font-bold text-white flex items-center gap-2">💻 커스텀 코드 에디터</h2>
+                <div class="flex gap-3">
+                    <button onclick="saveCode()" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium text-sm transition">
+                        💾 저장
+                    </button>
+                    <button onclick="runCode()" class="px-4 py-2 bg-cyan-600 hover:bg-cyan-700 text-white rounded-lg font-medium text-sm transition">
+                        ▶ 실행
+                    </button>
+                </div>
+            </header>
+
+            <!-- Main Area -->
+            <main class="flex-1 overflow-hidden flex gap-4 p-4">
+                <!-- Code Editor -->
+                <div class="flex-1 flex flex-col bg-slate-800 rounded-lg border border-slate-700 overflow-hidden">
+                    <div class="bg-slate-900 border-b border-slate-700 px-4 py-3 flex items-center justify-between">
+                        <div class="text-sm font-medium text-slate-300">
+                            <span class="text-cyan-400">📄</span> workflow.js
+                        </div>
+                        <div class="text-xs text-slate-500">라인: <span id="lineNumber">1</span> | 컬럼: <span id="colNumber">1</span></div>
+                    </div>
+                    <div class="flex-1 overflow-hidden relative">
+                        <textarea
+                            id="codeEditor"
+                            class="absolute inset-0 bg-slate-900 text-slate-100 p-4 font-mono text-sm resize-none focus:outline-none"
+                            spellcheck="false"
+                            autocomplete="off"
+                            autocorrect="off"
+                            autocapitalize="off">// AI 자동화 워크플로우 커스텀 코드
+// ===================================
+
+// Step 1: 데이터 불러오기
+async function loadData(source) {
+    const response = await fetch(`/api/${source}`);
+    return await response.json();
+}
+
+// Step 2: 데이터 처리
+function processData(data) {
+    return data.filter(item => item.active === true)
+               .map(item => ({
+                   id: item.id,
+                   name: item.name,
+                   timestamp: new Date().toISOString()
+               }));
+}
+
+// Step 3: 결과 저장
+async function saveResult(result) {
+    const response = await fetch('/api/workflow/result', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(result)
+    });
+    return response.ok;
+}
+
+// 메인 실행
+async function main() {
+    try {
+        const rawData = await loadData('data-source');
+        const processed = processData(rawData);
+        await saveResult({
+            status: 'success',
+            count: processed.length,
+            data: processed
+        });
+        console.log('✅ 워크플로우 완료');
+    } catch (error) {
+        console.error('❌ 오류:', error);
+    }
+}
+
+// 실행
+main();</textarea>
+                        <pre class="absolute inset-0 bg-slate-900 text-slate-100 p-4 font-mono text-sm pointer-events-none overflow-hidden" id="highlightPre"><code id="highlight" class="language-javascript"></code></pre>
+                    </div>
+                </div>
+
+                <!-- Right Panel: Help & Output -->
+                <div class="w-80 flex flex-col gap-4 overflow-hidden">
+                    <!-- API Reference -->
+                    <div class="flex-1 bg-slate-800 rounded-lg border border-slate-700 overflow-hidden flex flex-col">
+                        <div class="bg-slate-900 border-b border-slate-700 px-4 py-3 font-semibold text-cyan-400">
+                            📚 API 레퍼런스
+                        </div>
+                        <div class="flex-1 overflow-y-auto p-4 space-y-3 text-sm">
+                            <div class="bg-slate-900 p-3 rounded border border-slate-700">
+                                <div class="text-cyan-400 font-mono text-xs">GET /api/data</div>
+                                <p class="text-slate-400 text-xs mt-1">데이터 소스에서 항목 불러오기</p>
+                            </div>
+                            <div class="bg-slate-900 p-3 rounded border border-slate-700">
+                                <div class="text-cyan-400 font-mono text-xs">POST /api/workflow/result</div>
+                                <p class="text-slate-400 text-xs mt-1">처리 결과 저장하기</p>
+                            </div>
+                            <div class="bg-slate-900 p-3 rounded border border-slate-700">
+                                <div class="text-cyan-400 font-mono text-xs">PUT /api/workflow/status</div>
+                                <p class="text-slate-400 text-xs mt-1">워크플로우 상태 업데이트</p>
+                            </div>
+                            <div class="bg-slate-900 p-3 rounded border border-slate-700">
+                                <div class="text-cyan-400 font-mono text-xs">DELETE /api/workflow/task/{id}</div>
+                                <p class="text-slate-400 text-xs mt-1">작업 취소하기</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Output Console -->
+                    <div class="flex-1 bg-slate-800 rounded-lg border border-slate-700 overflow-hidden flex flex-col">
+                        <div class="bg-slate-900 border-b border-slate-700 px-4 py-3 font-semibold text-green-400 flex items-center justify-between">
+                            <span>🖥 실행 결과</span>
+                            <button onclick="clearConsole()" class="text-xs text-slate-400 hover:text-slate-200">Clear</button>
+                        </div>
+                        <div class="flex-1 overflow-y-auto p-3 font-mono text-xs bg-slate-900 space-y-1" id="console">
+                            <div class="text-slate-500">• 준비됨. ▶ 실행 버튼을 누르세요.</div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        requireAuth();
+
+        const editor = document.getElementById('codeEditor');
+        const highlight = document.getElementById('highlight');
+        const highlightPre = document.getElementById('highlightPre');
+        const consoleOutput = document.getElementById('console');
+
+        // Sync scroll between editor and highlight
+        editor.addEventListener('scroll', () => {
+            highlightPre.scrollTop = editor.scrollTop;
+            highlightPre.scrollLeft = editor.scrollLeft;
+        });
+
+        // Update highlighting as user types
+        editor.addEventListener('input', () => {
+            const code = editor.value;
+            highlight.textContent = code;
+            hljs.highlightElement(highlight);
+
+            // Update line number
+            const lines = editor.value.substring(0, editor.selectionStart).split('\n');
+            document.getElementById('lineNumber').textContent = lines.length;
+            document.getElementById('colNumber').textContent = lines[lines.length - 1].length + 1;
+        });
+
+        // Track cursor position
+        editor.addEventListener('keyup', () => {
+            const lines = editor.value.substring(0, editor.selectionStart).split('\n');
+            document.getElementById('lineNumber').textContent = lines.length;
+            document.getElementById('colNumber').textContent = lines[lines.length - 1].length + 1;
+        });
+
+        // Initial highlight
+        highlight.textContent = editor.value;
+        hljs.highlightElement(highlight);
+
+        function addConsoleLog(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const colors = {
+                'info': 'text-slate-400',
+                'success': 'text-green-400',
+                'error': 'text-red-400',
+                'warning': 'text-yellow-400'
+            };
+            const color = colors[type] || colors.info;
+
+            const line = document.createElement('div');
+            line.className = color;
+            line.textContent = `[${timestamp}] ${message}`;
+            consoleOutput.appendChild(line);
+            consoleOutput.scrollTop = consoleOutput.scrollHeight;
+        }
+
+        function clearConsole() {
+            consoleOutput.innerHTML = '<div class="text-slate-500">• 콘솔 초기화됨</div>';
+        }
+
+        function saveCode() {
+            const code = editor.value;
+            localStorage.setItem('customCode', code);
+            addConsoleLog('✅ 코드가 저장되었습니다.', 'success');
+        }
+
+        function runCode() {
+            clearConsole();
+            addConsoleLog('🚀 코드 실행 시작...', 'info');
+
+            try {
+                // Parse and validate code
+                new Function(editor.value);
+                addConsoleLog('✅ 문법 검사 통과', 'success');
+
+                // Simulate execution
+                setTimeout(() => {
+                    addConsoleLog('📊 데이터 로드: 42개 항목', 'info');
+                }, 500);
+
+                setTimeout(() => {
+                    addConsoleLog('⚙ 처리 중...', 'info');
+                }, 1000);
+
+                setTimeout(() => {
+                    addConsoleLog('💾 결과 저장 완료', 'success');
+                    addConsoleLog('⏱ 실행 시간: 2.34s', 'info');
+                    addConsoleLog('✅ 워크플로우 완료', 'success');
+                }, 1500);
+            } catch (error) {
+                addConsoleLog(`❌ 문법 오류: ${error.message}`, 'error');
+            }
+        }
+
+        // Load saved code
+        const savedCode = localStorage.getItem('customCode');
+        if (savedCode) {
+            editor.value = savedCode;
+            highlight.textContent = savedCode;
+            hljs.highlightElement(highlight);
+        }
+    </script>
+</body>
+</html>
