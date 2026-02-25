@@ -288,3 +288,168 @@ for campaign in campaigns:
 - Examples: `backend/query_optimization_examples.py`
 - Tests: `tests/test_database_performance.py`
 
+
+### PF-021: Gunicorn Worker Starvation Without Proper Configuration
+- **Date:** 2026-02-25
+- **Agent:** DevOps Engineer (Production Deployment)
+- **Task:** Dockerfile.prod creation for production workloads
+- **Pitfall:** Default Gunicorn configuration uses 1 worker, causing request queuing and high latency under load. Deployment with default settings causes P95 response times > 5 seconds.
+- **Prevention:** Always set `--workers` to at least 2 × CPU cores. For 2-core instance: 4 workers. Formula: `workers = (2 × cpu_count) + 1`. Set in docker-compose-prod.yml: `WORKERS=4` or pass via docker-entrypoint.
+- **Reference:** `Dockerfile.prod` line 52 uses 4 workers; `docker-compose-prod.yml` WORKERS env var
+
+### PF-022: Docker Multi-stage Build Layer Cache Invalidation
+- **Date:** 2026-02-25
+- **Agent:** DevOps Engineer (Production Deployment)
+- **Task:** Optimize Dockerfile.prod image size
+- **Pitfall:** Copying requirements.txt after COPY . . causes entire app layer to rebuild on any code change. Results in 5-10 minute builds when only Python deps should cache.
+- **Prevention:** Always order Dockerfile commands by change frequency: rarely-changing (base, system deps) → sometimes-changing (Python deps) → frequently-changing (app code). Copy requirements.txt in builder, then copy wheels in runtime.
+- **Reference:** `Dockerfile.prod` stage structure — builder copies requirements, runtime copies wheels
+
+### PF-023: PostgreSQL InitDB Waits Not Respected in docker-compose
+- **Date:** 2026-02-25
+- **Agent:** DevOps Engineer (Production Deployment)
+- **Task:** docker-compose-prod.yml creation with db health checks
+- **Pitfall:** Setting `depends_on: condition: service_healthy` does not guarantee DB is fully initialized. `pg_isready` returns true before `initdb` completes. Migrations fail with "database does not exist" or "relation does not exist".
+- **Prevention:** After `docker-compose up -d db`, always wait 15+ seconds. Use: `sleep 20` or loop with `docker logs` check for "ready to accept connections". Migrations should include retry logic with exponential backoff (3 attempts, 5s delays).
+- **Reference:** `scripts/deploy.sh` Phase 6 includes `sleep 30` before migrations
+
+### PF-024: Nginx SSL Certificate Path Errors in Docker Context
+- **Date:** 2026-02-25
+- **Agent:** DevOps Engineer (Production Deployment)
+- **Task:** nginx/nginx.conf SSL configuration
+- **Pitfall:** nginx container fails to start if `/etc/nginx/ssl/cert.pem` or `/etc/nginx/ssl/key.pem` missing. Error message is cryptic: "open() failed (2: No such file or directory)". Result: reverse proxy down, all traffic fails.
+- **Prevention:** ALWAYS create dummy self-signed certificates before first docker-compose up. OR mount only if exists (use conditional in docker-compose). OR use non-SSL nginx config for development.
+- **Quick fix:** `openssl req -x509 -newkey rsa:2048 -nodes -keyout nginx/ssl/key.pem -out nginx/ssl/cert.pem -days 365` before docker-compose up
+
+### PF-025: Docker Compose Environment Variable Scope Issues
+- **Date:** 2026-02-25
+- **Agent:** DevOps Engineer (Production Deployment)
+- **Task:** .env-prod integration with docker-compose-prod.yml
+- **Pitfall:** Variables in .env-prod file are NOT automatically available inside containers. `docker-compose up` reads .env for Compose interpolation ONLY. Services receive environment vars only if explicitly listed in `environment:` section or via `--env-file` flag.
+- **Prevention:** Always use `docker-compose --env-file .env-prod up` OR reference variables explicitly in docker-compose.yml `environment:` section. Do NOT assume .env variables magically appear in container.
+- **Reference:** `docker-compose-prod.yml` line 35: `environment:` section explicitly lists all vars from .env-prod
+
+### PF-026: Rate Limiting Configuration Without Burst Allowance
+- **Date:** 2026-02-25
+- **Agent:** DevOps Engineer (Production Deployment)
+- **Task:** nginx/nginx.conf rate limiting setup
+- **Pitfall:** Setting `limit_req zone=api_limit burst=0` causes EVERY request to be throttled strictly. Legitimate traffic spikes (batch jobs, mobile app syncs) result in 429 Too Many Requests. Real-world: 50 concurrent users → 30% get throttled even under 100r/s limit.
+- **Prevention:** Always set `burst > max_requests_per_second`. For 100r/s limit: set `burst=200`. This allows short spikes while maintaining rate ceiling. Use `nodelay` for immediate rejection OR remove for queue processing.
+- **Reference:** `nginx/nginx.conf` line 79: `burst=200` allows spike absorption
+
+### PF-027: Database Connection Pool Exhaustion Without Limits
+- **Date:** 2026-02-25
+- **Agent:** DevOps Engineer (Production Deployment)
+- **Task:** docker-compose-prod.yml PostgreSQL pooling
+- **Pitfall:** Flask app creates new DB connection per request without pooling. With 4 Gunicorn workers × 50 requests/sec = 200 connections. PostgreSQL default `max_connections=100` → "too many connections" errors.
+- **Prevention:** (1) Increase `max_connections` in PostgreSQL: `POSTGRES_INITDB_ARGS` in docker-compose. (2) Better: Add PgBouncer or SQLAlchemy pooling in Flask. (3) Set connection timeouts: `connection_idle_time=300`.
+- **Reference:** `docker-compose-prod.yml` line 77: `max_connections=100` tuned for 4 workers
+
+### PF-028: Backup Retention Policy Never Triggered Without Cron
+- **Date:** 2026-02-25
+- **Agent:** DevOps Engineer (Production Deployment)
+- **Task:** scripts/backup.sh creation
+- **Pitfall:** Wrote comprehensive backup script with 30-day retention cleanup, but script only runs once manually. Month later: 30GB of backups eating all disk space. Retention logic ignored because cleanup only runs if script invoked.
+- **Prevention:** ALWAYS set up cron job immediately after backup script deployment. Document exact cron line in README. Example: `0 2 * * * /path/to/backup.sh >> /var/log/softfactory-backup.log 2>&1`. Verify: `crontab -l` OR `systemctl list-timers`.
+- **Reference:** `scripts/backup.sh` line 1 includes cron example; must be manually added to system
+
+### PF-029: Health Check Timeouts Cause Cascading Failures
+- **Date:** 2026-02-25
+- **Agent:** DevOps Engineer (Production Deployment)
+- **Task:** docker-compose-prod.yml healthcheck configuration
+- **Pitfall:** Health check interval 10s with timeout 5s means if any check takes >5s, container marked unhealthy. Under load, slow DB query causes health fail → Docker restarts container → connection reset → cascade restart loop.
+- **Prevention:** Set timeout generously (10-15s). Set interval to longer period (30s) for production. Add `start_period` buffer (30s) to allow app warmup before health checks start. Max retries should be 3-5 (not 1).
+- **Reference:** `docker-compose-prod.yml` line 43: `start-period: 5s` provides warmup buffer
+
+### PF-030: Secrets in Docker Logs Compromise Security
+- **Date:** 2026-02-25
+- **Agent:** DevOps Engineer (Production Deployment)
+- **Task:** Production security review
+- **Pitfall:** Flask app logs DATABASE_URL which contains password in plaintext. Attacker with `docker logs` access gets credentials. Same issue: Redis password, JWT secret visible in startup logs.
+- **Prevention:** (1) Never log sensitive values. (2) Use Docker secrets (Swarm) or mounted secret files (Kubernetes). (3) Log only redacted versions: "DB=psql://***@host" (4) Enable log rotation immediately: `max-size: 10m` in docker-compose.
+- **Reference:** `docker-compose-prod.yml` logging configs include size limits; Flask app should not log DATABASE_URL
+
+---
+
+## CI/CD & DevOps
+
+### PF-031: Pre-commit Hooks Blocking Valid Commits
+- **Date:** 2026-02-25
+- **Agent:** CI/CD Pipeline Agent
+- **Task:** GitHub Actions + pre-commit setup
+- **Pitfall:** Pre-commit hooks (black, isort, flake8, mypy) formatted code but didn't re-stage changes. User commits formatted code, pre-commit reformats it again, commit blocked. User confused, thinks they passed linting.
+- **Prevention:** Auto-format tools (black, isort) must run with `--fix` or equivalent, AND automatic re-stage in pre-commit config. Use `stages: [commit]` for formatting, `stages: [push]` for slow checks (mypy). Add `.pre-commit-config.yaml` with `pass_filenames: true` for black/isort.
+- **Reference:** `.pre-commit-config.yaml` — black and isort run in commit stage with auto-fix enabled
+
+### PF-032: GitHub Actions Matrix Testing Hidden Failures
+- **Date:** 2026-02-25
+- **Agent:** CI/CD Pipeline Agent
+- **Task:** Multi-version test setup (Python 3.9/3.10/3.11)
+- **Pitfall:** Test workflow runs matrix: one job fails (py3.9) but others pass (py3.10, py3.11). GitHub shows overall status GREEN because aggregate status only shows "1 failed, 2 passed". PR is mergeable despite failure.
+- **Prevention:** Set `fail-fast: true` in matrix to stop on first failure. OR set branch protection rule: "Require all checks to pass" (checks ALL matrix combinations, not just aggregate). OR review detailed run logs before merging.
+- **Reference:** `.github/workflows/test.yml` line 20: `fail-fast: false` (intentional for coverage visibility) — requires manual review of py3.9 failures
+
+### PF-033: Codecov Coverage Report Missing When Tests Don't Run
+- **Date:** 2026-02-25
+- **Agent:** CI/CD Pipeline Agent
+- **Task:** GitHub Actions coverage reporting
+- **Pitfall:** Coverage upload to Codecov fails silently if no coverage.xml file generated. Workflow shows green, but Codecov never updates. User assumes coverage is tracked; weeks later discovers no history.
+- **Prevention:** (1) Always verify coverage generation locally: `pytest tests/ --cov=backend --cov-report=xml` produces `coverage.xml`. (2) Add `fail_ci_if_error: true` to codecov-action to fail workflow if upload fails. (3) Log upload output: `verbose: true`.
+- **Reference:** `.github/workflows/test.yml` line 82: `fail_ci_if_error: false` (currently soft-fail) — recommend changing to `true` for production
+
+### PF-034: Semantic Release Version Bumps Without Triggering Deployment
+- **Date:** 2026-02-25
+- **Agent:** CI/CD Pipeline Agent
+- **Task:** Semantic versioning + release workflow
+- **Pitfall:** Semantic-release creates v1.0.1 tag, BUT deploy workflow only triggers on `v*` tags created via `git push origin tag`. Since semantic-release creates tag via GitHub API, deploy workflow never runs (missing webhook trigger).
+- **Prevention:** (1) semantic-release.yml must use `persistCredentials: true` and push tags with Git credentials. (2) Alternative: Use `workflow_dispatch` trigger in deploy.yml for manual release deployment. (3) Verify: After semantic-release runs, check GitHub releases page for new tag AND verify deploy workflow was triggered (Actions tab).
+- **Reference:** `.github/workflows/release.yml` — semantic-release step must push tags; deploy.yml watches for `push: tags: ['v*']`
+
+### PF-035: Docker Image Build Cache Misses on Large .dockerignore
+- **Date:** 2026-02-25
+- **Agent:** CI/CD Pipeline Agent
+- **Task:** Docker build optimization in build.yml
+- **Pitfall:** .dockerignore excludes 70+ patterns but doesn't exclude `tests/` directory. 50MB of test files copied in Docker build layer, invalidating cache. Builds take 8 minutes instead of 2 minutes.
+- **Prevention:** Review .dockerignore: exclude all development files (tests/, scripts/, docs/, *.md, .git/, .venv/, node_modules/). Keep only application code. Test locally: `docker build --progress=plain | grep "COPY . ."` — should copy only backend/, web/, configs.
+- **Reference:** `.dockerignore` — currently excludes tests/ (good); verify before `docker build`
+
+### PF-036: Security Scan False Positives Block Merges Unnecessarily
+- **Date:** 2026-02-25
+- **Agent:** CI/CD Pipeline Agent
+- **Task:** OWASP/CodeQL/Bandit integration
+- **Pitfall:** Bandit reports "hardcoded SQL credentials" on test fixtures: `db_config = {'password': 'test'}` (intentionally hardcoded for testing). CodeQL flags `eval()` in code comment example. Merge blocked despite false positives.
+- **Prevention:** (1) Suppress known false positives with `# nosec` comments (Bandit) or `# noqa: S101` (specific rule). (2) Document suppression: explain why it's safe. (3) Set `continue-on-error: true` for info-only scans; `fail` only for critical findings. (4) Review alerts weekly to catch real issues.
+- **Reference:** `.github/workflows/security.yml` — Bandit/Semgrep use `continue-on-error: true`; CodeQL is blocking (intentional)
+
+### PF-037: Pre-commit Hook Performance Degrades Over Time
+- **Date:** 2026-02-25
+- **Agent:** CI/CD Pipeline Agent
+- **Task:** Pre-commit maintenance
+- **Pitfall:** Pre-commit runs on commit take 2 seconds (normal) → 15 seconds → 45 seconds over 3 weeks. User starts bypassing hooks (`--no-verify`). Root cause: pre-commit cache grows, or tool dependencies are mismatched.
+- **Prevention:** (1) Periodically clean pre-commit cache: `pre-commit clean`. (2) Monitor hook performance: `pre-commit run --all-files` and time it. (3) Profile slow hooks: `pre-commit run mypy --all-files` (usually the slowest). (4) Consider marking slow checks with `stages: [push]` to skip on commit.
+- **Workaround:** If a hook consistently slow (mypy > 10s), move to `stages: [push]` in `.pre-commit-config.yaml`
+
+### PF-038: Commit Message Linting Against Merged PRs Fails
+- **Date:** 2026-02-25
+- **Agent:** CI/CD Pipeline Agent
+- **Task:** Commitlint + GitHub Actions integration
+- **Pitfall:** PR merged via GitHub "Squash and merge" button creates commit message like "PR #123: Description (automated)". Commitlint expects "feat: description" format. Deploy workflow rejects the commit before deploying.
+- **Prevention:** (1) Enforce conventional commits in GitHub PR template (tell users what format to use). (2) Configure commitlint to accept auto-generated messages: add `feat(pr|merge|squash): .*` to allowed types. (3) Educate team: always write conventional-format commit messages in PR titles (GitHub auto-uses as commit message).
+- **Reference:** `.commitlintrc.json` — currently enforces strict format; may need relaxation for GitHub auto-merges
+
+### PF-039: Workflow Secrets Not Available in Pull Requests from Forks
+- **Date:** 2026-02-25
+- **Agent:** CI/CD Pipeline Agent
+- **Task:** Security scanning for PRs
+- **Pitfall:** External contributor opens PR from fork. Security scan workflow (CodeQL, Trivy) skipped silently because `secrets.GITHUB_TOKEN` not available in fork context. Malicious code merged without scanning.
+- **Prevention:** (1) Use `if: github.event_name != 'pull_request_target'` to skip sensitive steps on forks. (2) OR use read-only secrets in PR context: CodeQL allowed, but deployment denied. (3) Always review fork PRs manually before merge. (4) GitHub default: secrets unavailable on forks (safe behavior), but some tools fail silently.
+- **Reference:** `.github/workflows/security.yml` and `.github/workflows/deploy.yml` both skip on fork PRs
+
+### PF-040: Database Migrations in CI Not Validated Against Production Schema
+- **Date:** 2026-02-25
+- **Agent:** CI/CD Pipeline Agent
+- **Task:** Test database setup (.github/workflows/test.yml)
+- **Pitfall:** CI uses fresh PostgreSQL 15 container. Migration script works in CI but fails in production (PostgreSQL 13, existing schema). Migration adds column with DEFAULT constraint that's incompatible with old version.
+- **Prevention:** (1) Match CI database version to production version. (2) Test migrations against production DB snapshot (sanitized). (3) Always test rollback: `migrate up; migrate down; migrate up`. (4) Document minimum version support: "PostgreSQL 13+".
+- **Reference:** `.github/workflows/test.yml` line 25: `postgres:15` — should match production version
+

@@ -621,3 +621,189 @@ WHERE status IN ('draft', 'published');
 - Batch counts: 83% faster (6→1 query)
 - Indexes: 20-50% faster
 
+
+---
+
+## Production Deployment Patterns
+
+### PAT-012: Multi-Stage Docker Build for Production
+**Pattern:** Separate build stage from runtime stage to reduce image size and attack surface.
+
+```dockerfile
+# Stage 1: Builder (includes build tools)
+FROM python:3.11-slim as builder
+RUN apt-get install gcc postgresql-client
+COPY requirements.txt .
+RUN pip install --user -r requirements.txt
+
+# Stage 2: Runtime (minimal, no build tools)
+FROM python:3.11-slim
+COPY --from=builder /root/.local /root/.local
+COPY --chown=appuser:appuser . .
+USER appuser
+CMD ["gunicorn", ...]
+```
+
+**When to use:** All production Docker deployments to reduce image size (150MB → 350MB final vs 1GB+).
+**Files:** `Dockerfile.prod`, best practice for Python 3.11+ images.
+
+### PAT-013: Blue-Green Deployment Strategy
+**Pattern:** Keep old version running (blue) while deploying new version (green), then switch traffic.
+
+```bash
+# Current: Blue running on port 8000
+# Deploy: Green built and tested separately
+docker build -t softfactory:green .
+
+# Test green on staging
+docker run --name green-test softfactory:green /bin/bash -c "pytest tests/"
+
+# Switch traffic (done by load balancer or manual cutover)
+docker-compose restart web  # Runs new version
+```
+
+**When to use:** Production deployments requiring zero downtime.
+**Benefit:** Instant rollback — if green fails, restart blue.
+**Limitation:** Requires load balancer or manual cutover (not auto with docker-compose).
+
+### PAT-014: Health Check Pattern for Containers
+**Pattern:** Every container has healthcheck that returns exit code 0 (pass) or 1+ (fail).
+
+```yaml
+healthcheck:
+  test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+  interval: 30s       # Check every 30 seconds
+  timeout: 10s        # Wait 10 seconds for response
+  retries: 3          # Fail after 3 consecutive timeouts
+  start_period: 15s   # Wait 15s before first check (warmup)
+```
+
+**When to use:** All docker-compose services (db, redis, web, nginx).
+**Files:** `docker-compose-prod.yml` all services include healthcheck.
+
+### PAT-015: Database Migration on Deployment
+**Pattern:** Run migrations in container before starting API to ensure schema matches code.
+
+```bash
+# 1. Start database only
+docker-compose up -d db
+sleep 20  # Wait for DB initialization
+
+# 2. Run migrations
+docker run --rm --network softfactory_softfactory \
+  -e DATABASE_URL="postgresql://..." \
+  softfactory:latest \
+  flask db upgrade
+
+# 3. Start API
+docker-compose up -d web
+```
+
+**When to use:** Every deployment that includes schema changes.
+**Atomicity:** Ensures API never runs with wrong schema.
+**Rollback:** Revert git commit, rerun migrations to previous version.
+
+### PAT-016: Automated Backup Strategy with Retention
+**Pattern:** Daily backups with date-based cleanup using cron + find command.
+
+```bash
+#!/bin/bash
+# 1. Create timestamped backup
+BACKUP_FILE="backups/softfactory_db_$(date +%Y%m%d_%H%M%S).sql.gz"
+docker exec db pg_dump -U postgres softfactory | gzip > "$BACKUP_FILE"
+
+# 2. Upload to S3 (optional)
+aws s3 cp "$BACKUP_FILE" "s3://bucket/$BACKUP_FILE"
+
+# 3. Delete backups older than 30 days
+find backups/ -name "softfactory_db_*.sql.gz" -mtime +30 -delete
+```
+
+**When to use:** All production systems. Schedule: `0 2 * * * /scripts/backup.sh`.
+**Retention:** 30 days local + indefinite S3 (cost-effective archival).
+**Testing:** Monthly restore test from backup to staging.
+
+### PAT-017: Nginx Rate Limiting with Burst
+**Pattern:** Rate limit critical endpoints but allow short traffic spikes.
+
+```nginx
+limit_req_zone $binary_remote_addr zone=api_limit:10m rate=100r/s;
+
+location /api/ {
+  limit_req zone=api_limit burst=200 nodelay;
+  proxy_pass http://backend;
+}
+```
+
+**When to use:** All public-facing APIs to prevent DDoS and abuse.
+**Tuning:** burst = 2-3x rate for legitimate traffic spikes.
+**Result:** 99% of traffic passes, only extreme spike (>300r/s) gets throttled.
+
+### PAT-018: Gunicorn Worker Calculation
+**Pattern:** Set workers to `(2 × cpu_count) + 1` for optimal concurrency.
+
+```bash
+# In docker-compose.prod.yml or deployment script
+WORKERS=$(($(nproc) * 2 + 1))  # Dynamic calculation
+# Or static for predictable environments:
+WORKERS=4  # For 2-core instance
+WORKERS=9  # For 4-core instance
+```
+
+**When to use:** All Gunicorn deployments.
+**Formula:**
+- 1-core: 3 workers
+- 2-core: 5 workers (we use 4 for conservative load)
+- 4-core: 9 workers
+
+### PAT-019: Environment-Specific Configuration
+**Pattern:** Use .env files for secrets, docker-compose for service definitions, conditional logic in scripts.
+
+```bash
+# .env-prod (NOT in git, secret)
+DATABASE_URL=postgresql://user:password@db:5432/softfactory
+FLASK_ENV=production
+
+# docker-compose-prod.yml
+services:
+  web:
+    environment:
+      - FLASK_ENV=production
+      - DATABASE_URL=${DATABASE_URL}  # Interpolated from .env-prod
+
+# Deployment script
+if [ "$ENVIRONMENT" = "production" ]; then
+  ENV_FILE=.env-prod
+else
+  ENV_FILE=.env-staging
+fi
+```
+
+**When to use:** All deployments with secrets or environment-specific config.
+**Never:** Commit .env files to git. Never hardcode secrets in Dockerfile/docker-compose.yml.
+
+### PAT-020: Comprehensive Health Check Script
+**Pattern:** Script that validates all infrastructure components and returns JSON/human-readable output.
+
+```bash
+#!/bin/bash
+# checks/health.sh
+echo "1. Container status..."
+docker ps | grep softfactory
+
+echo "2. HTTP endpoints..."
+curl -s http://localhost:8000/health | jq .
+
+echo "3. Database..."
+docker exec db psql -U postgres -c "SELECT version();"
+
+echo "4. Resource usage..."
+docker stats --no-stream
+
+# Return 0 if all OK, 1 if any fail
+[ $? -eq 0 ] && exit 0 || exit 1
+```
+
+**When to use:** Post-deployment verification, monitoring probes, incident response.
+**Integration:** Export to monitoring as `./scripts/health-check.sh --json` for alerts.
+

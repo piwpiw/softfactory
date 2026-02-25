@@ -1,0 +1,175 @@
+version: '3.8'
+
+# SoftFactory Production Stack
+# Services: Flask API, PostgreSQL, Redis, Nginx, Prometheus
+# Usage: docker-compose -f docker-compose-prod.yml up -d
+
+services:
+
+  # ============ NGINX REVERSE PROXY ============
+  nginx:
+    image: nginx:1.25-alpine
+    container_name: softfactory-nginx
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+      - ./nginx/cache:/var/cache/nginx
+    networks:
+      - softfactory
+    depends_on:
+      - web
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    environment:
+      - TZ=UTC
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # ============ FLASK API ============
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+    container_name: softfactory-api
+    restart: always
+    expose:
+      - "8000"
+    environment:
+      - FLASK_ENV=production
+      - DATABASE_URL=postgresql://${DB_USER:-postgres}:${DB_PASSWORD:-securepass}@db:5432/${DB_NAME:-softfactory}
+      - REDIS_URL=redis://redis:6379/0
+      - FLASK_LOG_LEVEL=info
+      - LOG_DIR=/app/logs
+      - WORKERS=4
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - softfactory
+    volumes:
+      - ./logs:/app/logs
+      - ./platform.db:/app/platform.db:ro
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+    # Performance tuning
+    cpu_shares: 1024
+    mem_limit: 512m
+    memswap_limit: 768m
+
+  # ============ POSTGRESQL DATABASE ============
+  db:
+    image: postgres:15-alpine
+    container_name: softfactory-db
+    restart: always
+    environment:
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-securepass}
+      POSTGRES_DB: ${DB_NAME:-softfactory}
+      # Performance tuning
+      POSTGRES_INITDB_ARGS: -c shared_buffers=256MB -c effective_cache_size=1GB -c max_connections=100
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+      - ./scripts/backup:/backup
+    networks:
+      - softfactory
+    ports:
+      - "127.0.0.1:5432:5432"  # Only accessible from localhost
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # ============ REDIS CACHE ============
+  redis:
+    image: redis:7-alpine
+    container_name: softfactory-redis
+    restart: always
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-redispass}
+    volumes:
+      - redis_data:/data
+    networks:
+      - softfactory
+    ports:
+      - "127.0.0.1:6379:6379"  # Only accessible from localhost
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "2"
+    sysctls:
+      - net.core.somaxconn=1024
+
+  # ============ PROMETHEUS METRICS ============
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: softfactory-prometheus
+    restart: always
+    ports:
+      - "127.0.0.1:9090:9090"
+    volumes:
+      - ./orchestrator/prometheus-config.yml:/etc/prometheus/prometheus.yml:ro
+      - ./orchestrator/alert-rules.yml:/etc/prometheus/alert-rules.yml:ro
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=30d'
+    networks:
+      - softfactory
+    depends_on:
+      - web
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:9090"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "2"
+
+networks:
+  softfactory:
+    driver: bridge
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  prometheus_data:
+    driver: local
