@@ -17,6 +17,10 @@ class User(db.Model):
     role = db.Column(db.String(20), default='user')  # 'user' or 'admin'
     is_active = db.Column(db.Boolean, default=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    # Security fields (added 2026-02-25)
+    is_locked = db.Column(db.Boolean, default=False)  # Account locked due to failed login attempts
+    locked_until = db.Column(db.DateTime, nullable=True)  # When lockout expires
+    password_changed_at = db.Column(db.DateTime, default=datetime.utcnow)  # Track password age
 
     subscriptions = db.relationship('Subscription', backref='user', lazy=True, cascade='all, delete-orphan')
     payments = db.relationship('Payment', backref='user', lazy=True, cascade='all, delete-orphan')
@@ -412,6 +416,29 @@ class CrawlerLog(db.Model):
             'listing_count': self.listing_count,
             'last_crawl_time': self.last_crawl_time.isoformat(),
             'status': self.status
+        }
+
+
+# ============ SECURITY ============
+
+class LoginAttempt(db.Model):
+    """Track login attempts for rate limiting and security auditing"""
+    __tablename__ = 'login_attempts'
+
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(120), nullable=False, index=True)
+    ip_address = db.Column(db.String(45), nullable=True)  # Supports IPv4 and IPv6
+    success = db.Column(db.Boolean, default=False)  # True if login succeeded, False if failed
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow, index=True)
+    user_agent = db.Column(db.String(255), nullable=True)
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'email': self.email,
+            'ip_address': self.ip_address,
+            'success': self.success,
+            'timestamp': self.timestamp.isoformat(),
         }
 
 

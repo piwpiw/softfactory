@@ -5,6 +5,11 @@ import jwt
 import os
 from functools import wraps
 from .models import db, User, Subscription, Product
+from .password_validator import PasswordValidator
+from .security_middleware import (
+    LoginAttemptTracker, SecurityEventLogger, require_rate_limit,
+    log_security_event_decorator, sanitize_login_response
+)
 
 auth_bp = Blueprint('auth', __name__, url_prefix='/api/auth')
 
@@ -48,7 +53,7 @@ def verify_token(token):
 
 
 def require_auth(f):
-    """Decorator to require authentication"""
+    """Decorator to require authentication (SECURITY: Demo token removed in v2.0)"""
     @wraps(f)
     def decorated(*args, **kwargs):
         auth_header = request.headers.get('Authorization', '')
@@ -57,27 +62,8 @@ def require_auth(f):
 
         token = auth_header[7:]
 
-        # Demo mode support
-        if token == 'demo_token':
-            # Set mock user data for demo mode
-            g.user_id = 1  # Demo user ID
-            g.user_role = 'user'
-            class DemoUser:
-                id = 1
-                email = 'demo@softfactory.com'
-                name = 'Demo User'
-                role = 'user'
-                is_active = True
-                def to_dict(self):
-                    return {
-                        'id': 1,
-                        'email': 'demo@softfactory.com',
-                        'name': 'Demo User',
-                        'role': 'user'
-                    }
-            g.user = DemoUser()
-            return f(*args, **kwargs)
-
+        # SECURITY FIX: Removed hardcoded demo token bypass (CVSS 9.8)
+        # All authentication now goes through JWT verification
         payload = verify_token(token)
 
         if not payload or payload.get('type') != 'access':
@@ -113,10 +99,8 @@ def require_subscription(product_slug):
     def decorator(f):
         @wraps(f)
         def decorated(*args, **kwargs):
-            # Demo mode: allow all subscriptions for demo users
-            if g.user_id == 1:  # Demo user ID
-                return f(*args, **kwargs)
-
+            # SECURITY FIX: Removed demo user bypass (CVSS 9.8)
+            # All subscription checks now verified against database
             product = Product.query.filter_by(slug=product_slug).first()
             if not product:
                 return jsonify({'error': 'Product not found'}), 404
@@ -140,23 +124,36 @@ def require_subscription(product_slug):
 # ============ ENDPOINTS ============
 
 @auth_bp.route('/register', methods=['POST'])
+@require_rate_limit
+@log_security_event_decorator('USER_REGISTRATION')
 def register():
-    """Register new user"""
+    """Register new user with password validation"""
     data = request.get_json()
 
     if not data or not data.get('email') or not data.get('password') or not data.get('name'):
         return jsonify({'error': 'Missing required fields'}), 400
+
+    # SECURITY FIX: Enforce password policy (CVSS 8.6)
+    password_valid, error_msg = PasswordValidator.validate(data['password'])
+    if not password_valid:
+        return jsonify({
+            'error': error_msg,
+            'requirements': PasswordValidator.get_requirements()
+        }), 400
 
     if User.query.filter_by(email=data['email']).first():
         return jsonify({'error': 'Email already registered'}), 400
 
     user = User(email=data['email'], name=data['name'])
     user.set_password(data['password'])
+    user.password_changed_at = datetime.utcnow()
 
     db.session.add(user)
     db.session.commit()
 
     access_token, refresh_token = create_tokens(user.id, user.role)
+
+    SecurityEventLogger.log_event('USER_REGISTERED', user_id=user.id, email=user.email)
 
     return jsonify({
         'access_token': access_token,
@@ -166,27 +163,66 @@ def register():
 
 
 @auth_bp.route('/login', methods=['POST'])
+@require_rate_limit
 def login():
-    """Login user"""
+    """Login user with rate limiting and account lockout"""
     data = request.get_json()
 
     if not data or not data.get('email') or not data.get('password'):
         return jsonify({'error': 'Missing email or password'}), 400
 
-    user = User.query.filter_by(email=data['email']).first()
+    email = data['email']
+    user = User.query.filter_by(email=email).first()
 
+    # SECURITY FIX: Account lockout mechanism (CVSS 7.5)
+    if user and LoginAttemptTracker.is_account_locked(user):
+        SecurityEventLogger.log_event('LOGIN_ATTEMPT_LOCKED_ACCOUNT', email=email)
+        minutes_left = (user.locked_until - datetime.utcnow()).seconds // 60
+        return jsonify({
+            'error': f'Account locked due to too many failed attempts. Try again in {minutes_left} minutes.',
+            'error_code': 'ACCOUNT_LOCKED'
+        }), 403
+
+    # Authenticate user
     if not user or not user.check_password(data['password']):
-        return jsonify({'error': 'Invalid email or password'}), 401
+        # Record failed attempt
+        LoginAttemptTracker.record_attempt(email, success=False)
+
+        failed_count = LoginAttemptTracker.get_failed_attempt_count(email, minutes=1)
+        remaining = max(0, 5 - failed_count)
+
+        if user and failed_count >= 5:
+            # SECURITY FIX: Lock account after 5 failures (CVSS 7.5)
+            LoginAttemptTracker.lock_account(user, duration_minutes=15)
+            return jsonify({
+                'error': 'Account locked due to too many failed login attempts. Try again in 15 minutes.',
+                'error_code': 'ACCOUNT_LOCKED'
+            }), 403
+
+        SecurityEventLogger.log_event('LOGIN_FAILED', email=email, details={'remaining_attempts': remaining})
+        return jsonify({
+            'error': 'Invalid email or password',
+            'attempts_remaining': remaining
+        }), 401
 
     if not user.is_active:
         return jsonify({'error': 'Account is inactive'}), 403
 
+    # Successful login - clear failed attempts
+    LoginAttemptTracker.record_attempt(email, success=True)
+    LoginAttemptTracker.clear_attempts(email)
+
     access_token, refresh_token = create_tokens(user.id, user.role)
+
+    SecurityEventLogger.log_event('LOGIN_SUCCESS', user_id=user.id, email=email)
+
+    user_dict = user.to_dict()
+    user_dict = sanitize_login_response(user_dict)
 
     return jsonify({
         'access_token': access_token,
         'refresh_token': refresh_token,
-        'user': user.to_dict()
+        'user': user_dict
     }), 200
 
 

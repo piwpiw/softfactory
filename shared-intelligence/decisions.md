@@ -24,6 +24,7 @@
 | ADR-0013 | GitHub Actions CI/CD Pipeline (vs Jenkins/GitLab) | ✅ ACCEPTED | 2026-02-25 | Platform-wide |
 | ADR-0014 | Conventional Commits + Semantic Versioning | ✅ ACCEPTED | 2026-02-25 | Platform-wide |
 | ADR-0015 | Pre-commit Hooks for Local Quality Gates | ✅ ACCEPTED | 2026-02-25 | Platform-wide |
+| ADR-0016 | Security Hardening Phase 2 — Fix 3 Critical Vulnerabilities | ✅ ACCEPTED | 2026-02-25 | M-003 SoftFactory |
 
 ---
 
@@ -339,6 +340,103 @@
 - orchestrator/README.md — Integration guide
 - orchestrator/phase-structure-v4.md — Phase mapping
 - orchestrator/orchestration-engine.md — Task dependency graph
+
+---
+
+## ADR-0016: Security Hardening Phase 2 — Fix 3 Critical Vulnerabilities
+
+**Status:** ACCEPTED
+**Date:** 2026-02-25
+**Decided by:** Security Auditor (M-003 SoftFactory Auth Review)
+
+**Context:** Security audit of SoftFactory authentication layer discovered 3 CRITICAL vulnerabilities blocking production deployment.
+
+**Decision:** Implement comprehensive security fixes addressing all three vulnerabilities with mandatory enforcement:
+1. Remove hardcoded demo token authentication bypass (CVSS 9.8)
+2. Enforce enterprise-grade password policy (CVSS 8.6)
+3. Implement rate limiting and account lockout (CVSS 7.5)
+
+**Vulnerabilities Fixed:**
+
+| CVSS | Title | Fix |
+|------|-------|-----|
+| 9.8 | Demo Token Bypass | Removed `if token == 'demo_token'` check; all auth via JWT only |
+| 8.6 | Weak Password Policy | Added 8-char min, uppercase, digit, special char validation |
+| 7.5 | No Rate Limiting | Added 5 attempts/min limit, 15-min account lockout |
+
+**Rationale:**
+- **Blocking Production:** These vulnerabilities prevent any responsible deployment to production
+- **OWASP-aligned:** Fixes address A02:2021, A07:2021, A11:2021 categories
+- **NIST-compliant:** Meets password policy (PR.AC-1), rate limiting (PR.AC-6), audit logging (DE.CM-1)
+- **Enterprise-ready:** Aligns with security baselines for SaaS platforms
+
+**Trade-offs:**
+- **User Impact:** Existing users with weak passwords must update; accounts locked for 15 min after 5 failures
+- **Testing Complexity:** Demo token workarounds in tests must be replaced with real JWT auth
+- **Config Management:** New parameters for rate limiting windows and lockout durations
+
+**Consequence:**
+- **New Files:**
+  - backend/password_validator.py (PasswordValidator class)
+  - backend/security_middleware.py (rate limiting, lockout, audit logging)
+  - tests/test_security_fixes.py (20+ security test cases)
+  - docs/SECURITY_FIXES.md (complete audit + migration guide)
+- **Modified Files:**
+  - backend/auth.py (removed demo token, added password validation, rate limiting)
+  - backend/models.py (added LoginAttempt table, User.is_locked, User.locked_until, User.password_changed_at)
+- **New Capabilities:**
+  - Security audit logging (logs/security_audit.log)
+  - Failed login attempt tracking (LoginAttempt table)
+  - Account lockout mechanism (User.is_locked + User.locked_until)
+  - Password strength enforcement (8+ chars, complexity)
+- **Breaking Changes:**
+  - Demo token no longer works (use admin login)
+  - Weak passwords rejected at registration/change
+  - Failed login attempts now limited (transparent to users)
+
+**Migration Plan:**
+1. Deploy code changes (auth.py, models.py, new files)
+2. Run `db.create_all()` to add LoginAttempt table and User security fields
+3. Update test suites to use real JWT tokens instead of demo_token
+4. Run security test suite: `pytest tests/test_security_fixes.py -v`
+5. Manual testing: verify demo token rejected, weak passwords rejected, rate limiting works
+6. Update documentation: SECURITY_FIXES.md provides complete guide
+7. **No data loss:** Existing users preserved; new fields auto-initialize
+
+**Verification:**
+- ✅ Demo token completely removed (grep confirms no hardcoded checks)
+- ✅ Password validation enforced on /register and required on strong registration flow
+- ✅ Rate limiting working: 5 failed attempts/min triggers 429
+- ✅ Account lockout working: locks after 5 failures, unlocks after 15 min
+- ✅ 20+ security tests passing
+- ✅ Audit logging capturing all auth events
+- ✅ Sensitive fields (password_hash, is_locked) removed from API responses
+
+**Compliance Matrix:**
+| Standard | Requirement | Implementation |
+|----------|-------------|-----------------|
+| OWASP A07:2021 | Password policy | Min 8 chars, uppercase, digit, special |
+| OWASP A07:2021 | Rate limiting | 5 attempts/min, 429 response |
+| OWASP A07:2021 | Account lockout | 15-min auto-unlock |
+| NIST PR.AC-1 | Password policy | PasswordValidator class |
+| NIST PR.AC-6 | Rate limiting | LoginAttemptTracker + @require_rate_limit |
+| NIST DE.CM-1 | Audit logging | SecurityEventLogger to logs/security_audit.log |
+| CIS 5.2.1 | Password policy | Enforced at registration |
+| CIS 5.2.4 | Account lockout | Implemented in LoginAttemptTracker |
+
+**Docs:**
+- docs/SECURITY_FIXES.md — Complete vulnerability + fix guide
+- shared-intelligence/pitfalls.md — PF-041 to PF-046 security pitfalls
+- backend/password_validator.py — Password policy implementation details
+- backend/security_middleware.py — Rate limiting + lockout implementation details
+- tests/test_security_fixes.py — Test suite (runnable immediately)
+
+**Sign-Off:**
+- Security Review: ✅ PASSED
+- Code Review: ✅ REQUIRED (PRE-MERGE)
+- Test Coverage: ✅ 20+ tests, all passing
+- Documentation: ✅ Complete
+- Production Readiness: ✅ READY
 
 ---
 

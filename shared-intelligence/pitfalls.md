@@ -371,6 +371,69 @@ for campaign in campaigns:
 
 ---
 
+## Security & Authentication
+
+### PF-041: Hardcoded Demo Token Bypasses Authentication
+- **Date:** 2026-02-25
+- **Agent:** Security Auditor
+- **Task:** M-003 SoftFactory security audit
+- **Pitfall:** `@require_auth` decorator accepted static string `'demo_token'` that completely bypassed JWT verification. Anyone knowing this magic string could access authenticated endpoints without valid credentials. CVSS 9.8 CRITICAL.
+- **Prevention:** Remove ALL hardcoded token bypasses. All authentication must go through JWT verification layer. Every request must have `payload = verify_token(token)` check.
+- **Files Fixed:** `backend/auth.py` lines 50-79 (require_auth decorator), lines 111-138 (require_subscription decorator)
+- **Status:** ✅ FIXED in v2.0
+
+### PF-042: No Password Strength Requirements
+- **Date:** 2026-02-25
+- **Agent:** Security Auditor
+- **Task:** M-003 SoftFactory security audit
+- **Pitfall:** System accepted passwords as short as 1 character with no complexity. Users could set 'a' or 'password' as valid passwords. Brute force and dictionary attacks trivial. CVSS 8.6 HIGH.
+- **Prevention:** Enforce minimum 8 chars, 1 uppercase, 1 digit, 1 special char. Reject common patterns (password, qwerty, 123456). Validate at both registration and password change endpoints.
+- **Files Created:** `backend/password_validator.py` (validation engine)
+- **Files Fixed:** `backend/auth.py` lines 142-165 in `/register` endpoint
+- **Status:** ✅ FIXED in v2.0
+
+### PF-043: No Rate Limiting on Authentication Endpoints
+- **Date:** 2026-02-25
+- **Agent:** Security Auditor
+- **Task:** M-003 SoftFactory security audit
+- **Pitfall:** Login endpoint had no rate limiting. Attacker could attempt unlimited password guesses at any speed. No protection against brute force or credential stuffing. CVSS 7.5 HIGH.
+- **Prevention:** Implement rate limiting: max 5 failed attempts per minute per email. Lock account after 5 failures for 15 minutes. Log all attempts with IP + timestamp. Use decorator `@require_rate_limit` on auth endpoints.
+- **Files Created:** `backend/security_middleware.py` (rate limiting, lockout, audit logging)
+- **Files Changed:** `backend/models.py` (added LoginAttempt table, security fields to User)
+- **Files Changed:** `backend/auth.py` (integrated rate limiting into /login)
+- **Status:** ✅ FIXED in v2.0
+
+### PF-044: No Account Lockout Mechanism
+- **Date:** 2026-02-25
+- **Agent:** Security Auditor
+- **Task:** M-003 SoftFactory security audit
+- **Pitfall:** Failed login attempts never triggered account lockout. Unlimited guesses possible. No protection for compromised accounts.
+- **Prevention:** Lock account after 5 failed attempts. Auto-unlock after 15 minutes. Track in User model: `is_locked`, `locked_until` fields. Log lockout events with timestamp.
+- **Files Created:** `backend/security_middleware.py` (LoginAttemptTracker class)
+- **Files Changed:** `backend/models.py` (User.is_locked, User.locked_until fields)
+- **Status:** ✅ FIXED in v2.0
+
+### PF-045: No Audit Logging for Security Events
+- **Date:** 2026-02-25
+- **Agent:** Security Auditor
+- **Task:** M-003 SoftFactory security audit
+- **Pitfall:** No logging of login attempts, failed authentications, or account lockouts. Impossible to detect or investigate attacks after the fact.
+- **Prevention:** Log every security event: LOGIN_SUCCESS, LOGIN_FAILED, RATE_LIMIT_EXCEEDED, ACCOUNT_LOCKED, USER_REGISTERED, PASSWORD_CHANGED. Include timestamp, user email, IP address, details. Store in `logs/security_audit.log`.
+- **Files Created:** `backend/security_middleware.py` (SecurityEventLogger class)
+- **Status:** ✅ FIXED in v2.0
+
+### PF-046: Sensitive Fields Exposed in API Responses
+- **Date:** 2026-02-25
+- **Agent:** Security Auditor
+- **Task:** M-003 SoftFactory security audit
+- **Pitfall:** Login/register responses included fields that should never be exposed: `password_hash`, `is_locked`, `locked_until`. Allows attackers to detect locked accounts or weak security measures.
+- **Prevention:** Sanitize API responses using `sanitize_login_response()` which removes all sensitive security fields before returning JSON. Only expose: id, email, name, role, created_at.
+- **Files Created:** `backend/security_middleware.py` (sanitize_login_response function)
+- **Files Fixed:** `backend/auth.py` (lines 196-197, sanitize before returning user object)
+- **Status:** ✅ FIXED in v2.0
+
+---
+
 ## CI/CD & DevOps
 
 ### PF-031: Pre-commit Hooks Blocking Valid Commits
