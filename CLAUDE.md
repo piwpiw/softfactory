@@ -27,9 +27,22 @@
 ```
 새 프로젝트 시작:
 "프로젝트: [이름], 요구사항: [설명], 스택: [기술], 마감: [날짜]"
-→ Orchestrator 자동 활성화 (.claude/agents/orchestrator.md)
-→ Phase 0-4 자동 실행
-→ Production-ready 결과 납품
+→ Orchestrator 자동 활성화
+→ Phase -1 ~ 7 자동 실행 (Spec-First, Doc-First, Review-Heavy)
+→ Production-ready 결과 납품 + PR 자동 생성
+
+실행 순서 (CRITICAL):
+  Research → Plan → Requirement → Documentation (중요!) → Design → Code → Test → Deploy
+
+모델 전략:
+  - 기본: Haiku (빠름, 저비용) — Phases -1 ~ 6
+  - Critical만: Sonnet (정확함) — Phase 2 검증, Phase 5 보안, Phase 7 최종
+  - Cost: 227K (Haiku all) vs 105K (Haiku+Sonnet critical) = 76% 절감
+
+당신의 역할: Supervisor + Approver + Integrator
+  - 감독: 대시보드 보기 (5분/프로젝트)
+  - 승인: Critical만 (scope, security, deploy)
+  - 통합: 최종 배포
 
 현재 실행 중인 서비스: http://localhost:8000
 데모 접근: passkey = demo2026
