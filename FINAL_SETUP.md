@@ -45,7 +45,7 @@ GitHub Push → GitHub Actions → Railway Deploy
 
 ### Environment Variables (Railroad 대시보드)
 ```
-ANTHROPIC_API_KEY = sk-ant-api03-YOUR_KEY
+ANTHROPIC_API_KEY = YOUR_ANTHROPIC_API_KEY
 TELEGRAM_BOT_TOKEN = 8461725251:AAE...
 TELEGRAM_CHAT_ID = 7910169750
 DATABASE_URL = (자동 연동)

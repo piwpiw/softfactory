@@ -107,7 +107,7 @@ import os, asyncio, json
 ### 1.6 Bot Credentials
 
 ```python
-BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "8461725251:AAELKRbZkpa3u6WK24q4k-RGkzedHxjTLiM")
+BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "YOUR_TOKEN_HERE")
 CHAT_ID = int(os.getenv("TELEGRAM_CHAT_ID", "7910169750"))
 ```
 

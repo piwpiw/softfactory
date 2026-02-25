@@ -140,7 +140,7 @@ Parallel Track:
 - **Status:** ✅ ACTIVE (Operational)
 - **Endpoint:** https://jarvis-production.up.railway.app/
 - **Features:** /pages, /status, /deploy, /mission, /report, /help
-- **Token:** 8461725251:AAELKRbZkpa3u6WK24q4k-RGkzedHxjTLiM
+- **Token:** TELEGRAM_BOT_TOKEN_REDACTED
 - **Uptime:** 24/7
 
 ---
@@ -157,14 +157,14 @@ LOG_LEVEL=WARNING
 
 ### JARVIS + Telegram
 ```env
-TELEGRAM_BOT_TOKEN=8461725251:AAELKRbZkpa3u6WK24q4k-RGkzedHxjTLiM
+TELEGRAM_BOT_TOKEN=TELEGRAM_BOT_TOKEN_REDACTED
 TELEGRAM_CHAT_ID=7910169750
 PM2_APP_NAME=sonol-bot
 ```
 
 ### SoftFactory Platform
 ```env
-PLATFORM_SECRET_KEY=softfactory-dev-secret-key-2026
+PLATFORM_SECRET_KEY=PLATFORM_SECRET_KEY_REDACTED
 PLATFORM_URL=http://localhost:8000
 STRIPE_SECRET_KEY=sk_test_...
 STRIPE_PUBLISHABLE_KEY=pk_test_...

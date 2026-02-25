@@ -248,7 +248,7 @@ start_platform.py (진입점)
 
 ### 🚀 배포 정보
 - **플랫폼:** Railway (production)
-- **토큰:** 8461725251:AAELKRbZkpa3u6WK24q4k-RGkzedHxjTLiM
+- **토큰:** TELEGRAM_BOT_TOKEN_REDACTED
 - **URL:** https://jarvis-production.up.railway.app/
 - **가동률:** 100% (2026-02-22부터)
 
