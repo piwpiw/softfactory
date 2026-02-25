@@ -19,7 +19,7 @@ isort==5.13.2
 mypy==1.13.0
 
 # Security Scanning
-bandit==1.8.0
+bandit==1.8.6
 safety==3.2.11
 
 # Type Stubs
