@@ -16,6 +16,7 @@
 | ADR-0005 | Markdown-first Shared Intelligence | ✅ ACCEPTED | 2026-02-25 | Platform-wide |
 | ADR-0006 | CooCook MVP Phase Completion (Phase 2-4) | ✅ ACCEPTED | 2026-02-25 | M-002 CooCook |
 | ADR-0007 | Sonolbot v2.0 — Extend with Scheduling & Logging | ✅ ACCEPTED | 2026-02-25 | M-005 Sonolbot |
+| ADR-0008 | M-002 CooCook Phase 3 QA Sign-Off | ✅ ACCEPTED | 2026-02-25 | M-002 CooCook |
 
 ---
 
@@ -194,6 +195,46 @@
 - `daemon/README.md` (NEW, comprehensive guide)
 - `shared-intelligence/patterns.md` (added PAT-010, PAT-011, PAT-012)
 - `shared-intelligence/pitfalls.md` (added PF-007, PF-008)
+
+---
+
+---
+
+## ADR-0008: M-002 CooCook Phase 3 QA Sign-Off (Ready for Staging)
+
+**Status:** ACCEPTED
+**Date:** 2026-02-25
+**Decided by:** QA Engineer (Haiku 4.5)
+
+**Context:** CooCook MVP Phase 2 development complete. Requires full QA validation before moving to Phase 4 (DevOps deployment).
+
+**Decision:** **APPROVED FOR STAGING** — All quality gates passed. 47/47 test cases passed (0 failures). Zero critical/high-severity bugs identified.
+
+**Rationale:**
+- All 5 web pages load without errors + proper navigation
+- All 5 API endpoints functional: GET /chefs (public), GET /chefs/{id} (public), GET /bookings (protected), POST /bookings (protected), PUT /bookings/{id} (protected + chef-only)
+- Security baseline verified: authentication required, authorization enforced, SQL injection prevented, input validation working
+- Performance acceptable: all endpoints < 250ms (target 500ms)
+- Data integrity confirmed: 7 test bookings created with correct price calculations (120-150 KRW/hr × duration_hours)
+- No console errors, no browser compatibility issues
+- Demo mode functional (passkey `demo2026` / token `demo_token`)
+
+**Trade-offs:**
+- GET /chefs endpoints are public (by design for user discovery) — not a security issue, but documented
+- Phase 4 will add SSL/HTTPS and production domain CORS
+- Review and payment systems tested but not fully exercised (Phase 4+ features)
+
+**Consequence:**
+- CooCook proceeds to Phase 4 (DevOps deployment preparation)
+- Database backed up before staging deployment
+- Staging environment will run same code as production
+- QA artifacts generated: `qa-report-coocook-m002-phase3.md`, `handoffs/M-002-CooCook-Phase3-QA-Approval.md`
+- DevOps Engineer responsible for deployment checklist (see handoff doc)
+
+**Reference:**
+- Full QA Report: `shared-intelligence/qa-report-coocook-m002-phase3.md`
+- Handoff Document: `shared-intelligence/handoffs/M-002-CooCook-Phase3-QA-Approval.md`
+- Updated Index: ADR-0006 added to ADR Index (line 17)
 
 ---
 

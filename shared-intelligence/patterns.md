@@ -84,6 +84,53 @@ app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL
 
 ---
 
+## QA Testing Patterns
+
+### PAT-007: API Response Validation Checklist
+**Pattern:** Comprehensive API endpoint validation (from M-002 Phase 3 QA)
+```
+For each endpoint:
+1. Response time: Measure 3 runs, average < 500ms target
+2. JSON validity: Validate all responses parse as JSON
+3. Required fields: Check all expected fields present
+4. Data types: Verify integers, floats, dates format correctly
+5. Pagination: Test page/per_page params if applicable
+6. Error codes: Test 400/401/403/404 cases
+7. Auth headers: Test with/without Bearer token
+8. Edge cases: Test invalid IDs, past dates, missing fields
+```
+**Files:** Implementation → QA reports in `shared-intelligence/qa-report-*.md`
+
+### PAT-008: Price Calculation Verification
+**Pattern:** For booking/transaction systems, always validate calculation
+```python
+# Verify all bookings match: duration_hours × price_per_session
+# Test cases from M-002 QA:
+# ✓ Chef Park: 3h × 120 = 360
+# ✓ Chef Marco: 2h × 130 = 260
+# ✓ Chef Tanaka: 4h × 150 = 600
+# Sample query:
+# SELECT b.id, b.duration_hours, c.price_per_session, b.total_price FROM booking b
+# JOIN chef c ON b.chef_id = c.id
+```
+**When to use:** Any monetary transaction endpoint
+**Prevention:** Prevents billing errors, trust issues
+
+### PAT-009: OWASP Security Check Template
+**Pattern:** Minimal security baseline for QA sign-off
+```
+1. Authentication: Test missing auth header → 401
+2. Authorization: Test unauthorized user → 403
+3. SQL Injection: Test with ' OR '1'='1 in filter params
+4. Input Validation: Test past dates, invalid IDs, missing fields
+5. Data Exposure: Verify no passwords/secrets in responses
+6. Rate Limiting: Verify no repeated endpoint spam (if applicable)
+```
+**Result:** All checks must PASS for production sign-off
+**Reference:** M-002 Phase 3 QA Report (100% passed)
+
+---
+
 ## Agent Coordination Patterns
 
 ### PAT-006: Inter-Agent Message Format (Token-Efficient)

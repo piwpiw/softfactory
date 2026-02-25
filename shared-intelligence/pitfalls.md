@@ -74,6 +74,46 @@
 - **Prevention:** Create parent directory with `mkdir(parents=True, exist_ok=True)` before writing. Always wrap in try/except to avoid crashing message handler.
 - **Files Fixed:** `daemon/daemon_service.py` method `_log_command()` (line ~870)
 
+### PF-009: GET Endpoints Exposing Data Without Auth
+- **Date:** 2026-02-25
+- **Agent:** QA Engineer (Phase 3)
+- **Task:** M-002 CooCook QA — API security review
+- **Pitfall:** `GET /api/coocook/chefs` and `GET /api/coocook/chefs/{id}` lack `@require_auth` decorator. While intentional for public discovery, this is a design decision that must be documented. Risk: prevents future permission changes.
+- **Prevention:** Document public endpoints explicitly in API spec. Mark clearly: "This endpoint intentionally public for user discovery." For protected variants, use separate endpoints (e.g., `/api/coocook/chefs-premium`).
+- **Status:** ✅ By Design (not a bug, but document it)
+- **Reference:** M-002 Phase 3 QA Report, Security section
+
+### PF-010: Response Time Benchmarking Must Include Multiple Runs
+- **Date:** 2026-02-25
+- **Agent:** QA Engineer (Phase 3)
+- **Task:** M-002 CooCook QA — Performance validation
+- **Pitfall:** Single API response time test can be anomalous due to caching, system load, etc. 220ms on first run, 180ms on third run due to warm cache.
+- **Prevention:** Always measure endpoints 3+ times and report average. Report min/max range. Useful for identifying cache behavior.
+- **Example:** GET /chefs: 214ms, 221ms, 218ms → Average 218ms (variance ±3ms indicates stable performance)
+
+### PF-011: JSON Path Extraction with grep Fragile on Complex Responses
+- **Date:** 2026-02-25
+- **Agent:** QA Engineer (Phase 3)
+- **Task:** M-002 CooCook QA — Test automation
+- **Pitfall:** Using `curl | grep '"id":[0-9]*'` to extract booking ID from JSON response. Works for simple responses but fails when response includes multiple objects. Returns multiple matches, making ID extraction unreliable.
+- **Prevention:** Use proper JSON parser (jq, python -m json.tool) when available. If scripting QA tests, prefer API client libraries over shell curl + grep.
+- **Workaround:** For bash, use Python: `python3 -c "import json, sys; print(json.load(sys.stdin)['id'])"`
+
+### PF-012: Database Verification Without Query Tool Requires Python Fallback
+- **Date:** 2026-02-25
+- **Agent:** QA Engineer (Phase 3)
+- **Task:** M-002 CooCook QA — Data integrity check
+- **Pitfall:** Attempted `sqlite3` CLI tool for database validation but CLI not in PATH on test system. Had to fall back to Python `sqlite3` library.
+- **Prevention:** In QA scripts, prefer Python scripting over CLI tools for database verification. More portable across environments.
+- **Script Pattern:**
+  ```python
+  import sqlite3
+  conn = sqlite3.connect("D:/Project/platform.db")
+  cursor = conn.cursor()
+  cursor.execute("SELECT COUNT(*) FROM booking WHERE total_price > 0")
+  print(f"Valid bookings: {cursor.fetchone()[0]}")
+  ```
+
 ---
 
 ## Template for New Entries
