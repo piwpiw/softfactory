@@ -18,7 +18,7 @@ stripe==5.4.0
 APScheduler==3.10.4
 
 # Media Processing (SNS Auto v2.0)
-Pillow==10.0.0
+Pillow==11.3.0
 
 # Web Scraping (Review Scrapers)
 beautifulsoup4==4.12.2
