@@ -1,2 +1,0 @@
-root: D:\Project\nvm
-path: D:\Project\nvm4w\nodejs
