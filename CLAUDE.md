@@ -674,10 +674,185 @@ DOMAIN=yourdomain.com
 
 ---
 
+---
+
+## 🎮 **SECTION 18: 당신의 역할 정의 (YOU = Supervisor + Approver + Integrator)**
+
+> **New (v3.1):** Orchestration v2.0과 함께 당신의 역할을 최소화하고 시스템 자동화를 극대화합니다.
+
+### **당신이 해야 할 일 (3가지만)**
+
+```
+1️⃣  SUPERVISOR (감독)
+   ├─ 대시보드 보기: 실시간 프로젝트 진행도
+   ├─ 경고 받기: Critical alert 자동 통보
+   └─ 개입 필요 시: 만 요청
+
+2️⃣  APPROVER (승인)
+   ├─ Critical 결정만 승인 (scope 변경, 시간 연장)
+   ├─ 나머지는 자동: 기준 명확 → 자동 실행
+   └─ PR review: 최종 merge 승인만
+
+3️⃣  INTEGRATOR (통합)
+   ├─ 최종 테스트: QA 완료 후 smoke test
+   ├─ 배포 승인: Go/No-go 결정
+   └─ 모니터링: 배포 후 1시간 관찰
+```
+
+### **당신이 하지 말아야 할 일**
+
+```
+❌ 코드 작성 (에이전트가 함)
+❌ 테스트 작성 (QA Engineer가 함)
+❌ 설계 (Architect가 함)
+❌ 일상적 승인 (정책 자동화)
+❌ 병렬/순차 결정 (Smart orchestrator가 함)
+❌ Conflict 해결 (자동 merge 전략)
+```
+
+---
+
+## ⚙️ **SECTION 19: 자동화 정책 (Complete Autonomy)**
+
+### **정책 1: Token 폭탄 방지**
+
+```
+🎯 Hard Limit:
+├─ Per-session: 200K tokens (초과 시 즉시 STOP)
+├─ Per-project: Budget × 1.2 (경고 @ 110%, 중단 @ 120%)
+├─ Per-agent: Role-specific limit (DevLead < 50K, etc.)
+└─ Auto-action: 초과 시 자동 압축 또는 프로젝트 분할
+
+📊 Monitoring:
+├─ Real-time tracker (token-tracker.json)
+├─ Auto-alert @ 80%, 90%, 100%, 110% 지점
+├─ Auto-recover: Batch compression, context caching 자동 적용
+└─ You: 경고받기만 (수동 개입 불필요)
+```
+
+### **정책 2: Merge Hell 방지**
+
+```
+🔀 Branch Strategy (자동):
+├─ Per-project: feature/{project-id}/{date} 자동 생성
+├─ Per-agent: feature/{project}/{agent-role} 자동 분기
+├─ Conflict detection: Merge 전 자동 감지
+└─ Auto-resolve: 정책 기반 자동 해결
+   ├─ Schema changes: DB-last wins (migration safety)
+   ├─ API changes: API spec wins (contract first)
+   ├─ Config changes: User's local config wins
+   └─ Docs: Auto-merge (non-blocking)
+
+🚦 Merge Gate:
+├─ 조건 1: CI/CD 100% PASS
+├─ 조건 2: Code review (1 approval)
+├─ 조건 3: Test coverage >= 80%
+├─ 조건 4: Security scan 0 critical
+└─ Auto-merge: 모든 조건 충족 시 자동 merge (당신 승인 불필요)
+   └─ Exception: Production deploy는 당신 최종 승인 필수
+```
+
+### **정책 3: 병목 제거**
+
+```
+🚀 Bottleneck Detection (자동):
+├─ Task waiting > 5 min? → Auto-escalate to orchestrator
+├─ Agent blocked? → Auto-assign fallback agent
+├─ Dependency unmet? → Auto-reorder tasks
+├─ Resource exhausted? → Auto-queue & alert you
+
+⚡ Parallelization (스마트 자동):
+├─ Independent tasks → 자동 병렬화
+├─ Serial dependencies → 자동 감지 & 순차화
+├─ Smart batching → 유사 작업 묶음 (tokens 절감)
+└─ You: 모니터만 (개입 불필요)
+```
+
+### **정책 4: 선제적 판단 (Proactive)**
+
+```
+🧠 Auto-Decision Engine:
+├─ Risk detected? → Self-healing 시도
+├─ Healing 실패? → 당신에게 escalate with options
+├─ User input needed? → 2분 대기, 응답 없으면 default 선택
+├─ Anomaly? → Slack/Telegram alert (real-time)
+└─ Critical issue? → 자동 rollback (롤백 후 보고)
+
+📋 Decision Criteria (명확):
+├─ Scope change: User approval only
+├─ Timeline change: Auto-eval, 당신 승인
+├─ Feature cut: Auto-recommend, 당신 decision
+├─ Quality issue: Auto-fix if possible, else escalate
+└─ Security issue: 즉시 STOP, 당신 승인 전 proceed 금지
+```
+
+---
+
+## 🎯 **SECTION 20: 실행 체크리스트 (Orchestrator Auto-Checklist)**
+
+모든 프로젝트 실행 전 Orchestrator가 자동으로 확인:
+
+```
+[ ] 요구사항 명확한가?
+    → No? → 당신에게 2개 clarifying questions 제시
+    → Yes? → Continue
+
+[ ] 기술 스택 정의되었는가?
+    → No? → 기존 스택과 일치성 확인, default 제안
+    → Yes? → Continue
+
+[ ] 마감일 현실적인가?
+    → No? → 당신에게 "마감일 연장 또는 scope 축소" 선택 제시
+    → Yes? → Continue
+
+[ ] Token 예산 충분한가?
+    → No? → 자동 scope 축소 제안 또는 session split
+    → Yes? → Continue
+
+[ ] 코드/문서 기존에 있는가?
+    → Yes? → Phase -1 (분석) 자동 시작
+    → No? → Phase 0 (discovery) 자동 시작
+
+[ ] 병렬화 가능한가?
+    → Yes? → Smart parallelization 자동 활성화
+    → No? → Serial execution with checkpoints
+
+[ ] 승인 필요한가?
+    → 기준 충족 & low-risk? → Auto-approve (당신 개입 불필요)
+    → High-risk or scope change? → 당신 승인 요청
+```
+
+---
+
+## 🚨 **SECTION 21: 경고 & 에스컬레이션**
+
+당신이 받을 경고 (3가지만):
+
+```
+🟢 INFO (무시해도 됨)
+├─ "Phase 1 complete: PRD ready"
+├─ "M-002: 68% token efficiency"
+└─ "Token tracker updated"
+
+🟡 WARNING (확인 추천)
+├─ "Token usage 80%" → 프로젝트 계속 가능하지만 주의
+├─ "Phase 2 → Phase 3 delay detected" → 원인 자동 분석, 보고
+└─ "Build failing on 1/5 test cases" → 자동 재실행 후 보고
+
+🔴 CRITICAL (즉시 개입 필요)
+├─ "Token 초과" → 당신 결정: Continue(expensive) / Stop(loss)
+├─ "Security vulnerability detected" → 자동 STOP, 당신 승인 필요
+├─ "Merge conflict 자동 해결 불가" → 당신이 선택지 제시받음
+└─ "Production deploy failed" → 자동 rollback, 당신 승인으로 재시도
+```
+
+---
+
 **Version History:**
 - v1.0: 2026-02-22 (Deca-Agent 초기)
 - v2.0: 2026-02-25 (표준화 완료)
 - v3.0: 2026-02-25 (Enterprise Governance — 15 principles, shared-intelligence, orchestrator registry, hooks)
+- v3.1: 2026-02-25 (Orchestration v2.0 — 당신의 역할 최소화, 자동화 극대화)
 
 ---
 
