@@ -1,0 +1,28 @@
+#!/bin/sh
+# Husky pre-commit hook
+# Runs pre-commit checks before allowing commits
+
+if [ -z "$HUSKY" ]; then
+  export HUSKY=0
+fi
+
+# Only run if pre-commit is installed
+if ! command -v pre-commit &> /dev/null; then
+  echo "pre-commit is not installed. Install with: pip install pre-commit"
+  exit 1
+fi
+
+# Run pre-commit checks on staged files
+pre-commit run --hook-stage commit
+
+# Exit with pre-commit's exit code
+exit_code=$?
+
+if [ $exit_code -ne 0 ]; then
+  echo ""
+  echo "⚠️  Pre-commit checks failed. Fix the issues above and try again."
+  echo "   Run 'pre-commit run --all-files' to check all files."
+  exit $exit_code
+fi
+
+exit 0
