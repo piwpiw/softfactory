@@ -143,7 +143,7 @@ jobs:
           fi
 
       - name: Upload to Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           files: ${{ matrix.artifact }}
           tag_name: v${{ needs.semantic-release.outputs.new-release-version }}
