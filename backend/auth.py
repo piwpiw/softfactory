@@ -13,7 +13,9 @@ from .security_middleware import (
 
 auth_bp = Blueprint('auth', __name__, url_prefix='/api/auth')
 
-SECRET_KEY = os.getenv('PLATFORM_SECRET_KEY', 'softfactory-dev-secret-key-2026')
+SECRET_KEY = os.getenv('PLATFORM_SECRET_KEY')
+if not SECRET_KEY:
+    raise ValueError("CRITICAL: PLATFORM_SECRET_KEY environment variable must be set. Check .env configuration.")
 ACCESS_TOKEN_EXPIRE = timedelta(hours=1)
 REFRESH_TOKEN_EXPIRE = timedelta(days=30)
 

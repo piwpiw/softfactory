@@ -9,7 +9,9 @@ import asyncio
 from telegram import Bot
 from datetime import datetime, timezone
 
-BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "8461725251:AAELKRbZkpa3u6WK24q4k-RGkzedHxjTLiM")
+BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
+if not BOT_TOKEN:
+    raise ValueError("CRITICAL: TELEGRAM_BOT_TOKEN environment variable must be set. Check .env configuration.")
 CHAT_ID = int(os.getenv("TELEGRAM_CHAT_ID", "7910169750"))
 
 class TelegramReporter:

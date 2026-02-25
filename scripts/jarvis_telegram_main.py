@@ -1,7 +1,19 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-🤖 JARVIS Telegram Bot — 실시간 양방향 통신
+⚠️ DEPRECATED: This version is deprecated as of 2026-02-25
+
+Jarvis v1 functionality has been merged into daemon/daemon_service.py via modular handlers.
+This file is kept for rollback purposes only.
+
+→ Run the daemon instead:
+pythonw.exe daemon/daemon_control_panel.py
+
+All commands are preserved in daemon/handlers/jarvis_commands.py
+
+---
+
+🤖 JARVIS Telegram Bot v1 — Legacy Implementation (Archived)
 요청 → 처리 → 3줄 결과 반환
 """
 
@@ -13,7 +25,9 @@ from telegram import Update
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
 from telegram.constants import ParseMode
 
-BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "8461725251:AAELKRbZkpa3u6WK24q4k-RGkzedHxjTLiM")
+BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
+if not BOT_TOKEN:
+    raise ValueError("CRITICAL: TELEGRAM_BOT_TOKEN environment variable must be set. Check .env configuration.")
 CHAT_ID = int(os.getenv("TELEGRAM_CHAT_ID", "7910169750"))
 
 class JARVISBot:
