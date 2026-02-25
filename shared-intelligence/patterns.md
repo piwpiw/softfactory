@@ -1082,3 +1082,303 @@ Optional IP-based access control:
 **When to use:** Restrict public access to known IPs
 **Reference:** `backend/public_access_handler.py`, `access_whitelist.json`
 
+---
+
+## Error Tracking & Observability Patterns
+
+### PAT-010: Enterprise Error Tracking System
+**Pattern:** Centralized error logging with automatic pattern detection and prevention suggestions
+
+**Core Components:**
+```python
+# 1. ErrorTracker (main interface)
+tracker = ErrorTracker()
+tracker.log_error(error_type, message, traceback, context, project_id, user_id, file, line)
+
+# 2. ErrorAggregator (groups similar errors)
+aggregator = ErrorAggregator()
+groups = aggregator.aggregate(error_logs)
+stats = aggregator.get_frequency_stats()
+
+# 3. PatternDetector (identifies recurring issues)
+detector = PatternDetector()
+patterns = detector.detect_patterns(error_logs)
+root_cause = detector.identify_root_causes(pattern)
+
+# 4. PreventionEngine (suggests fixes)
+engine = PreventionEngine()
+rules = engine.get_prevention_rules(error_type)
+suggestion = engine.suggest_fix(pattern)
+```
+
+**API Endpoints:**
+- `POST /api/errors/log` — Log error with full context
+- `GET /api/errors/recent?limit=10&project_id=X&error_type=Y` — Recent errors
+- `GET /api/errors/patterns?severity=high` — Detected patterns
+- `GET /api/errors/patterns/{id}/prevention` — Prevention suggestions
+- `POST /api/errors/patterns/{id}/resolve` — Mark pattern as fixed
+- `GET /api/errors/health` — System health and statistics
+
+**Key Features:**
+1. **Automatic pattern detection** — Identifies recurring errors after 2+ occurrences
+2. **Root cause analysis** — Rule-based identification (AttributeError, KeyError, TypeError, etc.)
+3. **Severity calculation** — Considers frequency, error type, and message content
+4. **Actionable suggestions** — Includes code examples for each error type
+5. **Error caching** — In-memory cache with 1000-error limit per project
+6. **Health monitoring** — Critical pattern alerts, error rate tracking
+
+**Severity Levels:**
+- `critical` — SecurityError, AuthError, >10 DB errors; immediate action required
+- `high` — ConnectionError, TimeoutError, >50 occurrences; investigate this week
+- `medium` — ValueError, TypeError, >10 occurrences; monitor and plan fix
+- `low` — Single/rare errors; document for future investigation
+
+**Prevention Rules Examples:**
+```python
+# AttributeError
+- "Always check for None before accessing attributes"
+- "Use optional chaining or getattr(obj, 'attr', None)"
+- "Add type hints and enforce type checking"
+
+# KeyError
+- "Use .get() method with default: dict.get(key, default)"
+- "Check key existence before access: if key in dict:"
+- "Use defaultdict for automatic default values"
+
+# TypeError (JSON serialization)
+- "Verify JSON serialization with to_dict() method"
+- "Add type hints and runtime type checking"
+- "Use isinstance() for runtime type verification"
+```
+
+**When to use:** All production backend services. Deploy error tracking early (MVP phase) for continuous improvement.
+
+**Integration Steps:**
+1. Register `error_bp` in `backend/app.py`
+2. Call `tracker.log_error()` in exception handlers
+3. Expose `/api/errors/*` endpoints for dashboard
+4. Set up daily pattern analysis and alert emails
+
+**Files:**
+- `backend/error_tracker.py` (350+ lines, fully typed)
+- `backend/error_api.py` (6 endpoints)
+- `tests/test_error_tracker.py` (50 tests, 80%+ coverage)
+
+**Reference:** Task #4 (Infrastructure Enhancement), completed 2026-02-25
+
+### PAT-011: Error Response Format Standardization
+**Pattern:** All error responses use consistent JSON structure
+
+```python
+# Successful request
+{
+    "success": true,
+    "data": {...},
+    "timestamp": "2026-02-25T14:30:00Z"
+}
+
+# Client error (4xx)
+{
+    "success": false,
+    "error": "Invalid input format",
+    "code": "INVALID_INPUT",
+    "details": {...},
+    "timestamp": "2026-02-25T14:30:00Z"
+}
+
+# Server error (5xx)
+{
+    "success": false,
+    "error": "Internal server error",
+    "code": "INTERNAL_ERROR",
+    "error_id": "err_abc123def456",  # For support/logging
+    "timestamp": "2026-02-25T14:30:00Z"
+}
+```
+
+**Error Codes:**
+- `INVALID_INPUT` — Request validation failed
+- `AUTHENTICATION_FAILED` — Missing/invalid auth
+- `PERMISSION_DENIED` — Insufficient permissions
+- `NOT_FOUND` — Resource doesn't exist
+- `CONFLICT` — Duplicate resource
+- `INTERNAL_ERROR` — Unexpected server error
+
+**When to use:** All API responses. Define in API specification.
+
+**Reference:** `backend/error_api.py` and `backend/error_tracker.py`
+
+---
+
+## CI/CD & DevOps Patterns
+
+### PAT-010: GitHub Workflow Multi-Python Testing
+```yaml
+# Pattern: Test against multiple Python versions in parallel
+strategy:
+  matrix:
+    python-version: ["3.9", "3.10", "3.11"]
+
+steps:
+  - name: Set up Python ${{ matrix.python-version }}
+    uses: actions/setup-python@v4
+    with:
+      python-version: ${{ matrix.python-version }}
+      cache: 'pip'
+
+  - name: Run tests
+    run: pytest tests/ -v
+```
+**When to use:** All Python projects for compatibility testing.
+**Files:** `.github/workflows/test.yml`
+
+### PAT-011: Health Check Gate in Deployment
+```yaml
+# Pattern: Validate service health before marking deployment successful
+- name: Health check
+  run: |
+    for i in {1..30}; do
+      if curl -f http://localhost:8000/health; then
+        echo "✅ Health check passed"
+        break
+      fi
+      if [ $i -eq 30 ]; then
+        echo "❌ Health check failed"
+        exit 1
+      fi
+      sleep 1
+    done
+```
+**When to use:** Every deployment workflow (staging + production).
+**Key:** Retry logic with timeout, hard fail after max attempts.
+
+### PAT-012: Coverage Threshold Enforcement
+```yaml
+# Pattern: Fail build if coverage below threshold
+- name: Check coverage
+  run: |
+    coverage report --fail-under=80
+```
+**When to use:** All test workflows.
+**Threshold:** Minimum 80% for production code.
+**Files:** `.github/workflows/test.yml`, `setup.cfg`
+
+### PAT-013: Secret Scanning in CI
+```yaml
+# Pattern: Multiple secret scanning tools in pipeline
+- name: Scan for secrets
+  run: |
+    # Check for patterns
+    grep -r "password.*=\|api_key\|secret_key" backend/ && exit 1 || echo "✅ No secrets"
+    # Use dedicated tools
+    pip install detect-secrets
+    detect-secrets scan --baseline .baseline.json .
+```
+**When to use:** Security workflows on every push.
+**Tools:** TruffleHog, Bandit, detect-secrets, Semgrep.
+
+### PAT-014: Docker Build with Trivy Scanning
+```yaml
+# Pattern: Build Docker image and scan for vulnerabilities
+- name: Build Docker image
+  run: docker build -t softfactory:latest .
+
+- name: Scan with Trivy
+  run: |
+    docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
+      aquasec/trivy image softfactory:latest
+```
+**When to use:** All Docker build workflows.
+**Fail on:** CRITICAL vulnerabilities only (WARNING/HIGH are warnings).
+
+### PAT-015: Prometheus Health Check Endpoint
+```python
+# Pattern: Expose Prometheus metrics at /api/metrics/prometheus
+from flask import jsonify
+
+@app.route('/api/metrics/prometheus')
+def prometheus_metrics():
+    """Export metrics in Prometheus text format"""
+    return Response(
+        generate_prometheus_metrics(),
+        mimetype='text/plain; version=0.0.4'
+    )
+
+@app.route('/api/infrastructure/health')
+def infrastructure_health():
+    """Return comprehensive health status"""
+    return jsonify({
+        'overall_status': 'healthy',
+        'database': 'ok',
+        'cache': 'ok',
+        'error_rate': 0.001,
+        'uptime_seconds': 3600
+    })
+```
+**When to use:** All production services with monitoring.
+**Files:** `backend/app.py`, `infrastructure/monitoring/prometheus_config.yml`
+
+### PAT-016: Deployment Checklist Pattern
+```markdown
+# Deployment Checklist Pattern
+
+## Pre-Deployment (Hour -1)
+- [ ] All tests pass
+- [ ] Coverage ≥80%
+- [ ] Type check passes
+- [ ] No lint warnings
+- [ ] QA approval obtained
+
+## Staging Deploy (Hour 0)
+- [ ] Build Docker image
+- [ ] Run smoke tests
+- [ ] Validate endpoints
+- [ ] Check error logs
+
+## Production Deploy (Hour +1)
+- [ ] Create backup
+- [ ] Stop old container
+- [ ] Start new container
+- [ ] Run health checks
+- [ ] Monitor for 30 min
+```
+**When to use:** Every deployment.
+**File:** `docs/standards/DEPLOYMENT_CHECKLIST.md`
+
+### PAT-017: Project Structure Validation Script
+```bash
+# Pattern: Automated validation of project structure
+bash scripts/validate_project_structure.sh
+
+# Checks:
+# 1. Core directories exist
+# 2. Critical files present
+# 3. Python imports valid
+# 4. No hardcoded secrets
+# 5. Tests discoverable
+# 6. Database models have to_dict()
+# 7. Governance files exist
+```
+**When to use:** Pre-commit hook + CI workflow.
+**File:** `scripts/validate_project_structure.sh`
+
+### PAT-018: Pre-Commit Hook Pattern
+```bash
+#!/bin/bash
+# Pattern: Local quality gate before commit
+
+# Run validation script
+bash scripts/validate_project_structure.sh
+
+# Run linting
+flake8 backend/ mypy backend/ || true
+
+# Check for secrets
+grep -r "secret\|password" . && exit 1 || exit 0
+```
+**When to use:** All developers.
+**Install:** `chmod +x .git/hooks/pre-commit`
+**Note:** Does NOT replace CI checks — it's a developer convenience.
+
+---
+

@@ -9,6 +9,7 @@ from .auth import auth_bp
 from .payment import payment_bp
 from .platform import platform_bp
 from .jarvis_api import jarvis_bp
+from .error_api import error_bp
 from .services.coocook import coocook_bp
 from .services.sns_auto import sns_bp
 from .services.review import review_bp
@@ -40,6 +41,7 @@ def create_app():
     app.register_blueprint(payment_bp)
     app.register_blueprint(platform_bp)
     app.register_blueprint(jarvis_bp)
+    app.register_blueprint(error_bp)
     app.register_blueprint(coocook_bp)
     app.register_blueprint(sns_bp)
     app.register_blueprint(review_bp)

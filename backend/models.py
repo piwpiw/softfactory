@@ -442,6 +442,60 @@ class LoginAttempt(db.Model):
         }
 
 
+class ErrorLog(db.Model):
+    """Error logging for all projects (M-001, M-002, etc.)"""
+    __tablename__ = 'error_logs'
+
+    id = db.Column(db.Integer, primary_key=True)
+    error_type = db.Column(db.String(255), nullable=False, index=True)
+    message = db.Column(db.Text, nullable=False)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow, nullable=False, index=True)
+    context = db.Column(db.JSON)  # {user_id, endpoint, method, status_code, ...}
+    project_id = db.Column(db.String(50), index=True)  # M-001, M-002, etc.
+    severity = db.Column(db.String(20), default='medium')  # critical, high, medium, low
+    resolved = db.Column(db.Boolean, default=False)
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'error_type': self.error_type,
+            'message': self.message,
+            'timestamp': self.timestamp.isoformat() if self.timestamp else None,
+            'context': self.context,
+            'project_id': self.project_id,
+            'severity': self.severity,
+            'resolved': self.resolved
+        }
+
+
+class ErrorPattern(db.Model):
+    """Detected error patterns for root cause analysis"""
+    __tablename__ = 'error_patterns'
+
+    id = db.Column(db.Integer, primary_key=True)
+    error_type = db.Column(db.String(255), nullable=False, unique=True, index=True)
+    frequency = db.Column(db.Integer, default=0)  # Total occurrences
+    first_seen = db.Column(db.DateTime, nullable=False, index=True)
+    last_seen = db.Column(db.DateTime, nullable=False)
+    severity = db.Column(db.String(20), default='medium')
+    root_cause = db.Column(db.String(500))
+    resolution = db.Column(db.String(500))
+    is_active = db.Column(db.Boolean, default=True)
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'error_type': self.error_type,
+            'frequency': self.frequency,
+            'first_seen': self.first_seen.isoformat() if self.first_seen else None,
+            'last_seen': self.last_seen.isoformat() if self.last_seen else None,
+            'severity': self.severity,
+            'root_cause': self.root_cause,
+            'resolution': self.resolution,
+            'is_active': self.is_active
+        }
+
+
 def init_db(app):
     """Initialize database with tables and seed data"""
     with app.app_context():

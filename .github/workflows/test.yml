@@ -69,6 +69,16 @@ jobs:
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/softfactory_test
 
+      - name: Run error tracker tests
+        run: |
+          pytest tests/test_error_tracker.py -v --cov=backend --cov-report=xml --cov-append --cov-report=term-missing
+        continue-on-error: true
+
+      - name: Run cross-validation integration tests
+        run: |
+          pytest tests/integration/test_cross_validation.py -v --cov=backend --cov-report=xml --cov-append --cov-report=term-missing
+        continue-on-error: true
+
       - name: Run E2E tests
         run: |
           pytest tests/e2e -v --cov=backend --cov-report=xml --cov-append --cov-report=term-missing

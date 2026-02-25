@@ -58,6 +58,27 @@
 - **Pitfall:** `MEMORY.md` grew to 365 lines — only first 200 loaded into context. Critical project info was being silently truncated.
 - **Prevention:** Keep MEMORY.md ≤200 lines. Extract detail into topic files (e.g., `memory/project-status.md`). MEMORY.md is an index, not a dump.
 
+### PF-007: GitHub Workflows Missing Health Check Gate
+- **Date:** 2026-02-25
+- **Agent:** 09-DevOps
+- **Task:** #6 CI/CD hardening + monitoring
+- **Pitfall:** Deploy workflow lacked health check validation before marking deployment as successful. Broken deployments appeared as "green" for 5+ minutes.
+- **Prevention:** Add health check gate to all deploy workflows. Retry logic on 502/503. Hard fail on 5 consecutive failures. Check endpoint before and after deployment.
+
+### PF-008: Prometheus Config Not Validated Before Deploy
+- **Date:** 2026-02-25
+- **Agent:** 09-DevOps
+- **Task:** #6 Infrastructure monitoring setup
+- **Pitfall:** Invalid Prometheus YAML syntax silently fails — metrics collection appears off but no error alert fires.
+- **Prevention:** Add `promtool check config` to lint pipeline. Validate all YAML before commit. Add to CI/CD.
+
+### PF-009: Pre-commit Hooks Don't Execute in CI
+- **Date:** 2026-02-25
+- **Agent:** 09-DevOps
+- **Task:** #6 Pre-commit hook setup
+- **Pitfall:** Pre-commit hooks work locally but skip in GitHub Actions CI. Allows quality standards bypass on automated commits.
+- **Prevention:** Replicate pre-commit checks in GitHub Actions workflow. Never trust local hooks for quality gate. Use workflow as source of truth.
+
 ### PF-007: Missing Scheduler Shutdown on Daemon Exit
 - **Date:** 2026-02-25
 - **Agent:** 09-DevOps / Sonolbot Enhancement
@@ -679,4 +700,53 @@ curl -X POST http://localhost:8000/api/admin/public-url-update \
 ### Reference
 - Integration guide: `docs/PUBLIC_ACCESS_INTEGRATION.md` Step 3
 - Update script: `scripts/update-public-urls.sh`
+
+---
+
+## Error Tracking & Observability
+
+### PF-041: Pattern Detection Requires Multiple Error Occurrences
+- **Date:** 2026-02-25
+- **Agent:** 09-Development Lead (Error Tracking Task #4)
+- **Task:** Error Tracking System Implementation
+- **Pitfall:** Error tracking system only flags as "pattern" when same error type/message occurs 2+ times. Single isolated errors never get prevention suggestions, making rare bugs invisible for long periods.
+- **Prevention:** Log all errors to tracking system, even single occurrences. Periodic batch analysis (daily) can identify rare patterns. For production: daily pattern report shows "1-occurrence errors" separately for monitoring.
+- **Files Created:** `backend/error_tracker.py` (ErrorTracker class), `backend/error_api.py` (6 API endpoints)
+- **Implementation Note:** Pattern threshold set to 2+ occurrences intentionally; adjust `PatternDetector.detect_patterns()` for different sensitivity.
+
+### PF-042: Error Severity Calculation Based on Frequency Alone
+- **Date:** 2026-02-25
+- **Agent:** 09-Development Lead (Error Tracking Task #4)
+- **Task:** Error Tracking System Implementation
+- **Pitfall:** Error severity calculated only by frequency and error type. An "AttributeError: 'NoneType' has no attribute 'id'" occurring 100 times still scored as "medium" even though it's likely a critical issue affecting all users.
+- **Prevention:** Extend PreventionEngine._calculate_severity() to analyze error message content (database, auth, API-related keywords get higher severity). Correlate with business impact: errors affecting payment/auth always "high" or "critical" regardless of frequency.
+- **Files Created:** `backend/error_tracker.py` (PreventionEngine._calculate_severity method)
+- **Enhancement Opportunity:** Add machine learning pattern analysis; train on historical production errors.
+
+### PF-043: Prevention Suggestions Without Code Examples Not Actionable
+- **Date:** 2026-02-25
+- **Agent:** 09-Development Lead (Error Tracking Task #4)
+- **Task:** Error Tracking System Implementation
+- **Pitfall:** Generic prevention rules like "Add input validation" are not immediately actionable. Developers must search for examples elsewhere, delaying fixes.
+- **Prevention:** Every PreventionEngine.suggest_fix() must include concrete code example matching the error type. Developers copy/paste example, adapting to their code context.
+- **Files Created:** `backend/error_tracker.py` (PreventionEngine._generate_code_example method with AttributeError, KeyError, TypeError examples)
+- **Status:** ✅ Implemented with 4 code examples; can be extended
+
+### PF-044: Error Tracking System Cache Only — No Persistence Across Restarts
+- **Date:** 2026-02-25
+- **Agent:** 09-Development Lead (Error Tracking Task #4)
+- **Task:** Error Tracking System Implementation
+- **Pitfall:** Current ErrorTracker implementation stores errors in memory dict (error_cache). On Flask restart, all error history lost. Patterns detected over days/weeks cannot be retrieved after deployment.
+- **Prevention:** (Phase 2 enhancement) Implement `ErrorLog` and `ErrorPattern` SQLAlchemy models. On startup, query recent errors from DB and rebuild pattern cache. ErrorTracker.log_error() persists to database for long-term analysis.
+- **Current Limitation:** MVP level; suitable for monitoring within single session. Not production-ready for multi-day pattern analysis.
+- **Upgrade Path:** `backend/models.py` needs ErrorLog model; `backend/error_tracker.py` needs database persistence layer
+
+### PF-045: Pitfalls Registry Auto-Update Not Fully Integrated
+- **Date:** 2026-02-25
+- **Agent:** 09-Development Lead (Error Tracking Task #4)
+- **Task:** Error Tracking System Implementation
+- **Pitfall:** Task requirement specified: "When pattern marked resolved, auto-append to pitfalls.md". Current implementation has `report_pattern_fixed()` method but no integration with `shared-intelligence/pitfalls.md` file writing.
+- **Prevention:** Add ErrorTracker.auto_update_pitfalls(pattern) method that: (1) Detects pattern severity and type, (2) Generates pitfall entry markdown, (3) Appends to pitfalls.md with proper formatting. Call after pattern resolution approved.
+- **Current Status:** ⚠️ Partially implemented — infrastructure ready, auto-write logic deferred to Phase 2
+- **Reference:** Mission requirement lines: "Create auto-update mechanism: ErrorPattern → pitfall entry format"
 

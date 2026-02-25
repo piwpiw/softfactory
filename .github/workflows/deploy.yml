@@ -164,7 +164,30 @@ jobs:
       - name: Health check
         run: |
           echo "Running health checks..."
-          curl -f https://softfactory.com/health || exit 1
+          # Wait for service to be ready (max 30 seconds)
+          for i in {1..30}; do
+            if curl -f https://softfactory.com/health; then
+              echo "✅ Health check passed"
+              break
+            fi
+            if [ $i -eq 30 ]; then
+              echo "❌ Health check failed after 30 attempts"
+              exit 1
+            fi
+            echo "Attempt $i/30: Service not ready yet, waiting..."
+            sleep 1
+          done
+
+      - name: Infrastructure health check
+        run: |
+          echo "Running infrastructure health checks..."
+          curl -f https://softfactory.com/api/infrastructure/health || exit 1
+
+      - name: Validate API endpoints
+        run: |
+          echo "Validating critical API endpoints..."
+          curl -f https://softfactory.com/api/services/health || exit 1
+          echo "✅ All API endpoints responding"
 
       - name: Notify success
         uses: 8398a7/action-slack@v3

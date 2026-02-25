@@ -27,6 +27,7 @@
 | ADR-0016 | Security Hardening Phase 2 — Fix 3 Critical Vulnerabilities | ✅ ACCEPTED | 2026-02-25 | M-003 SoftFactory |
 | ADR-0017 | Coverage Threshold 80% Minimum, 90% Target | ✅ ACCEPTED | 2026-02-25 | Platform-wide |
 | ADR-0018 | Claude API Integration for AI Suggestions (Sprint 2) | 📋 DESIGN COMPLETE | 2026-02-25 | All 5 services |
+| ADR-0019 | CI/CD Hardening: Multi-Workflow, Health Gates, Validation | ✅ ACCEPTED | 2026-02-25 | Platform-wide |
 
 ---
 
@@ -1079,3 +1080,139 @@ ROI: 34x (engagement revenue >> API costs)
 - Testing: `TESTING_STRATEGY.md` Section 7 (pre-production checklist)
 - ADR-0004: Additive governance (non-breaking changes only)
 
+
+---
+
+## ADR-0019: CI/CD Hardening — Multi-Workflow, Health Gates, Validation
+
+**Status:** ACCEPTED
+**Date:** 2026-02-25
+**Decided by:** 09-DevOps (Team E)
+**References:** CLAUDE.md Phase 4, DEPLOYMENT_CHECKLIST.md
+
+**Context:**
+SoftFactory platform needs production-grade CI/CD pipelines with multiple quality gates, comprehensive testing, and automated validation. Previous deployments lacked health checks and failed silently.
+
+**Problem Statement:**
+1. Single test workflow insufficient for enterprise requirements
+2. No health check gate — deployments marked successful even with broken services
+3. No automated project structure validation
+4. Pre-commit hooks not enforced in CI
+5. Prometheus metrics not configured for monitoring
+6. No centralized deployment checklist for human-in-loop decisions
+
+**Decision:**
+Implement multi-workflow CI/CD architecture with:
+1. **test.yml** — Comprehensive testing (unit + integration + E2E + error_tracker)
+2. **lint.yml** — Code quality (ruff, flake8, mypy, secret scanning)
+3. **build.yml** — Docker image build + Trivy vulnerability scan
+4. **deploy.yml** — Staged deployment with health check gates
+5. **security.yml** — Existing + enhanced
+6. **validate_project_structure.sh** — Pre-commit + CI validation
+7. **Prometheus config** — Metrics export + scraping
+8. **DEPLOYMENT_CHECKLIST.md** — Human-verified checklist
+
+**Rationale:**
+- **Separation of concerns:** Each workflow has single responsibility (SOLID)
+- **Parallel execution:** lint + test + build can run independently
+- **Health gates:** No deployment without passing health checks
+- **Automation + manual:** Automated tests + human checklist for risky decisions
+- **Observability:** Prometheus metrics on all deployments
+- **Prevention:** Validation script prevents common mistakes before commit
+
+**Implementation Details:**
+
+### 1. GitHub Workflows
+- `test.yml`: Matrix testing (Python 3.9, 3.10, 3.11) + coverage + error_tracker tests
+- `lint.yml`: Ruff, flake8, pylint, mypy (strict mode), secret scanning
+- `build.yml`: Docker buildx + Trivy scanning + image push
+- `deploy.yml`: 3-tier deployment (test → build → staging → production) with health checks
+- `security.yml`: CodeQL, Bandit, Semgrep, dependency check, OWASP ZAP
+
+### 2. Infrastructure
+- `infrastructure/monitoring/prometheus_config.yml`: Scrape targets for API, database, cache, containers
+- `infrastructure/README.md`: Setup and management guide
+- Health endpoints: `/health`, `/api/infrastructure/health`, `/api/metrics/prometheus`
+
+### 3. Validation
+- `scripts/validate_project_structure.sh`: 17-point validation checklist
+- `.git/hooks/pre-commit`: Local quality gate (developer convenience)
+- Both referenced in CI workflows for enforcement
+
+### 4. Deployment Process
+- `docs/standards/DEPLOYMENT_CHECKLIST.md`: 50+ item staging/production checklist
+- Pre-deployment: tests + coverage + approval
+- Staging: build + smoke test + performance baseline
+- Production: backup + deploy + health check + 2h monitoring
+
+**Success Metrics:**
+- ✅ All workflows pass on main branch
+- ✅ Deployment health checks: 100% success rate
+- ✅ Error rate < 0.5% post-deployment
+- ✅ Project structure validation: 0 failures
+- ✅ No hardcoded secrets in commits
+- ✅ Coverage: ≥80% minimum, 90% target
+- ✅ Lint warnings: 0
+- ✅ Type check: strict mode compliance
+- ✅ Prometheus: all targets UP
+
+**Blockers & Dependencies:**
+- Team B: infrastructure/ directory creation → ✅ Blocked on ADR-0012 (complete)
+- Team C: error_tracker.py tests → ✅ Module complete, tests integrated
+- Team D: QA approval gate → ✅ Gates deployment.yml
+
+**Implementation Timeline:**
+- **Immediate:** Workflows + infrastructure + validation (2026-02-25)
+- **Week 1:** Team integration + testing (2026-02-27)
+- **Week 2:** Production deployment dry-run (2026-03-03)
+- **Ongoing:** Monitoring + alerts tuning (2026-03-10+)
+
+**Rollback Plan:**
+If any workflow fails consistently:
+1. Disable failing workflow (mark as `if: false`)
+2. Root cause analysis (log to ADR update)
+3. Fix in feature branch
+4. Re-enable after testing
+
+**Known Limitations:**
+- Pre-commit hooks don't execute in GitHub Actions (by design)
+- CI workflows are authoritative source of truth
+- Health checks validate service startup only (not functional correctness)
+- Prometheus requires manual dashboarding setup
+
+**Future Enhancements (Post-MVP):**
+- Auto-rollback on error rate > 5% (Week 4)
+- Canary deployments (Week 5)
+- Performance regression detection (Week 6)
+- Distributed tracing (OpenTelemetry) (Month 2)
+- SLA monitoring + alerting (Month 2)
+
+**Cost Impact:**
+- GitHub Actions: ~$5/month (existing plan)
+- Prometheus: Free (self-hosted)
+- Trivy scanning: Free
+- CodeQL: Free (GitHub-included)
+- Monitoring stack: ~$15/month (prod)
+
+**Risk Mitigation:**
+| Risk | Mitigation |
+|------|-----------|
+| Workflow complexity | Clear documentation, single responsibility per workflow |
+| False negatives | Multiple validation layers (lint + test + health check) |
+| Deployment delay | Parallel workflows reduce wall-clock time |
+| Secret leakage | Secret scanning on every commit |
+| Performance regression | Coverage metrics tracked historically |
+
+**Approval & Sign-Off:**
+- ✅ Team E (DevOps) — Design & implementation
+- ⏳ Team C (Dev Lead) — Integration & testing
+- ⏳ Team D (QA) — Validation & deployment approval
+- ⏳ Platform Lead — Production sign-off
+
+**References:**
+- Governance: `CLAUDE.md` Section 17 (15 principles)
+- Shared Intelligence: `patterns.md` (PAT-010 through PAT-018)
+- Shared Intelligence: `pitfalls.md` (PF-007 through PF-009)
+- Documentation: `docs/standards/DEPLOYMENT_CHECKLIST.md`
+- Scripts: `scripts/validate_project_structure.sh`
+- Infrastructure: `infrastructure/monitoring/prometheus_config.yml`
