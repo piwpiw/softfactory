@@ -127,6 +127,130 @@ Dependent tasks  → sequential with explicit handoff (checkpoint → next agent
 
 ---
 
+### PAT-009: CooCook MVP Demo Mode Pattern
+```javascript
+// Pattern: Demo mode with static token for web UI testing
+const DEMO_PASSKEY = 'demo2026';
+const DEMO_TOKEN = 'demo_token';
+
+function enableDemoMode() {
+    localStorage.setItem('demo_mode', 'true');
+    localStorage.setItem('access_token', DEMO_TOKEN);
+    localStorage.setItem('user', JSON.stringify(DEMO_USER));
+}
+
+// Backend: Accept 'demo_token' in Authorization header
+@require_auth
+def protected_route():
+    if request.headers.get('Authorization') == f'Bearer {DEMO_TOKEN}':
+        # Grant demo user access
+        pass
+```
+**When to use:** MVP/demo phases where real authentication not required.
+**Files:** `web/platform/api.js`, `backend/auth.py`
+**Note:** Demo token is static string, never append timestamp (see PF-003).
+
+---
+
+## Telegram Bot Patterns
+
+### PAT-010: Sonolbot Command Framework (v2.0)
+```python
+# Pattern: Extensible command handler with logging + scheduling
+# File: daemon/daemon_service.py
+
+def _handle_control_message(self, chat_id: int, message_id: int, text: str) -> bool:
+    lowered = text.lower()
+
+    # Log all commands for audit trail
+    if any(lowered.startswith(cmd) for cmd in [CMD_STATUS, CMD_HELP, CMD_REMIND, ...]):
+        self._log_command(chat_id, text.split()[0], text)
+
+    # Handle each command
+    if lowered.startswith(CMD_REMIND):
+        reminder_text = text.replace(CMD_REMIND, "", 1).strip()
+        self._handle_reminder_command(chat_id, reminder_text)
+        return True
+
+    if lowered.startswith(CMD_SUMMARY):
+        self._send_daily_summary(chat_id)
+        return True
+```
+
+**When to use:** Extending Sonolbot with new commands.
+**Why:** Centralized logging, scheduler integration, consistent error handling.
+**Files:** `daemon/daemon_service.py`, `daemon/README.md`
+**Key rules:**
+- All commands logged via `_log_command()` for audit
+- Command handlers placed in `_handle_control_message()`
+- Implementation methods named `_handle_*_command()` or `_send_*_report()`
+
+### PAT-011: APScheduler Background Jobs for Telegram Bot
+```python
+# Pattern: Background scheduler for periodic notifications
+# File: daemon/daemon_service.py
+
+def _init_scheduler(self):
+    self.scheduler = BackgroundScheduler()
+
+    # Daily standup at 9 AM
+    self.scheduler.add_job(
+        self._send_daily_standup,
+        trigger=CronTrigger(hour=9, minute=0),
+        id='daily_standup'
+    )
+
+    # Weekly report (Friday 6 PM)
+    self.scheduler.add_job(
+        self._send_weekly_summary,
+        trigger=CronTrigger(day_of_week=4, hour=18, minute=0),
+        id='weekly_summary'
+    )
+
+    self.scheduler.start()
+
+def _send_daily_standup(self):
+    for chat_id in self.active_tasks.keys():
+        self._send_text(chat_id, "🌅 오늘의 일정...")
+```
+
+**When to use:** Bots needing recurring notifications or maintenance tasks.
+**Why:** APScheduler handles timezone-aware cron scheduling without blocking main event loop.
+**Files:** `daemon/daemon_service.py`
+**Requirements:** `pip install apscheduler>=3.10.4` (auto with python-telegram-bot[all])
+
+### PAT-012: Persistent Reminder State with JSON
+```python
+# Pattern: JSON-backed reminder storage with scheduling
+# File: daemon/daemon_service.py
+
+def _handle_reminder_command(self, chat_id: int, reminder_text: str):
+    # Parse "YYYY-MM-DD message"
+    parts = reminder_text.split(None, 1)
+    date_str, message = parts[0], parts[1]
+
+    # Validate and save
+    reminder = {
+        'id': str(uuid.uuid4())[:8],
+        'date': date_str,
+        'message': message,
+        'created_at': datetime.now().isoformat(),
+        'notified': False
+    }
+    self.reminders[str(chat_id)].append(reminder)
+    self._save_reminders()  # Persist to reminders.json
+
+    # Schedule notification job
+    if self.scheduler.running:
+        self._schedule_reminder(reminder, chat_id)
+```
+
+**When to use:** Date-based reminders in Telegram bots.
+**Why:** Survives daemon restart, decoupled from job scheduler.
+**Files:** `daemon/daemon_service.py`, `daemon/state/reminders.json`
+
+---
+
 ## Template for New Entries
 ```markdown
 ### PAT-XXX: [Short Title]

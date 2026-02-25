@@ -58,6 +58,22 @@
 - **Pitfall:** `MEMORY.md` grew to 365 lines — only first 200 loaded into context. Critical project info was being silently truncated.
 - **Prevention:** Keep MEMORY.md ≤200 lines. Extract detail into topic files (e.g., `memory/project-status.md`). MEMORY.md is an index, not a dump.
 
+### PF-007: Missing Scheduler Shutdown on Daemon Exit
+- **Date:** 2026-02-25
+- **Agent:** 09-DevOps / Sonolbot Enhancement
+- **Task:** M-005 Sonolbot v2.0 — APScheduler integration
+- **Pitfall:** BackgroundScheduler started in `_init_scheduler()` but never shut down in `run()` finally block. Result: daemon process hangs on Ctrl+C, hanging jobs block OS shutdown.
+- **Prevention:** Always call `scheduler.shutdown()` before releasing daemon lock. Add to finally block: `if self.scheduler and self.scheduler.running: self.scheduler.shutdown()`
+- **Files Fixed:** `daemon/daemon_service.py` (line ~430)
+
+### PF-008: Command Logging Without Directory Validation
+- **Date:** 2026-02-25
+- **Agent:** 09-DevOps / Sonolbot Enhancement
+- **Task:** M-005 Sonolbot v2.0 — Command audit logging
+- **Pitfall:** `_log_command()` appends to `command_history.log` without checking if parent directory exists. First command write fails silently.
+- **Prevention:** Create parent directory with `mkdir(parents=True, exist_ok=True)` before writing. Always wrap in try/except to avoid crashing message handler.
+- **Files Fixed:** `daemon/daemon_service.py` method `_log_command()` (line ~870)
+
 ---
 
 ## Template for New Entries

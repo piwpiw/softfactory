@@ -14,6 +14,8 @@
 | ADR-0003 | SQLite → PostgreSQL Migration Path | ✅ ACCEPTED | 2026-02-23 | M-003 SoftFactory |
 | ADR-0004 | Additive Governance (vs Full Restructure) | ✅ ACCEPTED | 2026-02-25 | Platform-wide |
 | ADR-0005 | Markdown-first Shared Intelligence | ✅ ACCEPTED | 2026-02-25 | Platform-wide |
+| ADR-0006 | CooCook MVP Phase Completion (Phase 2-4) | ✅ ACCEPTED | 2026-02-25 | M-002 CooCook |
+| ADR-0007 | Sonolbot v2.0 — Extend with Scheduling & Logging | ✅ ACCEPTED | 2026-02-25 | M-005 Sonolbot |
 
 ---
 
@@ -117,6 +119,81 @@
 - MCP filesystem server provides programmatic access if needed
 
 **Consequence:** All agents MUST append to shared-intelligence files after every task (Principle #9).
+
+---
+
+## ADR-0006: CooCook MVP Phase Completion (Phase 2-4)
+
+**Status:** ACCEPTED
+**Date:** 2026-02-25
+**Decided by:** Orchestrator + Development Lead (Agent C)
+
+**Context:** M-002 CooCook requires MVP completion to enter QA phase by 2026-02-27. Phase 0 (input parsing) and Phase 1 (strategy+design) were complete. Phases 2-4 (Development, QA, Deployment) executed on 2026-02-25.
+
+**Decision:** Execute Phases 2-4 sequentially with automated testing. Mark MVP as COMPLETE upon all core API endpoints returning 200 OK and web pages loading without errors.
+
+**Rationale:**
+- All prerequisite data exists (5 sample chefs, demo user with subscription)
+- API endpoints already implemented in `backend/services/coocook.py`
+- Web pages already created in `web/coocook/`
+- Database ready with absolute path configuration (per PAT-005)
+- No architectural changes needed — only verification
+
+**Trade-offs:**
+- Skipped manual browser testing in this session (will be done during QA phase 2026-02-27)
+- Demo mode used instead of production auth (acceptable for MVP)
+
+**Consequence:**
+- CooCook MVP marked ready for QA phase
+- Access via: http://localhost:8000/web/coocook/index.html
+- 2-day buffer before QA deadline (2026-02-27)
+
+---
+
+## ADR-0007: Sonolbot v2.0 — Extend with Scheduling & Logging
+
+**Status:** ACCEPTED
+**Date:** 2026-02-25
+**Decided by:** 09-DevOps (Sonolbot Enhancement)
+
+**Context:** M-005 Sonolbot v1.0 has 5 core commands (/task-new, /task-list, /task-activate, /s, /h). Users need reminders, summaries, data exports, and command auditing. Question: add features incrementally or restructure?
+
+**Decision:** Extend v1.0 additively with 4 new commands + APScheduler background jobs + logging infrastructure.
+
+**New Features:**
+- Commands: `/remind [date] [msg]`, `/summary`, `/export [json|csv]`, `/logs [lines]`
+- Scheduler: Daily standup (9 AM), weekly summary (Fri 6 PM), log cleanup (3 AM)
+- Logging: `command_history.log` for audit trail
+- Persistence: `reminders.json` for scheduled reminders
+
+**Rationale:**
+- APScheduler is already a dependency (python-telegram-bot[all])
+- Additive approach: zero changes to existing v1.0 code paths
+- Command logging required for compliance/audit
+- Scheduled jobs improve user experience (recurring notifications)
+- JSON-backed state survives daemon restart
+
+**Trade-offs:**
+- One additional background thread (scheduler)
+- Slight memory overhead (reminders dict in memory)
+- Log files grow over time (automatic 7-day cleanup)
+
+**Alternative considered:**
+- Pure event-driven (no scheduler) — rejected because lost notifications if daemon restarts during scheduled time
+- Database-backed reminders — rejected because adds DB dependency and complexity (Principle #10)
+
+**Consequence:**
+- Sonolbot bumped to v2.0
+- New `daemon/README.md` documents all commands
+- `shared-intelligence/patterns.md` includes PAT-010, PAT-011, PAT-012 for reuse in future bots
+- Scheduler must be shut down gracefully on daemon exit (PF-007)
+- Command logging appends to text file (no special infrastructure)
+
+**Files Changed:**
+- `daemon/daemon_service.py` (+1000 lines, +7 methods)
+- `daemon/README.md` (NEW, comprehensive guide)
+- `shared-intelligence/patterns.md` (added PAT-010, PAT-011, PAT-012)
+- `shared-intelligence/pitfalls.md` (added PF-007, PF-008)
 
 ---
 
