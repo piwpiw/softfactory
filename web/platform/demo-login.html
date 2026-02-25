@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>SoftFactory - Demo Login</title>
+    <link href="https://cdn.tailwindcss.com" rel="stylesheet">
+    <script src="api.js"></script>
+</head>
+<body class="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 min-h-screen flex items-center justify-center p-4">
+    <div class="w-full max-w-md">
+        <!-- Logo -->
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-white mb-2">SoftFactory</h1>
+            <p class="text-gray-400">One Platform, Many Services</p>
+        </div>
+
+        <!-- Demo Mode Card -->
+        <div class="bg-gray-800 rounded-lg p-8 text-white mb-6 border-2 border-blue-500">
+            <h2 class="text-2xl font-bold mb-4 text-blue-400">Demo Mode</h2>
+            <p class="text-gray-300 mb-6">Enter the demo passkey to access all features with mock data.</p>
+
+            <form id="demoForm" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-semibold mb-2">Passkey</label>
+                    <input type="password" id="passkey" required placeholder="Enter passkey"
+                        class="w-full bg-gray-700 border border-gray-600 rounded px-4 py-2 text-white placeholder-gray-400 focus:border-blue-400 outline-none">
+                    <p class="text-xs text-gray-500 mt-2">Hint: demo2026</p>
+                </div>
+
+                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 rounded-lg transition">
+                    Enter Demo Mode
+                </button>
+            </form>
+
+            <div class="mt-6 pt-6 border-t border-gray-700">
+                <h3 class="font-semibold mb-3 text-sm">Demo Features Available:</h3>
+                <ul class="space-y-2 text-sm text-gray-300">
+                    <li>✓ CooCook - Chef booking marketplace</li>
+                    <li>✓ SNS Auto - Social media automation</li>
+                    <li>✓ Review Campaigns - Brand reviews</li>
+                    <li>✓ AI Automation - 24/7 AI employees</li>
+                    <li>✓ WebApp Builder - 8-week bootcamp</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Regular Login Card -->
+        <div class="bg-gray-800 rounded-lg p-8 text-white">
+            <h2 class="text-2xl font-bold mb-4">Real Login</h2>
+
+            <form id="loginForm" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-semibold mb-2">Email</label>
+                    <input type="email" id="email" required placeholder="admin@softfactory.com"
+                        class="w-full bg-gray-700 border border-gray-600 rounded px-4 py-2 text-white placeholder-gray-400 focus:border-blue-400 outline-none">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold mb-2">Password</label>
+                    <input type="password" id="password" required placeholder="your password"
+                        class="w-full bg-gray-700 border border-gray-600 rounded px-4 py-2 text-white placeholder-gray-400 focus:border-blue-400 outline-none">
+                    <p class="text-xs text-gray-500 mt-2">Demo: admin123</p>
+                </div>
+
+                <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 rounded-lg transition">
+                    Login
+                </button>
+            </form>
+
+            <div class="mt-6 pt-6 border-t border-gray-700 text-sm text-gray-400">
+                <p>Don't have an account? <a href="register.html" class="text-blue-400 hover:text-blue-300">Sign up</a></p>
+            </div>
+        </div>
+
+        <!-- Info -->
+        <div class="mt-6 text-center text-sm text-gray-400">
+            <p>All systems operational</p>
+            <p>Backend: http://localhost:8000</p>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('demoForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const passkey = document.getElementById('passkey').value;
+
+            if (passkey === 'demo2026') {
+                enableDemoMode();
+                showToast('Demo mode enabled! Redirecting...', 'success');
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 1000);
+            } else {
+                showToast('Invalid passkey', 'error');
+                document.getElementById('passkey').value = '';
+            }
+        });
+
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                const result = await login(email, password);
+
+                if (result.access_token) {
+                    localStorage.setItem('access_token', result.access_token);
+                    localStorage.setItem('refresh_token', result.refresh_token);
+                    localStorage.setItem('user', JSON.stringify(result.user));
+
+                    showToast('Login successful!', 'success');
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 1000);
+                } else {
+                    showToast(result.error || 'Login failed', 'error');
+                }
+            } catch (err) {
+                showToast('Login error: ' + err.message, 'error');
+            }
+        });
+    </script>
+</body>
+</html>

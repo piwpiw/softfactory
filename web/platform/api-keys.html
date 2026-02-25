@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API 키 관리 — SoftFactory</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="api.js"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 antialiased">
+    <div class="flex h-screen overflow-hidden">
+        <aside class="w-60 bg-slate-900 border-r border-slate-800 flex flex-col shrink-0">
+            <div class="p-6 border-b border-slate-800">
+                <h1 class="text-xl font-bold text-white">🏭 SoftFactory</h1>
+            </div>
+            <nav class="flex-1 p-4 space-y-2 overflow-y-auto">
+                <a href="dashboard.html" class="block px-4 py-2 rounded-lg text-slate-300 hover:bg-slate-800">📊 대시보드</a>
+                <a href="billing.html" class="block px-4 py-2 rounded-lg text-slate-300 hover:bg-slate-800">💳 결제</a>
+                <a href="profile.html" class="block px-4 py-2 rounded-lg text-slate-300 hover:bg-slate-800">👤 프로필</a>
+                <a href="settings.html" class="block px-4 py-2 rounded-lg text-slate-300 hover:bg-slate-800">⚙️ 설정</a>
+                <a href="integrations.html" class="block px-4 py-2 rounded-lg text-slate-300 hover:bg-slate-800">🔗 통합</a>
+                <a href="api-keys.html" class="block px-4 py-2 rounded-lg bg-indigo-600 text-white">🔑 API 키</a>
+                <a href="admin.html" class="block px-4 py-2 rounded-lg text-slate-300 hover:bg-slate-800">👨‍💼 관리</a>
+                <hr class="my-4 border-slate-800">
+                <div class="text-xs text-slate-500 px-4 py-2">서비스</div>
+                <a href="../sns-auto/index.html" class="block px-4 py-2 rounded-lg text-slate-300 hover:bg-slate-800">📱 SNS Auto</a>
+                <a href="../review/index.html" class="block px-4 py-2 rounded-lg text-slate-300 hover:bg-slate-800">⭐ Review</a>
+                <a href="../coocook/index.html" class="block px-4 py-2 rounded-lg text-slate-300 hover:bg-slate-800">🍳 CooCook</a>
+                <a href="../ai-automation/index.html" class="block px-4 py-2 rounded-lg text-slate-300 hover:bg-slate-800">🤖 AI Auto</a>
+                <a href="../webapp-builder/index.html" class="block px-4 py-2 rounded-lg text-slate-300 hover:bg-slate-800">💻 WebApp</a>
+            </nav>
+            <div class="p-4 border-t border-slate-800">
+                <button onclick="logout()" class="w-full px-4 py-2 bg-slate-800 hover:bg-slate-700 rounded-lg text-sm font-medium transition">로그아웃</button>
+            </div>
+        </aside>
+
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <header class="h-16 bg-slate-900 border-b border-slate-800 flex items-center justify-between px-6 shrink-0">
+                <h2 class="text-2xl font-bold text-white">🔑 API 키 관리</h2>
+                <button onclick="createNewKey()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition">+ 새 키 생성</button>
+            </header>
+
+            <main class="flex-1 overflow-y-auto p-6">
+                <div class="space-y-6 max-w-4xl">
+                    <!-- API Keys List -->
+                    <div class="bg-slate-800 rounded-xl p-6 border border-slate-700">
+                        <h3 class="text-xl font-bold text-white mb-4">활성 API 키</h3>
+                        <div class="space-y-4">
+                            <!-- Key 1 -->
+                            <div class="bg-slate-700 rounded-lg p-4 border border-slate-600">
+                                <div class="flex items-start justify-between">
+                                    <div class="flex-1">
+                                        <div class="flex items-center gap-3 mb-2">
+                                            <p class="font-bold text-white">Production Key</p>
+                                            <span class="px-2 py-1 bg-green-900/50 text-green-300 text-xs rounded-full">활성</span>
+                                        </div>
+                                        <p class="text-sm text-slate-400 font-mono">sk_prod_***8N2xL5q9</p>
+                                        <p class="text-xs text-slate-500 mt-2">생성: 2026-02-01 | 마지막 사용: 2026-02-24 14:30</p>
+                                    </div>
+                                    <div class="flex gap-2">
+                                        <button onclick="copyKeyToClipboard('sk_prod_***8N2xL5q9')" class="px-3 py-1 text-sm bg-slate-600 hover:bg-slate-500 rounded transition">복사</button>
+                                        <button onclick="showKeyDetails('key1')" class="px-3 py-1 text-sm text-indigo-400 hover:text-indigo-300 transition">상세</button>
+                                        <button onclick="revokeKey('key1')" class="px-3 py-1 text-sm text-red-400 hover:text-red-300 transition">해제</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Key 2 -->
+                            <div class="bg-slate-700 rounded-lg p-4 border border-slate-600">
+                                <div class="flex items-start justify-between">
+                                    <div class="flex-1">
+                                        <div class="flex items-center gap-3 mb-2">
+                                            <p class="font-bold text-white">Development Key</p>
+                                            <span class="px-2 py-1 bg-green-900/50 text-green-300 text-xs rounded-full">활성</span>
+                                        </div>
+                                        <p class="text-sm text-slate-400 font-mono">sk_dev_***rM7kP2j4</p>
+                                        <p class="text-xs text-slate-500 mt-2">생성: 2026-01-15 | 마지막 사용: 2026-02-20 11:15</p>
+                                    </div>
+                                    <div class="flex gap-2">
+                                        <button onclick="copyKeyToClipboard('sk_dev_***rM7kP2j4')" class="px-3 py-1 text-sm bg-slate-600 hover:bg-slate-500 rounded transition">복사</button>
+                                        <button onclick="showKeyDetails('key2')" class="px-3 py-1 text-sm text-indigo-400 hover:text-indigo-300 transition">상세</button>
+                                        <button onclick="revokeKey('key2')" class="px-3 py-1 text-sm text-red-400 hover:text-red-300 transition">해제</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Key 3 -->
+                            <div class="bg-slate-700 rounded-lg p-4 border border-slate-600 opacity-50">
+                                <div class="flex items-start justify-between">
+                                    <div class="flex-1">
+                                        <div class="flex items-center gap-3 mb-2">
+                                            <p class="font-bold text-white">Testing Key (만료됨)</p>
+                                            <span class="px-2 py-1 bg-red-900/50 text-red-300 text-xs rounded-full">비활성</span>
+                                        </div>
+                                        <p class="text-sm text-slate-400 font-mono">sk_test_***xQ4nL9v8</p>
+                                        <p class="text-xs text-slate-500 mt-2">생성: 2025-12-01 | 해제됨: 2026-02-10</p>
+                                    </div>
+                                    <div class="flex gap-2">
+                                        <button onclick="deleteKey('key3')" class="px-3 py-1 text-sm text-red-400 hover:text-red-300 transition">삭제</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Key Permissions -->
+                    <div class="bg-slate-800 rounded-xl p-6 border border-slate-700">
+                        <h3 class="text-xl font-bold text-white mb-4">권한 설정</h3>
+                        <div class="space-y-3">
+                            <div class="flex items-start gap-3 p-4 bg-slate-700 rounded-lg">
+                                <input type="checkbox" checked class="w-4 h-4 mt-1 accent-indigo-600">
+                                <div class="flex-1">
+                                    <p class="font-medium text-white">읽기 (Read)</p>
+                                    <p class="text-sm text-slate-400">캠페인, 분석, 상태 조회</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-3 p-4 bg-slate-700 rounded-lg">
+                                <input type="checkbox" checked class="w-4 h-4 mt-1 accent-indigo-600">
+                                <div class="flex-1">
+                                    <p class="font-medium text-white">쓰기 (Write)</p>
+                                    <p class="text-sm text-slate-400">캠페인 생성 및 수정</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-3 p-4 bg-slate-700 rounded-lg">
+                                <input type="checkbox" class="w-4 h-4 mt-1 accent-indigo-600">
+                                <div class="flex-1">
+                                    <p class="font-medium text-white">삭제 (Delete)</p>
+                                    <p class="text-sm text-slate-400">캠페인 및 데이터 삭제</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-3 p-4 bg-slate-700 rounded-lg">
+                                <input type="checkbox" class="w-4 h-4 mt-1 accent-indigo-600">
+                                <div class="flex-1">
+                                    <p class="font-medium text-white">관리 (Admin)</p>
+                                    <p class="text-sm text-slate-400">계정 및 팀원 관리</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Usage Statistics -->
+                    <div class="bg-slate-800 rounded-xl p-6 border border-slate-700">
+                        <h3 class="text-xl font-bold text-white mb-4">API 사용량</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="bg-slate-700 rounded-lg p-4 border border-slate-600 text-center">
+                                <p class="text-3xl font-bold text-indigo-400">1,245</p>
+                                <p class="text-sm text-slate-400 mt-1">금월 요청</p>
+                            </div>
+                            <div class="bg-slate-700 rounded-lg p-4 border border-slate-600 text-center">
+                                <p class="text-3xl font-bold text-green-400">99.9%</p>
+                                <p class="text-sm text-slate-400 mt-1">가용률</p>
+                            </div>
+                            <div class="bg-slate-700 rounded-lg p-4 border border-slate-600 text-center">
+                                <p class="text-3xl font-bold text-cyan-400">45ms</p>
+                                <p class="text-sm text-slate-400 mt-1">평균 응답</p>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <p class="text-sm text-slate-300 mb-2">월별 사용량 (요청)</p>
+                            <div class="bg-slate-700 rounded h-2 overflow-hidden">
+                                <div class="bg-gradient-to-r from-cyan-500 to-indigo-500 h-full" style="width: 62%;"></div>
+                            </div>
+                            <p class="text-xs text-slate-400 mt-2">1,245 / 2,000 (62%)</p>
+                        </div>
+                    </div>
+
+                    <!-- Documentation -->
+                    <div class="bg-slate-800 rounded-xl p-6 border border-slate-700">
+                        <h3 class="text-xl font-bold text-white mb-4">📚 개발자 문서</h3>
+                        <div class="space-y-2">
+                            <a href="docs/api-reference.html" class="block px-4 py-3 bg-slate-700 hover:bg-slate-600 rounded-lg text-indigo-400 hover:text-indigo-300 transition">→ API 레퍼런스</a>
+                            <a href="docs/webhooks.html" class="block px-4 py-3 bg-slate-700 hover:bg-slate-600 rounded-lg text-indigo-400 hover:text-indigo-300 transition">→ Webhook 가이드</a>
+                            <a href="docs/authentication.html" class="block px-4 py-3 bg-slate-700 hover:bg-slate-600 rounded-lg text-indigo-400 hover:text-indigo-300 transition">→ 인증 설정</a>
+                            <a href="docs/rate-limits.html" class="block px-4 py-3 bg-slate-700 hover:bg-slate-600 rounded-lg text-indigo-400 hover:text-indigo-300 transition">→ 레이트 제한</a>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        requireAuth();
+
+        function createNewKey() {
+            const name = prompt('새 API 키의 이름을 입력하세요:');
+            if (name) {
+                showToast(`"${name}" API 키가 생성되었습니다`, 'success');
+            }
+        }
+
+        function copyKeyToClipboard(key) {
+            navigator.clipboard.writeText(key);
+            showToast('클립보드에 복사되었습니다', 'success');
+        }
+
+        function showKeyDetails(keyId) {
+            showToast('API 키 상세 정보를 표시합니다', 'info');
+        }
+
+        function revokeKey(keyId) {
+            confirmModal('이 API 키를 해제하시겠습니까? 이 키를 사용하는 요청이 실패합니다.').then(() => {
+                showToast('API 키가 해제되었습니다', 'warning');
+            });
+        }
+
+        function deleteKey(keyId) {
+            confirmModal('이 API 키를 삭제하시겠습니까? 이 작업은 취소할 수 없습니다.').then(() => {
+                showToast('API 키가 삭제되었습니다', 'error');
+            });
+        }
+
+        function logout() {
+            localStorage.removeItem('auth_token');
+            window.location.href = 'login.html';
+        }
+    </script>
+</body>
+</html>

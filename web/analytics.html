@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics - JARVIS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-white">
+    <nav class="bg-gray-800 border-b border-gray-700 px-6 py-4 flex justify-between items-center">
+        <h1 class="text-2xl font-bold">Analytics</h1>
+        <a href="index.html" class="text-gray-400 hover:text-white">← 홈</a>
+    </nav>
+
+    <main class="p-6 max-w-6xl mx-auto">
+        <!-- KPI Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+            <div class="bg-gradient-to-br from-orange-600 to-orange-700 p-6 rounded-lg">
+                <div class="text-sm opacity-90">활성 사용자</div>
+                <div class="text-4xl font-bold mt-2">10.2K</div>
+                <div class="text-sm mt-2">↑ 23% vs last month</div>
+            </div>
+            <div class="bg-gradient-to-br from-blue-600 to-blue-700 p-6 rounded-lg">
+                <div class="text-sm opacity-90">배포 성공률</div>
+                <div class="text-4xl font-bold mt-2">98.5%</div>
+                <div class="text-sm mt-2">↑ 2.5% target</div>
+            </div>
+            <div class="bg-gradient-to-br from-green-600 to-green-700 p-6 rounded-lg">
+                <div class="text-sm opacity-90">팀 활용률</div>
+                <div id="team-util" class="text-4xl font-bold mt-2">-</div>
+                <div class="text-sm mt-2">평균</div>
+            </div>
+            <div class="bg-gradient-to-br from-purple-600 to-purple-700 p-6 rounded-lg">
+                <div class="text-sm opacity-90">시스템 가동률</div>
+                <div class="text-4xl font-bold mt-2">99.98%</div>
+                <div class="text-sm mt-2">목표: 99.9%</div>
+            </div>
+        </div>
+
+        <!-- Performance Metrics -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <div class="bg-gray-800 p-6 rounded-lg">
+                <h3 class="text-xl font-bold mb-4">팀별 성과</h3>
+                <div id="team-performance" class="space-y-3">
+                    <div class="flex justify-between items-center">
+                        <span>Backend Core</span>
+                        <div class="bg-gray-700 rounded-full h-3 w-32">
+                            <div class="bg-orange-500 h-3 rounded-full" style="width: 92%"></div>
+                        </div>
+                        <span class="text-sm">92%</span>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-gray-800 p-6 rounded-lg">
+                <h3 class="text-xl font-bold mb-4">배포 통계</h3>
+                <div class="space-y-2">
+                    <p>✅ 완료: 234</p>
+                    <p>⏳ 진행중: 3</p>
+                    <p>❌ 실패: 1</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Button Actions -->
+        <div class="flex gap-4">
+            <button onclick="refreshMetrics()" class="bg-orange-600 hover:bg-orange-700 px-6 py-3 rounded font-bold">새로고침</button>
+            <button onclick="downloadReport()" class="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded font-bold">리포트 다운로드</button>
+        </div>
+    </main>
+
+    <script>
+        async function loadMetrics() {
+            try {
+                const res = await fetch('/api/v1/teams');
+                const data = await res.json();
+                document.getElementById('team-util').textContent = data.summary.avg_utilization;
+            } catch (e) {}
+        }
+
+        function refreshMetrics() {
+            loadMetrics();
+            alert('메트릭 새로고침 완료');
+        }
+
+        function downloadReport() {
+            alert('리포트 다운로드 시작');
+        }
+
+        loadMetrics();
+    </script>
+</body>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📊 분석 — JARVIS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .kpi-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .kpi-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        .trend-up { color: #10b981; }
+        .trend-down { color: #ef4444; }
+        .metric-card {
+            background: white;
+            border-left: 4px solid #f97316;
+            padding: 16px;
+            border-radius: 4px;
+            margin: 8px 0;
+        }
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="min-h-screen">
+        <!-- Header -->
+        <div class="bg-white border-b border-gray-200 sticky top-0 z-50">
+            <div class="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-900">📊 분석 & KPI</h1>
+                        <p class="text-sm text-gray-600">JARVIS 운영 지표 분석</p>
+                    </div>
+                    <a href="operations.html" class="text-orange-600 hover:text-orange-700 font-semibold">← 돌아가기</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
+            <!-- KPI 카드 -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                <div class="kpi-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                    <p class="text-sm opacity-90">Deploy Success Rate</p>
+                    <div class="kpi-value">100%</div>
+                    <p class="text-xs">📈 No failures this week</p>
+                </div>
+                <div class="kpi-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                    <p class="text-sm opacity-90">Sprint Velocity</p>
+                    <div class="kpi-value">30 pts</div>
+                    <p class="text-xs">⬆️ +8% vs last sprint</p>
+                </div>
+                <div class="kpi-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                    <p class="text-sm opacity-90">Test Coverage</p>
+                    <div class="kpi-value">89%</div>
+                    <p class="text-xs">✅ Above target (85%)</p>
+                </div>
+                <div class="kpi-card" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
+                    <p class="text-sm opacity-90">NPS Score</p>
+                    <div class="kpi-value">56</div>
+                    <p class="text-xs">⬆️ +2 from yesterday</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                <!-- Sprint 번다운 차트 -->
+                <div class="bg-white rounded-lg shadow p-6">
+                    <h2 class="text-lg font-bold mb-4">📉 Sprint Burndown</h2>
+                    <div class="chart-container">
+                        <canvas id="burndown-chart"></canvas>
+                    </div>
+                </div>
+
+                <!-- 팀별 속도 -->
+                <div class="bg-white rounded-lg shadow p-6">
+                    <h2 class="text-lg font-bold mb-4">⚙️ Team Velocity</h2>
+                    <div class="chart-container">
+                        <canvas id="velocity-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 배포 통계 -->
+            <div class="bg-white rounded-lg shadow p-6 mb-6">
+                <h2 class="text-lg font-bold mb-4">🚀 배포 통계</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="metric-card">
+                        <p class="text-2xl font-bold text-gray-900">24</p>
+                        <p class="text-sm text-gray-600">이번 달 배포</p>
+                        <p class="text-xs text-green-600">✅ 100% 성공</p>
+                    </div>
+                    <div class="metric-card">
+                        <p class="text-2xl font-bold text-gray-900">4.2 min</p>
+                        <p class="text-sm text-gray-600">평균 배포 시간</p>
+                        <p class="text-xs text-blue-600">⬇️ -15% vs last month</p>
+                    </div>
+                    <div class="metric-card">
+                        <p class="text-2xl font-bold text-gray-900">0</p>
+                        <p class="text-sm text-gray-600">이번 달 Rollback</p>
+                        <p class="text-xs text-green-600">✅ Excellent stability</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 품질 메트릭 -->
+            <div class="bg-white rounded-lg shadow p-6 mb-6">
+                <h2 class="text-lg font-bold mb-4">✅ 품질 메트릭</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <h3 class="font-semibold text-gray-900 mb-3">버그 지표</h3>
+                        <div class="metric-card">
+                            <p class="text-xl font-bold">0.02%</p>
+                            <p class="text-sm text-gray-600">프로덕션 에러율</p>
+                            <p class="text-xs text-green-600">✅ 목표: < 0.1%</p>
+                        </div>
+                        <div class="metric-card">
+                            <p class="text-xl font-bold">2%</p>
+                            <p class="text-sm text-gray-600">버그 재발률</p>
+                            <p class="text-xs text-green-600">✅ 목표: < 5%</p>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-gray-900 mb-3">성능 지표</h3>
+                        <div class="metric-card">
+                            <p class="text-xl font-bold">145ms</p>
+                            <p class="text-sm text-gray-600">평균 응답 시간</p>
+                            <p class="text-xs text-green-600">✅ 목표: < 200ms</p>
+                        </div>
+                        <div class="metric-card">
+                            <p class="text-xl font-bold">99.98%</p>
+                            <p class="text-sm text-gray-600">가용성</p>
+                            <p class="text-xs text-green-600">✅ 목표: > 99.9%</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 팀 생산성 -->
+            <div class="bg-white rounded-lg shadow p-6 mb-6">
+                <h2 class="text-lg font-bold mb-4">👥 팀 생산성</h2>
+                <div class="space-y-3">
+                    <div>
+                        <div class="flex justify-between mb-2">
+                            <span class="text-sm font-semibold">⚙️ Team 05 (Backend)</span>
+                            <span class="text-sm font-semibold text-orange-600">8/8 pts</span>
+                        </div>
+                        <div class="bg-gray-200 rounded-full h-3">
+                            <div class="bg-orange-500 h-3 rounded-full" style="width: 100%;"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between mb-2">
+                            <span class="text-sm font-semibold">🎨 Team 06 (Frontend)</span>
+                            <span class="text-sm font-semibold text-blue-600">5/6 pts</span>
+                        </div>
+                        <div class="bg-gray-200 rounded-full h-3">
+                            <div class="bg-blue-500 h-3 rounded-full" style="width: 83%;"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between mb-2">
+                            <span class="text-sm font-semibold">🔍 Team 07 (QA)</span>
+                            <span class="text-sm font-semibold text-purple-600">3/3 pts</span>
+                        </div>
+                        <div class="bg-gray-200 rounded-full h-3">
+                            <div class="bg-purple-500 h-3 rounded-full" style="width: 100%;"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between mb-2">
+                            <span class="text-sm font-semibold">🚀 Team 09 (DevOps)</span>
+                            <span class="text-sm font-semibold text-red-600">2/2 pts</span>
+                        </div>
+                        <div class="bg-gray-200 rounded-full h-3">
+                            <div class="bg-red-500 h-3 rounded-full" style="width: 100%;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 최근 활동 -->
+            <div class="bg-white rounded-lg shadow p-6">
+                <h2 class="text-lg font-bold mb-4">📝 최근 활동</h2>
+                <div class="space-y-3 text-sm">
+                    <p>✅ <strong>v1.2.24</strong> deployed to production (10,234 users affected)</p>
+                    <p>✅ Sprint S-001 <strong>30% complete</strong> (12/40 points)</p>
+                    <p>✅ Team 05 completed <strong>JWT Authentication</strong> task</p>
+                    <p>⏳ Team 06 working on <strong>Dashboard UI</strong> (40% done)</p>
+                    <p>🎯 Mission M-002 <strong>60% complete</strong></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Burndown 차트
+        const burndownCtx = document.getElementById('burndown-chart').getContext('2d');
+        new Chart(burndownCtx, {
+            type: 'line',
+            data: {
+                labels: ['Day 1', 'Day 2', 'Day 3', 'Day 4', 'Day 5', 'Day 6', 'Day 7', 'Day 8', 'Day 9', 'Day 10', 'Today'],
+                datasets: [{
+                    label: 'Ideal',
+                    data: [40, 35, 30, 25, 20, 15, 10, 5, 0, 0, 0],
+                    borderColor: '#9ca3af',
+                    borderDash: [5, 5],
+                    fill: false,
+                }, {
+                    label: 'Actual',
+                    data: [40, 38, 36, 33, 30, 27, 22, 18, 14, 12, 12],
+                    borderColor: '#f97316',
+                    backgroundColor: 'rgba(249, 115, 22, 0.1)',
+                    fill: true,
+                    tension: 0.4,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: true } },
+                scales: {
+                    y: { beginAtZero: true, max: 40 }
+                }
+            }
+        });
+
+        // Team Velocity 차트
+        const velocityCtx = document.getElementById('velocity-chart').getContext('2d');
+        new Chart(velocityCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Team 05', 'Team 06', 'Team 07', 'Team 09'],
+                datasets: [{
+                    label: 'Points Completed',
+                    data: [8, 5, 3, 2],
+                    backgroundColor: [
+                        '#f97316',
+                        '#3b82f6',
+                        '#8b5cf6',
+                        '#ef4444'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: { y: { beginAtZero: true } }
+            }
+        });
+    </script>
+</body>
+</html>

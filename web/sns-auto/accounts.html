@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>계정 연동 — SNS Auto | SoftFactory</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="../platform/api.js"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 antialiased">
+    <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-slate-900 border-r border-slate-800 flex flex-col shrink-0">
+            <div class="p-6 border-b border-slate-800">
+                <a href="../platform/dashboard.html" class="flex items-center gap-3">
+                    <span class="text-2xl">🏭</span>
+                    <div>
+                        <h1 class="font-bold text-white text-sm">SoftFactory</h1>
+                        <p class="text-xs text-slate-400">← Back</p>
+                    </div>
+                </a>
+            </div>
+            <nav class="flex-1 p-6 space-y-2 overflow-y-auto">
+                <p class="text-xs font-semibold text-slate-400 uppercase px-4 mb-3">📱 SNS Auto</p>
+                <a href="index.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 transition">
+                    <span>📊</span> 대시보드
+                </a>
+                <a href="accounts.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg bg-pink-600 text-white font-medium">
+                    <span>🔗</span> 계정 연동
+                </a>
+                <a href="create.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 transition">
+                    <span>✍️</span> 포스트 작성
+                </a>
+                <a href="schedule.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 transition">
+                    <span>📅</span> 예약 관리
+                </a>
+            </nav>
+            <div class="p-6 border-t border-slate-800">
+                <div class="flex items-center justify-between">
+                    <p class="text-sm font-medium text-white">Demo User</p>
+                    <button onclick="logout()" class="p-2 hover:bg-slate-800 rounded-lg transition">🚪</button>
+                </div>
+            </div>
+        </aside>
+
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <header class="h-16 bg-slate-900 border-b border-slate-800 px-6 flex items-center justify-between shrink-0">
+                <div>
+                    <h2 class="text-xl font-bold text-white">🔗 계정 연동</h2>
+                    <p class="text-xs text-slate-400">SNS 계정을 관리하세요</p>
+                </div>
+                <button onclick="showAddModal()" class="px-4 py-2 bg-pink-600 hover:bg-pink-700 text-white rounded-lg font-medium transition text-sm">
+                    + 계정 추가
+                </button>
+            </header>
+
+            <main class="flex-1 overflow-y-auto p-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="accountsGrid">
+                    <div class="bg-slate-800 rounded-lg p-6 border border-slate-700 animate-pulse">
+                        <div class="h-6 bg-slate-700 rounded mb-4 w-3/4"></div>
+                        <div class="space-y-3">
+                            <div class="h-4 bg-slate-700 rounded"></div>
+                            <div class="h-4 bg-slate-700 rounded w-5/6"></div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Add Account Modal -->
+    <div id="addModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-slate-800 border border-slate-700 rounded-xl p-8 max-w-sm w-full mx-4">
+            <h3 class="text-xl font-bold text-white mb-4">📱 SNS 계정 추가</h3>
+            <form id="addForm" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-slate-300 mb-2">플랫폼</label>
+                    <select id="platform" required class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white focus:border-pink-500 focus:outline-none">
+                        <option value="">선택하세요</option>
+                        <option value="instagram">Instagram</option>
+                        <option value="blog">Blog</option>
+                        <option value="tiktok">TikTok</option>
+                        <option value="youtube">YouTube</option>
+                        <option value="twitter">Twitter/X</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-300 mb-2">계정명</label>
+                    <input type="text" id="accountName" placeholder="@username" required class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white placeholder-slate-500 focus:border-pink-500 focus:outline-none">
+                </div>
+                <div class="flex gap-3">
+                    <button type="button" onclick="closeAddModal()" class="flex-1 px-4 py-2.5 bg-slate-700 hover:bg-slate-600 text-slate-100 rounded-lg transition">
+                        취소
+                    </button>
+                    <button type="submit" class="flex-1 px-4 py-2.5 bg-pink-600 hover:bg-pink-700 text-white rounded-lg font-medium transition">
+                        추가
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        requireAuth();
+
+        async function init() {
+            try {
+                const accountsData = await getSNSAccounts();
+                renderAccounts(accountsData.accounts || []);
+            } catch (error) {
+                console.error('Error:', error);
+                showError('계정 로드 중 오류 발생');
+            }
+        }
+
+        function renderAccounts(accounts) {
+            const grid = document.getElementById('accountsGrid');
+            grid.innerHTML = '';
+
+            const platformEmojis = {
+                instagram: '📷', blog: '📝', tiktok: '🎵', youtube: '▶️', twitter: '𝕏', facebook: '👍'
+            };
+
+            accounts.forEach(account => {
+                const emoji = platformEmojis[account.platform] || '📱';
+                const html = `
+                    <div class="bg-gradient-to-br from-pink-900/30 to-pink-900/10 rounded-lg p-6 border-2 border-pink-600">
+                        <div class="flex items-start justify-between mb-4">
+                            <div>
+                                <div class="text-3xl mb-2">${emoji}</div>
+                                <h4 class="font-semibold text-white">${account.account_name}</h4>
+                                <p class="text-xs text-slate-400 capitalize">${account.platform}</p>
+                            </div>
+                            <span class="${account.is_active ? 'text-green-400 text-xs' : 'text-slate-400 text-xs'}">
+                                ${account.is_active ? '✅ 활성' : '⚫ 비활성'}
+                            </span>
+                        </div>
+                        <div class="text-xs text-slate-400 mb-4">연동: ${formatDate(account.created_at, 'short')}</div>
+                        <button onclick="deleteAccount(${account.id})" class="w-full px-3 py-2 bg-red-600 hover:bg-red-700 text-white text-sm rounded-lg transition">
+                            삭제
+                        </button>
+                    </div>
+                `;
+                grid.innerHTML += html;
+            });
+        }
+
+        function showAddModal() {
+            document.getElementById('addModal').classList.remove('hidden');
+        }
+
+        function closeAddModal() {
+            document.getElementById('addModal').classList.add('hidden');
+        }
+
+        document.getElementById('addForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            try {
+                const platform = document.getElementById('platform').value;
+                const accountName = document.getElementById('accountName').value;
+                const result = await createSNSAccount(platform, accountName);
+                if (result.id) {
+                    showSuccess('계정이 추가되었습니다!');
+                    closeAddModal();
+                    init();
+                }
+            } catch (error) {
+                showError('계정 추가 실패');
+            }
+        });
+
+        async function deleteAccount(accountId) {
+            if (confirm('정말 삭제하시겠습니까?')) {
+                try {
+                    await deleteSNSAccount(accountId);
+                    showSuccess('계정이 삭제되었습니다!');
+                    init();
+                } catch (error) {
+                    showError('삭제 실패');
+                }
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>

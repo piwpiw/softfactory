@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>로그인 — SoftFactory</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="api.js"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        @keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+        .fade-in { animation: fadeIn 0.3s ease-out; }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 antialiased min-h-screen flex items-center justify-center p-4">
+    <div class="w-full max-w-2xl">
+        <!-- Header -->
+        <div class="text-center mb-12">
+            <div class="text-4xl mb-3">🏭</div>
+            <h1 class="text-4xl font-bold text-white mb-2">SoftFactory</h1>
+            <p class="text-slate-400 text-lg">프리미엄 비즈니스 자동화 플랫폼</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Demo Mode Card -->
+            <div class="bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl p-8 border border-slate-700 hover:border-slate-600 transition">
+                <div class="flex items-center gap-3 mb-6">
+                    <span class="text-2xl">🎮</span>
+                    <div>
+                        <h2 class="text-xl font-bold text-white">데모 모드</h2>
+                        <p class="text-xs text-slate-400">모든 기능 미리보기</p>
+                    </div>
+                </div>
+
+                <form id="demoForm" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-slate-300 mb-2">패스키 입력</label>
+                        <input type="password" id="passkey" placeholder="••••••"
+                            class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white placeholder-slate-500 focus:border-indigo-500 focus:outline-none transition">
+                        <p class="text-xs text-slate-500 mt-2">💡 힌트: <code class="bg-slate-800 px-2 py-1 rounded">demo2026</code></p>
+                    </div>
+                    <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 rounded-lg transition">
+                        데모 시작
+                    </button>
+                </form>
+
+                <p class="text-xs text-slate-500 text-center mt-4">Mock 데이터로 모든 기능 테스트 가능</p>
+            </div>
+
+            <!-- Real Login Card -->
+            <div class="bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl p-8 border border-slate-700">
+                <div class="flex items-center gap-3 mb-6">
+                    <span class="text-2xl">🔐</span>
+                    <div>
+                        <h2 class="text-xl font-bold text-white">실제 로그인</h2>
+                        <p class="text-xs text-slate-400">계정으로 접속</p>
+                    </div>
+                </div>
+
+                <form id="loginForm" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-slate-300 mb-2">이메일</label>
+                        <input type="email" id="email" placeholder="admin@softfactory.com"
+                            class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white placeholder-slate-500 focus:border-indigo-500 focus:outline-none transition">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-slate-300 mb-2">비밀번호</label>
+                        <input type="password" id="password" placeholder="••••••"
+                            class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white placeholder-slate-500 focus:border-indigo-500 focus:outline-none transition">
+                    </div>
+
+                    <div class="flex items-center gap-2">
+                        <input type="checkbox" id="remember" class="w-4 h-4 rounded border-slate-600 bg-slate-700 text-indigo-600">
+                        <label for="remember" class="text-sm text-slate-400">로그인 유지</label>
+                    </div>
+
+                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 rounded-lg transition">
+                        로그인
+                    </button>
+                </form>
+
+                <p class="text-xs text-slate-500 text-center mt-4">
+                    데모: <code class="bg-slate-800 px-2 py-1 rounded">admin@softfactory.com</code> / <code class="bg-slate-800 px-2 py-1 rounded">admin123</code>
+                </p>
+            </div>
+        </div>
+
+        <!-- Features Grid -->
+        <div class="mt-12 grid grid-cols-1 md:grid-cols-5 gap-4">
+            <div class="bg-slate-800 rounded-lg p-4 text-center border border-slate-700 hover:border-slate-600 transition">
+                <div class="text-3xl mb-2">🍳</div>
+                <p class="text-sm font-medium text-slate-200">CooCook</p>
+                <p class="text-xs text-slate-500">셰프 마켓</p>
+            </div>
+            <div class="bg-slate-800 rounded-lg p-4 text-center border border-slate-700 hover:border-slate-600 transition">
+                <div class="text-3xl mb-2">📱</div>
+                <p class="text-sm font-medium text-slate-200">SNS Auto</p>
+                <p class="text-xs text-slate-500">소셜 자동화</p>
+            </div>
+            <div class="bg-slate-800 rounded-lg p-4 text-center border border-slate-700 hover:border-slate-600 transition">
+                <div class="text-3xl mb-2">⭐</div>
+                <p class="text-sm font-medium text-slate-200">Review</p>
+                <p class="text-xs text-slate-500">리뷰 캠페인</p>
+            </div>
+            <div class="bg-slate-800 rounded-lg p-4 text-center border border-slate-700 hover:border-slate-600 transition">
+                <div class="text-3xl mb-2">🤖</div>
+                <p class="text-sm font-medium text-slate-200">AI Auto</p>
+                <p class="text-xs text-slate-500">AI 직원</p>
+            </div>
+            <div class="bg-slate-800 rounded-lg p-4 text-center border border-slate-700 hover:border-slate-600 transition">
+                <div class="text-3xl mb-2">💻</div>
+                <p class="text-sm font-medium text-slate-200">WebApp</p>
+                <p class="text-xs text-slate-500">부트캠프</p>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="mt-12 text-center text-xs text-slate-500">
+            <p>🔗 백엔드: http://localhost:8000</p>
+            <p class="mt-2">© 2026 SoftFactory — Premium B2B SaaS Platform</p>
+        </div>
+    </div>
+
+    <script>
+        // Demo Mode Handler
+        document.getElementById('demoForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const passkey = document.getElementById('passkey').value;
+
+            if (passkey === DEMO_PASSKEY) {
+                enableDemoMode();
+                showSuccess('데모 모드 활성화!');
+                setTimeout(() => {
+                    window.location.href = 'dashboard.html';
+                }, 500);
+            } else {
+                showError('잘못된 패스키입니다.');
+                document.getElementById('passkey').value = '';
+            }
+        });
+
+        // Real Login Handler
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                const data = await login(email, password);
+                if (data.access_token) {
+                    localStorage.setItem('access_token', data.access_token);
+                    localStorage.setItem('refresh_token', data.refresh_token || '');
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    showSuccess('로그인 성공!');
+                    setTimeout(() => {
+                        window.location.href = 'dashboard.html';
+                    }, 500);
+                } else {
+                    showError(data.message || '로그인 실패');
+                }
+            } catch (error) {
+                showError('로그인 중 오류 발생');
+            }
+        });
+    </script>
+</body>
+</html>

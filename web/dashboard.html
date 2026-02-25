@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - JARVIS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-white">
+    <nav class="bg-gray-800 border-b border-gray-700 px-6 py-4 flex justify-between items-center">
+        <h1 class="text-2xl font-bold">Real-time Dashboard</h1>
+        <a href="index.html" class="text-gray-400 hover:text-white">← 홈</a>
+    </nav>
+
+    <main class="p-6 max-w-6xl mx-auto">
+        <!-- System Health -->
+        <div class="bg-gray-800 p-6 rounded-lg mb-8">
+            <h2 class="text-2xl font-bold mb-6">시스템 상태</h2>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div>
+                    <p class="text-sm text-gray-400 mb-2">가동률</p>
+                    <p class="text-3xl font-bold">99.98%</p>
+                    <p class="text-green-400 text-sm mt-1">✅ Healthy</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-400 mb-2">지연시간</p>
+                    <p class="text-3xl font-bold">145ms</p>
+                    <p class="text-green-400 text-sm mt-1">✅ Normal</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-400 mb-2">에러율</p>
+                    <p class="text-3xl font-bold">0.02%</p>
+                    <p class="text-green-400 text-sm mt-1">✅ Low</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-400 mb-2">활성 연결</p>
+                    <div id="active-connections" class="text-3xl font-bold">-</div>
+                    <p class="text-green-400 text-sm mt-1">✅ Connected</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Real-time Stats -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <div class="bg-gray-800 p-6 rounded-lg">
+                <h3 class="text-xl font-bold mb-4">활성 팀</h3>
+                <div id="active-teams" class="space-y-2"></div>
+            </div>
+            <div class="bg-gray-800 p-6 rounded-lg">
+                <h3 class="text-xl font-bold mb-4">진행중인 배포</h3>
+                <div id="active-deploys" class="space-y-2">
+                    <p class="text-gray-400">배포 없음</p>
+                </div>
+                <button onclick="startDeploy()" class="mt-4 bg-orange-600 hover:bg-orange-700 px-4 py-2 rounded">배포 시작</button>
+            </div>
+        </div>
+
+        <!-- Live Updates -->
+        <div class="bg-gray-800 p-6 rounded-lg">
+            <h3 class="text-xl font-bold mb-4">실시간 로그</h3>
+            <div id="live-logs" class="bg-gray-900 p-4 rounded text-sm font-mono max-h-48 overflow-y-auto space-y-1">
+                <p class="text-gray-500">[System] Dashboard initialized</p>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        async function loadDashboard() {
+            try {
+                const res = await fetch('/api/v1/teams');
+                const data = await res.json();
+
+                // Active connections
+                document.getElementById('active-connections').textContent = data.teams.length;
+
+                // Active teams
+                const teamsHtml = data.teams.slice(0, 3).map(t =>
+                    `<div class="flex justify-between">
+                        <span>${t.name}</span>
+                        <span class="text-green-400">${t.utilization}% 활용</span>
+                    </div>`
+                ).join('');
+                document.getElementById('active-teams').innerHTML = teamsHtml;
+
+                // Add log
+                const logs = document.getElementById('live-logs');
+                const time = new Date().toLocaleTimeString();
+                logs.innerHTML += `<p class="text-gray-400">[${time}] Teams loaded: ${data.teams.length}</p>`;
+            } catch (e) {}
+        }
+
+        function startDeploy() {
+            const deploys = document.getElementById('active-deploys');
+            deploys.innerHTML = '<p class="text-orange-400">배포 진행 중: 0%</p>';
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += 25;
+                if (progress <= 100) {
+                    deploys.innerHTML = `<p class="text-orange-400">배포 진행 중: ${progress}%</p>`;
+                } else {
+                    clearInterval(interval);
+                    deploys.innerHTML = '<p class="text-green-400">배포 완료 ✅</p>';
+                }
+            }, 500);
+        }
+
+        loadDashboard();
+        setInterval(loadDashboard, 5000);
+    </script>
+</body>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CooCook Analytics Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        .metric-card {
+            background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+            color: white;
+        }
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white">
+    <nav class="bg-gray-800 border-b border-gray-700 px-6 py-4">
+        <div class="flex justify-between items-center">
+            <h1 class="text-2xl font-bold">📊 CooCook Analytics</h1>
+            <div class="text-sm text-gray-400">Updated: <span id="time"></span></div>
+        </div>
+    </nav>
+
+    <main class="p-6 max-w-7xl mx-auto">
+        <!-- Real-time Progress Bar -->
+        <div class="bg-gray-800 p-4 rounded-lg mb-8">
+            <div class="text-sm text-gray-400 mb-2">System Status</div>
+            <div class="flex items-center gap-4">
+                <div class="flex-1">
+                    <div class="bg-gray-700 rounded-full h-3 overflow-hidden">
+                        <div id="progress" class="bg-orange-500 h-full" style="width: 85%; transition: width 0.3s;"></div>
+                    </div>
+                </div>
+                <span id="progress-text" class="text-sm font-bold">85%</span>
+            </div>
+            <div class="text-xs text-gray-500 mt-2">Uptime: 99.98% | Health: OK | Latency: 145ms</div>
+        </div>
+
+        <!-- KPI Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+            <div class="metric-card p-6 rounded-lg">
+                <div class="text-sm opacity-90">Monthly Active Users</div>
+                <div class="text-4xl font-bold mt-2">10.2K</div>
+                <div class="text-sm mt-2">↑ 23% vs last month</div>
+            </div>
+            <div class="metric-card p-6 rounded-lg">
+                <div class="text-sm opacity-90">Booking Conversion</div>
+                <div class="text-4xl font-bold mt-2">16.8%</div>
+                <div class="text-sm mt-2">↑ 2.1% target</div>
+            </div>
+            <div class="metric-card p-6 rounded-lg">
+                <div class="text-sm opacity-90">7-Day Retention</div>
+                <div class="text-4xl font-bold mt-2">42.3%</div>
+                <div class="text-sm mt-2">↑ 1.2% from goal</div>
+            </div>
+            <div class="metric-card p-6 rounded-lg">
+                <div class="text-sm opacity-90">Net Promoter Score</div>
+                <div class="text-4xl font-bold mt-2">54</div>
+                <div class="text-sm mt-2">↑ 4 points</div>
+            </div>
+        </div>
+
+        <!-- Charts Row 1 -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <!-- MAU Trend -->
+            <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                <h3 class="text-lg font-bold mb-4">📈 MAU Trend (Q1 2026)</h3>
+                <div class="chart-container">
+                    <canvas id="mauChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Revenue by Source -->
+            <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                <h3 class="text-lg font-bold mb-4">💰 Revenue by Source</h3>
+                <div class="chart-container">
+                    <canvas id="revenueChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Row 2 -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <!-- User Cohort -->
+            <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                <h3 class="text-lg font-bold mb-4">👥 Cohort Retention</h3>
+                <div class="space-y-3">
+                    <div>
+                        <div class="flex justify-between text-sm mb-1">
+                            <span>Jan 2026</span>
+                            <span>78%</span>
+                        </div>
+                        <div class="w-full bg-gray-700 rounded-full h-2">
+                            <div class="bg-orange-500 h-2 rounded-full" style="width:78%"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between text-sm mb-1">
+                            <span>Feb 2026</span>
+                            <span>65%</span>
+                        </div>
+                        <div class="w-full bg-gray-700 rounded-full h-2">
+                            <div class="bg-orange-500 h-2 rounded-full" style="width:65%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Feature Adoption -->
+            <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                <h3 class="text-lg font-bold mb-4">🎯 Feature Adoption</h3>
+                <div class="space-y-3">
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm">Recipe Discovery</span>
+                        <span class="font-bold">92%</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm">Chef Booking</span>
+                        <span class="font-bold">68%</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm">AI Recommendations</span>
+                        <span class="font-bold">54%</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm">Social Sharing</span>
+                        <span class="font-bold">41%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Activities -->
+        <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+            <h3 class="text-lg font-bold mb-4">⚡ Recent Activities</h3>
+            <div class="space-y-2 text-sm">
+                <div class="flex justify-between py-2 border-b border-gray-700">
+                    <span>🎉 100 new chef registrations</span>
+                    <span class="text-gray-400">2h ago</span>
+                </div>
+                <div class="flex justify-between py-2 border-b border-gray-700">
+                    <span>🚀 Recipe Discovery API deployed</span>
+                    <span class="text-gray-400">5h ago</span>
+                </div>
+                <div class="flex justify-between py-2 border-b border-gray-700">
+                    <span>🔐 Security audit PASSED (0 critical)</span>
+                    <span class="text-gray-400">8h ago</span>
+                </div>
+                <div class="flex justify-between py-2">
+                    <span>📊 Q1 OKR Review: 95% on track</span>
+                    <span class="text-gray-400">1d ago</span>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Update time
+        function updateTime() {
+            document.getElementById('time').textContent = new Date().toLocaleString('en-US', {
+                month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+            });
+        }
+        updateTime();
+        setInterval(updateTime, 60000);
+
+        // MAU Trend Chart
+        new Chart(document.getElementById('mauChart'), {
+            type: 'line',
+            data: {
+                labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6', 'Week 7'],
+                datasets: [{
+                    label: 'MAU',
+                    data: [8200, 8900, 9400, 9800, 10200, 10450, 10200],
+                    borderColor: '#f97316',
+                    backgroundColor: 'rgba(249, 115, 22, 0.1)',
+                    borderWidth: 2,
+                    tension: 0.4,
+                    fill: true,
+                }]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: { y: { grid: { color: '#374151' }, ticks: { color: '#9CA3AF' } } }
+            }
+        });
+
+        // Revenue Chart
+        new Chart(document.getElementById('revenueChart'), {
+            type: 'doughnut',
+            data: {
+                labels: ['Chef Bookings', 'Subscriptions', 'Premium Recipes', 'Partnerships'],
+                datasets: [{
+                    data: [42, 31, 18, 9],
+                    backgroundColor: ['#f97316', '#ea580c', '#d97706', '#b45309'],
+                }]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                plugins: { legend: { labels: { color: '#E5E7EB' } } }
+            }
+        });
+    </script>
+</body>
+</html>

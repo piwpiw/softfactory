@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>통합 설정 — SoftFactory</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="api.js"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 antialiased">
+    <div class="flex h-screen overflow-hidden">
+        <aside class="w-60 bg-slate-900 border-r border-slate-800 flex flex-col shrink-0">
+            <div class="p-6 border-b border-slate-800">
+                <h1 class="text-xl font-bold text-white">🏭 SoftFactory</h1>
+            </div>
+            <nav class="flex-1 p-4 space-y-2 overflow-y-auto">
+                <a href="dashboard.html" class="block px-4 py-2 rounded-lg text-slate-300 hover:bg-slate-800">📊 대시보드</a>
+                <a href="billing.html" class="block px-4 py-2 rounded-lg text-slate-300 hover:bg-slate-800">💳 결제</a>
+                <a href="profile.html" class="block px-4 py-2 rounded-lg text-slate-300 hover:bg-slate-800">👤 프로필</a>
+                <a href="settings.html" class="block px-4 py-2 rounded-lg text-slate-300 hover:bg-slate-800">⚙️ 설정</a>
+                <a href="integrations.html" class="block px-4 py-2 rounded-lg bg-indigo-600 text-white">🔗 통합</a>
+                <a href="api-keys.html" class="block px-4 py-2 rounded-lg text-slate-300 hover:bg-slate-800">🔑 API 키</a>
+                <a href="admin.html" class="block px-4 py-2 rounded-lg text-slate-300 hover:bg-slate-800">👨‍💼 관리</a>
+                <hr class="my-4 border-slate-800">
+                <div class="text-xs text-slate-500 px-4 py-2">서비스</div>
+                <a href="../sns-auto/index.html" class="block px-4 py-2 rounded-lg text-slate-300 hover:bg-slate-800">📱 SNS Auto</a>
+                <a href="../review/index.html" class="block px-4 py-2 rounded-lg text-slate-300 hover:bg-slate-800">⭐ Review</a>
+                <a href="../coocook/index.html" class="block px-4 py-2 rounded-lg text-slate-300 hover:bg-slate-800">🍳 CooCook</a>
+                <a href="../ai-automation/index.html" class="block px-4 py-2 rounded-lg text-slate-300 hover:bg-slate-800">🤖 AI Auto</a>
+                <a href="../webapp-builder/index.html" class="block px-4 py-2 rounded-lg text-slate-300 hover:bg-slate-800">💻 WebApp</a>
+            </nav>
+            <div class="p-4 border-t border-slate-800">
+                <button onclick="logout()" class="w-full px-4 py-2 bg-slate-800 hover:bg-slate-700 rounded-lg text-sm font-medium transition">로그아웃</button>
+            </div>
+        </aside>
+
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <header class="h-16 bg-slate-900 border-b border-slate-800 flex items-center justify-between px-6 shrink-0">
+                <h2 class="text-2xl font-bold text-white">🔗 통합 설정</h2>
+                <a href="help.html" class="px-4 py-2 text-slate-300 hover:text-white transition">❓ 도움말</a>
+            </header>
+
+            <main class="flex-1 overflow-y-auto p-6">
+                <div class="space-y-6 max-w-4xl">
+                    <!-- Available Integrations -->
+                    <div class="bg-slate-800 rounded-xl p-6 border border-slate-700">
+                        <h3 class="text-xl font-bold text-white mb-4">이용 가능한 통합</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <!-- Instagram -->
+                            <div class="bg-slate-700 rounded-lg p-4 border border-slate-600">
+                                <div class="flex items-start justify-between">
+                                    <div>
+                                        <p class="font-bold text-white flex items-center gap-2">📷 Instagram</p>
+                                        <p class="text-sm text-slate-400 mt-1">SNS Auto에서 Instagram 계정 연동</p>
+                                        <p class="text-xs text-slate-500 mt-2">상태: 연동되지 않음</p>
+                                    </div>
+                                    <button onclick="connectIntegration('instagram')" class="px-3 py-1 bg-indigo-600 hover:bg-indigo-700 text-white text-sm rounded font-medium transition">연결</button>
+                                </div>
+                            </div>
+
+                            <!-- Facebook Pages -->
+                            <div class="bg-slate-700 rounded-lg p-4 border border-slate-600">
+                                <div class="flex items-start justify-between">
+                                    <div>
+                                        <p class="font-bold text-white flex items-center gap-2">f Facebook</p>
+                                        <p class="text-sm text-slate-400 mt-1">Facebook Pages 연동 및 관리</p>
+                                        <p class="text-xs text-slate-500 mt-2">상태: 연동되지 않음</p>
+                                    </div>
+                                    <button onclick="connectIntegration('facebook')" class="px-3 py-1 bg-indigo-600 hover:bg-indigo-700 text-white text-sm rounded font-medium transition">연결</button>
+                                </div>
+                            </div>
+
+                            <!-- Twitter/X -->
+                            <div class="bg-slate-700 rounded-lg p-4 border border-slate-600">
+                                <div class="flex items-start justify-between">
+                                    <div>
+                                        <p class="font-bold text-white flex items-center gap-2">𝕏 Twitter/X</p>
+                                        <p class="text-sm text-slate-400 mt-1">트윗 자동화 및 스케줄링</p>
+                                        <p class="text-xs text-slate-500 mt-2">상태: 연동됨 ✅</p>
+                                    </div>
+                                    <button onclick="disconnectIntegration('twitter')" class="px-3 py-1 bg-slate-600 hover:bg-slate-500 text-white text-sm rounded font-medium transition">해제</button>
+                                </div>
+                            </div>
+
+                            <!-- LinkedIn -->
+                            <div class="bg-slate-700 rounded-lg p-4 border border-slate-600">
+                                <div class="flex items-start justify-between">
+                                    <div>
+                                        <p class="font-bold text-white flex items-center gap-2">in LinkedIn</p>
+                                        <p class="text-sm text-slate-400 mt-1">LinkedIn 포스트 및 회사 페이지</p>
+                                        <p class="text-xs text-slate-500 mt-2">상태: 연동되지 않음</p>
+                                    </div>
+                                    <button onclick="connectIntegration('linkedin')" class="px-3 py-1 bg-indigo-600 hover:bg-indigo-700 text-white text-sm rounded font-medium transition">연결</button>
+                                </div>
+                            </div>
+
+                            <!-- Stripe -->
+                            <div class="bg-slate-700 rounded-lg p-4 border border-slate-600">
+                                <div class="flex items-start justify-between">
+                                    <div>
+                                        <p class="font-bold text-white flex items-center gap-2">💳 Stripe</p>
+                                        <p class="text-sm text-slate-400 mt-1">결제 처리 및 청구서 관리</p>
+                                        <p class="text-xs text-slate-500 mt-2">상태: 연동됨 ✅</p>
+                                    </div>
+                                    <button onclick="showIntegrationSettings('stripe')" class="px-3 py-1 bg-slate-600 hover:bg-slate-500 text-white text-sm rounded font-medium transition">설정</button>
+                                </div>
+                            </div>
+
+                            <!-- Slack -->
+                            <div class="bg-slate-700 rounded-lg p-4 border border-slate-600">
+                                <div class="flex items-start justify-between">
+                                    <div>
+                                        <p class="font-bold text-white flex items-center gap-2">💬 Slack</p>
+                                        <p class="text-sm text-slate-400 mt-1">알림 및 팀 커뮤니케이션</p>
+                                        <p class="text-xs text-slate-500 mt-2">상태: 연동되지 않음</p>
+                                    </div>
+                                    <button onclick="connectIntegration('slack')" class="px-3 py-1 bg-indigo-600 hover:bg-indigo-700 text-white text-sm rounded font-medium transition">연결</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Connected Integrations -->
+                    <div class="bg-slate-800 rounded-xl p-6 border border-slate-700">
+                        <h3 class="text-xl font-bold text-white mb-4">연동된 서비스</h3>
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between p-4 bg-slate-700 rounded-lg border border-green-600/30">
+                                <div>
+                                    <p class="font-medium text-white">𝕏 Twitter/X</p>
+                                    <p class="text-sm text-slate-400">계정: @softfactory_kr</p>
+                                    <p class="text-xs text-slate-500 mt-1">연동: 2026-02-15</p>
+                                </div>
+                                <button onclick="showIntegrationDetails('twitter')" class="px-3 py-1 text-sm text-indigo-400 hover:text-indigo-300 transition">상세 보기</button>
+                            </div>
+
+                            <div class="flex items-center justify-between p-4 bg-slate-700 rounded-lg border border-green-600/30">
+                                <div>
+                                    <p class="font-medium text-white">💳 Stripe</p>
+                                    <p class="text-sm text-slate-400">계정: sk_live_***4242</p>
+                                    <p class="text-xs text-slate-500 mt-1">연동: 2026-01-20</p>
+                                </div>
+                                <button onclick="showIntegrationDetails('stripe')" class="px-3 py-1 text-sm text-indigo-400 hover:text-indigo-300 transition">상세 보기</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Webhook Settings -->
+                    <div class="bg-slate-800 rounded-xl p-6 border border-slate-700">
+                        <h3 class="text-xl font-bold text-white mb-4">Webhook 설정</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-slate-300 mb-2">Webhook URL</label>
+                                <input type="text" value="https://app.softfactory.com/webhook" readonly class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white text-sm">
+                                <p class="text-xs text-slate-400 mt-2">외부 서비스에서 이벤트를 받을 수 있습니다</p>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-300 mb-2">구독 이벤트</label>
+                                <div class="space-y-2">
+                                    <label class="flex items-center gap-3">
+                                        <input type="checkbox" checked class="w-4 h-4 rounded accent-indigo-600">
+                                        <span class="text-sm text-slate-300">캠페인 완료</span>
+                                    </label>
+                                    <label class="flex items-center gap-3">
+                                        <input type="checkbox" checked class="w-4 h-4 rounded accent-indigo-600">
+                                        <span class="text-sm text-slate-300">포스트 발행</span>
+                                    </label>
+                                    <label class="flex items-center gap-3">
+                                        <input type="checkbox" class="w-4 h-4 rounded accent-indigo-600">
+                                        <span class="text-sm text-slate-300">결제 완료</span>
+                                    </label>
+                                </div>
+                            </div>
+                            <button onclick="saveWebhookSettings()" class="w-full px-4 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition">저장</button>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        requireAuth();
+
+        function connectIntegration(service) {
+            confirmModal(`${service} 통합을 활성화하시겠습니까?`).then(() => {
+                showToast(`${service} 통합이 활성화되었습니다`, 'success');
+            });
+        }
+
+        function disconnectIntegration(service) {
+            confirmModal(`${service} 통합을 해제하시겠습니까?`).then(() => {
+                showToast(`${service} 통합이 해제되었습니다`, 'warning');
+            });
+        }
+
+        function showIntegrationSettings(service) {
+            showToast(`${service} 설정 페이지로 이동합니다`, 'info');
+        }
+
+        function showIntegrationDetails(service) {
+            showToast(`${service} 상세 정보를 표시합니다`, 'info');
+        }
+
+        function saveWebhookSettings() {
+            showToast('Webhook 설정이 저장되었습니다', 'success');
+        }
+
+        function logout() {
+            localStorage.removeItem('auth_token');
+            window.location.href = 'login.html';
+        }
+    </script>
+</body>
+</html>

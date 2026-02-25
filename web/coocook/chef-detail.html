@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>셰프 상세 — CooCook | SoftFactory</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="../platform/api.js"></script>
+    <style>body { font-family: 'Inter', sans-serif; }</style>
+</head>
+<body class="bg-slate-950 text-slate-100">
+    <div class="flex h-screen overflow-hidden">
+        <aside class="w-64 bg-slate-900 border-r border-slate-800 flex flex-col shrink-0">
+            <div class="p-6 border-b border-slate-800">
+                <a href="explore.html" class="flex items-center gap-3">
+                    <span>←</span><span class="text-sm font-medium">탐색</span>
+                </a>
+            </div>
+        </aside>
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <main class="flex-1 overflow-y-auto p-6">
+                <div class="grid grid-cols-3 gap-6">
+                    <div class="col-span-2">
+                        <div class="bg-slate-800 rounded-xl p-8 border border-slate-700 mb-6">
+                            <div class="flex items-start gap-6 mb-6">
+                                <div class="text-6xl" id="chefImage">👨‍🍳</div>
+                                <div>
+                                    <h1 class="text-3xl font-bold text-white mb-2" id="chefName">Chef Name</h1>
+                                    <p class="text-orange-400 mb-4" id="chefCuisine">Cuisine Type</p>
+                                    <p class="text-yellow-400 text-lg mb-4">⭐ <span id="chefRating">5.0</span> (<span id="chefRatingCount">0</span>)</p>
+                                    <p class="text-slate-300 mb-4" id="chefBio">Bio here</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-slate-800 rounded-xl p-8 border border-slate-700 mb-6">
+                            <h3 class="text-lg font-bold text-white mb-4">🍽️ 특기</h3>
+                            <div class="flex gap-2" id="specialties">
+                                <span class="px-3 py-1 bg-orange-600 text-orange-100 text-sm rounded-full">요리1</span>
+                            </div>
+                        </div>
+                        <div class="bg-slate-800 rounded-xl p-8 border border-slate-700">
+                            <h3 class="text-lg font-bold text-white mb-4">💬 리뷰</h3>
+                            <div id="reviews" class="space-y-4">
+                                <div class="p-4 bg-slate-700 rounded-lg">
+                                    <p class="text-sm text-slate-400">리뷰 로딩 중...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-gradient-to-br from-orange-900/30 to-orange-900/10 rounded-xl p-6 border-2 border-orange-600 h-fit">
+                        <p class="text-slate-400 text-sm mb-2">1회 요리 비용</p>
+                        <p class="text-3xl font-bold text-white mb-6" id="chefPrice">₩0</p>
+                        <a href="booking.html" class="w-full block text-center px-4 py-3 bg-orange-600 hover:bg-orange-700 text-white rounded-lg font-semibold transition mb-3">
+                            예약하기
+                        </a>
+                        <p class="text-xs text-slate-400 text-center">날짜와 시간을 선택하여 예약합니다</p>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+    <script>
+        requireAuth();
+
+        async function init() {
+            try {
+                const params = new URLSearchParams(window.location.search);
+                const chefId = params.get('id') || 1;
+                const chef = await getChefDetail(chefId);
+
+                document.getElementById('chefImage').textContent = chef.image || '👨‍🍳';
+                document.getElementById('chefName').textContent = chef.name;
+                document.getElementById('chefCuisine').textContent = chef.cuisine_type;
+                document.getElementById('chefRating').textContent = chef.rating;
+                document.getElementById('chefRatingCount').textContent = chef.rating_count;
+                document.getElementById('chefBio').textContent = chef.bio;
+                document.getElementById('chefPrice').textContent = formatKRW(chef.price_per_session);
+
+                const specs = document.getElementById('specialties');
+                specs.innerHTML = (chef.specialties || []).map(s => `<span class="px-3 py-1 bg-orange-600 text-orange-100 text-sm rounded-full">${s}</span>`).join('');
+
+                const reviews = document.getElementById('reviews');
+                reviews.innerHTML = (chef.reviews || []).map(r => `
+                    <div class="p-4 bg-slate-700 rounded-lg">
+                        <p class="text-sm text-yellow-400 mb-1">⭐ ${r.rating}</p>
+                        <p class="text-sm text-white font-medium">${r.author}</p>
+                        <p class="text-xs text-slate-300 mt-2">"${r.comment}"</p>
+                    </div>
+                `).join('');
+            } catch (error) {
+                showError('셰프 정보 로드 실패');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>

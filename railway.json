@@ -1,0 +1,38 @@
+{
+  "$schema": "https://railway.app/railway.schema.json",
+  "build": {
+    "builder": "dockerfile"
+  },
+  "deploy": {
+    "numReplicas": 1,
+    "sleepApplication": false,
+    "restartPolicyType": "on_failure",
+    "restartPolicyMaxRetries": 5
+  },
+  "variables": {
+    "ANTHROPIC_API_KEY": {
+      "description": "Claude API Key",
+      "value": ""
+    },
+    "TELEGRAM_BOT_TOKEN": {
+      "description": "Telegram Bot Token",
+      "value": ""
+    },
+    "TELEGRAM_CHAT_ID": {
+      "description": "Telegram Chat ID",
+      "value": ""
+    },
+    "DATABASE_URL": {
+      "description": "PostgreSQL URL",
+      "value": ""
+    }
+  },
+  "plugins": [
+    {
+      "source": "railway/postgresql",
+      "config": {
+        "version": "16"
+      }
+    }
+  ]
+}

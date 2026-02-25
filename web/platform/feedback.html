@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>피드백 & 제안 — SoftFactory</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="api.js"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 antialiased">
+    <div class="flex h-screen overflow-hidden">
+        <aside class="w-60 bg-slate-900 border-r border-slate-800 flex flex-col shrink-0">
+            <div class="p-6 border-b border-slate-800">
+                <h1 class="text-xl font-bold text-white">🏭 SoftFactory</h1>
+            </div>
+            <nav class="flex-1 p-4 space-y-2 overflow-y-auto">
+                <a href="dashboard.html" class="block px-4 py-2 rounded-lg text-slate-300 hover:bg-slate-800">📊 대시보드</a>
+                <a href="help.html" class="block px-4 py-2 rounded-lg text-slate-300 hover:bg-slate-800">❓ 도움말</a>
+                <a href="feedback.html" class="block px-4 py-2 rounded-lg bg-indigo-600 text-white">💡 피드백</a>
+                <a href="contact.html" class="block px-4 py-2 rounded-lg text-slate-300 hover:bg-slate-800">📞 문의</a>
+                <a href="status.html" class="block px-4 py-2 rounded-lg text-slate-300 hover:bg-slate-800">🔧 상태</a>
+            </nav>
+            <div class="p-4 border-t border-slate-800">
+                <button onclick="logout()" class="w-full px-4 py-2 bg-slate-800 hover:bg-slate-700 rounded-lg text-sm font-medium transition">로그아웃</button>
+            </div>
+        </aside>
+
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <header class="h-16 bg-slate-900 border-b border-slate-800 flex items-center justify-between px-6 shrink-0">
+                <h2 class="text-2xl font-bold text-white">💡 피드백 & 제안</h2>
+                <button onclick="openFeedbackForm()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition">+ 새 피드백</button>
+            </header>
+
+            <main class="flex-1 overflow-y-auto p-6">
+                <div class="space-y-6 max-w-4xl">
+                    <!-- Feedback Categories -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="bg-slate-800 rounded-lg p-4 border border-slate-700 cursor-pointer hover:border-indigo-500 transition">
+                            <p class="text-2xl mb-2">💬</p>
+                            <p class="font-bold text-white">일반 피드백</p>
+                            <p class="text-sm text-slate-400 mt-1">제품 개선 의견</p>
+                            <p class="text-xs text-slate-500 mt-2">47개 제안</p>
+                        </div>
+                        <div class="bg-slate-800 rounded-lg p-4 border border-slate-700 cursor-pointer hover:border-indigo-500 transition">
+                            <p class="text-2xl mb-2">✨</p>
+                            <p class="font-bold text-white">기능 요청</p>
+                            <p class="text-sm text-slate-400 mt-1">새로운 기능 아이디어</p>
+                            <p class="text-xs text-slate-500 mt-2">62개 요청</p>
+                        </div>
+                        <div class="bg-slate-800 rounded-lg p-4 border border-slate-700 cursor-pointer hover:border-indigo-500 transition">
+                            <p class="text-2xl mb-2">🐛</p>
+                            <p class="font-bold text-white">버그 신고</p>
+                            <p class="text-sm text-slate-400 mt-1">문제 및 오류 제보</p>
+                            <p class="text-xs text-slate-500 mt-2">13개 보고</p>
+                        </div>
+                    </div>
+
+                    <!-- New Feedback Form -->
+                    <div class="bg-slate-800 rounded-xl p-8 border border-slate-700">
+                        <h3 class="text-xl font-bold text-white mb-6">피드백 제출</h3>
+                        <form class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-slate-300 mb-2">유형</label>
+                                <select required class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white focus:border-indigo-500 focus:outline-none">
+                                    <option>일반 피드백</option>
+                                    <option>기능 요청</option>
+                                    <option>버그 신고</option>
+                                    <option>성능 문제</option>
+                                    <option>기타</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-slate-300 mb-2">제목</label>
+                                <input type="text" required placeholder="짧은 제목을 입력하세요" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white placeholder-slate-500 focus:border-indigo-500 focus:outline-none">
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-slate-300 mb-2">설명</label>
+                                <textarea required placeholder="자세한 설명을 입력하세요..." class="w-full h-32 bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white placeholder-slate-500 focus:border-indigo-500 focus:outline-none resize-none"></textarea>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-slate-300 mb-2">관련 서비스</label>
+                                <div class="grid grid-cols-2 md:grid-cols-3 gap-2">
+                                    <label class="flex items-center gap-2">
+                                        <input type="checkbox" class="w-4 h-4 rounded accent-indigo-600">
+                                        <span class="text-sm text-slate-300">📱 SNS Auto</span>
+                                    </label>
+                                    <label class="flex items-center gap-2">
+                                        <input type="checkbox" class="w-4 h-4 rounded accent-indigo-600">
+                                        <span class="text-sm text-slate-300">⭐ Review</span>
+                                    </label>
+                                    <label class="flex items-center gap-2">
+                                        <input type="checkbox" class="w-4 h-4 rounded accent-indigo-600">
+                                        <span class="text-sm text-slate-300">🍳 CooCook</span>
+                                    </label>
+                                    <label class="flex items-center gap-2">
+                                        <input type="checkbox" class="w-4 h-4 rounded accent-indigo-600">
+                                        <span class="text-sm text-slate-300">🤖 AI Auto</span>
+                                    </label>
+                                    <label class="flex items-center gap-2">
+                                        <input type="checkbox" class="w-4 h-4 rounded accent-indigo-600">
+                                        <span class="text-sm text-slate-300">💻 WebApp</span>
+                                    </label>
+                                    <label class="flex items-center gap-2">
+                                        <input type="checkbox" class="w-4 h-4 rounded accent-indigo-600">
+                                        <span class="text-sm text-slate-300">플랫폼</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="flex items-center gap-2 mb-4">
+                                    <input type="checkbox" class="w-4 h-4 rounded accent-indigo-600">
+                                    <span class="text-sm text-slate-300">이 피드백을 다른 사용자들과 공유 가능</span>
+                                </label>
+                            </div>
+
+                            <button type="submit" onclick="submitFeedback(); return false;" class="w-full px-4 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition">피드백 제출</button>
+                        </form>
+                    </div>
+
+                    <!-- Recent Feedback -->
+                    <div class="bg-slate-800 rounded-xl p-8 border border-slate-700">
+                        <h3 class="text-xl font-bold text-white mb-6">최근 피드백</h3>
+                        <div class="space-y-4">
+                            <!-- Feedback Item 1 -->
+                            <div class="bg-slate-700 rounded-lg p-4 border border-slate-600 hover:border-indigo-500 transition cursor-pointer">
+                                <div class="flex items-start justify-between mb-2">
+                                    <div>
+                                        <div class="flex items-center gap-2 mb-1">
+                                            <span class="px-2 py-1 bg-green-900 text-green-300 text-xs rounded-full">✨ 기능 요청</span>
+                                            <span class="text-xs text-slate-400">2026-02-24</span>
+                                        </div>
+                                        <p class="font-medium text-white">AI 자동 태그 지정</p>
+                                        <p class="text-sm text-slate-400 mt-1">SNS 포스트를 AI로 자동으로 분류하고 태그할 수 있으면 좋겠습니다.</p>
+                                    </div>
+                                    <div class="flex gap-2">
+                                        <span class="text-sm text-indigo-400">👍 24</span>
+                                        <span class="text-sm text-slate-400">💬 3</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Feedback Item 2 -->
+                            <div class="bg-slate-700 rounded-lg p-4 border border-slate-600 hover:border-indigo-500 transition cursor-pointer">
+                                <div class="flex items-start justify-between mb-2">
+                                    <div>
+                                        <div class="flex items-center gap-2 mb-1">
+                                            <span class="px-2 py-1 bg-blue-900 text-blue-300 text-xs rounded-full">💬 일반 피드백</span>
+                                            <span class="text-xs text-slate-400">2026-02-23</span>
+                                        </div>
+                                        <p class="font-medium text-white">다크모드 테마 옵션 확대</p>
+                                        <p class="text-sm text-slate-400 mt-1">더 많은 컬러 테마 옵션을 추가해주세요.</p>
+                                    </div>
+                                    <div class="flex gap-2">
+                                        <span class="text-sm text-indigo-400">👍 18</span>
+                                        <span class="text-sm text-slate-400">💬 5</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Feedback Item 3 -->
+                            <div class="bg-slate-700 rounded-lg p-4 border border-slate-600 hover:border-indigo-500 transition cursor-pointer">
+                                <div class="flex items-start justify-between mb-2">
+                                    <div>
+                                        <div class="flex items-center gap-2 mb-1">
+                                            <span class="px-2 py-1 bg-orange-900 text-orange-300 text-xs rounded-full">🐛 버그 신고</span>
+                                            <span class="text-xs text-slate-400">2026-02-22</span>
+                                        </div>
+                                        <p class="font-medium text-white">모바일에서 포스트 에디터 버그</p>
+                                        <p class="text-sm text-slate-400 mt-1">iPhone에서 포스트 에디터 오른쪽 끝이 잘립니다.</p>
+                                    </div>
+                                    <div class="flex gap-2">
+                                        <span class="text-sm text-indigo-400">👍 12</span>
+                                        <span class="text-sm text-slate-400">💬 2</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Feedback Item 4 -->
+                            <div class="bg-slate-700 rounded-lg p-4 border border-slate-600 hover:border-indigo-500 transition cursor-pointer">
+                                <div class="flex items-start justify-between mb-2">
+                                    <div>
+                                        <div class="flex items-center gap-2 mb-1">
+                                            <span class="px-2 py-1 bg-green-900 text-green-300 text-xs rounded-full">✨ 기능 요청</span>
+                                            <span class="text-xs text-slate-400">2026-02-21</span>
+                                        </div>
+                                        <p class="font-medium text-white">Slack 통합 개선</p>
+                                        <p class="text-sm text-slate-400 mt-1">Slack에서 직접 포스트를 스케줄링할 수 있게 해주세요.</p>
+                                    </div>
+                                    <div class="flex gap-2">
+                                        <span class="text-sm text-indigo-400">👍 31</span>
+                                        <span class="text-sm text-slate-400">💬 7</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Voting System Info -->
+                    <div class="bg-indigo-900/30 rounded-lg p-6 border border-indigo-600/30">
+                        <p class="text-sm text-slate-300">💡 <strong>팁:</strong> 다른 사용자의 피드백에 투표하세요. 가장 많은 표를 받은 기능 요청부터 우선 개발합니다.</p>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        requireAuth();
+
+        function openFeedbackForm() {
+            showToast('피드백 양식이 준비되었습니다', 'info');
+        }
+
+        function submitFeedback() {
+            showToast('피드백이 성공적으로 제출되었습니다! 감사합니다.', 'success');
+            document.querySelector('form').reset();
+        }
+
+        function logout() {
+            localStorage.removeItem('auth_token');
+            window.location.href = 'login.html';
+        }
+    </script>
+</body>
+</html>

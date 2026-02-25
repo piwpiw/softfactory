@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SNS Auto — SoftFactory</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="../platform/api.js"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 antialiased">
+    <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-slate-900 border-r border-slate-800 flex flex-col shrink-0">
+            <!-- Logo -->
+            <div class="p-6 border-b border-slate-800">
+                <a href="../platform/dashboard.html" class="flex items-center gap-3">
+                    <span class="text-2xl">🏭</span>
+                    <div>
+                        <h1 class="font-bold text-white text-sm">SoftFactory</h1>
+                        <p class="text-xs text-slate-400">← Back</p>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Navigation -->
+            <nav class="flex-1 p-6 space-y-2 overflow-y-auto">
+                <p class="text-xs font-semibold text-slate-400 uppercase px-4 mb-3">📱 SNS Auto</p>
+                <a href="index.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg bg-pink-600 text-white font-medium">
+                    <span>📊</span> 대시보드
+                </a>
+                <a href="accounts.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 transition">
+                    <span>🔗</span> 계정 연동
+                </a>
+                <a href="create.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 transition">
+                    <span>✍️</span> 포스트 작성
+                </a>
+                <a href="schedule.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 transition">
+                    <span>📅</span> 예약 관리
+                </a>
+                <a href="analytics.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 transition">
+                    <span>📈</span> 분석
+                </a>
+                <a href="templates.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 transition">
+                    <span>🎨</span> 템플릿
+                </a>
+            </nav>
+
+            <!-- User Info -->
+            <div class="p-6 border-t border-slate-800">
+                <div class="flex items-center justify-between">
+                    <p class="text-sm font-medium text-white">Demo User</p>
+                    <button onclick="logout()" class="p-2 hover:bg-slate-800 rounded-lg transition" title="Logout">
+                        🚪
+                    </button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <!-- Header -->
+            <header class="h-16 bg-slate-900 border-b border-slate-800 px-6 flex items-center justify-between shrink-0">
+                <div>
+                    <h2 class="text-xl font-bold text-white">📱 SNS Auto 대시보드</h2>
+                    <p class="text-xs text-slate-400">소셜미디어 자동화 관리</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <a href="create.html" class="px-4 py-2 bg-pink-600 hover:bg-pink-700 text-white rounded-lg font-medium transition text-sm">
+                        + 새 포스트
+                    </a>
+                </div>
+            </header>
+
+            <!-- Content -->
+            <main class="flex-1 overflow-y-auto p-6 space-y-6">
+                <!-- KPI Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                    <div class="bg-slate-800 rounded-xl p-6 border border-slate-700">
+                        <p class="text-slate-400 text-sm font-medium mb-2">전체 포스트</p>
+                        <p class="text-3xl font-bold text-white" id="totalPosts">24</p>
+                        <p class="text-xs text-slate-500 mt-2">30일 기준</p>
+                    </div>
+                    <div class="bg-slate-800 rounded-xl p-6 border border-slate-700">
+                        <p class="text-slate-400 text-sm font-medium mb-2">총 상호작용</p>
+                        <p class="text-3xl font-bold text-white" id="totalEngagement">8,450</p>
+                        <p class="text-xs text-slate-500 mt-2">좋아요 + 댓글</p>
+                    </div>
+                    <div class="bg-slate-800 rounded-xl p-6 border border-slate-700">
+                        <p class="text-slate-400 text-sm font-medium mb-2">평균 상호작용</p>
+                        <p class="text-3xl font-bold text-white" id="avgEngagement">352</p>
+                        <p class="text-xs text-slate-500 mt-2">포스트당</p>
+                    </div>
+                    <div class="bg-slate-800 rounded-xl p-6 border border-slate-700">
+                        <p class="text-slate-400 text-sm font-medium mb-2">연결된 계정</p>
+                        <p class="text-3xl font-bold text-white" id="accountCount">2</p>
+                        <p class="text-xs text-slate-500 mt-2">활성 중</p>
+                    </div>
+                </div>
+
+                <!-- Accounts Summary -->
+                <div>
+                    <h3 class="text-lg font-bold text-white mb-4">📱 연결된 계정</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="accountsGrid">
+                        <div class="bg-slate-800 rounded-lg p-6 border border-slate-700 animate-pulse">
+                            <div class="h-6 bg-slate-700 rounded mb-4 w-3/4"></div>
+                            <div class="space-y-3">
+                                <div class="h-4 bg-slate-700 rounded"></div>
+                                <div class="h-4 bg-slate-700 rounded w-5/6"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Top Performing Posts -->
+                <div>
+                    <h3 class="text-lg font-bold text-white mb-4">🌟 최고 성과 포스트</h3>
+                    <div class="bg-slate-800 rounded-xl p-6 border border-slate-700">
+                        <div id="topPost" class="space-y-4">
+                            <div class="animate-pulse">
+                                <div class="h-6 bg-slate-700 rounded mb-4 w-3/4"></div>
+                                <div class="space-y-3">
+                                    <div class="h-4 bg-slate-700 rounded"></div>
+                                    <div class="h-4 bg-slate-700 rounded w-5/6"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Platform Breakdown Chart -->
+                <div>
+                    <h3 class="text-lg font-bold text-white mb-4">📊 플랫폼별 분석</h3>
+                    <div class="bg-slate-800 rounded-xl p-6 border border-slate-700">
+                        <canvas id="platformChart" style="max-height: 300px;"></canvas>
+                    </div>
+                </div>
+
+                <!-- Recent Posts -->
+                <div>
+                    <h3 class="text-lg font-bold text-white mb-4">📝 최근 포스트</h3>
+                    <div class="space-y-3" id="recentPosts">
+                        <div class="bg-slate-800 rounded-lg p-4 border border-slate-700 animate-pulse">
+                            <div class="h-4 bg-slate-700 rounded w-3/4 mb-2"></div>
+                            <div class="h-3 bg-slate-700 rounded w-1/2"></div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        requireAuth();
+
+        let platformChart = null;
+
+        async function init() {
+            try {
+                // Get SNS Analytics and Accounts
+                const [accountsData, analyticsData] = await Promise.all([
+                    getSNSAccounts(),
+                    apiFetch('/api/sns/analytics').then(r => r.json())
+                ]);
+
+                // Update KPI cards
+                document.getElementById('totalPosts').textContent = analyticsData.total_posts || 24;
+                document.getElementById('totalEngagement').textContent = (analyticsData.total_engagement || 8450).toLocaleString('ko-KR');
+                document.getElementById('avgEngagement').textContent = (analyticsData.average_engagement || 352).toLocaleString('ko-KR');
+                document.getElementById('accountCount').textContent = (accountsData.accounts?.length || 2);
+
+                // Render accounts
+                renderAccounts(accountsData.accounts || []);
+
+                // Render top post
+                renderTopPost(analyticsData.top_performing);
+
+                // Render chart
+                renderChart(analyticsData.platform_breakdown || []);
+
+                // Render recent posts
+                renderRecentPosts(analyticsData.trend_30days || []);
+            } catch (error) {
+                console.error('Error loading SNS Auto:', error);
+                showError('데이터 로드 중 오류 발생');
+            }
+        }
+
+        function renderAccounts(accounts) {
+            const grid = document.getElementById('accountsGrid');
+            grid.innerHTML = '';
+
+            const platformEmojis = {
+                instagram: '📷',
+                blog: '📝',
+                tiktok: '🎵',
+                youtube: '▶️',
+                twitter: '𝕏',
+                facebook: '👍'
+            };
+
+            accounts.forEach(account => {
+                const emoji = platformEmojis[account.platform] || '📱';
+                const html = `
+                    <div class="bg-gradient-to-br from-pink-900/30 to-pink-900/10 rounded-lg p-6 border-2 border-pink-600">
+                        <div class="flex items-start justify-between mb-4">
+                            <div>
+                                <div class="text-2xl mb-2">${emoji}</div>
+                                <h4 class="font-semibold text-white">${account.account_name}</h4>
+                                <p class="text-xs text-slate-400 capitalize">${account.platform}</p>
+                            </div>
+                            <span class="${account.is_active ? 'text-green-400 font-bold text-xs' : 'text-slate-400 text-xs'}">
+                                ${account.is_active ? '🟢 활성' : '⚫ 비활성'}
+                            </span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3 text-sm">
+                            <div>
+                                <p class="text-slate-400 text-xs">팔로워</p>
+                                <p class="font-bold text-white">${(account.followers || 0).toLocaleString('ko-KR')}</p>
+                            </div>
+                            <div>
+                                <p class="text-slate-400 text-xs">참여도</p>
+                                <p class="font-bold text-white">${(account.engagement_rate || 0).toFixed(1)}%</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                grid.innerHTML += html;
+            });
+        }
+
+        function renderTopPost(topPost) {
+            const container = document.getElementById('topPost');
+            if (topPost) {
+                const html = `
+                    <div class="grid grid-cols-3 gap-4">
+                        <div>
+                            <p class="text-slate-400 text-sm mb-1">제목</p>
+                            <p class="font-semibold text-white">${topPost.title || '-'}</p>
+                        </div>
+                        <div>
+                            <p class="text-slate-400 text-sm mb-1">조회수</p>
+                            <p class="font-semibold text-white text-lg">${(topPost.views || 0).toLocaleString('ko-KR')}</p>
+                        </div>
+                        <div>
+                            <p class="text-slate-400 text-sm mb-1">상호작용</p>
+                            <p class="font-semibold text-white text-lg">${(topPost.likes || 0).toLocaleString('ko-KR')}❤️</p>
+                        </div>
+                    </div>
+                `;
+                container.innerHTML = html;
+            }
+        }
+
+        function renderChart(platformData) {
+            const ctx = document.getElementById('platformChart').getContext('2d');
+            const defaults = getChartDefaults();
+
+            const labels = (platformData || []).map(p => p.platform || 'Unknown');
+            const data = (platformData || []).map(p => p.engagement || 0);
+
+            platformChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: labels.length > 0 ? labels : ['Instagram', 'Blog'],
+                    datasets: [{
+                        data: data.length > 0 ? data : [5200, 3250],
+                        backgroundColor: [
+                            '#ec4899',
+                            '#f97316',
+                            '#06b6d4',
+                            '#a78bfa',
+                            '#10b981'
+                        ],
+                        borderColor: '#1e293b',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    ...defaults,
+                    plugins: {
+                        ...defaults.plugins,
+                        legend: {
+                            position: 'bottom',
+                            labels: { color: '#cbd5e1', font: { family: "'Inter', sans-serif", size: 12 } }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderRecentPosts(trend) {
+            const container = document.getElementById('recentPosts');
+            container.innerHTML = '';
+
+            if (trend && trend.length > 0) {
+                trend.forEach(item => {
+                    const html = `
+                        <div class="bg-slate-800 rounded-lg p-4 border border-slate-700 hover:border-pink-600 transition">
+                            <div class="flex items-start justify-between">
+                                <div>
+                                    <p class="text-sm text-slate-400">${item.day || '날짜'}</p>
+                                    <p class="font-medium text-white">${item.posts || 0} 포스트 • ${item.engagement || 0} 상호작용</p>
+                                </div>
+                                <a href="#" class="text-pink-400 hover:text-pink-300 text-xs">→</a>
+                            </div>
+                        </div>
+                    `;
+                    container.innerHTML += html;
+                });
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>

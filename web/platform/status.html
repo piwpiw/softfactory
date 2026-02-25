@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>시스템 상태 — SoftFactory</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="api.js"></script>
+    <style>body { font-family: 'Inter', sans-serif; }</style>
+</head>
+<body class="bg-slate-950 text-slate-100">
+    <div class="max-w-4xl mx-auto px-6 py-12">
+        <h1 class="text-4xl font-bold text-white mb-8">🔧 시스템 상태</h1>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <div class="bg-gradient-to-br from-green-900/30 to-green-900/10 rounded-xl p-6 border-2 border-green-600">
+                <h3 class="font-bold text-white mb-2">✅ 모든 서비스 정상</h3>
+                <p class="text-sm text-slate-300">마지막 확인: 2026-02-24 14:30</p>
+            </div>
+            <div class="bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl p-6 border border-slate-700">
+                <h3 class="font-bold text-white mb-2">📊 가동률</h3>
+                <p class="text-2xl font-bold text-green-400">99.99%</p>
+            </div>
+        </div>
+
+        <div class="bg-slate-800 rounded-xl p-8 border border-slate-700">
+            <h2 class="text-2xl font-bold text-white mb-6">서비스 상태</h2>
+            <div class="space-y-4">
+                <div class="flex items-center justify-between p-4 bg-slate-700 rounded-lg">
+                    <div>
+                        <p class="font-medium text-white">🏭 Core Platform</p>
+                        <p class="text-sm text-slate-400">메인 플랫폼</p>
+                    </div>
+                    <span class="px-3 py-1 bg-green-900 text-green-200 text-xs rounded-full font-bold">✅ 정상</span>
+                </div>
+                <div class="flex items-center justify-between p-4 bg-slate-700 rounded-lg">
+                    <div>
+                        <p class="font-medium text-white">🍳 CooCook API</p>
+                        <p class="text-sm text-slate-400">셰프 마켓</p>
+                    </div>
+                    <span class="px-3 py-1 bg-green-900 text-green-200 text-xs rounded-full font-bold">✅ 정상</span>
+                </div>
+                <div class="flex items-center justify-between p-4 bg-slate-700 rounded-lg">
+                    <div>
+                        <p class="font-medium text-white">📱 SNS Auto API</p>
+                        <p class="text-sm text-slate-400">소셜 미디어 자동화</p>
+                    </div>
+                    <span class="px-3 py-1 bg-green-900 text-green-200 text-xs rounded-full font-bold">✅ 정상</span>
+                </div>
+                <div class="flex items-center justify-between p-4 bg-slate-700 rounded-lg">
+                    <div>
+                        <p class="font-medium text-white">⭐ Review API</p>
+                        <p class="text-sm text-slate-400">리뷰 캠페인</p>
+                    </div>
+                    <span class="px-3 py-1 bg-green-900 text-green-200 text-xs rounded-full font-bold">✅ 정상</span>
+                </div>
+                <div class="flex items-center justify-between p-4 bg-slate-700 rounded-lg">
+                    <div>
+                        <p class="font-medium text-white">🤖 AI Automation API</p>
+                        <p class="text-sm text-slate-400">AI 자동화</p>
+                    </div>
+                    <span class="px-3 py-1 bg-green-900 text-green-200 text-xs rounded-full font-bold">✅ 정상</span>
+                </div>
+                <div class="flex items-center justify-between p-4 bg-slate-700 rounded-lg">
+                    <div>
+                        <p class="font-medium text-white">💻 WebApp Builder API</p>
+                        <p class="text-sm text-slate-400">웹앱 빌더</p>
+                    </div>
+                    <span class="px-3 py-1 bg-green-900 text-green-200 text-xs rounded-full font-bold">✅ 정상</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-8 text-center text-slate-400 text-sm">
+            <p>실시간 상태 업데이트: 자동 새로고침 (1분마다)</p>
+        </div>
+    </div>
+    <script>
+        // Auto-refresh every 60 seconds
+        setTimeout(() => { location.reload(); }, 60000);
+    </script>
+</body>
+</html>

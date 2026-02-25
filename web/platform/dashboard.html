@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>대시보드 — SoftFactory</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="api.js"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 antialiased">
+    <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-slate-900 border-r border-slate-800 flex flex-col shrink-0">
+            <!-- Logo -->
+            <div class="p-6 border-b border-slate-800">
+                <div class="flex items-center gap-3">
+                    <span class="text-2xl">🏭</span>
+                    <div>
+                        <h1 class="font-bold text-white">SoftFactory</h1>
+                        <p class="text-xs text-slate-400">Premium SaaS</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation -->
+            <nav class="flex-1 p-6 space-y-2 overflow-y-auto">
+                <a href="dashboard.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg bg-indigo-600 text-white font-medium">
+                    <span>📊</span> 대시보드
+                </a>
+                <a href="billing.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 transition">
+                    <span>💳</span> 결제 및 청구
+                </a>
+                <a href="profile.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 transition">
+                    <span>👤</span> 프로필
+                </a>
+                <a href="admin.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 transition">
+                    <span>⚙️</span> 관리자
+                </a>
+
+                <div class="my-6 border-t border-slate-800"></div>
+
+                <!-- Services Quick Links -->
+                <p class="text-xs font-semibold text-slate-400 uppercase px-4 mb-3">서비스</p>
+                <a href="../sns-auto/index.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 transition">
+                    <span>📱</span> SNS Auto
+                </a>
+                <a href="../review/index.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 transition">
+                    <span>⭐</span> Review
+                </a>
+                <a href="../coocook/index.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 transition">
+                    <span>🍳</span> CooCook
+                </a>
+                <a href="../ai-automation/index.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 transition">
+                    <span>🤖</span> AI Automation
+                </a>
+                <a href="../webapp-builder/index.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 transition">
+                    <span>💻</span> WebApp Builder
+                </a>
+            </nav>
+
+            <!-- User Info -->
+            <div class="p-6 border-t border-slate-800">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-white" id="userName">Demo User</p>
+                        <p class="text-xs text-slate-400" id="userEmail">demo@softfactory.com</p>
+                    </div>
+                    <button onclick="logout()" class="p-2 hover:bg-slate-800 rounded-lg transition" title="Logout">
+                        <span>🚪</span>
+                    </button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <!-- Header -->
+            <header class="h-16 bg-slate-900 border-b border-slate-800 px-6 flex items-center justify-between shrink-0">
+                <div>
+                    <h2 class="text-xl font-bold text-white">대시보드</h2>
+                    <p class="text-xs text-slate-400">당신의 SoftFactory 활동 현황</p>
+                </div>
+                <div class="flex items-center gap-4">
+                    <button onclick="location.reload()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg transition text-sm">
+                        🔄 새로고침
+                    </button>
+                </div>
+            </header>
+
+            <!-- Content -->
+            <main class="flex-1 overflow-y-auto p-6 space-y-6">
+                <!-- KPI Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-slate-800 rounded-xl p-6 border border-slate-700">
+                        <p class="text-slate-400 text-sm font-medium mb-2">월간 청구</p>
+                        <p class="text-3xl font-bold text-white" id="monthlyMRR">₩0</p>
+                        <p class="text-xs text-slate-500 mt-2">3개월 평균</p>
+                    </div>
+                    <div class="bg-slate-800 rounded-xl p-6 border border-slate-700">
+                        <p class="text-slate-400 text-sm font-medium mb-2">활성 서비스</p>
+                        <p class="text-3xl font-bold text-white" id="activeServices">5</p>
+                        <p class="text-xs text-slate-500 mt-2">5개 중</p>
+                    </div>
+                    <div class="bg-slate-800 rounded-xl p-6 border border-slate-700">
+                        <p class="text-slate-400 text-sm font-medium mb-2">누적 지출</p>
+                        <p class="text-3xl font-bold text-white" id="totalSpent">₩0</p>
+                        <p class="text-xs text-slate-500 mt-2">이번 달</p>
+                    </div>
+                </div>
+
+                <!-- Services Grid -->
+                <div>
+                    <h3 class="text-lg font-bold text-white mb-4">구독 서비스</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4" id="servicesGrid">
+                        <div class="bg-slate-800 rounded-lg p-6 border border-slate-700 animate-pulse">
+                            <div class="h-6 bg-slate-700 rounded mb-4 w-3/4"></div>
+                            <div class="space-y-3">
+                                <div class="h-4 bg-slate-700 rounded"></div>
+                                <div class="h-4 bg-slate-700 rounded w-5/6"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Upcoming Billings -->
+                <div>
+                    <h3 class="text-lg font-bold text-white mb-4">다음 청구 일정</h3>
+                    <div class="bg-slate-800 rounded-xl p-6 border border-slate-700 overflow-x-auto">
+                        <table class="w-full text-sm">
+                            <thead>
+                                <tr class="border-b border-slate-700">
+                                    <th class="text-left py-3 px-4 text-slate-400 font-medium">서비스</th>
+                                    <th class="text-left py-3 px-4 text-slate-400 font-medium">요금</th>
+                                    <th class="text-left py-3 px-4 text-slate-400 font-medium">청구 예정일</th>
+                                    <th class="text-left py-3 px-4 text-slate-400 font-medium">상태</th>
+                                </tr>
+                            </thead>
+                            <tbody id="billingTable">
+                                <tr class="border-b border-slate-700 last:border-0">
+                                    <td class="py-3 px-4 text-slate-300">로딩 중...</td>
+                                    <td colspan="3"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Quick Stats Chart -->
+                <div>
+                    <h3 class="text-lg font-bold text-white mb-4">월별 지출 추이</h3>
+                    <div class="bg-slate-800 rounded-xl p-6 border border-slate-700">
+                        <canvas id="spendingChart" style="max-height: 300px;"></canvas>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        requireAuth();
+
+        let spendingChart = null;
+
+        async function init() {
+            try {
+                // Load dashboard data
+                const dashData = await getDashboard();
+                const user = getUser();
+
+                // Update user info
+                if (user) {
+                    document.getElementById('userName').textContent = user.name || 'Demo User';
+                    document.getElementById('userEmail').textContent = user.email;
+                }
+
+                // Update KPI cards
+                document.getElementById('monthlyMRR').textContent = formatKRW(dashData.monthly_mrr || 276000);
+                document.getElementById('activeServices').textContent = dashData.products ? dashData.products.length : 5;
+                document.getElementById('totalSpent').textContent = formatKRW(dashData.total_spent || 195000);
+
+                // Render services grid
+                renderServices(dashData.products || []);
+
+                // Render billing table
+                renderBillingTable(dashData.products || []);
+
+                // Render chart
+                renderChart();
+            } catch (error) {
+                console.error('Error loading dashboard:', error);
+                showError('대시보드 로드 중 오류 발생');
+            }
+        }
+
+        function renderServices(products) {
+            const grid = document.getElementById('servicesGrid');
+            grid.innerHTML = '';
+
+            const services = [
+                { slug: 'coocook', name: 'CooCook', icon: '🍳', color: 'orange', price: 39000 },
+                { slug: 'sns-auto', name: 'SNS Auto', icon: '📱', color: 'pink', price: 49000 },
+                { slug: 'review', name: 'Review', icon: '⭐', color: 'amber', price: 99000 },
+                { slug: 'ai-automation', name: 'AI Auto', icon: '🤖', color: 'cyan', price: 89000 },
+                { slug: 'webapp-builder', name: 'WebApp', icon: '💻', color: 'violet', price: 590000 }
+            ];
+
+            services.forEach(service => {
+                const isActive = products.some(p => p.slug === service.slug && p.status === 'active');
+                const nextBilling = products.find(p => p.slug === service.slug)?.next_billing;
+                const colors = {
+                    orange: 'border-orange-600 bg-gradient-to-br from-orange-900/30 to-orange-900/10',
+                    pink: 'border-pink-600 bg-gradient-to-br from-pink-900/30 to-pink-900/10',
+                    amber: 'border-amber-600 bg-gradient-to-br from-amber-900/30 to-amber-900/10',
+                    cyan: 'border-cyan-600 bg-gradient-to-br from-cyan-900/30 to-cyan-900/10',
+                    violet: 'border-violet-600 bg-gradient-to-br from-violet-900/30 to-violet-900/10'
+                };
+
+                const html = `
+                    <div class="rounded-lg p-5 border-2 ${colors[service.color]} hover:border-opacity-100 transition">
+                        <div class="text-3xl mb-2">${service.icon}</div>
+                        <h4 class="font-semibold text-white mb-1">${service.name}</h4>
+                        <p class="text-xs text-slate-400 mb-3">${formatKRW(service.price)}/월</p>
+                        <div class="flex items-center justify-between">
+                            <span class="${isActive ? 'text-green-400 text-xs font-medium' : 'text-slate-400 text-xs'}">${isActive ? '✅ 활성' : '비활성'}</span>
+                            <a href="#" class="text-xs text-indigo-400 hover:text-indigo-300">→</a>
+                        </div>
+                    </div>
+                `;
+                grid.innerHTML += html;
+            });
+        }
+
+        function renderBillingTable(products) {
+            const tbody = document.getElementById('billingTable');
+            tbody.innerHTML = '';
+
+            const services = [
+                { slug: 'coocook', name: 'CooCook', price: 39000 },
+                { slug: 'sns-auto', name: 'SNS Auto', price: 49000 },
+                { slug: 'review', name: 'Review Campaign', price: 99000 },
+                { slug: 'ai-automation', name: 'AI Automation', price: 89000 }
+            ];
+
+            services.forEach(service => {
+                const product = products.find(p => p.slug === service.slug);
+                const nextBilling = product?.next_billing || '2026-03-24';
+                const status = product?.status || 'active';
+
+                const html = `
+                    <tr class="border-b border-slate-700 last:border-0 hover:bg-slate-700/50 transition">
+                        <td class="py-3 px-4 text-slate-300 font-medium">${service.name}</td>
+                        <td class="py-3 px-4 text-slate-300">${formatKRW(service.price)}</td>
+                        <td class="py-3 px-4 text-slate-400">${formatDate(nextBilling, 'short')}</td>
+                        <td class="py-3 px-4">${statusBadge(status)}</td>
+                    </tr>
+                `;
+                tbody.innerHTML += html;
+            });
+        }
+
+        function renderChart() {
+            const ctx = document.getElementById('spendingChart').getContext('2d');
+            const defaults = getChartDefaults();
+
+            spendingChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['1월', '2월', '3월'],
+                    datasets: [{
+                        label: '월간 지출',
+                        data: [88000, 195000, 276000],
+                        borderColor: '#4f46e5',
+                        backgroundColor: 'rgba(79, 70, 229, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4,
+                        pointBackgroundColor: '#4f46e5',
+                        pointBorderColor: '#1e293b',
+                        pointBorderWidth: 2,
+                        pointRadius: 6
+                    }]
+                },
+                options: {
+                    ...defaults,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 300000,
+                            ticks: {
+                                color: '#94a3b8',
+                                callback: (value) => formatKRW(value)
+                            },
+                            grid: { color: '#334155' }
+                        },
+                        x: {
+                            ticks: { color: '#94a3b8' },
+                            grid: { color: '#334155' }
+                        }
+                    }
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>

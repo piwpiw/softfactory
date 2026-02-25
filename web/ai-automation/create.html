@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 직원 생성 — AI Auto | SoftFactory</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="../platform/api.js"></script>
+    <style>body { font-family: 'Inter', sans-serif; }</style>
+</head>
+<body class="bg-slate-950 text-slate-100">
+    <div class="flex h-screen overflow-hidden">
+        <aside class="w-64 bg-slate-900 border-r border-slate-800 flex flex-col shrink-0">
+            <div class="p-6 border-b border-slate-800">
+                <a href="index.html" class="flex items-center gap-3">
+                    <span>←</span><span class="text-sm font-medium">돌아가기</span>
+                </a>
+            </div>
+        </aside>
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <header class="h-16 bg-slate-900 border-b border-slate-800 px-6 flex items-center justify-between shrink-0">
+                <h2 class="text-xl font-bold text-white">✨ AI 직원 생성</h2>
+            </header>
+            <main class="flex-1 overflow-y-auto p-6">
+                <div class="max-w-2xl mx-auto">
+                    <div class="mb-8">
+                        <div class="flex items-center justify-between mb-8">
+                            <div class="text-center">
+                                <div class="w-10 h-10 rounded-full bg-cyan-600 text-white flex items-center justify-center font-bold">1</div>
+                                <p class="text-xs text-slate-400 mt-2">시나리오 선택</p>
+                            </div>
+                            <div class="flex-1 mx-4 h-1 bg-slate-800"></div>
+                            <div class="text-center">
+                                <div class="w-10 h-10 rounded-full bg-slate-700 text-slate-400 flex items-center justify-center font-bold">2</div>
+                                <p class="text-xs text-slate-400 mt-2">설정</p>
+                            </div>
+                            <div class="flex-1 mx-4 h-1 bg-slate-800"></div>
+                            <div class="text-center">
+                                <div class="w-10 h-10 rounded-full bg-slate-700 text-slate-400 flex items-center justify-center font-bold">3</div>
+                                <p class="text-xs text-slate-400 mt-2">배포</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-800 rounded-xl p-8 border border-slate-700">
+                        <h3 class="text-2xl font-bold text-white mb-6">시나리오 선택</h3>
+                        <div class="space-y-3">
+                            <label class="flex items-center p-4 border-2 border-cyan-600 rounded-lg cursor-pointer bg-cyan-900/30 hover:bg-cyan-900/50 transition">
+                                <input type="radio" name="scenario" value="email" checked class="w-4 h-4">
+                                <div class="ml-4">
+                                    <p class="font-semibold text-white">📧 이메일 자동 응답</p>
+                                    <p class="text-xs text-slate-400">월 15시간 절약</p>
+                                </div>
+                            </label>
+                            <label class="flex items-center p-4 border-2 border-slate-700 rounded-lg cursor-pointer hover:border-cyan-600 transition">
+                                <input type="radio" name="scenario" value="social" class="w-4 h-4">
+                                <div class="ml-4">
+                                    <p class="font-semibold text-white">📱 소셜 미디어 포스팅</p>
+                                    <p class="text-xs text-slate-400">월 20시간 절약</p>
+                                </div>
+                            </label>
+                            <label class="flex items-center p-4 border-2 border-slate-700 rounded-lg cursor-pointer hover:border-cyan-600 transition">
+                                <input type="radio" name="scenario" value="support" class="w-4 h-4">
+                                <div class="ml-4">
+                                    <p class="font-semibold text-white">💬 고객 지원봇</p>
+                                    <p class="text-xs text-slate-400">월 30시간 절약</p>
+                                </div>
+                            </label>
+                        </div>
+                        <div class="flex gap-4 mt-8">
+                            <button class="flex-1 px-4 py-3 bg-slate-700 hover:bg-slate-600 text-slate-100 rounded-lg font-medium transition">취소</button>
+                            <button class="flex-1 px-4 py-3 bg-cyan-600 hover:bg-cyan-700 text-white rounded-lg font-medium transition">다음 →</button>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+    <script>
+        requireAuth();
+    </script>
+</body>
+</html>

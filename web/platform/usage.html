@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>사용량 분석 — SoftFactory</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="api.js"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 antialiased">
+    <div class="flex h-screen overflow-hidden">
+        <aside class="w-60 bg-slate-900 border-r border-slate-800 flex flex-col shrink-0">
+            <div class="p-6 border-b border-slate-800">
+                <h1 class="text-xl font-bold text-white">🏭 SoftFactory</h1>
+            </div>
+            <nav class="flex-1 p-4 space-y-2 overflow-y-auto">
+                <a href="dashboard.html" class="block px-4 py-2 rounded-lg text-slate-300 hover:bg-slate-800">📊 대시보드</a>
+                <a href="billing.html" class="block px-4 py-2 rounded-lg text-slate-300 hover:bg-slate-800">💳 결제</a>
+                <a href="usage.html" class="block px-4 py-2 rounded-lg bg-indigo-600 text-white">📈 사용량</a>
+                <a href="settings.html" class="block px-4 py-2 rounded-lg text-slate-300 hover:bg-slate-800">⚙️ 설정</a>
+                <a href="profile.html" class="block px-4 py-2 rounded-lg text-slate-300 hover:bg-slate-800">👤 프로필</a>
+            </nav>
+            <div class="p-4 border-t border-slate-800">
+                <button onclick="logout()" class="w-full px-4 py-2 bg-slate-800 hover:bg-slate-700 rounded-lg text-sm font-medium transition">로그아웃</button>
+            </div>
+        </aside>
+
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <header class="h-16 bg-slate-900 border-b border-slate-800 flex items-center justify-between px-6 shrink-0">
+                <h2 class="text-2xl font-bold text-white">📈 사용량 분석</h2>
+                <div class="flex gap-2">
+                    <select id="timePeriod" onchange="updateCharts()" class="px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white text-sm focus:border-indigo-500 focus:outline-none">
+                        <option value="7d">지난 7일</option>
+                        <option value="30d" selected>지난 30일</option>
+                        <option value="90d">지난 90일</option>
+                        <option value="1y">지난 1년</option>
+                    </select>
+                </div>
+            </header>
+
+            <main class="flex-1 overflow-y-auto p-6">
+                <div class="space-y-6 max-w-6xl">
+                    <!-- Usage Summary -->
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <div class="bg-slate-800 rounded-lg p-4 border border-slate-700">
+                            <p class="text-sm text-slate-400 mb-2">총 사용량</p>
+                            <p class="text-3xl font-bold text-indigo-400">1,245</p>
+                            <p class="text-xs text-slate-500 mt-2">요청</p>
+                        </div>
+                        <div class="bg-slate-800 rounded-lg p-4 border border-slate-700">
+                            <p class="text-sm text-slate-400 mb-2">활성 사용자</p>
+                            <p class="text-3xl font-bold text-cyan-400">847</p>
+                            <p class="text-xs text-slate-500 mt-2">사용자</p>
+                        </div>
+                        <div class="bg-slate-800 rounded-lg p-4 border border-slate-700">
+                            <p class="text-sm text-slate-400 mb-2">평균 응답 시간</p>
+                            <p class="text-3xl font-bold text-green-400">45ms</p>
+                            <p class="text-xs text-slate-500 mt-2">밀리초</p>
+                        </div>
+                        <div class="bg-slate-800 rounded-lg p-4 border border-slate-700">
+                            <p class="text-sm text-slate-400 mb-2">가용률</p>
+                            <p class="text-3xl font-bold text-amber-400">99.9%</p>
+                            <p class="text-xs text-slate-500 mt-2">가동 시간</p>
+                        </div>
+                    </div>
+
+                    <!-- Service Usage -->
+                    <div class="bg-slate-800 rounded-xl p-6 border border-slate-700">
+                        <h3 class="text-lg font-bold text-white mb-4">서비스별 사용량</h3>
+                        <canvas id="serviceUsageChart" height="300"></canvas>
+                    </div>
+
+                    <!-- Daily Usage Trend -->
+                    <div class="bg-slate-800 rounded-xl p-6 border border-slate-700">
+                        <h3 class="text-lg font-bold text-white mb-4">일일 사용량 추이</h3>
+                        <canvas id="dailyUsageChart" height="300"></canvas>
+                    </div>
+
+                    <!-- API Usage by Type -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- By Request Type -->
+                        <div class="bg-slate-800 rounded-lg p-6 border border-slate-700">
+                            <h3 class="text-lg font-bold text-white mb-4">요청 유형별</h3>
+                            <canvas id="requestTypeChart" height="250"></canvas>
+                        </div>
+
+                        <!-- By Feature -->
+                        <div class="bg-slate-800 rounded-lg p-6 border border-slate-700">
+                            <h3 class="text-lg font-bold text-white mb-4">기능별 사용량</h3>
+                            <div class="space-y-3">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm text-slate-300">📱 SNS Auto</span>
+                                    <span class="text-sm font-bold text-pink-400">456 (36%)</span>
+                                </div>
+                                <div class="w-full bg-slate-700 rounded h-2">
+                                    <div class="bg-pink-500 h-2 rounded" style="width: 36%;"></div>
+                                </div>
+
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm text-slate-300">⭐ Review</span>
+                                    <span class="text-sm font-bold text-amber-400">289 (23%)</span>
+                                </div>
+                                <div class="w-full bg-slate-700 rounded h-2">
+                                    <div class="bg-amber-500 h-2 rounded" style="width: 23%;"></div>
+                                </div>
+
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm text-slate-300">🍳 CooCook</span>
+                                    <span class="text-sm font-bold text-orange-400">234 (19%)</span>
+                                </div>
+                                <div class="w-full bg-slate-700 rounded h-2">
+                                    <div class="bg-orange-500 h-2 rounded" style="width: 19%;"></div>
+                                </div>
+
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm text-slate-300">🤖 AI Auto</span>
+                                    <span class="text-sm font-bold text-cyan-400">189 (15%)</span>
+                                </div>
+                                <div class="w-full bg-slate-700 rounded h-2">
+                                    <div class="bg-cyan-500 h-2 rounded" style="width: 15%;"></div>
+                                </div>
+
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm text-slate-300">💻 WebApp</span>
+                                    <span class="text-sm font-bold text-violet-400">77 (7%)</span>
+                                </div>
+                                <div class="w-full bg-slate-700 rounded h-2">
+                                    <div class="bg-violet-500 h-2 rounded" style="width: 7%;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Peak Times -->
+                    <div class="bg-slate-800 rounded-xl p-6 border border-slate-700">
+                        <h3 class="text-lg font-bold text-white mb-4">피크 시간대</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="bg-slate-700 rounded-lg p-4 border border-slate-600">
+                                <p class="text-sm text-slate-400 mb-2">가장 높은 피크</p>
+                                <p class="text-2xl font-bold text-indigo-400">오후 2-3시</p>
+                                <p class="text-xs text-slate-500 mt-2">평균 180 요청/분</p>
+                            </div>
+                            <div class="bg-slate-700 rounded-lg p-4 border border-slate-600">
+                                <p class="text-sm text-slate-400 mb-2">가장 낮은 시간</p>
+                                <p class="text-2xl font-bold text-slate-300">오전 4-5시</p>
+                                <p class="text-xs text-slate-500 mt-2">평균 15 요청/분</p>
+                            </div>
+                            <div class="bg-slate-700 rounded-lg p-4 border border-slate-600">
+                                <p class="text-sm text-slate-400 mb-2">평균 사용량</p>
+                                <p class="text-2xl font-bold text-cyan-400">42 요청/분</p>
+                                <p class="text-xs text-slate-500 mt-2">24시간 평균</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Export Options -->
+                    <div class="flex gap-2">
+                        <button onclick="exportUsageData('csv')" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition text-sm">CSV 다운로드</button>
+                        <button onclick="exportUsageData('pdf')" class="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg font-medium transition text-sm">PDF 다운로드</button>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        requireAuth();
+
+        const chartDefaults = getChartDefaults();
+
+        // Service Usage Chart
+        const serviceCtx = document.getElementById('serviceUsageChart').getContext('2d');
+        new Chart(serviceCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['SNS Auto', 'Review', 'CooCook', 'AI Auto', 'WebApp'],
+                datasets: [{
+                    data: [456, 289, 234, 189, 77],
+                    backgroundColor: ['#ec4899', '#f59e0b', '#f97316', '#06b6d4', '#a78bfa']
+                }]
+            },
+            options: chartDefaults
+        });
+
+        // Daily Usage Chart
+        const dailyCtx = document.getElementById('dailyUsageChart').getContext('2d');
+        new Chart(dailyCtx, {
+            type: 'line',
+            data: {
+                labels: ['1일', '5일', '10일', '15일', '20일', '25일', '30일'],
+                datasets: [{
+                    label: '일일 요청',
+                    data: [35, 45, 42, 68, 55, 72, 65],
+                    borderColor: '#818cf8',
+                    backgroundColor: 'rgba(129, 140, 248, 0.1)',
+                    tension: 0.4,
+                    fill: true,
+                    pointBackgroundColor: '#818cf8'
+                }]
+            },
+            options: {
+                ...chartDefaults,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: '#334155' }
+                    },
+                    x: {
+                        grid: { color: '#334155' }
+                    }
+                }
+            }
+        });
+
+        // Request Type Chart
+        const typeCtx = document.getElementById('requestTypeChart').getContext('2d');
+        new Chart(typeCtx, {
+            type: 'bar',
+            data: {
+                labels: ['GET', 'POST', 'PUT', 'DELETE'],
+                datasets: [{
+                    label: '요청 수',
+                    data: [645, 380, 180, 40],
+                    backgroundColor: ['#06b6d4', '#06b6d4', '#06b6d4', '#06b6d4']
+                }]
+            },
+            options: {
+                ...chartDefaults,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: '#334155' }
+                    },
+                    x: {
+                        grid: { color: 'transparent' }
+                    }
+                }
+            }
+        });
+
+        function updateCharts() {
+            showToast('차트가 업데이트되었습니다', 'info');
+        }
+
+        function exportUsageData(format) {
+            showToast(`사용량 데이터를 ${format.toUpperCase()}로 다운로드 중...`, 'info');
+            setTimeout(() => {
+                showToast(`usage_report_2026-02.${format} 다운로드 완료!`, 'success');
+            }, 1000);
+        }
+
+        function logout() {
+            localStorage.removeItem('auth_token');
+            window.location.href = 'login.html';
+        }
+    </script>
+</body>
+</html>

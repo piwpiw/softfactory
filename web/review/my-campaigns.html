@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>내 신청 — Review | SoftFactory</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="../platform/api.js"></script>
+    <style>body { font-family: 'Inter', sans-serif; }</style>
+</head>
+<body class="bg-slate-950 text-slate-100">
+    <div class="flex h-screen overflow-hidden">
+        <aside class="w-64 bg-slate-900 border-r border-slate-800 flex flex-col shrink-0">
+            <div class="p-6 border-b border-slate-800">
+                <a href="../platform/dashboard.html" class="flex items-center gap-3">
+                    <span class="text-2xl">🏭</span>
+                    <div><h1 class="font-bold text-white text-sm">SoftFactory</h1></div>
+                </a>
+            </div>
+            <nav class="flex-1 p-6 space-y-2 overflow-y-auto">
+                <p class="text-xs font-semibold text-slate-400 uppercase px-4 mb-3">⭐ Review</p>
+                <a href="index.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">🎯 탐색</a>
+                <a href="my-campaigns.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg bg-amber-600 text-white font-medium">📋 내 신청</a>
+            </nav>
+            <div class="p-6 border-t border-slate-800">
+                <button onclick="logout()" class="p-2 hover:bg-slate-800 rounded-lg">🚪</button>
+            </div>
+        </aside>
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <header class="h-16 bg-slate-900 border-b border-slate-800 px-6 flex items-center justify-between shrink-0">
+                <h2 class="text-xl font-bold text-white">📋 내 캠페인 신청</h2>
+            </header>
+            <main class="flex-1 overflow-y-auto p-6">
+                <div class="space-y-4" id="myApplications">
+                    <div class="bg-slate-800 rounded-lg p-6 border border-slate-700 hover:border-amber-600 transition">
+                        <div class="flex items-start justify-between mb-4">
+                            <div>
+                                <h3 class="font-semibold text-white">Skincare Product Launch</h3>
+                                <p class="text-sm text-slate-400">GlowSkin Pro</p>
+                            </div>
+                            <span class="px-3 py-1 bg-green-900 text-green-200 text-xs rounded-full">✅ 승인됨</span>
+                        </div>
+                        <p class="text-sm text-slate-300 mb-3">신청: 2026-02-24</p>
+                        <p class="text-sm text-amber-400">리워드: ₩150,000 키트</p>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+    <script>
+        requireAuth();
+
+        async function init() {
+            try {
+                const apps = await getMyApplications();
+                renderApplications(apps);
+            } catch (error) {
+                showError('신청 정보 로드 실패');
+            }
+        }
+
+        function renderApplications(applications) {
+            const container = document.getElementById('myApplications');
+            container.innerHTML = '';
+            (applications || []).forEach(app => {
+                const html = `
+                    <div class="bg-slate-800 rounded-lg p-6 border border-slate-700 hover:border-amber-600 transition">
+                        <div class="flex items-start justify-between">
+                            <div>
+                                <h3 class="font-semibold text-white">캠페인 #${app.campaign_id}</h3>
+                                <p class="text-sm text-slate-400">신청: ${formatDate(new Date(), 'short')}</p>
+                            </div>
+                            ${statusBadge(app.status)}
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += html;
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>

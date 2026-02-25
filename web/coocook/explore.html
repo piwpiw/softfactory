@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>셰프 탐색 — CooCook | SoftFactory</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="../platform/api.js"></script>
+    <style>body { font-family: 'Inter', sans-serif; }</style>
+</head>
+<body class="bg-slate-950 text-slate-100">
+    <div class="flex h-screen overflow-hidden">
+        <aside class="w-64 bg-slate-900 border-r border-slate-800 flex flex-col shrink-0">
+            <div class="p-6 border-b border-slate-800">
+                <a href="index.html" class="flex items-center gap-3">
+                    <span class="text-2xl">🍳</span>
+                    <div><h1 class="font-bold text-white text-sm">CooCook</h1><p class="text-xs text-slate-400">← Back</p></div>
+                </a>
+            </div>
+            <nav class="flex-1 p-6 space-y-2 overflow-y-auto">
+                <p class="text-xs font-semibold text-slate-400 uppercase px-4 mb-3">필터</p>
+                <div>
+                    <p class="text-xs text-slate-400 font-medium mb-2">요리 종류</p>
+                    <div class="space-y-2">
+                        <label class="flex items-center gap-2 text-sm text-slate-300 cursor-pointer hover:text-white">
+                            <input type="checkbox" class="rounded"> 한식
+                        </label>
+                        <label class="flex items-center gap-2 text-sm text-slate-300 cursor-pointer hover:text-white">
+                            <input type="checkbox" class="rounded"> 이탈리안
+                        </label>
+                        <label class="flex items-center gap-2 text-sm text-slate-300 cursor-pointer hover:text-white">
+                            <input type="checkbox" class="rounded"> 일식
+                        </label>
+                        <label class="flex items-center gap-2 text-sm text-slate-300 cursor-pointer hover:text-white">
+                            <input type="checkbox" class="rounded"> 프렌치
+                        </label>
+                    </div>
+                </div>
+                <div class="my-6 border-t border-slate-800"></div>
+                <div>
+                    <p class="text-xs text-slate-400 font-medium mb-2">가격 범위</p>
+                    <input type="range" min="100000" max="250000" class="w-full">
+                    <p class="text-xs text-slate-400 mt-2">₩100,000 - ₩250,000</p>
+                </div>
+            </nav>
+            <div class="p-6 border-t border-slate-800">
+                <button onclick="logout()" class="p-2 hover:bg-slate-800 rounded-lg">🚪</button>
+            </div>
+        </aside>
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <header class="h-16 bg-slate-900 border-b border-slate-800 px-6 flex items-center justify-between shrink-0">
+                <div><h2 class="text-xl font-bold text-white">🔍 셰프 탐색</h2></div>
+            </header>
+            <main class="flex-1 overflow-y-auto p-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="chefsGrid">
+                    <div class="bg-slate-800 rounded-lg p-6 border border-slate-700 animate-pulse">
+                        <div class="h-6 bg-slate-700 rounded mb-4 w-3/4"></div>
+                        <div class="space-y-3">
+                            <div class="h-4 bg-slate-700 rounded"></div>
+                            <div class="h-4 bg-slate-700 rounded w-5/6"></div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+    <script>
+        requireAuth();
+
+        async function init() {
+            try {
+                const data = await getChefs();
+                renderChefs(data.chefs || []);
+            } catch (error) {
+                showError('셰프 로드 실패');
+            }
+        }
+
+        function renderChefs(chefs) {
+            const grid = document.getElementById('chefsGrid');
+            grid.innerHTML = '';
+            (chefs || []).forEach(chef => {
+                const html = `
+                    <a href="chef-detail.html?id=${chef.id}" class="bg-gradient-to-br from-orange-900/30 to-orange-900/10 rounded-lg p-6 border-2 border-orange-600 hover:border-opacity-100 transition">
+                        <div class="text-4xl mb-3">${chef.image || '👨‍🍳'}</div>
+                        <h3 class="text-lg font-bold text-white mb-1">${chef.name}</h3>
+                        <p class="text-sm text-orange-400 mb-3">${chef.cuisine_type}</p>
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="text-yellow-400 text-sm">⭐ ${chef.rating}</span>
+                            <span class="text-slate-400 text-xs">(${chef.rating_count} 리뷰)</span>
+                        </div>
+                        <p class="text-lg font-bold text-white mb-2">${formatKRW(chef.price_per_session)}</p>
+                        <p class="text-xs text-slate-400">📍 ${chef.location}</p>
+                    </a>
+                `;
+                grid.innerHTML += html;
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>

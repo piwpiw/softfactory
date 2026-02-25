@@ -1,0 +1,190 @@
+# Product Requirements Document (PRD)
+**Project:** CooCook
+**Date:** 2026-02-22
+**Author:** Agent 02 / Product-Manager
+**Status:** DRAFT | REVIEW | APPROVED
+
+---
+
+## 1. Executive Summary
+> One paragraph: what are we building, for whom, and why now?
+
+CooCook addresses the gap in travel-tech: no dominant platform combines authentic local food discovery with chef booking. Target users: leisure travelers and digital nomads.
+
+---
+
+## 2. Problem Statement
+> Articulate the user problem without jumping to solutions.
+
+CooCook addresses the gap in travel-tech: no dominant platform combines authentic local food discovery with chef booking. Target users: leisure travelers and digital nomads.
+
+---
+
+## 3. Goals & Success Metrics
+
+| Goal | Success Metric | Target | Measurement Method |
+|------|---------------|--------|--------------------|
+| (e.g.) Increase engagement | DAU/MAU ratio | > 40% | Analytics |
+| (e.g.) Reduce churn | Day-7 retention | > 60% | Cohort analysis |
+
+1. 10,000 MAU within 6 months of launch
+2. Chef booking conversion rate > 15%
+3. Day-7 retention > 40%
+4. NPS > 50
+
+---
+
+## 4. User Personas
+
+
+### Persona 1: Leisure Traveler (Primary)
+| Field | Value |
+|-------|-------|
+| Name | Alex, 32 |
+| Role | Marketing manager + food enthusiast |
+| Key Goal | Discover authentic local food during trips |
+| Key Pain | Generic restaurant apps miss local hidden gems |
+| Tech Proficiency | High |
+
+### Persona 2: Digital Nomad (Secondary)
+| Field | Value |
+|-------|-------|
+| Name | Sam, 28 |
+| Role | Remote software developer |
+| Key Goal | Find weekly meal plans with local ingredients while working abroad |
+| Key Pain | Spending too much time on food logistics |
+| Tech Proficiency | Expert |
+
+
+### Persona Template
+| Field | Value |
+|-------|-------|
+| Name | — |
+| Age / Role | — |
+| Key Goal | — |
+| Key Pain Point | — |
+| Tech Proficiency | Low / Medium / High |
+
+---
+
+## 5. User Stories & Acceptance Criteria
+
+
+### Epic 1: Recipe Discovery
+```
+As a Leisure Traveler,
+I want to discover local recipes by destination,
+So that I can plan authentic food experiences before my trip.
+
+Acceptance Criteria:
+  Given I have selected a destination
+  When I browse the recipe discovery feed
+  Then I see minimum 10 locally-verified recipes with photos, ratings, and chef info
+```
+
+### Epic 2: Chef Booking
+```
+As a Digital Nomad,
+I want to book a local chef for a private cooking session,
+So that I can learn and eat authentic cuisine weekly.
+
+Acceptance Criteria:
+  Given I have found a chef profile
+  When I select a time slot and confirm booking
+  Then I receive a booking confirmation with location and payment receipt within 30 seconds
+```
+
+
+### Story Format
+```
+As a [persona],
+I want to [action],
+So that [benefit].
+
+Acceptance Criteria (Given-When-Then):
+  Given [precondition]
+  When [action]
+  Then [observable outcome]
+```
+
+---
+
+## 6. Functional Requirements
+
+
+| ID | Requirement | Priority |
+|----|------------|----------|
+| FR-001 | User registration with email + OAuth (Google/Apple) | Must |
+| FR-002 | Recipe browsing filtered by destination, cuisine, dietary | Must |
+| FR-003 | Chef profile with portfolio, ratings, availability calendar | Must |
+| FR-004 | Booking flow with payment (Stripe integration) | Must |
+| FR-005 | AI-powered recipe recommendation | Should |
+| FR-006 | Community reviews and social sharing | Could |
+| FR-007 | Physical ingredient delivery | Won't (v1) |
+
+
+| ID | Requirement | Priority | Notes |
+|----|------------|----------|-------|
+| FR-001 | — | Must | — |
+
+---
+
+## 7. Non-Functional Requirements
+
+| Category | Requirement | Target |
+|----------|------------|--------|
+| Performance | API p99 latency | < 500ms |
+| Availability | Uptime | 99.9% |
+| Security | Auth method | OAuth 2.0 + MFA |
+| Scalability | Concurrent users | 10,000 |
+
+---
+
+## 8. MoSCoW Prioritization
+
+
+| Priority | Feature | Justification |
+|----------|---------|---------------|
+| **Must** | Auth, Recipe Discovery, Chef Booking, Payment | Core value proposition |
+| **Should** | Reviews, AI Recommendations, Notifications | Engagement drivers |
+| **Could** | Social sharing, Dietary tracking | Nice-to-have |
+| **Won't (v1)** | Physical delivery, Live streaming | Out of scope for MVP |
+
+
+| Priority | Feature | Justification |
+|----------|---------|---------------|
+| **Must** | — | — |
+| **Should** | — | — |
+| **Could** | — | — |
+| **Won't (v1)** | — | — |
+
+---
+
+## 9. RICE Scoring
+
+| Feature | Reach | Impact | Confidence | Effort | RICE Score |
+|---------|-------|--------|------------|--------|-----------|
+| — | — | — | — | — | — |
+
+---
+
+## 10. Dependencies & Risks
+
+| Dependency | Owner | Risk Level |
+|-----------|-------|-----------|
+| — | — | Low/Med/High |
+
+---
+
+## 11. Out of Scope (v1)
+- (list items explicitly excluded)
+
+---
+
+## 12. Open Questions
+- [ ] Question 1
+- [ ] Question 2
+
+---
+
+*Generated by Deca-Agent Document Engine | Template: PRD_TEMPLATE.md*

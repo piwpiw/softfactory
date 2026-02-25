@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>예약 — CooCook | SoftFactory</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="../platform/api.js"></script>
+    <style>body { font-family: 'Inter', sans-serif; }</style>
+</head>
+<body class="bg-slate-950 text-slate-100">
+    <div class="flex h-screen overflow-hidden">
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <header class="h-16 bg-slate-900 border-b border-slate-800 px-6 flex items-center justify-between shrink-0">
+                <h2 class="text-xl font-bold text-white">📅 예약하기</h2>
+                <a href="explore.html" class="text-slate-400 hover:text-white">← 돌아가기</a>
+            </header>
+            <main class="flex-1 overflow-y-auto p-6">
+                <div class="grid grid-cols-3 gap-6">
+                    <div class="col-span-2 space-y-6">
+                        <!-- Calendar -->
+                        <div class="bg-slate-800 rounded-xl p-8 border border-slate-700">
+                            <h3 class="text-lg font-bold text-white mb-4">📅 날짜 선택</h3>
+                            <div class="grid grid-cols-7 gap-2 mb-6">
+                                <div class="text-xs text-slate-400 text-center">일</div>
+                                <div class="text-xs text-slate-400 text-center">월</div>
+                                <div class="text-xs text-slate-400 text-center">화</div>
+                                <div class="text-xs text-slate-400 text-center">수</div>
+                                <div class="text-xs text-slate-400 text-center">목</div>
+                                <div class="text-xs text-slate-400 text-center">금</div>
+                                <div class="text-xs text-slate-400 text-center">토</div>
+                                <button class="p-2 rounded-lg text-slate-400 hover:bg-slate-700">1</button>
+                                <button class="p-2 rounded-lg text-slate-400 hover:bg-slate-700">2</button>
+                                <button class="p-2 rounded-lg text-slate-400 hover:bg-slate-700">3</button>
+                                <button class="p-2 rounded-lg bg-orange-600 text-white font-bold">24</button>
+                                <button class="p-2 rounded-lg text-slate-400 hover:bg-slate-700">25</button>
+                                <button class="p-2 rounded-lg text-slate-400 hover:bg-slate-700">26</button>
+                                <button class="p-2 rounded-lg text-slate-400 hover:bg-slate-700">27</button>
+                            </div>
+                        </div>
+
+                        <!-- Time Selection -->
+                        <div class="bg-slate-800 rounded-xl p-8 border border-slate-700">
+                            <h3 class="text-lg font-bold text-white mb-4">🕐 시간 선택</h3>
+                            <div class="grid grid-cols-4 gap-3">
+                                <button class="p-3 rounded-lg bg-slate-700 hover:bg-orange-600 text-white text-sm">09:00</button>
+                                <button class="p-3 rounded-lg bg-slate-700 hover:bg-orange-600 text-white text-sm">10:00</button>
+                                <button class="p-3 rounded-lg bg-slate-700 hover:bg-orange-600 text-white text-sm">11:00</button>
+                                <button class="p-3 rounded-lg bg-slate-700 hover:bg-orange-600 text-white text-sm">12:00</button>
+                                <button class="p-3 rounded-lg bg-orange-600 text-white text-sm font-bold">14:00</button>
+                                <button class="p-3 rounded-lg bg-slate-700 hover:bg-orange-600 text-white text-sm">15:00</button>
+                                <button class="p-3 rounded-lg bg-slate-700 hover:bg-orange-600 text-white text-sm">16:00</button>
+                                <button class="p-3 rounded-lg bg-slate-700 hover:bg-orange-600 text-white text-sm">17:00</button>
+                            </div>
+                        </div>
+
+                        <!-- Duration -->
+                        <div class="bg-slate-800 rounded-xl p-8 border border-slate-700">
+                            <h3 class="text-lg font-bold text-white mb-4">⏱️ 소요 시간</h3>
+                            <div class="grid grid-cols-4 gap-3">
+                                <button class="p-3 rounded-lg bg-slate-700 hover:bg-orange-600 text-white text-sm">1시간</button>
+                                <button class="p-3 rounded-lg bg-orange-600 text-white text-sm font-bold">2시간</button>
+                                <button class="p-3 rounded-lg bg-slate-700 hover:bg-orange-600 text-white text-sm">3시간</button>
+                                <button class="p-3 rounded-lg bg-slate-700 hover:bg-orange-600 text-white text-sm">4시간</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Summary Sidebar -->
+                    <div class="bg-gradient-to-br from-orange-900/30 to-orange-900/10 rounded-xl p-6 border-2 border-orange-600 h-fit">
+                        <h3 class="text-lg font-bold text-white mb-6">📋 예약 요약</h3>
+                        <div class="space-y-4 mb-6 pb-6 border-b border-orange-700">
+                            <div>
+                                <p class="text-xs text-slate-400">셰프</p>
+                                <p class="font-bold text-white">Chef Park</p>
+                            </div>
+                            <div>
+                                <p class="text-xs text-slate-400">날짜</p>
+                                <p class="font-bold text-white">2026-02-24</p>
+                            </div>
+                            <div>
+                                <p class="text-xs text-slate-400">시간</p>
+                                <p class="font-bold text-white">14:00 - 16:00 (2시간)</p>
+                            </div>
+                        </div>
+                        <div class="space-y-3 mb-6">
+                            <div class="flex justify-between text-sm">
+                                <span class="text-slate-300">1시간 × ₩150,000</span>
+                                <span class="text-white font-bold">₩300,000</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-slate-300">수수료</span>
+                                <span class="text-white font-bold">₩0</span>
+                            </div>
+                            <div class="flex justify-between border-t border-orange-700 pt-3 mt-3">
+                                <span class="text-white font-bold">합계</span>
+                                <span class="text-lg font-bold text-orange-400">₩300,000</span>
+                            </div>
+                        </div>
+                        <button onclick="completeBooking()" class="w-full px-4 py-3 bg-orange-600 hover:bg-orange-700 text-white rounded-lg font-semibold transition">
+                            예약 확정
+                        </button>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+    <script>
+        requireAuth();
+
+        async function completeBooking() {
+            try {
+                const result = await createBooking(1, '2026-02-24', 2);
+                showSuccess('예약이 확정되었습니다!');
+                setTimeout(() => {
+                    window.location.href = 'my-bookings.html';
+                }, 1000);
+            } catch (error) {
+                showError('예약 실패');
+            }
+        }
+    </script>
+</body>
+</html>

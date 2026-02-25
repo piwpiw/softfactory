@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JARVIS - 팀 운영 시스템</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .status-card {
+            border-left: 4px solid #f97316;
+        }
+        .navigation-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+        .nav-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .nav-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px rgba(249, 115, 22, 0.2);
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white">
+    <!-- Header -->
+    <nav class="bg-gray-800 border-b border-gray-700 px-6 py-4">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <span class="text-3xl">🤖</span>
+                <h1 class="text-3xl font-bold text-orange-500">JARVIS</h1>
+                <span class="text-gray-400 text-sm ml-2">팀 운영 시스템</span>
+            </div>
+            <div class="text-gray-400 text-sm">
+                <span id="status" class="inline-block px-3 py-1 rounded bg-green-900 text-green-300">● Online</span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto p-6">
+        <!-- System Status Overview -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+            <div class="status-card bg-gray-800 p-6 rounded-lg">
+                <p class="text-gray-400 text-sm">활성 팀</p>
+                <p class="text-4xl font-bold mt-2" id="active-teams">10</p>
+            </div>
+            <div class="status-card bg-gray-800 p-6 rounded-lg">
+                <p class="text-gray-400 text-sm">총 팀원</p>
+                <p class="text-4xl font-bold mt-2" id="total-members">33</p>
+            </div>
+            <div class="status-card bg-gray-800 p-6 rounded-lg">
+                <p class="text-gray-400 text-sm">평균 활용률</p>
+                <p class="text-4xl font-bold mt-2" id="avg-utilization">83%</p>
+            </div>
+            <div class="status-card bg-gray-800 p-6 rounded-lg">
+                <p class="text-gray-400 text-sm">시스템 가동</p>
+                <p class="text-4xl font-bold mt-2">99.98%</p>
+            </div>
+        </div>
+
+        <!-- Navigation Sections -->
+        <div class="mb-8">
+            <h2 class="text-2xl font-bold mb-6">Core Operations (MVP)</h2>
+            <div class="navigation-grid">
+                <!-- Operations -->
+                <a href="operations.html" class="nav-card bg-gray-800 p-6 rounded-lg border border-gray-700 hover:border-orange-500">
+                    <div class="text-3xl mb-3">⚙️</div>
+                    <h3 class="text-lg font-bold mb-2">Operations</h3>
+                    <p class="text-gray-400 text-sm">배포 및 미션 관리</p>
+                    <p class="text-xs text-gray-500 mt-2">Deploy · Mission · Status</p>
+                </a>
+
+                <!-- Teams -->
+                <a href="teams.html" class="nav-card bg-gray-800 p-6 rounded-lg border border-gray-700 hover:border-orange-500">
+                    <div class="text-3xl mb-3">👥</div>
+                    <h3 class="text-lg font-bold mb-2">Teams</h3>
+                    <p class="text-gray-400 text-sm">팀 현황 및 활용률</p>
+                    <p class="text-xs text-gray-500 mt-2">Utilization · Status · Members</p>
+                </a>
+
+                <!-- Analytics -->
+                <a href="analytics.html" class="nav-card bg-gray-800 p-6 rounded-lg border border-gray-700 hover:border-orange-500">
+                    <div class="text-3xl mb-3">📊</div>
+                    <h3 class="text-lg font-bold mb-2">Analytics</h3>
+                    <p class="text-gray-400 text-sm">성과 측정 및 분석</p>
+                    <p class="text-xs text-gray-500 mt-2">KPI · Performance · Metrics</p>
+                </a>
+
+                <!-- Dashboard -->
+                <a href="dashboard.html" class="nav-card bg-gray-800 p-6 rounded-lg border border-gray-700 hover:border-orange-500">
+                    <div class="text-3xl mb-3">📈</div>
+                    <h3 class="text-lg font-bold mb-2">Dashboard</h3>
+                    <p class="text-gray-400 text-sm">실시간 시스템 모니터링</p>
+                    <p class="text-xs text-gray-500 mt-2">Live · Real-time · Monitoring</p>
+                </a>
+            </div>
+        </div>
+
+        <!-- Team Pages -->
+        <div class="mb-8">
+            <h2 class="text-2xl font-bold mb-6">Team Management</h2>
+            <div class="navigation-grid">
+                <!-- Sprint Management (PM) -->
+                <a href="sprints.html" class="nav-card bg-gray-800 p-6 rounded-lg border border-gray-700 hover:border-blue-500">
+                    <div class="text-3xl mb-3">📋</div>
+                    <h3 class="text-lg font-bold mb-2">02 PM: Sprints</h3>
+                    <p class="text-gray-400 text-sm">스프린트 관리</p>
+                    <p class="text-xs text-gray-500 mt-2">Sprint 24 · 12 Tasks · 42 SP</p>
+                </a>
+
+                <!-- Team Chat (Frontend) -->
+                <a href="chat.html" class="nav-card bg-gray-800 p-6 rounded-lg border border-gray-700 hover:border-blue-500">
+                    <div class="text-3xl mb-3">💬</div>
+                    <h3 class="text-lg font-bold mb-2">06 Frontend: Chat</h3>
+                    <p class="text-gray-400 text-sm">팀 협업 채팅</p>
+                    <p class="text-xs text-gray-500 mt-2">Messages · Collaboration · Teams</p>
+                </a>
+
+                <!-- CI/CD Pipeline (DevOps) -->
+                <a href="ci-cd.html" class="nav-card bg-gray-800 p-6 rounded-lg border border-gray-700 hover:border-blue-500">
+                    <div class="text-3xl mb-3">🚀</div>
+                    <h3 class="text-lg font-bold mb-2">09 DevOps: CI/CD</h3>
+                    <p class="text-gray-400 text-sm">배포 파이프라인</p>
+                    <p class="text-xs text-gray-500 mt-2">v1.2.26 · Build → Deploy</p>
+                </a>
+
+                <!-- Security Audit (Security) -->
+                <a href="audit.html" class="nav-card bg-gray-800 p-6 rounded-lg border border-gray-700 hover:border-blue-500">
+                    <div class="text-3xl mb-3">🔒</div>
+                    <h3 class="text-lg font-bold mb-2">08 Security: Audit</h3>
+                    <p class="text-gray-400 text-sm">감사 로그</p>
+                    <p class="text-xs text-gray-500 mt-2">95/100 · 34 Users · 2 Alerts</p>
+                </a>
+
+                <!-- Daily Reports (Reporter) -->
+                <a href="reports.html" class="nav-card bg-gray-800 p-6 rounded-lg border border-gray-700 hover:border-blue-500">
+                    <div class="text-3xl mb-3">📄</div>
+                    <h3 class="text-lg font-bold mb-2">10 Reporter: Reports</h3>
+                    <p class="text-gray-400 text-sm">일일 리포트</p>
+                    <p class="text-xs text-gray-500 mt-2">2024-02-23 · Deployments · Tests</p>
+                </a>
+            </div>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+            <h3 class="text-xl font-bold mb-4">System Health</h3>
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+                <div>
+                    <p class="text-gray-400 text-sm">Backend Core</p>
+                    <p class="text-2xl font-bold text-green-500">✓</p>
+                </div>
+                <div>
+                    <p class="text-gray-400 text-sm">Frontend UI</p>
+                    <p class="text-2xl font-bold text-green-500">✓</p>
+                </div>
+                <div>
+                    <p class="text-gray-400 text-sm">DevOps</p>
+                    <p class="text-2xl font-bold text-green-500">✓</p>
+                </div>
+                <div>
+                    <p class="text-gray-400 text-sm">Security</p>
+                    <p class="text-2xl font-bold text-green-500">✓</p>
+                </div>
+                <div>
+                    <p class="text-gray-400 text-sm">Reporter</p>
+                    <p class="text-2xl font-bold text-green-500">✓</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Load team stats on page load
+        async function loadStats() {
+            try {
+                const response = await fetch('/api/v1/teams');
+                const teams = await response.json();
+
+                if (Array.isArray(teams)) {
+                    document.getElementById('active-teams').textContent = teams.length;
+                    const totalMembers = teams.reduce((sum, team) => sum + (team.members || 0), 0);
+                    document.getElementById('total-members').textContent = totalMembers;
+
+                    const avgUtil = (teams.reduce((sum, team) => sum + (team.utilization || 0), 0) / teams.length).toFixed(0);
+                    document.getElementById('avg-utilization').textContent = avgUtil + '%';
+                }
+            } catch (error) {
+                console.log('Stats loaded with defaults');
+            }
+        }
+
+        // Load stats when page loads
+        loadStats();
+
+        // Refresh every 30 seconds
+        setInterval(loadStats, 30000);
+    </script>
+</body>
+</html>
