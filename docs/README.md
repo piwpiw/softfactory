@@ -1,6 +1,6 @@
 # 📖 문서 시작 가이드
 
-> **마지막 업데이트:** 2026-02-23 | **상태:** ✅ ACTIVE
+> **마지막 업데이트:** 2026-02-25 | **상태:** ✅ ACTIVE | **Governance:** v3.0 (15 principles)
 
 ---
 
@@ -19,6 +19,9 @@
 | **문제 해결** | [TROUBLESHOOTING.md](#troubleshooting) |
 | **새 서비스 추가** | [ADD_NEW_SERVICE.md](#newservice) |
 | **문서 템플릿?** | `docs/standards/` |
+| **과거 실수 확인** | [`shared-intelligence/pitfalls.md`](../shared-intelligence/pitfalls.md) |
+| **재사용 패턴 찾기** | [`shared-intelligence/patterns.md`](../shared-intelligence/patterns.md) |
+| **MCP 서버 목록** | [`orchestrator/mcp-registry.md`](../orchestrator/mcp-registry.md) |
 
 ---
 
@@ -28,9 +31,10 @@
 **이 조직의 구조는?** (10분 읽음)
 
 - 10명의 에이전트 역할
-- 4개의 활성 프로젝트
+- **5개의 활성 프로젝트** (M-001~M-005)
 - 의사결정 파이프라인
 - 통신 방식
+- **거버넌스 레이어 v3.0** (shared-intelligence, orchestrator, 15 principles)
 
 👉 **처음 읽을 문서**
 
@@ -40,9 +44,10 @@
 | 프로젝트 | 상태 | 진행률 | 담당 |
 |---------|------|--------|------|
 | **M-001** | ✅ COMPLETE | 100% | 01-Dispatcher |
-| **M-002** | 🔄 IN_PROGRESS | 30% | 02-PM |
+| **M-002** | 🔄 IN_PROGRESS | 35% | 02-PM |
 | **M-003** | ✅ DEPLOYED | 100% | 05+06-Dev |
 | **M-004** | ✅ ACTIVE | 100% | 10-Reporter |
+| **M-005** | ✅ ACTIVE | 100% | 01-Dispatcher |
 
 👉 **실시간 현황판**
 

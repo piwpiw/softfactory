@@ -1,9 +1,24 @@
 # CLAUDE.md — Multi-Agent Standard Architecture
-> **Project Completion Engine v2.1** | Claude Code Official Sub-Agent Framework
+> **Project Completion Engine v3.0** | Claude Code Official Sub-Agent Framework
 >
 > **Updated:** 2026-02-25 | **Status:** PRODUCTION | **Mode:** Auto-Execution
 >
 > **Core Principle:** 프로젝트 주제 제시 → 다중 에이전트 자동 실행 → 상용 표준 완성
+
+---
+
+## 🔗 **IMPORTS** (모든 에이전트 — 액션 전 필독)
+
+```
+# → .claude/agents/orchestrator.md        (Master Agent constitution)
+# → shared-intelligence/patterns.md       (Reusable solutions — reuse first)
+# → shared-intelligence/decisions.md      (ADR log — check before deciding)
+# → shared-intelligence/pitfalls.md       (Failure prevention — check before coding)
+# → orchestrator/mcp-registry.md          (All external connections — MCP only)
+# → orchestrator/agent-registry.md        (Authority boundaries — no agent acts outside scope)
+```
+
+**Rule:** Every agent reads its scoped constitution (`#` import chain) before any action. No exceptions.
 
 ---
 
@@ -40,11 +55,23 @@ D:/Project/
 │   ├── skills/                    ← Sonolbot 스킬
 │   │   ├── sonolbot-tasks/
 │   │   └── sonolbot-telegram/
-│   └── settings.local.json        ← Bash(*) 권한
+│   └── settings.local.json        ← Bash(*) 권한 + 4 Hooks
 │
 ├── .mcp.json                      ← 10개 MCP 서버 설정
 ├── .env                           ← 환경변수 (git 제외)
-├── CLAUDE.md                      ← 이 파일 (v2.1)
+├── CLAUDE.md                      ← 이 파일 (v3.0)
+│
+├── shared-intelligence/           ← 크로스-세션 에이전트 메모리
+│   ├── pitfalls.md                ← 실패 방지 (매 태스크 추가 필수)
+│   ├── patterns.md                ← 재사용 솔루션 라이브러리
+│   ├── decisions.md               ← ADR 로그 (모든 결정 기록)
+│   ├── cost-log.md                ← 토큰/비용 추적
+│   ├── handoffs/                  ← 에이전트간 핸드오프 노트
+│   └── checkpoints/               ← 장기 태스크 체크포인트
+│
+├── orchestrator/                  ← 거버넌스 레이어
+│   ├── mcp-registry.md            ← 모든 MCP 서버 (외부 연결 선언 필수)
+│   └── agent-registry.md          ← 에이전트 권한 매트릭스
 │
 ├── agents/                        ← Python 에이전트 구현체
 │   ├── 01_dispatcher/             ← Chief Dispatcher
@@ -432,8 +459,11 @@ Orchestrator:
 ### **활성 프로젝트**
 | ID | 이름 | 상태 | 시작 | 예상 완료 | 담당 |
 |----|------|------|------|----------|------|
-| P001 | SoftFactory | COMPLETE | 2026-02-23 | 2026-02-24 | C (Dev) |
-| P002 | CooCook API | IN_PROGRESS | 2026-02-22 | 2026-03-15 | B (Arch) → C (Dev) |
+| M-001 | Infrastructure | ✅ COMPLETE | 2026-02-22 | 2026-02-22 | PA-01 |
+| M-002 | CooCook API | 🔄 IN_PROGRESS (30%) | 2026-02-22 | 2026-04-15 | PA-04 → PA-05 |
+| M-003 | SoftFactory Hub | ✅ DEPLOYED | 2026-02-23 | 2026-02-24 | PA-05 + PA-06 |
+| M-004 | JARVIS Telegram Bot | ✅ ACTIVE | 2026-02-22 | Ongoing | PA-10 |
+| M-005 | Sonolbot Daemon | ✅ ACTIVE | 2026-02-23 | Ongoing | PA-01 |
 
 ---
 
@@ -623,10 +653,11 @@ DOMAIN=yourdomain.com
 
 | 날짜 | Agent | 액션 |
 |------|-------|-----|
-| 2026-02-25 | Orchestrator | CLAUDE.md v2.0 표준화 완료 |
-| 2026-02-24 | Agent C (Dev) | SoftFactory 완전 구현 (75 pages) |
-| 2026-02-24 | Agent D (QA) | SoftFactory 100% 테스트 통과 |
-| 2026-02-24 | Agent E (DevOps) | SoftFactory 배포 완료 |
+| 2026-02-25 | Orchestrator | Governance v3.0 — shared-intelligence/, orchestrator/, 4 hooks, import chaining |
+| 2026-02-25 | Orchestrator | CLAUDE.md v3.0 (15-principle enterprise standard) |
+| 2026-02-24 | PA-07 (QA) | SoftFactory 16/16 API 테스트 100% 통과 |
+| 2026-02-24 | PA-05 (Dev) | SoftFactory 완전 구현 (75 HTML pages, 5 services) |
+| 2026-02-23 | PA-01 | M-005 Sonolbot daemon 통합 + Project Brain 강화 |
 
 ---
 
@@ -645,4 +676,42 @@ DOMAIN=yourdomain.com
 
 **Version History:**
 - v1.0: 2026-02-22 (Deca-Agent 초기)
-- v2.0: 2026-02-25 (표준화 완료 - 현재)
+- v2.0: 2026-02-25 (표준화 완료)
+- v3.0: 2026-02-25 (Enterprise Governance — 15 principles, shared-intelligence, orchestrator registry, hooks)
+
+---
+
+## 🏛️ **SECTION 17: Enterprise Governance Standards (15 Principles)**
+
+> **Authoritative source** — these 15 principles override all other conventions.
+> Every agent inherits these at all layers: root, agent, sub-project.
+
+**[1]** You are the master orchestrator of an enterprise multi-agent SaaS platform built exclusively on Claude Code official standards, methodologies, and maximum known capability benchmarks.
+
+**[2]** Enforce CLAUDE.md at root, agent, and sub-project layers with `#` import chaining — every agent reads its scoped constitution before any action; no agent acts outside its defined authority matrix.
+
+**[3]** All external connections via MCP only (stdio + SSE transport) — maintain MCP registry at `orchestrator/mcp-registry.md`; no ad-hoc API calls, no direct DB access, no undeclared dependencies.
+
+**[4]** Activate all four Hooks: PreToolUse (scope + permission validation), PostToolUse (action logging + QA trigger), Stop (force shared-intelligence update before close), Notification (escalate to orchestrator on threshold breach). Config: `.claude/settings.local.json`.
+
+**[5]** Execute independent tasks via parallel subagents using git worktree isolation per agent; enforce sequential execution with explicit handoff protocol for dependent tasks; checkpoint every long-running task to `shared-intelligence/checkpoints/[task-id].md`.
+
+**[6]** Apply full quality gate pipeline before every commit and handoff: test coverage ≥80%, zero lint warnings, type check pass, secret scan clean, prompt injection surface reviewed, inter-agent message sanitized and orchestrator-validated.
+
+**[7]** Failure recovery: max 3 retries with modified approach per failure, fallback to backup agent on breach, root cause logged immediately — zero silent failures, zero unlogged state changes, zero unresolved escalations.
+
+**[8]** Cost discipline: log token usage and estimated cost per agent per task per sub-project to `shared-intelligence/cost-log.md`; flag tasks exceeding threshold to orchestrator; prefer parallel execution to minimize wall-clock time and maximize token efficiency.
+
+**[9]** After every task without exception: append to `shared-intelligence/pitfalls.md`, `patterns.md`, `decisions.md` (ADR format), `cost-log.md`; write handoff notes for next agent; promote reusable solutions to patterns library; update CLAUDE.md prevention rules from new pitfalls.
+
+**[10]** The system is a compounding intelligence engine — every sub-project adds capability, every failure adds prevention, every pattern reduces future cost; complexity is the enemy, efficiency is the law.
+
+**[11]** New sub-project onboarding: create `/sub-projects/[name]/CLAUDE.md` from master template; define scope-in and scope-out in one sentence each; declare all consumed main-service APIs; assign agents with explicit authority boundaries (`orchestrator/agent-registry.md`); inherit all `shared-intelligence/` knowledge; confirm tech stack matches platform standards; set measurable success metrics before first commit.
+
+**[12]** Session and context management: use `--resume` to continue interrupted sessions; use `--continue` for same-context follow-up; compress context proactively on long agentic loops; never allow context window overflow to cause silent task abandonment.
+
+**[13]** CI/CD pipeline integration: run Claude Code in headless mode with `--dangerously-skip-permissions` in isolated pipeline environments only; pipe `--output-format stream-json` to structured log collectors; gate deployments on all quality checks passing; no manual override without orchestrator approval logged in ADR.
+
+**[14]** Sub-project authority: each sub-project agent inherits platform standards but owns its local CLAUDE.md; local overrides allowed only for project-specific tooling; no local override may weaken security, quality gates, or shared-intelligence update obligations.
+
+**[15]** Anthropic Cookbook patterns, Claude Code changelog, and `modelcontextprotocol.io` spec must be reviewed before implementing any new agent capability — no reinvention of solved patterns; reuse first, extend second, build new only when justified in ADR (`shared-intelligence/decisions.md`).
