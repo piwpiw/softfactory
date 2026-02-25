@@ -142,6 +142,50 @@ class Booking(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
 
+
+class BookingPayment(db.Model):
+    __tablename__ = "booking_payments"
+
+    id = db.Column(db.Integer, primary_key=True)
+    booking_id = db.Column(db.Integer, db.ForeignKey("bookings.id"), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    amount = db.Column(db.Float, nullable=False)
+    currency = db.Column(db.String(3), default="KRW")
+    status = db.Column(db.String(20), default="completed")
+    transaction_id = db.Column(db.String(255))
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "booking_id": self.booking_id,
+            "amount": self.amount,
+            "currency": self.currency,
+            "status": self.status,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+        }
+
+
+class BookingReview(db.Model):
+    __tablename__ = "booking_reviews"
+
+    id = db.Column(db.Integer, primary_key=True)
+    booking_id = db.Column(db.Integer, db.ForeignKey("bookings.id"), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    chef_id = db.Column(db.Integer, db.ForeignKey("chefs.id"), nullable=False)
+    rating = db.Column(db.Integer, nullable=False)
+    comment = db.Column(db.Text)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "booking_id": self.booking_id,
+            "chef_id": self.chef_id,
+            "rating": self.rating,
+            "comment": self.comment,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+        }
 # ============ SNS AUTO ============
 
 class SNSAccount(db.Model):

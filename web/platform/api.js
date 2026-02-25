@@ -930,3 +930,92 @@ async function getPaymentHistory() {
     const response = await apiFetch('/api/payment/history');
     return response.json();
 }
+
+// ============ COOCOOK API ============
+
+async function getChefs(cuisine = null, location = null, page = 1) {
+    let path = '/api/coocook/chefs?page=' + page;
+    if (cuisine) path += '&cuisine=' + encodeURIComponent(cuisine);
+    if (location) path += '&location=' + encodeURIComponent(location);
+    const response = await apiFetch(path);
+    return response.json();
+}
+
+async function getChefDetail(chefId) {
+    const response = await apiFetch(`/api/coocook/chefs/${chefId}`);
+    return response.json();
+}
+
+async function getMyBookings() {
+    const response = await apiFetch('/api/coocook/bookings');
+    return response.json();
+}
+
+async function getBookingDetail(bookingId) {
+    const response = await apiFetch(`/api/coocook/bookings/${bookingId}`);
+    return response.json();
+}
+
+async function createBooking(chefId, bookingDate, durationHours, specialRequests = '') {
+    const response = await apiFetch('/api/coocook/bookings', {
+        method: 'POST',
+        body: JSON.stringify({
+            chef_id: chefId,
+            booking_date: bookingDate,
+            duration_hours: parseInt(durationHours),
+            special_requests: specialRequests
+        })
+    });
+    return response.json();
+}
+
+async function updateBookingStatus(bookingId, status) {
+    const response = await apiFetch(`/api/coocook/bookings/${bookingId}`, {
+        method: 'PUT',
+        body: JSON.stringify({ status })
+    });
+    return response.json();
+}
+
+async function registerAsChef(name, cuisineType, location, pricePerSession, bio = '') {
+    const response = await apiFetch('/api/coocook/chefs', {
+        method: 'POST',
+        body: JSON.stringify({
+            name,
+            cuisine_type: cuisineType,
+            location,
+            price_per_session: parseFloat(pricePerSession),
+            bio
+        })
+    });
+    return response.json();
+}
+
+// ============ COOCOOK PAYMENT & REVIEW ============
+
+// Payment - Process booking payment
+async function processPayment(bookingId, amount) {
+    const response = await apiFetch(`/api/coocook/bookings/${bookingId}/pay`, {
+        method: 'POST',
+        body: JSON.stringify({ amount: parseFloat(amount) })
+    });
+    return response.json();
+}
+
+// Review - Submit booking review
+async function submitBookingReview(bookingId, rating, comment) {
+    const response = await apiFetch(`/api/coocook/bookings/${bookingId}/review`, {
+        method: 'POST',
+        body: JSON.stringify({
+            rating: parseInt(rating),
+            comment: comment.trim()
+        })
+    });
+    return response.json();
+}
+
+// Get reviews for a chef
+async function getChefReviews(chefId) {
+    const response = await apiFetch(`/api/coocook/chefs/${chefId}/reviews`);
+    return response.json();
+}

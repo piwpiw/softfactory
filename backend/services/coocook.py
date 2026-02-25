@@ -220,3 +220,138 @@ def update_booking(booking_id):
         db.session.commit()
 
     return jsonify({'message': 'Booking updated'}), 200
+
+
+@coocook_bp.route('/bookings/<int:booking_id>/pay', methods=['POST'])
+@require_auth
+@require_subscription('coocook')
+def process_payment(booking_id):
+    """Process payment for a booking"""
+    booking = Booking.query.get(booking_id)
+
+    if not booking:
+        return jsonify({'error': 'Booking not found'}), 404
+
+    if booking.user_id != g.user_id:
+        return jsonify({'error': 'Not authorized'}), 403
+
+    if booking.payment_status == 'paid':
+        return jsonify({'error': 'Already paid'}), 400
+
+    data = request.get_json()
+    amount = float(data.get('amount', booking.total_price))
+
+    # Validate amount matches booking
+    if amount != booking.total_price:
+        return jsonify({'error': 'Amount mismatch'}), 400
+
+    # Create payment record
+    from ..models import BookingPayment
+    payment = BookingPayment(
+        booking_id=booking_id,
+        user_id=g.user_id,
+        amount=amount,
+        currency='KRW',
+        status='completed',
+        transaction_id=f'TXN-{booking_id}-{datetime.utcnow().timestamp()}'
+    )
+
+    # Update booking status
+    booking.payment_status = 'paid'
+    booking.status = 'confirmed'
+
+    db.session.add(payment)
+    db.session.commit()
+
+    return jsonify({
+        'message': 'Payment processed successfully',
+        'payment_id': payment.id,
+        'booking_id': booking_id,
+        'amount': amount
+    }), 200
+
+
+@coocook_bp.route('/bookings/<int:booking_id>/review', methods=['POST'])
+@require_auth
+@require_subscription('coocook')
+def submit_review(booking_id):
+    """Submit a review for a completed booking"""
+    booking = Booking.query.get(booking_id)
+
+    if not booking:
+        return jsonify({'error': 'Booking not found'}), 404
+
+    if booking.user_id != g.user_id:
+        return jsonify({'error': 'Not authorized'}), 403
+
+    if booking.status != 'completed':
+        return jsonify({'error': 'Can only review completed bookings'}), 400
+
+    data = request.get_json()
+    rating = int(data.get('rating', 5))
+    comment = data.get('comment', '')
+
+    # Validate rating
+    if rating < 1 or rating > 5:
+        return jsonify({'error': 'Rating must be between 1 and 5'}), 400
+
+    # Check if already reviewed
+    from ..models import BookingReview
+    existing = BookingReview.query.filter_by(booking_id=booking_id).first()
+    if existing:
+        return jsonify({'error': 'Already reviewed'}), 400
+
+    # Create review
+    review = BookingReview(
+        booking_id=booking_id,
+        user_id=g.user_id,
+        chef_id=booking.chef_id,
+        rating=rating,
+        comment=comment
+    )
+
+    # Update chef rating
+    chef = booking.chef
+    new_rating = (chef.rating * chef.rating_count + rating) / (chef.rating_count + 1)
+    chef.rating = new_rating
+    chef.rating_count += 1
+
+    db.session.add(review)
+    db.session.commit()
+
+    return jsonify({
+        'message': 'Review submitted successfully',
+        'review_id': review.id,
+        'chef_rating': chef.rating,
+        'rating_count': chef.rating_count
+    }), 201
+
+
+@coocook_bp.route('/chefs/<int:chef_id>/reviews', methods=['GET'])
+def get_chef_reviews(chef_id):
+    """Get reviews for a chef"""
+    chef = Chef.query.get(chef_id)
+
+    if not chef:
+        return jsonify({'error': 'Chef not found'}), 404
+
+    from ..models import BookingReview
+    reviews = BookingReview.query.filter_by(chef_id=chef_id).all()
+
+    reviews_data = []
+    for review in reviews:
+        reviews_data.append({
+            'id': review.id,
+            'user_id': review.user_id,
+            'rating': review.rating,
+            'comment': review.comment,
+            'created_at': review.created_at.isoformat(),
+        })
+
+    return jsonify({
+        'chef_id': chef_id,
+        'chef_name': chef.name,
+        'average_rating': chef.rating,
+        'total_reviews': chef.rating_count,
+        'reviews': reviews_data
+    }), 200

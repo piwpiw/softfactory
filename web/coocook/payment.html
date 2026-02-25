@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>결제 — CooCook | SoftFactory</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="../platform/api.js"></script>
+    <style>body { font-family: 'Inter', sans-serif; }</style>
+</head>
+<body class="bg-slate-950 text-slate-100">
+    <div class="flex h-screen overflow-hidden">
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <header class="h-16 bg-slate-900 border-b border-slate-800 px-6 flex items-center justify-between shrink-0">
+                <h2 class="text-xl font-bold text-white">💳 결제</h2>
+                <a href="my-bookings.html" class="text-slate-400 hover:text-white">← 돌아가기</a>
+            </header>
+            <main class="flex-1 overflow-y-auto p-6">
+                <div class="grid grid-cols-3 gap-6">
+                    <!-- Payment Form -->
+                    <div class="col-span-2 space-y-6">
+                        <div class="bg-slate-800 rounded-xl p-8 border border-slate-700">
+                            <h3 class="text-lg font-bold text-white mb-6">💰 결제 정보</h3>
+
+                            <!-- Booking Info -->
+                            <div class="bg-slate-900 rounded-lg p-6 mb-6 border border-slate-700">
+                                <p class="text-xs text-slate-400 mb-2">예약 정보</p>
+                                <div class="space-y-3">
+                                    <div class="flex justify-between">
+                                        <span class="text-slate-300">셰프</span>
+                                        <span id="chef-name" class="font-bold text-white">Chef Park</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-slate-300">예약 날짜</span>
+                                        <span id="booking-date" class="font-bold text-white">2026-03-01</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-slate-300">소요 시간</span>
+                                        <span id="duration" class="font-bold text-white">2시간</span>
+                                    </div>
+                                    <div class="flex justify-between border-t border-slate-700 pt-3">
+                                        <span class="text-slate-300 font-bold">합계 금액</span>
+                                        <span id="amount" class="font-bold text-orange-400 text-lg">₩300,000</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Payment Methods -->
+                            <div class="space-y-4">
+                                <h4 class="text-sm font-bold text-white">결제 방법</h4>
+
+                                <!-- Credit Card -->
+                                <label class="flex items-center p-4 border-2 border-slate-700 rounded-lg hover:border-orange-600 cursor-pointer">
+                                    <input type="radio" name="method" value="card" class="w-5 h-5" checked>
+                                    <div class="ml-4 flex-1">
+                                        <p class="font-bold text-white">💳 신용카드</p>
+                                        <p class="text-xs text-slate-400">Visa, Mastercard, Amex</p>
+                                    </div>
+                                </label>
+
+                                <!-- Bank Transfer -->
+                                <label class="flex items-center p-4 border-2 border-slate-700 rounded-lg hover:border-orange-600 cursor-pointer">
+                                    <input type="radio" name="method" value="bank" class="w-5 h-5">
+                                    <div class="ml-4 flex-1">
+                                        <p class="font-bold text-white">🏦 계좌이체</p>
+                                        <p class="text-xs text-slate-400">은행 송금</p>
+                                    </div>
+                                </label>
+
+                                <!-- Mobile Payment -->
+                                <label class="flex items-center p-4 border-2 border-slate-700 rounded-lg hover:border-orange-600 cursor-pointer">
+                                    <input type="radio" name="method" value="mobile" class="w-5 h-5">
+                                    <div class="ml-4 flex-1">
+                                        <p class="font-bold text-white">📱 모바일 페이</p>
+                                        <p class="text-xs text-slate-400">카카오페이, 삼성페이</p>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <!-- Card Details (shown for card method) -->
+                            <div id="card-details" class="mt-6 space-y-4 p-4 bg-slate-900 rounded-lg border border-slate-700">
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-300 mb-2">카드번호</label>
+                                    <input type="text" placeholder="1234 5678 9012 3456" class="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-orange-600">
+                                </div>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-xs font-bold text-slate-300 mb-2">유효기간</label>
+                                        <input type="text" placeholder="MM/YY" class="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-orange-600">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-bold text-slate-300 mb-2">CVC</label>
+                                        <input type="text" placeholder="123" class="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-orange-600">
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-300 mb-2">카드 소유자명</label>
+                                    <input type="text" placeholder="Name on Card" class="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-orange-600">
+                                </div>
+                            </div>
+
+                            <!-- Agree to Terms -->
+                            <label class="flex items-center mt-6 p-4 bg-slate-900 rounded-lg border border-slate-700">
+                                <input type="checkbox" id="agree-terms" class="w-5 h-5">
+                                <span class="ml-3 text-sm text-slate-300">
+                                    <a href="#" class="text-orange-400 hover:underline">결제약관</a>에 동의합니다
+                                </span>
+                            </label>
+
+                            <!-- Action Buttons -->
+                            <div class="flex gap-4 mt-8">
+                                <button onclick="cancelPayment()" class="flex-1 px-6 py-3 rounded-lg border-2 border-slate-700 text-slate-300 hover:border-slate-600 font-bold">
+                                    취소
+                                </button>
+                                <button onclick="processPayment()" class="flex-1 px-6 py-3 rounded-lg bg-gradient-to-r from-orange-600 to-orange-500 text-white font-bold hover:from-orange-700 hover:to-orange-600 transition">
+                                    ✓ 결제하기
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Summary Sidebar -->
+                    <div class="bg-gradient-to-br from-orange-900/30 to-orange-900/10 rounded-xl p-6 border-2 border-orange-600 h-fit">
+                        <h3 class="text-lg font-bold text-white mb-6">📋 결제 요약</h3>
+                        <div class="space-y-4 mb-6 pb-6 border-b border-orange-700">
+                            <div>
+                                <p class="text-xs text-slate-400">예약 번호</p>
+                                <p id="booking-id" class="font-bold text-white">#1001</p>
+                            </div>
+                            <div>
+                                <p class="text-xs text-slate-400">상태</p>
+                                <p id="booking-status" class="font-bold text-yellow-400">대기중</p>
+                            </div>
+                        </div>
+                        <div class="space-y-3">
+                            <div class="flex justify-between text-sm">
+                                <span class="text-slate-300">기본 금액</span>
+                                <span id="base-amount" class="text-white font-bold">₩300,000</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-slate-300">수수료</span>
+                                <span class="text-white font-bold">₩0</span>
+                            </div>
+                            <div class="flex justify-between border-t border-orange-700 pt-3 mt-3">
+                                <span class="text-white font-bold">최종 금액</span>
+                                <span id="final-amount" class="text-lg font-bold text-orange-400">₩300,000</span>
+                            </div>
+                        </div>
+
+                        <!-- Info Box -->
+                        <div class="mt-6 p-4 bg-blue-900/20 border border-blue-700 rounded-lg">
+                            <p class="text-xs text-blue-200">
+                                ℹ️ 결제 완료 후 셰프에게 자동으로 알림이 전달됩니다.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        // Get booking ID from URL params
+        const params = new URLSearchParams(window.location.search);
+        const bookingId = params.get('booking_id');
+
+        // Load booking details
+        async function loadBooking() {
+            try {
+                const booking = await getBookingDetail(bookingId);
+                const chef = await getChefDetail(booking.chef_id);
+
+                document.getElementById('chef-name').textContent = chef.name;
+                document.getElementById('booking-date').textContent = booking.booking_date;
+                document.getElementById('duration').textContent = `${booking.duration_hours}시간`;
+                document.getElementById('booking-id').textContent = `#${booking.id}`;
+                document.getElementById('booking-status').textContent = booking.status || '대기중';
+                document.getElementById('amount').textContent = `₩${booking.total_price.toLocaleString()}`;
+                document.getElementById('base-amount').textContent = `₩${booking.total_price.toLocaleString()}`;
+                document.getElementById('final-amount').textContent = `₩${booking.total_price.toLocaleString()}`;
+            } catch (error) {
+                console.error('Error loading booking:', error);
+                alert('예약 정보를 불러올 수 없습니다');
+                window.location.href = 'my-bookings.html';
+            }
+        }
+
+        async function processPayment() {
+            if (!document.getElementById('agree-terms').checked) {
+                alert('약관에 동의하세요');
+                return;
+            }
+
+            try {
+                const booking = await getBookingDetail(bookingId);
+                const result = await window.processPayment(bookingId, booking.total_price);
+
+                alert(`결제 완료!\n결제번호: ${result.payment_id}`);
+                window.location.href = `my-bookings.html?paid=${bookingId}`;
+            } catch (error) {
+                console.error('Payment error:', error);
+                alert('결제 처리 중 오류가 발생했습니다');
+            }
+        }
+
+        function cancelPayment() {
+            if (confirm('결제를 취소하시겠습니까?')) {
+                window.location.href = 'my-bookings.html';
+            }
+        }
+
+        // Initialize
+        loadBooking();
+    </script>
+</body>
+</html>
