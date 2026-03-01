@@ -55,7 +55,7 @@ jobs:
           echo "IMAGE_FULL=${IMAGE_FULL}" >> "$GITHUB_ENV"
 
       - name: Build and push staging image
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: .
           file: ./Dockerfile.prod
