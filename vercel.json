@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "rewrites": [
+    { "source": "/", "destination": "/web/index.html" },
+    { "source": "/platform/:path*", "destination": "/web/platform/:path*" },
+    { "source": "/sns-auto/:path*", "destination": "/web/sns-auto/:path*" },
+    { "source": "/admin/:path*", "destination": "/web/admin/:path*" },
+    { "source": "/:path*", "destination": "/web/:path*" }
+  ]
+}
