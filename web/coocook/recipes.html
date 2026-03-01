@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#111827">
+    <title>레시피 탐색 — CooCook — SoftFactory</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="../platform/api.js"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .recipe-card { transition: all 0.3s ease; }
+        .recipe-card:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(0,0,0,0.3); }
+        .star-rating { color: #fbbf24; }
+        .slider { width: 100%; }
+        .modal-overlay { backdrop-filter: blur(4px); }
+    </style>
+    <link rel="stylesheet" href="../responsive-framework.css">
+</head>
+<body class="bg-slate-950 text-slate-100">
+    <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar Navigation -->
+        <aside class="w-64 bg-slate-900 border-r border-slate-800 flex flex-col shrink-0 overflow-y-auto">
+            <div class="p-6 border-b border-slate-800">
+                <a href="index.html" class="flex items-center gap-3">
+                    <span class="text-2xl">🍳</span>
+                    <div><h1 class="font-bold text-white text-sm">CooCook</h1><p class="text-xs text-slate-400">레시피</p></div>
+                </a>
+            </div>
+            <nav class="flex-1 p-6 space-y-2">
+                <a href="index.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">🏠 홈</a>
+                <a href="recipes.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg bg-orange-600 text-white font-medium">📖 레시피</a>
+                <a href="shopping-list.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">🛒 쇼핑리스트</a>
+                <a href="feed.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">📱 피드</a>
+            </nav>
+
+            <!-- Filters Section -->
+            <div class="p-6 border-t border-slate-800 space-y-6">
+                <div>
+                    <h4 class="font-semibold text-white mb-3 text-sm">🍜 요리 방식</h4>
+                    <div class="space-y-2">
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" class="cuisine-filter" value="Korean" class="rounded">
+                            <span class="text-sm text-slate-300">한식</span>
+                        </label>
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" class="cuisine-filter" value="Italian" class="rounded">
+                            <span class="text-sm text-slate-300">이탈리안</span>
+                        </label>
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" class="cuisine-filter" value="Japanese" class="rounded">
+                            <span class="text-sm text-slate-300">일식</span>
+                        </label>
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" class="cuisine-filter" value="French" class="rounded">
+                            <span class="text-sm text-slate-300">프렌치</span>
+                        </label>
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" class="cuisine-filter" value="Mexican" class="rounded">
+                            <span class="text-sm text-slate-300">멕시칸</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div>
+                    <h4 class="font-semibold text-white mb-3 text-sm">⭐ 난이도</h4>
+                    <div class="space-y-2">
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" class="difficulty-filter" value="Easy" class="rounded">
+                            <span class="text-sm text-slate-300">쉬움</span>
+                        </label>
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" class="difficulty-filter" value="Medium" class="rounded">
+                            <span class="text-sm text-slate-300">중간</span>
+                        </label>
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" class="difficulty-filter" value="Hard" class="rounded">
+                            <span class="text-sm text-slate-300">어려움</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div>
+                    <h4 class="font-semibold text-white mb-3 text-sm">⏱️ 준비시간</h4>
+                    <div class="space-y-3">
+                        <input type="range" id="timeSlider" class="slider" min="0" max="120" value="60">
+                        <p class="text-sm text-slate-400">최대 <span id="timeValue">60</span>분</p>
+                    </div>
+                </div>
+
+                <div>
+                    <h4 class="font-semibold text-white mb-3 text-sm">💰 가격 범위</h4>
+                    <div class="space-y-3">
+                        <input type="range" id="priceSlider" class="slider" min="0" max="100000" value="50000" step="1000">
+                        <p class="text-sm text-slate-400"><span id="priceValue">₩50,000</span> 이하</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-6 border-t border-slate-800">
+                <button onclick="logout()" class="p-2 hover:bg-slate-800 rounded-lg w-full text-left">🚪 로그아웃</button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <!-- Header -->
+            <header class="h-16 bg-slate-900 border-b border-slate-800 px-6 flex items-center justify-between shrink-0">
+                <div>
+                    <h2 class="text-xl font-bold text-white">📖 레시피 탐색</h2>
+                    <p class="text-xs text-slate-400">맛있는 레시피를 찾아보세요</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <select id="sortBy" class="px-4 py-2 bg-slate-800 text-white rounded-lg border border-slate-700 text-sm">
+                        <option value="popular">인기도순</option>
+                        <option value="time">준비시간순</option>
+                        <option value="price">가격순</option>
+                        <option value="rating">평점순</option>
+                    </select>
+                </div>
+            </header>
+
+            <!-- Recipe Grid -->
+            <main class="flex-1 overflow-y-auto p-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" id="recipeGrid">
+                    <!-- Loading Skeleton -->
+                    <div class="bg-slate-800 rounded-lg overflow-hidden animate-pulse border border-slate-700">
+                        <div class="h-40 bg-slate-700"></div>
+                        <div class="p-4 space-y-2">
+                            <div class="h-4 bg-slate-700 rounded w-3/4"></div>
+                            <div class="h-3 bg-slate-700 rounded w-1/2"></div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Recipe Detail Modal -->
+    <div id="detailModal" class="fixed inset-0 bg-black/50 modal-overlay hidden z-50 flex items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-slate-800 rounded-xl border border-slate-700 max-w-2xl w-full my-8">
+            <div class="flex items-center justify-between p-6 border-b border-slate-700">
+                <h3 id="modalTitle" class="text-xl font-bold text-white">레시피 상세</h3>
+                <button onclick="closeModal()" class="text-slate-400 hover:text-white text-xl">✕</button>
+            </div>
+            <div class="p-6 space-y-4 max-h-96 overflow-y-auto">
+                <div class="aspect-video bg-slate-700 rounded-lg flex items-center justify-center text-4xl" id="modalImage">🍽️</div>
+
+                <div class="grid grid-cols-3 gap-4">
+                    <div class="text-center">
+                        <p class="text-slate-400 text-sm">준비시간</p>
+                        <p id="modalTime" class="text-lg font-bold text-white">30분</p>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-slate-400 text-sm">난이도</p>
+                        <p id="modalDifficulty" class="text-lg font-bold text-orange-400">중간</p>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-slate-400 text-sm">평점</p>
+                        <p id="modalRating" class="text-lg font-bold text-yellow-400">⭐ 4.5</p>
+                    </div>
+                </div>
+
+                <div>
+                    <h4 class="font-semibold text-white mb-2">👨‍🍳 셰프</h4>
+                    <p id="modalChef" class="text-slate-300">로딩 중...</p>
+                </div>
+
+                <div>
+                    <h4 class="font-semibold text-white mb-2">🥘 재료</h4>
+                    <ul id="modalIngredients" class="text-slate-300 text-sm space-y-1">
+                        <li class="text-slate-400">로딩 중...</li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="font-semibold text-white mb-2">📋 영양정보</h4>
+                    <div class="grid grid-cols-2 gap-2 text-sm">
+                        <div class="bg-slate-700 p-2 rounded">
+                            <p class="text-slate-400">칼로리</p>
+                            <p id="modalCalories" class="font-bold text-white">480 kcal</p>
+                        </div>
+                        <div class="bg-slate-700 p-2 rounded">
+                            <p class="text-slate-400">단백질</p>
+                            <p id="modalProtein" class="font-bold text-white">25g</p>
+                        </div>
+                        <div class="bg-slate-700 p-2 rounded">
+                            <p class="text-slate-400">탄수화물</p>
+                            <p id="modalCarbs" class="font-bold text-white">45g</p>
+                        </div>
+                        <div class="bg-slate-700 p-2 rounded">
+                            <p class="text-slate-400">지방</p>
+                            <p id="modalFat" class="font-bold text-white">15g</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h4 class="font-semibold text-white mb-2">⭐ 리뷰</h4>
+                    <div id="modalReviews" class="space-y-2 text-sm max-h-32 overflow-y-auto">
+                        <p class="text-slate-400">리뷰 로딩 중...</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-6 border-t border-slate-700 flex gap-3">
+                <button onclick="closeModal()" class="flex-1 px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg font-medium">닫기</button>
+                <button id="likeBtn" onclick="toggleLike()" class="flex-1 px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-lg font-medium">❤️ 좋아요</button>
+                <button onclick="addToShoppingList()" class="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium">🛒 추가</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        requireAuth();
+
+        let recipes = [];
+        let selectedRecipe = null;
+        const pageSize = 20;
+        let currentPage = 0;
+
+        // Mock recipe data
+        const mockRecipes = [
+            { id: 1, name: '김치찌개', cuisine: 'Korean', difficulty: 'Easy', prep_time: 20, rating: 4.8, reviews: 156, chef: '홍셀프', price: 25000, image: '🔥', ingredients: ['김치', '돼지고기', '두부', '파'], calories: 280, protein: 18, carbs: 35, fat: 12 },
+            { id: 2, name: '파스타 카르보나라', cuisine: 'Italian', difficulty: 'Medium', prep_time: 30, rating: 4.6, reviews: 98, chef: '마르코', price: 32000, image: '🍝', ingredients: ['파스타', '계란', '베이컨', '치즈'], calories: 520, protein: 28, carbs: 48, fat: 20 },
+            { id: 3, name: '초밥 롤', cuisine: 'Japanese', difficulty: 'Hard', prep_time: 45, rating: 4.9, reviews: 203, chef: '타로', price: 38000, image: '🍣', ingredients: ['쌀', '노리', '연어', '오이'], calories: 320, protein: 22, carbs: 42, fat: 8 },
+            { id: 4, name: '비프 스테이크', cuisine: 'French', difficulty: 'Hard', prep_time: 40, rating: 4.7, reviews: 145, chef: '피에르', price: 45000, image: '🥩', ingredients: ['소고기', '버터', '마늘', '로즈메리'], calories: 580, protein: 42, carbs: 15, fat: 38 },
+            { id: 5, name: '타코', cuisine: 'Mexican', difficulty: 'Easy', prep_time: 25, rating: 4.5, reviews: 87, chef: '카를로스', price: 20000, image: '🌮', ingredients: ['또띠야', '닭고기', '양파', '라임'], calories: 350, protein: 24, carbs: 38, fat: 14 },
+            { id: 6, name: '된장찌개', cuisine: 'Korean', difficulty: 'Easy', prep_time: 25, rating: 4.7, reviews: 134, chef: '홍셀프', price: 22000, image: '🍲', ingredients: ['된장', '두부', '팽이버섯', '고추'], calories: 240, protein: 15, carbs: 28, fat: 10 },
+            { id: 7, name: '리조또', cuisine: 'Italian', difficulty: 'Medium', prep_time: 35, rating: 4.4, reviews: 76, chef: '마르코', price: 35000, image: '🍚', ingredients: ['쌀', '화이트와인', '치즈', '버터'], calories: 480, protein: 16, carbs: 55, fat: 18 },
+            { id: 8, name: '텐동', cuisine: 'Japanese', difficulty: 'Medium', prep_time: 30, rating: 4.6, reviews: 112, chef: '타로', price: 28000, image: '🍱', ingredients: ['밥', '새우튀김', '계란', '간장'], calories: 420, protein: 18, carbs: 52, fat: 16 },
+            { id: 9, name: '크로와상', cuisine: 'French', difficulty: 'Hard', prep_time: 120, rating: 4.8, reviews: 89, chef: '피에르', price: 18000, image: '🥐', ingredients: ['밀가루', '버터', '우유', '소금'], calories: 380, protein: 8, carbs: 42, fat: 22 },
+            { id: 10, name: '엔칠라다', cuisine: 'Mexican', difficulty: 'Medium', prep_time: 40, rating: 4.5, reviews: 65, chef: '카를로스', price: 26000, image: '🌶️', ingredients: ['또띠야', '소고기', '치즈', '살사'], calories: 450, protein: 25, carbs: 45, fat: 20 },
+        ];
+
+        // Initialize
+        function init() {
+            loadRecipes();
+            setupEventListeners();
+        }
+
+        function setupEventListeners() {
+            document.querySelectorAll('.cuisine-filter').forEach(el => el.addEventListener('change', filterRecipes));
+            document.querySelectorAll('.difficulty-filter').forEach(el => el.addEventListener('change', filterRecipes));
+            document.getElementById('timeSlider').addEventListener('input', (e) => {
+                document.getElementById('timeValue').textContent = e.target.value;
+                filterRecipes();
+            });
+            document.getElementById('priceSlider').addEventListener('input', (e) => {
+                document.getElementById('priceValue').textContent = '₩' + parseInt(e.target.value).toLocaleString('ko-KR');
+                filterRecipes();
+            });
+            document.getElementById('sortBy').addEventListener('change', sortRecipes);
+        }
+
+        function loadRecipes() {
+            recipes = [...mockRecipes];
+            renderRecipes();
+        }
+
+        function filterRecipes() {
+            const cuisines = Array.from(document.querySelectorAll('.cuisine-filter:checked')).map(el => el.value);
+            const difficulties = Array.from(document.querySelectorAll('.difficulty-filter:checked')).map(el => el.value);
+            const maxTime = parseInt(document.getElementById('timeSlider').value);
+            const maxPrice = parseInt(document.getElementById('priceSlider').value);
+
+            recipes = mockRecipes.filter(r => {
+                const cuisineMatch = cuisines.length === 0 || cuisines.includes(r.cuisine);
+                const difficultyMatch = difficulties.length === 0 || difficulties.includes(r.difficulty);
+                const timeMatch = r.prep_time <= maxTime;
+                const priceMatch = r.price <= maxPrice;
+                return cuisineMatch && difficultyMatch && timeMatch && priceMatch;
+            });
+
+            sortRecipes();
+            renderRecipes();
+        }
+
+        function sortRecipes() {
+            const sortBy = document.getElementById('sortBy').value;
+            switch(sortBy) {
+                case 'time':
+                    recipes.sort((a, b) => a.prep_time - b.prep_time);
+                    break;
+                case 'price':
+                    recipes.sort((a, b) => a.price - b.price);
+                    break;
+                case 'rating':
+                    recipes.sort((a, b) => b.rating - a.rating);
+                    break;
+                default:
+                    recipes.sort((a, b) => b.reviews - a.reviews);
+            }
+        }
+
+        function renderRecipes() {
+            const grid = document.getElementById('recipeGrid');
+            grid.innerHTML = '';
+
+            if (recipes.length === 0) {
+                grid.innerHTML = '<p class="col-span-full text-center text-slate-400 py-12">일치하는 레시피가 없습니다.</p>';
+                return;
+            }
+
+            recipes.forEach(recipe => {
+                const card = document.createElement('div');
+                card.className = 'recipe-card bg-slate-800 rounded-lg overflow-hidden border border-slate-700 cursor-pointer';
+                card.onclick = () => showDetailModal(recipe);
+                card.innerHTML = `
+                    <div class="aspect-video bg-gradient-to-br from-orange-900/30 to-orange-900/10 flex items-center justify-center text-4xl">
+                        ${recipe.image}
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-semibold text-white mb-1 line-clamp-2">${recipe.name}</h3>
+                        <p class="text-xs text-orange-400 mb-2">${recipe.cuisine} • ${recipe.difficulty}</p>
+                        <div class="flex justify-between items-center text-sm mb-3">
+                            <span class="text-slate-400">⏱️ ${recipe.prep_time}분</span>
+                            <span class="star-rating">⭐ ${recipe.rating}</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="font-semibold text-white">₩${recipe.price.toLocaleString('ko-KR')}</span>
+                            <button onclick="event.stopPropagation(); toggleLikeQuick(${recipe.id})" class="px-3 py-1 bg-orange-600 hover:bg-orange-700 text-white text-sm rounded-lg">♥️</button>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function showDetailModal(recipe) {
+            selectedRecipe = recipe;
+            document.getElementById('modalTitle').textContent = recipe.name;
+            document.getElementById('modalImage').textContent = recipe.image;
+            document.getElementById('modalTime').textContent = recipe.prep_time + '분';
+            document.getElementById('modalDifficulty').textContent = recipe.difficulty;
+            document.getElementById('modalRating').textContent = `⭐ ${recipe.rating} (${recipe.reviews}개)`;
+            document.getElementById('modalChef').textContent = recipe.chef;
+            document.getElementById('modalCalories').textContent = recipe.calories + ' kcal';
+            document.getElementById('modalProtein').textContent = recipe.protein + 'g';
+            document.getElementById('modalCarbs').textContent = recipe.carbs + 'g';
+            document.getElementById('modalFat').textContent = recipe.fat + 'g';
+
+            document.getElementById('modalIngredients').innerHTML = recipe.ingredients
+                .map(ing => `<li>✓ ${ing}</li>`)
+                .join('');
+
+            const reviews = [
+                { user: '김정현', rating: 5, text: '정말 맛있었어요!' },
+                { user: '이준호', rating: 4, text: '레시피가 깔끔해요.' },
+                { user: '박민지', rating: 5, text: '셰프님 감사합니다!' }
+            ];
+            document.getElementById('modalReviews').innerHTML = reviews
+                .map(r => `<div class="bg-slate-700 p-2 rounded"><p class="font-semibold text-white">${r.user} ${'⭐'.repeat(r.rating)}</p><p class="text-slate-300 text-xs mt-1">${r.text}</p></div>`)
+                .join('');
+
+            document.getElementById('detailModal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('detailModal').classList.add('hidden');
+            selectedRecipe = null;
+        }
+
+        function toggleLike() {
+            if (!selectedRecipe) return;
+            selectedRecipe.liked = !selectedRecipe.liked;
+            document.getElementById('likeBtn').textContent = selectedRecipe.liked ? '❤️ 좋아요 취소' : '❤️ 좋아요';
+            showSuccess(selectedRecipe.liked ? '좋아요 했습니다!' : '좋아요 취소했습니다.');
+        }
+
+        function toggleLikeQuick(recipeId) {
+            const recipe = recipes.find(r => r.id === recipeId);
+            if (!recipe) return;
+            recipe.liked = !recipe.liked;
+            showSuccess(recipe.liked ? '좋아요 했습니다!' : '좋아요 취소했습니다.');
+        }
+
+        function addToShoppingList() {
+            if (!selectedRecipe) return;
+            showSuccess(`${selectedRecipe.name}의 재료가 쇼핑리스트에 추가되었습니다.`);
+            closeModal();
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('detailModal').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('detailModal')) {
+                closeModal();
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+    <script src="../mobile-optimization.js" defer></script>
+</body>
+</html>

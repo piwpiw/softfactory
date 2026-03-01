@@ -1,0 +1,304 @@
+/**
+ * SoftFactory Responsive Framework v1.0
+ * Global responsive utilities for mobile-first design
+ * Covers 320px - 1920px viewport range
+ */
+
+/* ============ CSS Custom Properties ============ */
+:root {
+    --sf-sidebar-width: 256px;
+    --sf-header-height: 64px;
+    --sf-mobile-breakpoint: 768px;
+    --sf-tablet-breakpoint: 1024px;
+}
+
+/* ============ Hamburger Menu ============ */
+.hamburger {
+    display: none;
+    position: fixed;
+    top: 12px;
+    left: 12px;
+    z-index: 1001;
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    padding: 10px;
+    cursor: pointer;
+    flex-direction: column;
+    gap: 5px;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    transition: all 0.3s ease;
+}
+
+.hamburger span {
+    display: block;
+    width: 20px;
+    height: 2px;
+    background: #e2e8f0;
+    border-radius: 2px;
+    transition: all 0.3s ease;
+}
+
+.hamburger.active span:nth-child(1) {
+    transform: rotate(45deg) translate(5px, 5px);
+}
+.hamburger.active span:nth-child(2) {
+    opacity: 0;
+}
+.hamburger.active span:nth-child(3) {
+    transform: rotate(-45deg) translate(5px, -5px);
+}
+
+/* ============ Sidebar Overlay (mobile) ============ */
+.sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(2px);
+    z-index: 999;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.sidebar-overlay.active {
+    opacity: 1;
+}
+
+/* ============ Mobile Styles (max-width: 768px) ============ */
+@media (max-width: 768px) {
+    /* Show hamburger */
+    .hamburger {
+        display: flex;
+    }
+
+    /* Show overlay when sidebar is open */
+    .sidebar-overlay.active {
+        display: block;
+    }
+
+    /* Sidebar: off-canvas left */
+    aside,
+    .sidebar,
+    aside.w-64 {
+        position: fixed !important;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        width: var(--sf-sidebar-width) !important;
+        z-index: 1000;
+        transform: translateX(-100%);
+        transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        overflow-y: auto;
+    }
+
+    aside.sidebar-open,
+    .sidebar.sidebar-open,
+    aside.w-64.sidebar-open {
+        transform: translateX(0);
+    }
+
+    /* Main content: full width */
+    .flex.h-screen > .flex-1,
+    .flex.h-screen > div.flex-1 {
+        width: 100% !important;
+        margin-left: 0 !important;
+    }
+
+    /* Header adjustments */
+    header {
+        padding-left: 56px !important;
+    }
+
+    header h2 {
+        font-size: 1rem !important;
+    }
+
+    /* Grid adjustments */
+    .grid-cols-2,
+    .md\:grid-cols-2,
+    .lg\:grid-cols-3,
+    .lg\:grid-cols-4,
+    .md\:grid-cols-4 {
+        grid-template-columns: 1fr !important;
+    }
+
+    .md\:grid-cols-3 {
+        grid-template-columns: 1fr !important;
+    }
+
+    /* Two-column grids become single */
+    main .grid.grid-cols-2 {
+        grid-template-columns: 1fr !important;
+    }
+
+    /* Flex gap adjustments */
+    .gap-6 {
+        gap: 12px;
+    }
+
+    /* Padding adjustments */
+    main, .p-6 {
+        padding: 12px !important;
+    }
+
+    /* Text size adjustments */
+    .text-3xl {
+        font-size: 1.5rem !important;
+    }
+
+    .text-xl {
+        font-size: 1.125rem !important;
+    }
+
+    /* Hide elements that are desktop-only */
+    .hidden-mobile {
+        display: none !important;
+    }
+
+    /* Stack flex items */
+    .flex.gap-4,
+    .flex.gap-3 {
+        flex-wrap: wrap;
+    }
+
+    /* Login page adjustments */
+    body.login-page .max-w-2xl,
+    body .w-full.max-w-2xl {
+        max-width: 100%;
+        padding: 0 12px;
+    }
+
+    /* Login grid */
+    .grid.grid-cols-1.md\:grid-cols-2 {
+        grid-template-columns: 1fr !important;
+    }
+
+    /* Features grid on login */
+    .grid.grid-cols-1.md\:grid-cols-5 {
+        grid-template-columns: repeat(3, 1fr) !important;
+    }
+
+    /* Social login buttons */
+    .grid.grid-cols-3 {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    /* Stat cards */
+    .grid.grid-cols-1.md\:grid-cols-4 {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+
+    /* Canvas charts */
+    canvas {
+        max-height: 200px !important;
+    }
+
+    /* Table scrolling */
+    table {
+        display: block;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* Modal adjustments */
+    .fixed.inset-0 .max-w-sm,
+    .fixed.inset-0 .max-w-md {
+        max-width: calc(100vw - 32px);
+    }
+}
+
+/* ============ Small Mobile (max-width: 400px) ============ */
+@media (max-width: 400px) {
+    .grid.grid-cols-1.md\:grid-cols-4 {
+        grid-template-columns: 1fr !important;
+    }
+
+    .grid.grid-cols-1.md\:grid-cols-5 {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+
+    .text-4xl {
+        font-size: 1.5rem !important;
+    }
+
+    .text-2xl {
+        font-size: 1.25rem !important;
+    }
+}
+
+/* ============ Tablet (769px - 1024px) ============ */
+@media (min-width: 769px) and (max-width: 1024px) {
+    aside, aside.w-64 {
+        width: 200px !important;
+    }
+
+    .lg\:grid-cols-3 {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+
+    .lg\:grid-cols-4 {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+}
+
+/* ============ Touch Optimization ============ */
+@media (pointer: coarse) {
+    /* Larger tap targets */
+    button, a, input, select, textarea {
+        min-height: 44px;
+    }
+
+    select {
+        min-height: 44px;
+    }
+
+    /* Prevent text selection on buttons */
+    button {
+        -webkit-user-select: none;
+        user-select: none;
+    }
+}
+
+/* ============ Utility Classes ============ */
+.visible-mobile {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .visible-mobile {
+        display: block;
+    }
+    .hidden-mobile {
+        display: none !important;
+    }
+}
+
+@media (min-width: 769px) {
+    .visible-mobile {
+        display: none !important;
+    }
+}
+
+/* ============ Safe Area (Notch phones) ============ */
+@supports (padding: env(safe-area-inset-top)) {
+    body {
+        padding-top: env(safe-area-inset-top);
+        padding-bottom: env(safe-area-inset-bottom);
+        padding-left: env(safe-area-inset-left);
+        padding-right: env(safe-area-inset-right);
+    }
+}
+
+/* ============ Smooth Scrolling ============ */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Prevent layout shift during page load */
+body {
+    overflow-x: hidden;
+}

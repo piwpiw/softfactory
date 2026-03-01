@@ -1,0 +1,107 @@
+# Prometheus Configuration for SoftFactory Monitoring
+# Version: 1.2 (Fully Merged with Infrastructure & Recording Rules)
+# Updated: 2026-02-26
+
+global:
+  # Scrape interval: how often to query targets
+  scrape_interval: 15s
+
+  # How long until a scrape request times out
+  scrape_timeout: 10s
+
+  # How often to evaluate alert rules
+  evaluation_interval: 15s
+
+  # External labels added to all time series
+  external_labels:
+    cluster: 'softfactory-prod'
+    environment: 'production'
+
+# Alert rules configuration
+rule_files:
+  - 'alert-rules.yml'
+
+# Scrape configurations
+scrape_configs:
+  # SoftFactory Flask API
+  - job_name: 'softfactory-api'
+    static_configs:
+      - targets: ['localhost:8000']
+        labels:
+          service: 'platform'
+          instance: 'api-primary'
+    metrics_path: '/api/metrics/prometheus'
+    scrape_interval: 15s
+    scrape_timeout: 5s
+    # Relabel configs for adding/overwriting labels
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+      - source_labels: [__scheme__]
+        target_label: scheme
+
+  # Database metrics (PostgreSQL)
+  - job_name: 'postgres'
+    static_configs:
+      - targets: ['localhost:9187']
+        labels:
+          service: 'database'
+    metrics_path: '/metrics'
+    scrape_interval: 15s
+
+  # Redis cache metrics
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['localhost:9121']
+        labels:
+          service: 'cache'
+    metrics_path: '/metrics'
+    scrape_interval: 15s
+
+  # Node exporter metrics (System)
+  - job_name: 'node'
+    static_configs:
+      - targets: ['localhost:9100']
+        labels:
+          service: 'system'
+    metrics_path: '/metrics'
+    scrape_interval: 15s
+
+  # Docker container metrics (cAdvisor)
+  - job_name: 'cadvisor'
+    static_configs:
+      - targets: ['localhost:8080']
+        labels:
+          service: 'containers'
+    metrics_path: '/metrics'
+    scrape_interval: 10s
+    scrape_timeout: 5s
+
+  # Optional: Prometheus self-monitoring
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+        labels:
+          service: 'monitoring'
+
+# Recording rules for performance optimization
+recording_rules:
+  - name: api_endpoints
+    interval: 30s
+    rules:
+      - record: 'api:request_rate_5m'
+        expr: 'rate(http_requests_total[5m])'
+      - record: 'api:error_rate_5m'
+        expr: 'rate(http_requests_total{status=~"5.."}[5m])'
+      - record: 'api:latency_p99_5m'
+        expr: 'histogram_quantile(0.99, rate(http_request_duration_seconds_bucket[5m]))'
+
+# Alert notification configuration
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: ['localhost:9093']
+
+# Optional: service discovery (uncomment for cloud deployments)
+# consul_sd_configs:
+#   - server: 'localhost:8500'

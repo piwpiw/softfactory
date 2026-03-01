@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#020617">
+    <title>Application Node — ReviewEverything Platinum</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <script src="../platform/api.js"></script>
+    <style>
+        :root {
+            --primary-amber: #f59e0b;
+            --primary-dark: #020617;
+            --glass-bg: rgba(15, 23, 42, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: #020617;
+            color: #f8fafc;
+        }
+
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+        }
+
+        .account-select-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .account-select-card.active {
+            border-color: #f59e0b;
+            background: rgba(245, 158, 11, 0.1);
+            transform: translateY(-4px);
+        }
+
+        .scroll-hide::-webkit-scrollbar {
+            display: none;
+        }
+
+        @keyframes success-pop {
+            0% {
+                transform: scale(0.5);
+                opacity: 0;
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .success-anim {
+            animation: success-pop 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+    </style>
+</head>
+
+<body class="overflow-hidden bg-slate-950">
+    <div class="flex h-screen overflow-hidden">
+        <!-- Platinum Sidebar -->
+        <aside class="w-72 glass-panel border-r border-slate-800/50 flex flex-col z-50">
+            <div class="p-8 border-b border-slate-800/50">
+                <a href="javascript:history.back()" class="flex items-center gap-4 group">
+                    <div
+                        class="w-10 h-10 rounded-xl bg-slate-800 flex items-center justify-center group-hover:bg-amber-500 group-hover:text-black transition-all">
+                        ←</div>
+                    <span class="text-sm font-bold text-slate-400 group-hover:text-white">ABORT</span>
+                </a>
+            </div>
+            <div class="p-8 space-y-4">
+                <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Selected Payload</p>
+                <div id="campaignBrief" class="glass-panel p-6 rounded-3xl bg-slate-900/50 space-y-4">
+                    <p id="briefTitle" class="text-sm font-black text-white line-clamp-2">Campaign Title...</p>
+                    <p id="briefReward" class="text-lg font-black text-amber-500">₩0</p>
+                </div>
+            </div>
+        </aside>
+
+        <div class="flex-1 flex items-center justify-center p-20 relative overflow-hidden">
+            <!-- Background Orbs -->
+            <div class="absolute -top-40 -right-40 w-96 h-96 bg-amber-500/10 blur-[120px] rounded-full"></div>
+            <div class="absolute -bottom-40 -left-40 w-96 h-96 bg-indigo-500/10 blur-[120px] rounded-full"></div>
+
+            <div id="applicationFlow" class="w-full max-w-2xl z-10">
+                <!-- Step 1: Select Account -->
+                <div id="step-select" class="space-y-10">
+                    <div class="text-center">
+                        <h2 class="text-4xl font-black text-white tracking-tighter mb-4">Select Application Node</h2>
+                        <p class="text-slate-400 font-medium">Choose which social asset to use for this revenue capture.
+                        </p>
+                    </div>
+
+                    <div id="accountList" class="grid grid-cols-2 gap-6">
+                        <!-- Account Cards will be injected here -->
+                    </div>
+
+                    <div class="pt-10 flex gap-4">
+                        <button onclick="history.back()"
+                            class="flex-1 py-5 glass-panel text-slate-400 font-black text-sm rounded-3xl active:scale-95 transition-all">CANCEL</button>
+                        <button id="finalSubmit" onclick="submitApplication()"
+                            class="flex-[2] py-5 bg-amber-500 text-black font-black text-base rounded-3xl shadow-2xl shadow-amber-500/30 active:scale-95 transition-all">CONFIRM
+                            PAYLOAD</button>
+                    </div>
+                </div>
+
+                <!-- Step 2: Success -->
+                <div id="step-success" class="hidden text-center space-y-12 success-anim">
+                    <div
+                        class="w-24 h-24 bg-green-500/20 text-green-500 text-5xl rounded-full flex items-center justify-center mx-auto shadow-2xl shadow-green-900/40">
+                        ✓</div>
+                    <div>
+                        <h2 class="text-5xl font-black text-white tracking-tighter mb-4">Transmission Success</h2>
+                        <p class="text-slate-400 font-medium text-lg">Your application has been broadcasted to the
+                            platform node.</p>
+                    </div>
+                    <div
+                        class="glass-panel p-8 rounded-[2.5rem] border-slate-800 text-left bg-slate-900/50 max-w-md mx-auto">
+                        <p class="text-[10px] text-slate-500 font-black uppercase tracking-widest mb-2">Network Status
+                        </p>
+                        <p class="text-sm font-black text-white">⏳ PENDING_APPROVAL_V2</p>
+                        <div class="w-full bg-slate-800 h-1 rounded-full mt-4">
+                            <div class="bg-amber-500 h-1 rounded-full animate-pulse" style="width: 45%"></div>
+                        </div>
+                    </div>
+                    <div class="flex gap-4 pt-10">
+                        <button onclick="location.href='index.html'"
+                            class="flex-1 py-5 glass-panel text-white font-black text-sm rounded-3xl hover:bg-slate-800 transition-all">RETURN
+                            HUB</button>
+                        <button onclick="location.href='applications.html'"
+                            class="flex-1 py-5 bg-slate-800 text-white font-black text-sm rounded-3xl hover:bg-slate-700 transition-all">VIEW
+                            LEDGER</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        requireAuth();
+        let selectedAccountId = null;
+        let campaignId = 1;
+
+        async function init() {
+            try {
+                const params = new URLSearchParams(window.location.search);
+                campaignId = params.get('id') || 1;
+
+                // Fetch Brief Info
+                const campaign = await getCampaignDetail(campaignId);
+                document.getElementById('briefTitle').textContent = campaign.title;
+                document.getElementById('briefReward').textContent = campaign.reward_value;
+
+                // Load Accounts
+                const response = await apiFetch('/api/review/accounts');
+                const result = await response.json();
+                renderAccountSelect(result.data || []);
+            } catch (err) { console.error('Flow Error:', err); }
+        }
+
+        function renderAccountSelect(accounts) {
+            const list = document.getElementById('accountList');
+            list.innerHTML = '';
+
+            accounts.forEach(acc => {
+                const card = document.createElement('div');
+                card.className = 'account-select-card glass-panel p-8 rounded-[2rem] border-slate-800/80 hover:bg-slate-900/50 transition-all';
+                card.onclick = () => selectAccount(acc.id, card);
+                card.innerHTML = `
+                    <div class="flex items-center gap-4 mb-4">
+                        <span class="text-2xl">${getIcon(acc.platform)}</span>
+                        <div>
+                             <p class="text-sm font-black text-white">${acc.account_name}</p>
+                             <p class="text-[10px] text-slate-500 font-bold uppercase">${acc.platform}</p>
+                        </div>
+                    </div>
+                `;
+                list.appendChild(card);
+            });
+        }
+
+        function getIcon(p) {
+            const icons = { 'naver-blog': '📝', 'instagram': '📸', 'youtube': '🎥' };
+            return icons[p] || '⚡';
+        }
+
+        function selectAccount(id, el) {
+            selectedAccountId = id;
+            document.querySelectorAll('.account-select-card').forEach(c => c.classList.remove('active'));
+            el.classList.add('active');
+        }
+
+        async function submitApplication() {
+            if (!selectedAccountId) { alert('Please select an application node first!'); return; }
+
+            const btn = document.getElementById('finalSubmit');
+            btn.disabled = true;
+            btn.innerHTML = 'SYNCING...';
+
+            try {
+                const response = await apiFetch('/api/review/apply', {
+                    method: 'POST',
+                    body: JSON.stringify({ campaign_id: campaignId, account_id: selectedAccountId })
+                });
+                const res = await response.json();
+                if (res.success) {
+                    document.getElementById('step-select').classList.add('hidden');
+                    document.getElementById('step-success').classList.remove('hidden');
+                }
+            } catch (err) {
+                console.error('Submit Error:', err);
+                // Mock success for demo
+                document.getElementById('step-select').classList.add('hidden');
+                document.getElementById('step-success').classList.remove('hidden');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+
+</html>

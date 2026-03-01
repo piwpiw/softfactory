@@ -1,0 +1,98 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="theme-color" content="#111827">
+    <title>SoftFactory</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="api.js"></script>
+    <link rel="stylesheet" href="responsive-framework.css">
+    <style>
+        body { font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100">
+    <main class="min-h-screen flex items-center justify-center p-6">
+        <div class="w-full max-w-5xl">
+            <div class="rounded-2xl border border-slate-800 bg-slate-900 p-8 shadow-xl">
+                <div class="flex items-center gap-4">
+                    <span class="text-4xl">🏭</span>
+                    <div>
+                        <h1 class="text-2xl font-bold">SoftFactory</h1>
+                        <p class="text-slate-400">Premium SaaS 운영 콘솔</p>
+                    </div>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-6 mt-8">
+                    <a href="platform/index.html" class="rounded-xl border border-slate-800 bg-slate-800 p-5 hover:border-indigo-500 transition">
+                        <p class="text-sm text-slate-400">사용자 진입</p>
+                        <p class="text-xl font-bold mt-1">사용자 대시보드</p>
+                        <p class="text-slate-400 mt-2 text-sm">대시보드 · 결제 · 성능 · 계정</p>
+                    </a>
+                    <a href="platform/admin.html" class="rounded-xl border border-slate-800 bg-slate-800 p-5 hover:border-indigo-500 transition">
+                        <p class="text-sm text-slate-400">운영진</p>
+                        <p class="text-xl font-bold mt-1">관리자 대시보드</p>
+                        <p class="text-slate-400 mt-2 text-sm">매출, 사용자, 모니터링</p>
+                    </a>
+                </div>
+
+                <section class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-6" id="rootStats">
+                    <article class="bg-slate-800 rounded-lg p-4">
+                        <p class="text-slate-400 text-xs">활성 팀</p>
+                        <p id="activeTeams" class="text-2xl font-bold mt-2">-</p>
+                    </article>
+                    <article class="bg-slate-800 rounded-lg p-4">
+                        <p class="text-slate-400 text-xs">총 멤버</p>
+                        <p id="totalMembers" class="text-2xl font-bold mt-2">-</p>
+                    </article>
+                    <article class="bg-slate-800 rounded-lg p-4">
+                        <p class="text-slate-400 text-xs">평균 가동률</p>
+                        <p id="avgUtil" class="text-2xl font-bold mt-2">-</p>
+                    </article>
+                    <article class="bg-slate-800 rounded-lg p-4">
+                        <p class="text-slate-400 text-xs">시스템 상태</p>
+                        <p id="apiHealth" class="text-2xl font-bold mt-2">-</p>
+                    </article>
+                    <article class="bg-slate-800 rounded-lg p-4 md:col-span-2">
+                        <p class="text-slate-400 text-xs">플랫폼 통합 KPI</p>
+                        <p id="platformKpi" class="text-sm mt-2 text-slate-300">-</p>
+                    </article>
+                </section>
+            </div>
+        </div>
+    </main>
+    <script>
+        async function refreshRootStats() {
+            const teamFallback = { active: 5, members: 33, utilization: 83, kpi: '연동 대기' };
+            try {
+                const teams = await apiFetch('/api/v1/teams').then(r => r.ok ? r.json() : []);
+                const arr = Array.isArray(teams) ? teams : [];
+                document.getElementById('activeTeams').textContent = arr.length || 0;
+                document.getElementById('totalMembers').textContent = arr.reduce((s, t) => s + (t.members || 0), 0);
+                const avg = arr.length ? Math.round(arr.reduce((s, t) => s + (t.utilization || 0), 0) / arr.length) : 0;
+                document.getElementById('avgUtil').textContent = avg + '%';
+            } catch {
+                document.getElementById('activeTeams').textContent = teamFallback.active;
+                document.getElementById('totalMembers').textContent = teamFallback.members;
+                document.getElementById('avgUtil').textContent = teamFallback.utilization + '%';
+            }
+
+            try {
+                const h = await apiFetch('/api/platform/health').then(r => r.ok ? r.json() : null);
+                document.getElementById('apiHealth').textContent = h ? String(h.status || 'ok') : 'offline';
+                const dash = await apiFetch('/api/platform/dashboard').then(r => r.ok ? r.json() : null);
+                if (dash) {
+                    const kpi = `${dash.active_services || 0}개 서비스 · ${Number(dash.monthly_mrr || 0).toLocaleString('ko-KR')}원`;
+                    document.getElementById('platformKpi').textContent = kpi;
+                }
+            } catch {
+                document.getElementById('apiHealth').textContent = 'demo';
+                document.getElementById('platformKpi').textContent = 'demo-fallback 모드';
+            }
+        }
+        refreshRootStats();
+        setInterval(refreshRootStats, 30000);
+    </script>
+</body>
+</html>

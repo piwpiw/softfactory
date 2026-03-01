@@ -1,0 +1,76 @@
+# Semantic Versioning Configuration
+# Defines how versions are bumped based on commits
+
+branches:
+  - name: main
+    prerelease: false
+    channel: latest
+
+  - name: develop
+    prerelease: true
+    channel: dev
+
+plugins:
+  - "@semantic-release/commit-analyzer"
+  - "@semantic-release/release-notes-generator"
+  - "@semantic-release/changelog"
+  - "@semantic-release/npm"
+  - "@semantic-release/git"
+  - "@semantic-release/github"
+
+commitAnalyzer:
+  releaseRules:
+    - breaking: true
+      release: major
+    - revert: true
+      release: patch
+    - type: feat
+      release: minor
+    - type: fix
+      release: patch
+    - type: perf
+      release: patch
+    - type: refactor
+      release: false
+    - type: docs
+      release: false
+    - type: style
+      release: false
+    - type: test
+      release: false
+
+changelog:
+  template: |
+    ## [{{version}}]({{compareUrl}}) ({{date}})
+
+    {{#if breaking}}
+    ### ⚠️ BREAKING CHANGES
+
+    {{#each breaking}}
+    - {{committedOn}}: {{subject}}
+    {{/each}}
+    {{/if}}
+
+    {{#if features}}
+    ### ✨ Features
+
+    {{#each features}}
+    - {{committedOn}}: {{subject}}
+    {{/each}}
+    {{/if}}
+
+    {{#if fixes}}
+    ### 🐛 Bug Fixes
+
+    {{#each fixes}}
+    - {{committedOn}}: {{subject}}
+    {{/each}}
+    {{/if}}
+
+    {{#if performance}}
+    ### ⚡ Performance Improvements
+
+    {{#each performance}}
+    - {{committedOn}}: {{subject}}
+    {{/each}}
+    {{/if}}

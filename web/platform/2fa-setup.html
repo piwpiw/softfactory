@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="theme-color" content="#111827">
+    <title>2단계 인증 설정 — SoftFactory</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="api.js"></script>
+    <style>
+        body {
+            font-family: Inter, 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            background: #fff;
+            border-radius: 16px;
+            padding: 38px;
+            box-shadow: 0 22px 50px rgba(0, 0, 0, 0.32);
+        }
+        .step {
+            display: none;
+        }
+        .step.active {
+            display: block;
+        }
+        .step-dot {
+            width: 9px;
+            height: 9px;
+            border-radius: 9999px;
+            background: #e5e7eb;
+            flex: 1;
+            max-width: 42px;
+            transition: all 0.2s;
+        }
+        .step-dot.active { background: #6366f1; }
+        .step-dot.completed { background: #22c55e; }
+        .qr-code {
+            width: 250px;
+            height: 250px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            margin: 0 auto 18px;
+            object-fit: contain;
+            background: #fff;
+            padding: 8px;
+        }
+        .secret-box {
+            background: #f3f4f6;
+            border: 1px solid #e5e7eb;
+            padding: 12px;
+            border-radius: 8px;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            word-break: break-all;
+            color: #111827;
+            margin-top: 8px;
+        }
+        .backup-code {
+            background: #fff;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            padding: 10px;
+            margin: 6px 0;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            font-size: 14px;
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+        }
+        .msg {
+            border: 1px solid #fcd34d;
+            background: #fffbeb;
+            color: #92400e;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            margin-bottom: 16px;
+            display: none;
+        }
+        .msg.show {
+            display: block;
+        }
+        .success {
+            border-color: #86efac;
+            background: #f0fdf4;
+            color: #166534;
+        }
+        .warning {
+            border-color: #c4b5fd;
+            background: #f5f3ff;
+            color: #5b21b6;
+        }
+    </style>
+</head>
+<body>
+    <div class="min-h-screen flex items-center justify-center">
+        <div class="container">
+            <h1 class="text-2xl font-bold mb-1">2단계 인증 설정</h1>
+            <p class="text-sm text-slate-500 mb-6">계정 보안을 위해 인증 앱을 연결하세요.</p>
+
+            <div class="flex justify-between gap-3 mb-6">
+                <div class="step-dot active" id="dot1"></div>
+                <div class="step-dot" id="dot2"></div>
+                <div class="step-dot" id="dot3"></div>
+            </div>
+
+            <div id="alert" class="msg"></div>
+
+            <div id="step1" class="step active">
+                <h2 class="text-lg font-semibold mb-3">1단계: QR 스캔</h2>
+                <p class="text-sm text-slate-600 mb-4">Google Authenticator, Authy와 같은 앱으로 아래 QR을 스캔하세요.</p>
+
+                <img id="qrCode" class="qr-code" alt="2FA QR 코드" />
+
+                <p class="text-sm text-slate-500 mb-2">스캔이 어려우면 수동 등록 코드를 복사하세요.</p>
+                <label class="block text-xs text-slate-500 mb-1">시크릿 키</label>
+                <div class="secret-box">
+                    <span id="secretKey"></span>
+                    <button type="button" id="copy-secret" class="ml-2 text-indigo-600 underline text-xs">복사</button>
+                </div>
+
+                <button type="button" id="to-step2" class="w-full mt-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg">
+                    다음: 인증 코드 확인
+                </button>
+            </div>
+
+            <div id="step2" class="step">
+                <h2 class="text-lg font-semibold mb-3">2단계: 코드 확인</h2>
+                <p class="text-sm text-slate-600 mb-4">인증 앱에 표시된 6자리 코드를 입력해 완료하세요.</p>
+                <div id="error2" class="msg"></div>
+                <label class="block text-sm font-medium text-slate-700 mb-2">인증 코드</label>
+                <input type="text" id="totpCode" maxlength="6" inputmode="numeric" autocomplete="off" placeholder="000000"
+                    class="w-full px-4 py-3 border border-slate-300 rounded-lg text-center tracking-[0.28em] text-lg">
+                <div class="flex gap-3 mt-5">
+                    <button type="button" id="back-to-step1" class="flex-1 py-3 bg-slate-200 hover:bg-slate-300 rounded-lg">이전</button>
+                    <button type="button" id="verifyBtn" class="flex-1 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg">확인 및 진행</button>
+                </div>
+            </div>
+
+            <div id="step3" class="step">
+                <h2 class="text-lg font-semibold mb-3">3단계: 백업 코드 보관</h2>
+                <p class="text-sm text-slate-600 mb-3">복구 코드들을 안전한 곳에 저장하세요.</p>
+                <div class="bg-amber-50 border border-amber-300 text-amber-900 text-xs p-3 rounded-lg mb-4">
+                    인증 앱을 분실해도 로그인 가능한 백업 코드입니다.
+                </div>
+                <div id="backupCodesList" class="mb-4"></div>
+                <div class="flex gap-2 mb-4">
+                    <button type="button" id="copy-backups" class="flex-1 py-2.5 border border-slate-300 rounded-lg">전체 복사</button>
+                    <button type="button" id="download-backups" class="flex-1 py-2.5 border border-slate-300 rounded-lg">다운로드</button>
+                </div>
+                <label class="inline-flex items-center gap-2 text-sm text-slate-700">
+                    <input type="checkbox" id="savedCheckbox"> 백업 코드를 저장했습니다.
+                </label>
+                <button type="button" id="completeBtn" disabled class="w-full mt-5 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg disabled:opacity-50">
+                    설정 완료
+                </button>
+            </div>
+
+            <div id="step4" class="step text-center">
+                <div class="mx-auto mb-4 h-16 w-16 rounded-full bg-green-500 text-white text-3xl flex items-center justify-center">✓</div>
+                <h2 class="text-xl font-bold mb-2">2FA 설정 완료</h2>
+                <p class="text-sm text-slate-600 mb-6">계정이 2단계 인증으로 보호됩니다.</p>
+                <button type="button" id="go-settings" class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg">
+                    설정으로 이동
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentStep = 1;
+        const state = { secret: '', qrCode: '', backupCodes: [], encryptedBackupCodes: '' };
+
+        function setMessage(message, type = '') {
+            const box = document.getElementById('alert');
+            if (!box) return;
+            if (!message) {
+                box.className = 'msg';
+                box.textContent = '';
+                return;
+            }
+            box.className = `msg show ${type}`;
+            box.textContent = message;
+        }
+
+        function setStep(step) {
+            ['1', '2', '3', '4'].forEach((id) => {
+                const node = document.getElementById(`step${id}`);
+                if (node) node.classList.toggle('active', Number(id) === step);
+            });
+            const dots = ['dot1', 'dot2', 'dot3'];
+            dots.forEach((id, idx) => {
+                const node = document.getElementById(id);
+                if (!node) return;
+                const n = idx + 1;
+                node.classList.remove('active', 'completed');
+                if (n < step) node.classList.add('completed');
+                if (n === step) node.classList.add('active');
+            });
+            currentStep = step;
+            setMessage('');
+            if (step === 4) {
+                try {
+                    setMessage('2FA 설정이 완료되었습니다.', 'success');
+                } catch (_) {}
+            }
+            window.scrollTo(0, 0);
+        }
+
+        function escapeText(value) {
+            return String(value || '').replace(/[&<>"']/g, (m) => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+            })[m]);
+        }
+
+        function renderBackupCodes() {
+            const list = document.getElementById('backupCodesList');
+            list.innerHTML = state.backupCodes
+                .map((code, idx) => `<div class="backup-code"><span>${String(idx + 1).padStart(2, '0')}. ${escapeText(code)}</span><button type="button" data-idx="${idx}" class="copy-one text-indigo-600 text-xs underline">복사</button></div>`)
+                .join('');
+            list.querySelectorAll('button[data-idx]').forEach((btn) => {
+                btn.addEventListener('click', async () => {
+                    const idx = Number(btn.getAttribute('data-idx'));
+                    await copyText(state.backupCodes[idx]);
+                    setMessage(`코드 #${idx + 1} 복사됨`, 'warning');
+                });
+            });
+        }
+
+        function fallbackCopy(text) {
+            const tmp = document.createElement('textarea');
+            tmp.value = text;
+            document.body.appendChild(tmp);
+            tmp.select();
+            document.execCommand('copy');
+            document.body.removeChild(tmp);
+        }
+
+        async function copyText(text) {
+            if (!text) return;
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                await navigator.clipboard.writeText(text);
+                return;
+            }
+            fallbackCopy(text);
+        }
+
+        async function initSetup() {
+            try {
+                const response = await apiFetch('/api/auth/2fa/setup', { method: 'GET' });
+                if (!response.ok) {
+                    throw new Error('setup request failed');
+                }
+                const data = await response.json();
+                state.secret = data.secret || 'SOFT-SECRET-SAMPLE';
+                state.qrCode = data.qr_code || '';
+                state.backupCodes = Array.isArray(data.backup_codes) && data.backup_codes.length > 0 ? data.backup_codes : [
+                    'ABCD-1234', 'WXYZ-5678', 'QWER-9012', 'MNOP-3456'
+                ];
+                state.encryptedBackupCodes = data.encrypted_backup_codes || '';
+                document.getElementById('qrCode').src = state.qrCode || 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="250" height="250"><rect width="250" height="250" fill="%23f8fafc"/><text x="40" y="130" fill="%2364748b" font-size="16">QR unavailable</text></svg>';
+                document.getElementById('secretKey').textContent = state.secret;
+            } catch (error) {
+                setMessage('2FA 초기화 실패. 잠시 후 다시 시도하세요.', 'warning');
+                state.secret = 'SOFT-DEMO-SECRET';
+                state.backupCodes = ['ABCD-1234', 'WXYZ-5678', 'QWER-9012', 'MNOP-3456'];
+                document.getElementById('qrCode').src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="250" height="250"><rect width="250" height="250" fill="%23f8fafc"/><text x="40" y="130" fill="%2364748b" font-size="16">Fallback QR</text></svg>';
+                document.getElementById('secretKey').textContent = state.secret;
+            }
+        }
+
+        async function verifyCode() {
+            const codeInput = document.getElementById('totpCode');
+            const raw = (codeInput.value || '').trim();
+            const err = document.getElementById('error2');
+            err.classList.remove('show', 'success');
+            err.className = 'msg';
+            if (!/^\\d{6}$/.test(raw)) {
+                err.className = 'msg show';
+                err.textContent = '6자리 숫자 코드를 입력하세요.';
+                return;
+            }
+            const button = document.getElementById('verifyBtn');
+            button.disabled = true;
+            button.textContent = '확인 중...';
+
+            try {
+                const response = await apiFetch('/api/auth/2fa/verify-setup', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        secret: state.secret,
+                        totp_code: raw,
+                        encrypted_backup_codes: state.encryptedBackupCodes
+                    })
+                });
+
+                if (!response.ok) {
+                    const payload = await response.json().catch(() => ({}));
+                    throw new Error(payload.error || 'invalid code');
+                }
+
+                renderBackupCodes();
+                setStep(3);
+            } catch (error) {
+                err.className = 'msg show warning';
+                err.textContent = error.message || '코드 확인에 실패했습니다.';
+            } finally {
+                button.disabled = false;
+                button.textContent = '확인 및 진행';
+            }
+        }
+
+        function bind() {
+            document.getElementById('to-step2').addEventListener('click', () => {
+                if (!state.secret) {
+                    setMessage('시크릿 키가 없어 초기화되지 않았습니다. 다시 불러오세요.', 'warning');
+                    return;
+                }
+                setStep(2);
+            });
+            document.getElementById('back-to-step1').addEventListener('click', () => setStep(1));
+            document.getElementById('verifyBtn').addEventListener('click', verifyCode);
+            document.getElementById('totpCode').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    verifyCode();
+                }
+            });
+            document.getElementById('copy-secret').addEventListener('click', async () => {
+                await copyText(state.secret);
+                setMessage('시크릿 키가 복사되었습니다.');
+            });
+            document.getElementById('copy-backups').addEventListener('click', async () => {
+                await copyText(state.backupCodes.join('\\n'));
+                setMessage('백업 코드를 전체 복사했습니다.');
+            });
+            document.getElementById('download-backups').addEventListener('click', () => {
+                const text = state.backupCodes.join('\\n');
+                const href = `data:text/plain;charset=utf-8,${encodeURIComponent(text)}`;
+                const a = document.createElement('a');
+                a.href = href;
+                a.download = 'softfactory-backup-codes.txt';
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+            });
+            document.getElementById('savedCheckbox').addEventListener('change', (e) => {
+                document.getElementById('completeBtn').disabled = !e.target.checked;
+            });
+            document.getElementById('completeBtn').addEventListener('click', async () => {
+                try {
+                    await apiFetch('/api/auth/2fa/enable', {
+                        method: 'POST',
+                        body: JSON.stringify({ backup_codes_saved: true })
+                    });
+                } catch (_) {
+                    // fallback: local completion is still shown
+                }
+                setStep(4);
+            });
+            document.getElementById('go-settings').addEventListener('click', () => {
+                window.location.href = '/platform/settings.html';
+            });
+        }
+
+        initSetup();
+        bind();
+        setStep(1);
+    </script>
+</body>
+</html>

@@ -1,0 +1,348 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#111827">
+    <title>관리자 대시보드 — SoftFactory</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="api.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 3px;
+        }
+
+        button:focus,
+        a:focus,
+        [tabindex]:focus {
+            outline: 3px solid #ec4899;
+            outline-offset: 2px;
+        }
+
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border-width: 0;
+        }
+    </style>
+    <link rel="stylesheet" href="../responsive-framework.css">
+    <link rel="stylesheet" href="../accessibility.css">
+    <link rel="stylesheet" href="platform-dashboard-ui.css">
+</head>
+<body class="bg-slate-950 text-slate-100 antialiased soft-shell">
+    <a href="#main" class="skip-to-main sr-only">메인 콘텐츠로 이동</a>
+
+    <div class="flex h-screen overflow-hidden">
+        <aside class="w-64 soft-sidebar border-r border-slate-800 flex flex-col shrink-0">
+            <div class="p-6 border-b border-slate-800">
+                <div class="flex items-center gap-3">
+                    <span class="text-2xl" aria-hidden="true">🏭</span>
+                    <div>
+                        <h1 class="font-bold text-white">SoftFactory</h1>
+                        <p class="text-xs text-slate-400">Management</p>
+                    </div>
+                </div>
+            </div>
+
+            <nav class="flex-1 p-6 space-y-2 overflow-y-auto" aria-label="어드민 네비게이션">
+                <button class="hamburger" aria-label="네비게이션 메뉴 열기">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                <a href="dashboard.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-slate-800 transition">📊 사용자 화면</a>
+                <a href="admin.html" aria-current="page" class="soft-nav-link active flex items-center gap-3 px-4 py-2.5 rounded-lg transition">⚙️ 관리자</a>
+                <a href="admin-monitoring.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-slate-800 transition">📡 모니터링</a>
+            </nav>
+
+            <div class="p-6 border-t border-slate-800 soft-user-panel">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-white" id="userName">Demo User</p>
+                        <p class="text-xs text-slate-400" id="userEmail">demo@softfactory.com</p>
+                    </div>
+                    <button onclick="logout()" class="p-2 hover:bg-slate-800 rounded-lg transition" title="로그아웃">🚪</button>
+                </div>
+            </div>
+        </aside>
+
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <header class="soft-topbar h-16 px-6 flex items-center justify-between shrink-0">
+                <div>
+                    <h2 class="text-xl font-bold text-white">⚙️ 관리자 대시보드</h2>
+                    <p class="text-xs text-slate-400">운영 지표 · 구독 현황 · 사용자 관리</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button id="refreshAdminBtn" type="button" class="soft-btn px-3 py-2 rounded-lg text-sm">🔄 새로고침</button>
+                    <a href="admin-monitoring.html" class="soft-btn soft-btn-primary px-3 py-2 rounded-lg text-sm">모니터링</a>
+                </div>
+            </header>
+
+            <main id="main" class="flex-1 overflow-y-auto soft-main space-y-6">
+                <div id="adminKpi" class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                    <article class="soft-card soft-kpi p-6">
+                        <p class="label text-slate-400 text-sm font-medium mb-2">월간 MRR</p>
+                        <p class="value text-2xl" id="adminMrr">₩0</p>
+                        <p class="text-xs text-slate-500 mt-2">활성 구독 기준</p>
+                    </article>
+                    <article class="soft-card soft-kpi p-6">
+                        <p class="label text-slate-400 text-sm font-medium mb-2">연간 ARR</p>
+                        <p class="value text-2xl" id="adminArr">₩0</p>
+                        <p class="text-xs text-slate-500 mt-2">전월 대비 집계</p>
+                    </article>
+                    <article class="soft-card soft-kpi p-6">
+                        <p class="label text-slate-400 text-sm font-medium mb-2">총 매출</p>
+                        <p class="value text-2xl" id="adminRevenue">₩0</p>
+                        <p class="text-xs text-slate-500 mt-2">완료 결제 합계</p>
+                    </article>
+                    <article class="soft-card soft-kpi p-6">
+                        <p class="label text-slate-400 text-sm font-medium mb-2">총 사용자</p>
+                        <p class="value text-2xl" id="adminUsers">-</p>
+                        <p class="text-xs text-slate-500 mt-2">활성 구독 포함</p>
+                    </article>
+                </div>
+
+                <section class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <article class="soft-card p-6">
+                        <h3 class="text-lg font-bold text-white mb-4">상품별 월 매출</h3>
+                        <div class="soft-table-wrap">
+                            <table class="soft-table text-sm">
+                                <thead>
+                                    <tr>
+                                        <th class="text-left py-3 px-4">상품</th>
+                                        <th class="text-left py-3 px-4">구독 수</th>
+                                        <th class="text-left py-3 px-4">월 매출</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="productRows">
+                                    <tr>
+                                        <td class="py-3 px-4 text-slate-400" colspan="3">로딩 중...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </article>
+
+                    <article class="soft-card p-6">
+                        <h3 class="text-lg font-bold text-white mb-4">최근 사용자</h3>
+                        <div class="space-y-3 text-sm text-slate-200" id="recentUsers">
+                            <p class="text-slate-400">로딩 중...</p>
+                        </div>
+                    </article>
+                </section>
+
+                <section class="soft-card p-6">
+                    <h3 class="text-lg font-bold text-white mb-4">월간 매출 추이</h3>
+                    <div class="soft-chart">
+                        <canvas id="revenueChart" style="height: 320px;"></canvas>
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        requireAuth();
+
+        let revenueChart = null;
+
+        function formatAdminNumber(value) {
+            return formatKRW(Number(value || 0));
+        }
+
+        function setText(id, value, fallback = '—') {
+            const el = document.getElementById(id);
+            if (el) {
+                el.textContent = value || fallback;
+            }
+        }
+
+        async function getJsonOrNull(url) {
+            const response = await apiFetch(url);
+            if (!response || !response.ok) {
+                return null;
+            }
+            try {
+                return await response.json();
+            } catch (error) {
+                return null;
+            }
+        }
+
+        async function initAdminDashboard() {
+            const user = getUser();
+            if (user) {
+                document.getElementById('userName').textContent = user.name || 'Demo User';
+                document.getElementById('userEmail').textContent = user.email || 'demo@softfactory.com';
+            }
+
+            const isDemo = isDemoMode();
+            const isAdmin = Boolean(user && (isDemo || user.role === 'admin' || user.is_admin === true || user.is_superuser === true));
+            if (!isAdmin) {
+                showError('관리자 권한이 필요한 페이지입니다. 사용자 화면에서 확인해 주세요.');
+                setText('adminMrr', '권한없음');
+                setText('adminArr', '권한없음');
+                setText('adminRevenue', '권한없음');
+                setText('adminUsers', '권한없음');
+                document.getElementById('productRows').innerHTML = `
+                    <tr><td colspan="3" class="py-3 px-4 text-slate-400">권한이 없습니다.</td></tr>
+                `;
+                document.getElementById('recentUsers').innerHTML = `
+                    <div class="text-slate-400">관리자 API 호출 권한이 없어 데이터를 조회할 수 없습니다.</div>
+                `;
+                return;
+            }
+
+            const revenueResult = await getJsonOrNull('/api/platform/admin/revenue');
+            const usersResult = await getJsonOrNull('/api/platform/admin/users?page=1&per_page=10');
+
+            const revenueData = revenueResult && Object.keys(revenueResult).length ? revenueResult : null;
+            const usersData = usersResult && Object.keys(usersResult).length ? usersResult : null;
+
+            if (revenueData) {
+                setText('adminMrr', formatAdminNumber(revenueData.mrr));
+                setText('adminArr', formatAdminNumber(revenueData.arr));
+                setText('adminRevenue', formatAdminNumber(revenueData.total_revenue));
+                setText('adminUsers', `${revenueData.total_users || 0}명`);
+
+                const products = Array.isArray(revenueData.revenue_by_product) ? revenueData.revenue_by_product : [];
+                renderProductRows(products);
+                renderRevenueChart(products);
+            } else {
+                setText('adminMrr', '0');
+                setText('adminArr', '0');
+                setText('adminRevenue', '0');
+                setText('adminUsers', '0');
+                renderProductRows([]);
+                renderRevenueChart([]);
+            }
+
+            if (usersData && Array.isArray(usersData.users)) {
+                renderRecentUsers(usersData.users);
+            } else {
+                document.getElementById('recentUsers').innerHTML = `
+                    <p class="text-slate-400">사용자 목록을 불러올 수 없습니다.</p>
+                `;
+            }
+        }
+
+        function renderProductRows(products) {
+            const rows = products.map((item) => `
+                <tr class="border-b border-slate-700 last:border-0">
+                    <td class="py-3 px-4 text-white font-medium">${item.product_name || '상품'}</td>
+                    <td class="py-3 px-4 text-slate-300">${Number(item.subscriptions || 0)}명</td>
+                    <td class="py-3 px-4 text-slate-300">${formatAdminNumber(item.monthly_revenue || 0)}</td>
+                </tr>
+            `).join('');
+
+            document.getElementById('productRows').innerHTML = rows || `
+                <tr><td class="py-3 px-4 text-slate-400" colspan="3">데이터가 없습니다.</td></tr>
+            `;
+        }
+
+        function renderRecentUsers(users) {
+            const rows = users.slice(0, 6).map((user) => {
+                const statusClass = user.is_active ? 'soft-chip-ok' : 'soft-chip-warn';
+                const statusText = user.is_active ? '활성' : '비활성';
+                const roleLabel = user.role === 'admin' ? '관리자' : '일반';
+                return `
+                    <div class="flex items-center justify-between p-3 rounded-lg bg-slate-800/70 border border-slate-700">
+                        <div>
+                            <p class="font-semibold text-white">${user.email}</p>
+                            <p class="text-xs text-slate-400">${user.name || '이름 없음'} · ${roleLabel}</p>
+                        </div>
+                        <span class="soft-chip ${statusClass} text-xs">${statusText}</span>
+                    </div>
+                `;
+            }).join('');
+
+            document.getElementById('recentUsers').innerHTML = rows || `
+                <div class="text-slate-400">표시할 사용자 데이터가 없습니다.</div>
+            `;
+        }
+
+        function renderRevenueChart(products) {
+            const ctx = document.getElementById('revenueChart').getContext('2d');
+            const labels = products.length
+                ? products.map((item) => item.product_name || '상품')
+                : ['CooCook', 'SNS Auto', 'Review', 'AI', 'WebApp'];
+
+            const values = products.length
+                ? products.map((item) => Number(item.monthly_revenue || 0))
+                : [39000, 49000, 99000, 89000, 590000];
+
+            if (revenueChart) {
+                revenueChart.destroy();
+            }
+
+            revenueChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels,
+                    datasets: [{
+                        label: '월 매출',
+                        data: values,
+                        backgroundColor: [
+                            '#38bdf8',
+                            '#818cf8',
+                            '#a78bfa',
+                            '#22d3ee',
+                            '#c084fc'
+                        ],
+                        borderRadius: 8,
+                        borderSkipped: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                color: '#94a3b8',
+                                callback: (value) => formatKRW(value)
+                            },
+                            grid: { color: 'rgba(148, 163, 184, 0.2)' }
+                        },
+                        x: {
+                            ticks: {
+                                color: '#94a3b8'
+                            },
+                            grid: { color: 'rgba(148, 163, 184, 0.12)' }
+                        }
+                    }
+                }
+            });
+        }
+
+        document.getElementById('refreshAdminBtn').addEventListener('click', initAdminDashboard);
+        document.addEventListener('DOMContentLoaded', initAdminDashboard);
+    </script>
+    <script src="../mobile-optimization.js" defer></script>
+</body>
+</html>
+

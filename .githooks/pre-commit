@@ -1,0 +1,15 @@
+#!/usr/bin/env sh
+set -eu
+
+REQUIRED_NAME="In Wung, Park"
+REQUIRED_EMAIL="piwpiw@naver.com"
+
+CURRENT_NAME=$(git config user.name)
+CURRENT_EMAIL=$(git config user.email)
+
+if [ "$CURRENT_NAME" != "$REQUIRED_NAME" ] || [ "$CURRENT_EMAIL" != "$REQUIRED_EMAIL" ]; then
+  echo "[softfactory-git-guard] Git author must be '$REQUIRED_NAME <$REQUIRED_EMAIL>'"
+  echo "Current: '${CURRENT_NAME:-<unset>} <${CURRENT_EMAIL:-<unset>}>'"
+  echo "Set and retry: git config user.name \"$REQUIRED_NAME\" && git config user.email \"$REQUIRED_EMAIL\""
+  exit 1
+fi

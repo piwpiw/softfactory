@@ -1,0 +1,1143 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#111827">
+<title>고급 설정 — SoftFactory</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="api.js"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .tab-active { @apply border-b-2 border-indigo-600 text-white; }
+        .tab-inactive { @apply border-b-2 border-transparent text-slate-400 hover:text-slate-300; }
+        .toggle { @apply relative inline-flex h-6 w-11 items-center rounded-full bg-slate-700 cursor-pointer transition; }
+        .toggle.active { @apply bg-indigo-600; }
+        .toggle-circle { @apply inline-block h-5 w-5 transform rounded-full bg-white transition; }
+        .toggle.active .toggle-circle { @apply translate-x-5; }
+        .permission-cell { @apply flex items-center justify-center; }
+    </style>
+    <link rel="stylesheet" href="../responsive-framework.css">
+  </head>
+<body class="bg-slate-950 text-slate-100">
+    <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-slate-900 border-r border-slate-800 flex flex-col shrink-0">
+            <div class="p-6 border-b border-slate-800">
+                <a href="dashboard.html" class="flex items-center gap-3">
+                    <span class="text-2xl">🏭</span>
+                    <div>
+                        <h1 class="font-bold text-white">SoftFactory</h1>
+                        <p class="text-xs text-slate-400">← Back</p>
+                    </div>
+                </a>
+            </div>
+            <nav class="flex-1 p-6 space-y-2 overflow-y-auto">
+    <button class="hamburger" aria-label="Toggle navigation menu">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+                <a href="dashboard.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">📊 대시보드</a>
+                <a href="settings.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg bg-indigo-600 text-white font-medium">⚙️ 설정</a>
+                <a href="billing.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">💳 청구</a>
+                <a href="profile.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">👤 프로필</a>
+                <a href="team.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">👥 팀</a>
+                <a href="security.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">🔐 보안</a>
+            </nav>
+            <div class="p-6 border-t border-slate-800">
+                <button onclick="logout()" class="p-2 hover:bg-slate-800 rounded-lg w-full text-left">🚪 로그아웃</button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <header class="h-16 bg-slate-900 border-b border-slate-800 px-6 flex items-center justify-between">
+                <h2 class="text-xl font-bold text-white">⚙️ 고급 설정</h2>
+                <button onclick="showSaveNotification()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition">모두 저장</button>
+            </header>
+
+            <!-- Tab Navigation -->
+            <div class="bg-slate-900 border-b border-slate-800 px-6 flex gap-8 overflow-x-auto">
+                <button onclick="switchTab('organization')" class="py-4 px-1 tab-active" data-tab="organization">🏢 조직</button>
+                <button onclick="switchTab('permissions')" class="py-4 px-1 tab-inactive" data-tab="permissions">🔐 권한</button>
+                <button onclick="switchTab('integrations')" class="py-4 px-1 tab-inactive" data-tab="integrations">🔗 통합</button>
+                <button onclick="switchTab('data-security')" class="py-4 px-1 tab-inactive" data-tab="data-security">💾 데이터 & 보안</button>
+                <button onclick="switchTab('notifications')" class="py-4 px-1 tab-inactive" data-tab="notifications">🔔 알림 & 리포트</button>
+                <button onclick="switchTab('advanced')" class="py-4 px-1 tab-inactive" data-tab="advanced">⚡ 고급</button>
+            </div>
+
+            <!-- Content -->
+            <main class="flex-1 overflow-y-auto p-6">
+                <!-- Organization Tab -->
+                <div id="org-content" class="max-w-6xl space-y-6">
+                    <!-- Company Info -->
+                    <div class="bg-slate-800 rounded-xl p-8 border border-slate-700">
+                        <h3 class="text-xl font-bold text-white mb-6">회사 정보</h3>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-slate-300 mb-2">회사명</label>
+                                <input type="text" value="SoftFactory Inc." class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white focus:border-indigo-500 focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-300 mb-2">로고</label>
+                                <input type="file" accept="image/*" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-slate-400 focus:border-indigo-500">
+                            </div>
+                            <div class="col-span-2">
+                                <label class="block text-sm font-medium text-slate-300 mb-2">회사 설명</label>
+                                <textarea rows="3" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white focus:border-indigo-500 focus:outline-none">Digital marketing & automation platform</textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Billing Info -->
+                    <div class="bg-slate-800 rounded-xl p-8 border border-slate-700">
+                        <h3 class="text-xl font-bold text-white mb-6">청구 정보</h3>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-slate-300 mb-2">청구 이메일</label>
+                                <input type="email" value="billing@softfactory.com" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white focus:border-indigo-500 focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-300 mb-2">청구 주기</label>
+                                <select class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white focus:border-indigo-500">
+                                    <option>월별</option>
+                                    <option>분기별</option>
+                                    <option>연간</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-300 mb-2">결제 방법</label>
+                                <select class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white focus:border-indigo-500">
+                                    <option>신용카드 (·· 4567)</option>
+                                    <option>은행 계좌이체</option>
+                                    <option>새 카드 추가</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-300 mb-2">세금 ID</label>
+                                <input type="text" value="12-3456789" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white focus:border-indigo-500 focus:outline-none">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Team Members -->
+                    <div class="bg-slate-800 rounded-xl p-8 border border-slate-700">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="text-xl font-bold text-white">팀 멤버 (4명)</h3>
+                            <button onclick="showAddMemberModal()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition">+ 멤버 추가</button>
+                        </div>
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between p-4 bg-slate-700 rounded-lg">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 bg-indigo-600 rounded-full flex items-center justify-center">👤</div>
+                                    <div>
+                                        <p class="font-semibold text-white">Admin User</p>
+                                        <p class="text-sm text-slate-400">admin@softfactory.com</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <span class="px-3 py-1 bg-indigo-600 rounded-full text-sm">Admin</span>
+                                    <button onclick="removeTeamMember(this)" class="text-red-500 hover:text-red-400">✕</button>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between p-4 bg-slate-700 rounded-lg">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 bg-green-600 rounded-full flex items-center justify-center">👤</div>
+                                    <div>
+                                        <p class="font-semibold text-white">Manager User</p>
+                                        <p class="text-sm text-slate-400">manager@softfactory.com</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <span class="px-3 py-1 bg-green-600 rounded-full text-sm">Manager</span>
+                                    <button onclick="removeTeamMember(this)" class="text-red-500 hover:text-red-400">✕</button>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between p-4 bg-slate-700 rounded-lg">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center">👤</div>
+                                    <div>
+                                        <p class="font-semibold text-white">Demo User</p>
+                                        <p class="text-sm text-slate-400">demo@softfactory.com</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <span class="px-3 py-1 bg-blue-600 rounded-full text-sm">User</span>
+                                    <button onclick="removeTeamMember(this)" class="text-red-500 hover:text-red-400">✕</button>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between p-4 bg-slate-700 rounded-lg">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 bg-slate-600 rounded-full flex items-center justify-center">👤</div>
+                                    <div>
+                                        <p class="font-semibold text-white">Viewer User</p>
+                                        <p class="text-sm text-slate-400">viewer@softfactory.com</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <span class="px-3 py-1 bg-slate-600 rounded-full text-sm">Viewer</span>
+                                    <button onclick="removeTeamMember(this)" class="text-red-500 hover:text-red-400">✕</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Audit Log -->
+                    <div class="bg-slate-800 rounded-xl p-8 border border-slate-700">
+                        <h3 class="text-xl font-bold text-white mb-6">감사 로그 (최근 10건)</h3>
+                        <div class="space-y-2 text-sm">
+                            <div class="flex items-center justify-between p-3 bg-slate-700 rounded-lg">
+                                <div>
+                                    <p class="text-white">Admin User가 팀 설정 수정</p>
+                                    <p class="text-slate-400">2026-02-26 14:30:45</p>
+                                </div>
+                                <span class="px-2 py-1 bg-blue-600 rounded text-xs">수정</span>
+                            </div>
+                            <div class="flex items-center justify-between p-3 bg-slate-700 rounded-lg">
+                                <div>
+                                    <p class="text-white">Manager User가 멤버 추가</p>
+                                    <p class="text-slate-400">2026-02-26 13:15:22</p>
+                                </div>
+                                <span class="px-2 py-1 bg-green-600 rounded text-xs">추가</span>
+                            </div>
+                            <div class="flex items-center justify-between p-3 bg-slate-700 rounded-lg">
+                                <div>
+                                    <p class="text-white">Admin User가 권한 정책 변경</p>
+                                    <p class="text-slate-400">2026-02-26 09:45:30</p>
+                                </div>
+                                <span class="px-2 py-1 bg-yellow-600 rounded text-xs">보안</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Permissions Tab -->
+                <div id="perm-content" class="max-w-6xl space-y-6 hidden">
+                    <!-- Role Definitions -->
+                    <div class="bg-slate-800 rounded-xl p-8 border border-slate-700">
+                        <h3 class="text-xl font-bold text-white mb-6">역할 정의</h3>
+                        <div class="grid grid-cols-1 gap-4">
+                            <div class="p-4 bg-slate-700 rounded-lg">
+                                <div class="flex items-start justify-between mb-3">
+                                    <div>
+                                        <p class="font-semibold text-white">Admin</p>
+                                        <p class="text-sm text-slate-400">모든 권한</p>
+                                    </div>
+                                    <button onclick="editRole('admin')" class="px-3 py-1 bg-indigo-600 hover:bg-indigo-700 text-white text-sm rounded">수정</button>
+                                </div>
+                            </div>
+                            <div class="p-4 bg-slate-700 rounded-lg">
+                                <div class="flex items-start justify-between mb-3">
+                                    <div>
+                                        <p class="font-semibold text-white">Manager</p>
+                                        <p class="text-sm text-slate-400">읽기, 쓰기 권한</p>
+                                    </div>
+                                    <button onclick="editRole('manager')" class="px-3 py-1 bg-indigo-600 hover:bg-indigo-700 text-white text-sm rounded">수정</button>
+                                </div>
+                            </div>
+                            <div class="p-4 bg-slate-700 rounded-lg">
+                                <div class="flex items-start justify-between mb-3">
+                                    <div>
+                                        <p class="font-semibold text-white">User</p>
+                                        <p class="text-sm text-slate-400">읽기, 제한된 쓰기</p>
+                                    </div>
+                                    <button onclick="editRole('user')" class="px-3 py-1 bg-indigo-600 hover:bg-indigo-700 text-white text-sm rounded">수정</button>
+                                </div>
+                            </div>
+                            <div class="p-4 bg-slate-700 rounded-lg">
+                                <div class="flex items-start justify-between mb-3">
+                                    <div>
+                                        <p class="font-semibold text-white">Viewer</p>
+                                        <p class="text-sm text-slate-400">읽기 전용</p>
+                                    </div>
+                                    <button onclick="editRole('viewer')" class="px-3 py-1 bg-indigo-600 hover:bg-indigo-700 text-white text-sm rounded">수정</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Permission Matrix -->
+                    <div class="bg-slate-800 rounded-xl p-8 border border-slate-700">
+                        <h3 class="text-xl font-bold text-white mb-6">권한 매트릭스</h3>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-sm">
+                                <thead>
+                                    <tr class="border-b border-slate-700">
+                                        <th class="text-left py-3 px-4 text-white font-semibold">기능</th>
+                                        <th class="text-center py-3 px-4 text-white font-semibold">Admin</th>
+                                        <th class="text-center py-3 px-4 text-white font-semibold">Manager</th>
+                                        <th class="text-center py-3 px-4 text-white font-semibold">User</th>
+                                        <th class="text-center py-3 px-4 text-white font-semibold">Viewer</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="border-b border-slate-700 hover:bg-slate-700">
+                                        <td class="py-3 px-4 text-white">대시보드 보기</td>
+                                        <td class="permission-cell"><span class="text-green-400">✓</span></td>
+                                        <td class="permission-cell"><span class="text-green-400">✓</span></td>
+                                        <td class="permission-cell"><span class="text-green-400">✓</span></td>
+                                        <td class="permission-cell"><span class="text-green-400">✓</span></td>
+                                    </tr>
+                                    <tr class="border-b border-slate-700 hover:bg-slate-700">
+                                        <td class="py-3 px-4 text-white">캠페인 생성</td>
+                                        <td class="permission-cell"><span class="text-green-400">✓</span></td>
+                                        <td class="permission-cell"><span class="text-green-400">✓</span></td>
+                                        <td class="permission-cell"><span class="text-green-400">✓</span></td>
+                                        <td class="permission-cell"><span class="text-red-400">✕</span></td>
+                                    </tr>
+                                    <tr class="border-b border-slate-700 hover:bg-slate-700">
+                                        <td class="py-3 px-4 text-white">캠페인 편집</td>
+                                        <td class="permission-cell"><span class="text-green-400">✓</span></td>
+                                        <td class="permission-cell"><span class="text-green-400">✓</span></td>
+                                        <td class="permission-cell"><span class="text-yellow-400">자신의 것만</span></td>
+                                        <td class="permission-cell"><span class="text-red-400">✕</span></td>
+                                    </tr>
+                                    <tr class="border-b border-slate-700 hover:bg-slate-700">
+                                        <td class="py-3 px-4 text-white">캠페인 삭제</td>
+                                        <td class="permission-cell"><span class="text-green-400">✓</span></td>
+                                        <td class="permission-cell"><span class="text-green-400">✓</span></td>
+                                        <td class="permission-cell"><span class="text-red-400">✕</span></td>
+                                        <td class="permission-cell"><span class="text-red-400">✕</span></td>
+                                    </tr>
+                                    <tr class="border-b border-slate-700 hover:bg-slate-700">
+                                        <td class="py-3 px-4 text-white">팀 관리</td>
+                                        <td class="permission-cell"><span class="text-green-400">✓</span></td>
+                                        <td class="permission-cell"><span class="text-yellow-400">초대만</span></td>
+                                        <td class="permission-cell"><span class="text-red-400">✕</span></td>
+                                        <td class="permission-cell"><span class="text-red-400">✕</span></td>
+                                    </tr>
+                                    <tr class="border-b border-slate-700 hover:bg-slate-700">
+                                        <td class="py-3 px-4 text-white">청구 보기</td>
+                                        <td class="permission-cell"><span class="text-green-400">✓</span></td>
+                                        <td class="permission-cell"><span class="text-green-400">✓</span></td>
+                                        <td class="permission-cell"><span class="text-red-400">✕</span></td>
+                                        <td class="permission-cell"><span class="text-red-400">✕</span></td>
+                                    </tr>
+                                    <tr class="border-b border-slate-700 hover:bg-slate-700">
+                                        <td class="py-3 px-4 text-white">설정 변경</td>
+                                        <td class="permission-cell"><span class="text-green-400">✓</span></td>
+                                        <td class="permission-cell"><span class="text-red-400">✕</span></td>
+                                        <td class="permission-cell"><span class="text-red-400">✕</span></td>
+                                        <td class="permission-cell"><span class="text-red-400">✕</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- 2FA Settings -->
+                    <div class="bg-slate-800 rounded-xl p-8 border border-slate-700">
+                        <h3 class="text-xl font-bold text-white mb-6">이중 인증 (2FA)</h3>
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between p-4 bg-slate-700 rounded-lg">
+                                <div>
+                                    <p class="font-semibold text-white">조직 전체 2FA 요구</p>
+                                    <p class="text-sm text-slate-400">모든 멤버가 2FA 설정 필수</p>
+                                </div>
+                                <button onclick="toggleSwitch(this)" class="toggle">
+                                    <span class="toggle-circle"></span>
+                                </button>
+                            </div>
+                            <div class="flex items-center justify-between p-4 bg-slate-700 rounded-lg">
+                                <div>
+                                    <p class="font-semibold text-white">Admin 계정 2FA 의무</p>
+                                    <p class="text-sm text-slate-400">Admin 역할 사용자의 2FA 필수</p>
+                                </div>
+                                <button onclick="toggleSwitch(this)" class="toggle active">
+                                    <span class="toggle-circle"></span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- API Key Management -->
+                    <div class="bg-slate-800 rounded-xl p-8 border border-slate-700">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="text-xl font-bold text-white">API 키 관리</h3>
+                            <button onclick="showGenerateKeyModal()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition">+ 새 키 생성</button>
+                        </div>
+                        <div class="space-y-3">
+                            <div class="p-4 bg-slate-700 rounded-lg flex items-center justify-between">
+                                <div>
+                                    <p class="font-semibold text-white">Production Key</p>
+                                    <p class="text-sm text-slate-400">sk_live_51...***** • 생성: 2026-01-15</p>
+                                </div>
+                                <div class="flex gap-2">
+                                    <button onclick="copyToClipboard('sk_live_***')" class="px-3 py-1 bg-slate-600 hover:bg-slate-500 text-white text-sm rounded">복사</button>
+                                    <button onclick="revokeKey(this)" class="px-3 py-1 bg-red-600 hover:bg-red-700 text-white text-sm rounded">폐지</button>
+                                </div>
+                            </div>
+                            <div class="p-4 bg-slate-700 rounded-lg flex items-center justify-between">
+                                <div>
+                                    <p class="font-semibold text-white">Staging Key</p>
+                                    <p class="text-sm text-slate-400">sk_test_51...***** • 생성: 2026-02-10</p>
+                                </div>
+                                <div class="flex gap-2">
+                                    <button onclick="copyToClipboard('sk_test_***')" class="px-3 py-1 bg-slate-600 hover:bg-slate-500 text-white text-sm rounded">복사</button>
+                                    <button onclick="revokeKey(this)" class="px-3 py-1 bg-red-600 hover:bg-red-700 text-white text-sm rounded">폐지</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Integrations Tab -->
+                <div id="int-content" class="max-w-6xl space-y-6 hidden">
+                    <!-- External Services -->
+                    <div class="bg-slate-800 rounded-xl p-8 border border-slate-700">
+                        <h3 class="text-xl font-bold text-white mb-6">외부 서비스 연동</h3>
+                        <div class="grid grid-cols-1 gap-4">
+                            <div class="p-4 bg-slate-700 rounded-lg flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <span class="text-2xl">🟣</span>
+                                    <div>
+                                        <p class="font-semibold text-white">Slack</p>
+                                        <p class="text-sm text-slate-400">알림 및 메시지 연동</p>
+                                    </div>
+                                </div>
+                                <button onclick="connectSlack()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition">연결</button>
+                            </div>
+                            <div class="p-4 bg-slate-700 rounded-lg flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <span class="text-2xl">⚡</span>
+                                    <div>
+                                        <p class="font-semibold text-white">Zapier</p>
+                                        <p class="text-sm text-slate-400">자동화 워크플로우</p>
+                                    </div>
+                                </div>
+                                <button onclick="connectZapier()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition">연결</button>
+                            </div>
+                            <div class="p-4 bg-slate-700 rounded-lg flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <span class="text-2xl">🔧</span>
+                                    <div>
+                                        <p class="font-semibold text-white">n8n</p>
+                                        <p class="text-sm text-slate-400">복잡한 자동화</p>
+                                    </div>
+                                </div>
+                                <button onclick="connectN8n()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition">연결</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Webhooks -->
+                    <div class="bg-slate-800 rounded-xl p-8 border border-slate-700">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="text-xl font-bold text-white">Webhook 설정</h3>
+                            <button onclick="showAddWebhookModal()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition">+ 새 Webhook</button>
+                        </div>
+                        <div class="space-y-3">
+                            <div class="p-4 bg-slate-700 rounded-lg">
+                                <div class="flex items-center justify-between mb-2">
+                                    <p class="font-semibold text-white">campaign.completed</p>
+                                    <span class="px-2 py-1 bg-green-600 text-xs rounded">활성</span>
+                                </div>
+                                <p class="text-sm text-slate-400 mb-3">https://api.example.com/webhooks/campaign</p>
+                                <button onclick="removeWebhook(this)" class="text-red-500 hover:text-red-400 text-sm">삭제</button>
+                            </div>
+                            <div class="p-4 bg-slate-700 rounded-lg">
+                                <div class="flex items-center justify-between mb-2">
+                                    <p class="font-semibold text-white">payment.received</p>
+                                    <span class="px-2 py-1 bg-yellow-600 text-xs rounded">비활성</span>
+                                </div>
+                                <p class="text-sm text-slate-400 mb-3">https://api.example.com/webhooks/payment</p>
+                                <button onclick="removeWebhook(this)" class="text-red-500 hover:text-red-400 text-sm">삭제</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- API Documentation -->
+                    <div class="bg-slate-800 rounded-xl p-8 border border-slate-700">
+                        <h3 class="text-xl font-bold text-white mb-6">API 문서 및 테스트</h3>
+                        <div class="space-y-3">
+                            <a href="api-reference.html" class="block p-4 bg-slate-700 rounded-lg hover:bg-slate-600 transition">
+                                <p class="font-semibold text-white">📚 API 문서</p>
+                                <p class="text-sm text-slate-400">전체 API 엔드포인트 및 예시</p>
+                            </a>
+                            <button onclick="showApiTester()" class="block w-full text-left p-4 bg-slate-700 rounded-lg hover:bg-slate-600 transition">
+                                <p class="font-semibold text-white">🧪 API 테스터</p>
+                                <p class="text-sm text-slate-400">엔드포인트 테스트</p>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Data & Security Tab -->
+                <div id="sec-content" class="max-w-6xl space-y-6 hidden">
+                    <!-- Data Export -->
+                    <div class="bg-slate-800 rounded-xl p-8 border border-slate-700">
+                        <h3 class="text-xl font-bold text-white mb-6">데이터 내보내기</h3>
+                        <div class="space-y-3">
+                            <div class="p-4 bg-slate-700 rounded-lg flex items-center justify-between">
+                                <div>
+                                    <p class="font-semibold text-white">전체 데이터 다운로드</p>
+                                    <p class="text-sm text-slate-400">모든 캠페인, 분석, 계정 정보 (ZIP)</p>
+                                </div>
+                                <button onclick="exportAllData()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition">내보내기</button>
+                            </div>
+                            <div class="p-4 bg-slate-700 rounded-lg flex items-center justify-between">
+                                <div>
+                                    <p class="font-semibold text-white">특정 데이터 선택</p>
+                                    <p class="text-sm text-slate-400">캠페인, 분석, 계정 중 선택</p>
+                                </div>
+                                <button onclick="showSelectiveExportModal()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition">선택</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Backup Schedule -->
+                    <div class="bg-slate-800 rounded-xl p-8 border border-slate-700">
+                        <h3 class="text-xl font-bold text-white mb-6">백업 스케줄</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-slate-300 mb-2">자동 백업 활성화</label>
+                                <div class="flex items-center gap-3">
+                                    <button onclick="toggleSwitch(this)" class="toggle active">
+                                        <span class="toggle-circle"></span>
+                                    </button>
+                                    <span class="text-white">매일 자동 백업</span>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-300 mb-2">백업 시간</label>
+                                <select class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white focus:border-indigo-500">
+                                    <option>오전 02:00 (권장)</option>
+                                    <option>오전 03:00</option>
+                                    <option>오후 12:00</option>
+                                    <option>오후 18:00</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-300 mb-2">보관 기간</label>
+                                <select class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white focus:border-indigo-500">
+                                    <option>7일</option>
+                                    <option>30일 (권장)</option>
+                                    <option>90일</option>
+                                    <option>1년</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Encryption Settings -->
+                    <div class="bg-slate-800 rounded-xl p-8 border border-slate-700">
+                        <h3 class="text-xl font-bold text-white mb-6">암호화 설정</h3>
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between p-4 bg-slate-700 rounded-lg">
+                                <div>
+                                    <p class="font-semibold text-white">저장소 암호화 (AES-256)</p>
+                                    <p class="text-sm text-slate-400">모든 데이터 자동 암호화</p>
+                                </div>
+                                <button onclick="toggleSwitch(this)" class="toggle active">
+                                    <span class="toggle-circle"></span>
+                                </button>
+                            </div>
+                            <div class="flex items-center justify-between p-4 bg-slate-700 rounded-lg">
+                                <div>
+                                    <p class="font-semibold text-white">전송 중 암호화 (TLS 1.3)</p>
+                                    <p class="text-sm text-slate-400">API 통신 암호화</p>
+                                </div>
+                                <button onclick="toggleSwitch(this)" class="toggle active">
+                                    <span class="toggle-circle"></span>
+                                </button>
+                            </div>
+                            <div class="flex items-center justify-between p-4 bg-slate-700 rounded-lg">
+                                <div>
+                                    <p class="font-semibold text-white">고객 관리 암호화 키</p>
+                                    <p class="text-sm text-slate-400">직접 암호화 키 관리</p>
+                                </div>
+                                <button onclick="toggleSwitch(this)" class="toggle">
+                                    <span class="toggle-circle"></span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- GDPR Compliance -->
+                    <div class="bg-slate-800 rounded-xl p-8 border border-slate-700">
+                        <h3 class="text-xl font-bold text-white mb-6">GDPR 준수</h3>
+                        <div class="space-y-3">
+                            <div class="p-4 bg-slate-700 rounded-lg flex items-center justify-between">
+                                <div>
+                                    <p class="font-semibold text-white">데이터 주체 권리</p>
+                                    <p class="text-sm text-slate-400">사용자 데이터 삭제, 수정 요청 관리</p>
+                                </div>
+                                <button onclick="manageDataSubjectRequests()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition">관리</button>
+                            </div>
+                            <div class="p-4 bg-slate-700 rounded-lg flex items-center justify-between">
+                                <div>
+                                    <p class="font-semibold text-white">개인정보 처리방침</p>
+                                    <p class="text-sm text-slate-400">약관 및 정책 문서</p>
+                                </div>
+                                <button onclick="editPrivacyPolicy()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition">편집</button>
+                            </div>
+                            <div class="p-4 bg-slate-700 rounded-lg flex items-center justify-between">
+                                <div>
+                                    <p class="font-semibold text-white">동의 관리</p>
+                                    <p class="text-sm text-slate-400">마케팅, 분석 동의 추적</p>
+                                </div>
+                                <button onclick="manageConsents()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition">관리</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Notifications & Reports Tab -->
+                <div id="notif-content" class="max-w-6xl space-y-6 hidden">
+                    <!-- Email Notifications -->
+                    <div class="bg-slate-800 rounded-xl p-8 border border-slate-700">
+                        <h3 class="text-xl font-bold text-white mb-6">이메일 알림</h3>
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between p-4 bg-slate-700 rounded-lg">
+                                <div>
+                                    <p class="font-semibold text-white">캠페인 완료</p>
+                                    <p class="text-sm text-slate-400">캠페인 종료 시 알림</p>
+                                </div>
+                                <button onclick="toggleSwitch(this)" class="toggle active">
+                                    <span class="toggle-circle"></span>
+                                </button>
+                            </div>
+                            <div class="flex items-center justify-between p-4 bg-slate-700 rounded-lg">
+                                <div>
+                                    <p class="font-semibold text-white">일일 리포트</p>
+                                    <p class="text-sm text-slate-400">매일 성과 요약</p>
+                                </div>
+                                <button onclick="toggleSwitch(this)" class="toggle active">
+                                    <span class="toggle-circle"></span>
+                                </button>
+                            </div>
+                            <div class="flex items-center justify-between p-4 bg-slate-700 rounded-lg">
+                                <div>
+                                    <p class="font-semibold text-white">주간 리포트</p>
+                                    <p class="text-sm text-slate-400">매주 월요일 요약</p>
+                                </div>
+                                <button onclick="toggleSwitch(this)" class="toggle active">
+                                    <span class="toggle-circle"></span>
+                                </button>
+                            </div>
+                            <div class="flex items-center justify-between p-4 bg-slate-700 rounded-lg">
+                                <div>
+                                    <p class="font-semibold text-white">오류 알림</p>
+                                    <p class="text-sm text-slate-400">중요 오류 발생 시</p>
+                                </div>
+                                <button onclick="toggleSwitch(this)" class="toggle active">
+                                    <span class="toggle-circle"></span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Slack Bot Settings -->
+                    <div class="bg-slate-800 rounded-xl p-8 border border-slate-700">
+                        <h3 class="text-xl font-bold text-white mb-6">Slack 봇 설정</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-slate-300 mb-2">Slack 봇 활성화</label>
+                                <div class="flex items-center gap-3">
+                                    <button onclick="toggleSwitch(this)" class="toggle active">
+                                        <span class="toggle-circle"></span>
+                                    </button>
+                                    <span class="text-white">연결됨</span>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-300 mb-2">기본 채널</label>
+                                <select class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white focus:border-indigo-500">
+                                    <option>#notifications</option>
+                                    <option>#general</option>
+                                    <option>#marketing</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-300 mb-2">알림 종류</label>
+                                <div class="space-y-2">
+                                    <label class="flex items-center gap-2 cursor-pointer">
+                                        <input type="checkbox" checked class="w-4 h-4 rounded">
+                                        <span class="text-white">캠페인 시작</span>
+                                    </label>
+                                    <label class="flex items-center gap-2 cursor-pointer">
+                                        <input type="checkbox" checked class="w-4 h-4 rounded">
+                                        <span class="text-white">캠페인 완료</span>
+                                    </label>
+                                    <label class="flex items-center gap-2 cursor-pointer">
+                                        <input type="checkbox" checked class="w-4 h-4 rounded">
+                                        <span class="text-white">오류 및 경고</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Auto Report Schedule -->
+                    <div class="bg-slate-800 rounded-xl p-8 border border-slate-700">
+                        <h3 class="text-xl font-bold text-white mb-6">자동 리포트 스케줄</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-slate-300 mb-2">자동 리포트 생성</label>
+                                <div class="flex items-center gap-3">
+                                    <button onclick="toggleSwitch(this)" class="toggle active">
+                                        <span class="toggle-circle"></span>
+                                    </button>
+                                    <span class="text-white">활성화</span>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-300 mb-2">리포트 빈도</label>
+                                <select class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white focus:border-indigo-500">
+                                    <option>매일</option>
+                                    <option>매주</option>
+                                    <option>매달</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-300 mb-2">리포트 형식</label>
+                                <div class="space-y-2">
+                                    <label class="flex items-center gap-2 cursor-pointer">
+                                        <input type="radio" name="format" checked class="w-4 h-4">
+                                        <span class="text-white">PDF</span>
+                                    </label>
+                                    <label class="flex items-center gap-2 cursor-pointer">
+                                        <input type="radio" name="format" class="w-4 h-4">
+                                        <span class="text-white">Excel</span>
+                                    </label>
+                                    <label class="flex items-center gap-2 cursor-pointer">
+                                        <input type="radio" name="format" class="w-4 h-4">
+                                        <span class="text-white">HTML</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Alert Thresholds -->
+                    <div class="bg-slate-800 rounded-xl p-8 border border-slate-700">
+                        <h3 class="text-xl font-bold text-white mb-6">임계값 경고</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-slate-300 mb-2">낮은 클릭률 경고 (%)</label>
+                                <input type="number" value="2" min="0" max="100" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white focus:border-indigo-500 focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-300 mb-2">높은 비용 경고 (₩)</label>
+                                <input type="number" value="1000000" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white focus:border-indigo-500 focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-300 mb-2">API 오류율 경고 (%)</label>
+                                <input type="number" value="5" min="0" max="100" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white focus:border-indigo-500 focus:outline-none">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Advanced Tab -->
+                <div id="adv-content" class="max-w-6xl space-y-6 hidden">
+                    <!-- Theme -->
+                    <div class="bg-slate-800 rounded-xl p-8 border border-slate-700">
+                        <h3 class="text-xl font-bold text-white mb-6">테마</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-slate-300 mb-2">다크 모드</label>
+                                <div class="flex items-center gap-3">
+                                    <button onclick="toggleSwitch(this)" class="toggle active">
+                                        <span class="toggle-circle"></span>
+                                    </button>
+                                    <span class="text-white">활성화</span>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-300 mb-2">색 테마</label>
+                                <select class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white focus:border-indigo-500">
+                                    <option>인디고 (기본)</option>
+                                    <option>파란색</option>
+                                    <option>녹색</option>
+                                    <option>보라색</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Language & Timezone -->
+                    <div class="bg-slate-800 rounded-xl p-8 border border-slate-700">
+                        <h3 class="text-xl font-bold text-white mb-6">언어 및 시간대</h3>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-slate-300 mb-2">언어</label>
+                                <select class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white focus:border-indigo-500">
+                                    <option>한국어 (기본)</option>
+                                    <option>English</option>
+                                    <option>日本語</option>
+                                    <option>中文</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-300 mb-2">시간대</label>
+                                <select class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white focus:border-indigo-500">
+                                    <option>Asia/Seoul (UTC+9)</option>
+                                    <option>Asia/Tokyo (UTC+9)</option>
+                                    <option>Asia/Shanghai (UTC+8)</option>
+                                    <option>UTC</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Performance Options -->
+                    <div class="bg-slate-800 rounded-xl p-8 border border-slate-700">
+                        <h3 class="text-xl font-bold text-white mb-6">성능 최적화</h3>
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between p-4 bg-slate-700 rounded-lg">
+                                <div>
+                                    <p class="font-semibold text-white">캐시 활성화</p>
+                                    <p class="text-sm text-slate-400">로컬 캐싱으로 속도 향상</p>
+                                </div>
+                                <button onclick="toggleSwitch(this)" class="toggle active">
+                                    <span class="toggle-circle"></span>
+                                </button>
+                            </div>
+                            <div class="flex items-center justify-between p-4 bg-slate-700 rounded-lg">
+                                <div>
+                                    <p class="font-semibold text-white">이미지 최적화</p>
+                                    <p class="text-sm text-slate-400">자동 이미지 압축</p>
+                                </div>
+                                <button onclick="toggleSwitch(this)" class="toggle active">
+                                    <span class="toggle-circle"></span>
+                                </button>
+                            </div>
+                            <div class="flex items-center justify-between p-4 bg-slate-700 rounded-lg">
+                                <div>
+                                    <p class="font-semibold text-white">배치 처리</p>
+                                    <p class="text-sm text-slate-400">대량 작업 자동 최적화</p>
+                                </div>
+                                <button onclick="toggleSwitch(this)" class="toggle active">
+                                    <span class="toggle-circle"></span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Developer Options -->
+                    <div class="bg-slate-800 rounded-xl p-8 border border-slate-700">
+                        <h3 class="text-xl font-bold text-white mb-6">개발자 옵션</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-slate-300 mb-2">디버그 모드</label>
+                                <div class="flex items-center gap-3">
+                                    <button onclick="toggleSwitch(this)" class="toggle">
+                                        <span class="toggle-circle"></span>
+                                    </button>
+                                    <span class="text-white">활성화</span>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-300 mb-2">API 로깅</label>
+                                <select class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white focus:border-indigo-500">
+                                    <option>비활성화</option>
+                                    <option>기본</option>
+                                    <option>상세</option>
+                                    <option>전체</option>
+                                </select>
+                            </div>
+                            <button onclick="exportLogs()" class="w-full px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg font-medium transition">📥 로그 내보내기</button>
+                        </div>
+                    </div>
+
+                    <!-- Account Danger Zone -->
+                    <div class="bg-red-900 bg-opacity-20 rounded-xl p-8 border border-red-700">
+                        <h3 class="text-xl font-bold text-red-400 mb-6">위험 영역</h3>
+                        <div class="space-y-3">
+                            <button onclick="showResetModal()" class="block w-full p-4 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition text-left">
+                                🔄 모든 설정 초기화
+                            </button>
+                            <button onclick="showDeleteModal()" class="block w-full p-4 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition text-left">
+                                🗑️ 조직 및 모든 데이터 삭제
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <!-- Add Member Modal -->
+    <div id="addMemberModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-slate-800 rounded-xl p-8 max-w-md w-full border border-slate-700">
+            <h3 class="text-xl font-bold text-white mb-4">팀 멤버 추가</h3>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-slate-300 mb-2">이메일</label>
+                    <input type="email" placeholder="user@example.com" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white focus:border-indigo-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-300 mb-2">역할</label>
+                    <select class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white focus:border-indigo-500">
+                        <option>Admin</option>
+                        <option>Manager</option>
+                        <option selected>User</option>
+                        <option>Viewer</option>
+                    </select>
+                </div>
+                <div class="flex gap-3">
+                    <button onclick="closeModal('addMemberModal')" class="flex-1 px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg font-medium transition">취소</button>
+                    <button onclick="addTeamMember()" class="flex-1 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition">추가</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Generate API Key Modal -->
+    <div id="generateKeyModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-slate-800 rounded-xl p-8 max-w-md w-full border border-slate-700">
+            <h3 class="text-xl font-bold text-white mb-4">새 API 키 생성</h3>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-slate-300 mb-2">키 이름</label>
+                    <input type="text" placeholder="e.g., Production Key" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white focus:border-indigo-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-300 mb-2">환경</label>
+                    <select class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white focus:border-indigo-500">
+                        <option>Production</option>
+                        <option>Staging</option>
+                        <option>Development</option>
+                    </select>
+                </div>
+                <div class="flex gap-3">
+                    <button onclick="closeModal('generateKeyModal')" class="flex-1 px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg font-medium transition">취소</button>
+                    <button onclick="generateApiKey()" class="flex-1 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition">생성</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Webhook Modal -->
+    <div id="addWebhookModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-slate-800 rounded-xl p-8 max-w-md w-full border border-slate-700">
+            <h3 class="text-xl font-bold text-white mb-4">새 Webhook 추가</h3>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-slate-300 mb-2">이벤트</label>
+                    <select class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white focus:border-indigo-500">
+                        <option>campaign.started</option>
+                        <option>campaign.completed</option>
+                        <option>payment.received</option>
+                        <option>user.created</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-300 mb-2">URL</label>
+                    <input type="url" placeholder="https://api.example.com/webhooks" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white focus:border-indigo-500 focus:outline-none">
+                </div>
+                <div class="flex gap-3">
+                    <button onclick="closeModal('addWebhookModal')" class="flex-1 px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg font-medium transition">취소</button>
+                    <button onclick="addWebhook()" class="flex-1 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition">추가</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-slate-800 rounded-xl p-8 max-w-md w-full border border-red-700">
+            <h3 class="text-xl font-bold text-red-400 mb-4">⚠️ 조직 삭제</h3>
+            <p class="text-slate-300 mb-4">이 작업은 되돌릴 수 없습니다. 모든 데이터가 영구 삭제됩니다.</p>
+            <div class="flex gap-3">
+                <button onclick="closeModal('deleteModal')" class="flex-1 px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg font-medium transition">취소</button>
+                <button onclick="deleteOrganization()" class="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition">삭제</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reset Confirmation Modal -->
+    <div id="resetModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-slate-800 rounded-xl p-8 max-w-md w-full border border-red-700">
+            <h3 class="text-xl font-bold text-red-400 mb-4">⚠️ 설정 초기화</h3>
+            <p class="text-slate-300 mb-4">모든 설정이 기본값으로 재설정됩니다.</p>
+            <div class="flex gap-3">
+                <button onclick="closeModal('resetModal')" class="flex-1 px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg font-medium transition">취소</button>
+                <button onclick="resetSettings()" class="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition">초기화</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        requireAuth();
+
+        // Tab switching
+        function switchTab(tabName) {
+            // Hide all content
+            document.querySelectorAll('[id$="-content"]').forEach(el => el.classList.add('hidden'));
+
+            // Remove active styling from all tabs
+            document.querySelectorAll('[data-tab]').forEach(el => {
+                el.classList.remove('tab-active');
+                el.classList.add('tab-inactive');
+            });
+
+            // Show selected content
+            const contentMap = {
+                'organization': 'org-content',
+                'permissions': 'perm-content',
+                'integrations': 'int-content',
+                'data-security': 'sec-content',
+                'notifications': 'notif-content',
+                'advanced': 'adv-content'
+            };
+
+            if (contentMap[tabName]) {
+                document.getElementById(contentMap[tabName]).classList.remove('hidden');
+            }
+
+            // Mark current tab as active
+            document.querySelector(`[data-tab="${tabName}"]`).classList.remove('tab-inactive');
+            document.querySelector(`[data-tab="${tabName}"]`).classList.add('tab-active');
+        }
+
+        // Toggle switch functionality
+        function toggleSwitch(element) {
+            element.classList.toggle('active');
+            showSaveNotification();
+        }
+
+        // Modal functions
+        function showAddMemberModal() {
+            document.getElementById('addMemberModal').classList.remove('hidden');
+        }
+
+        function showGenerateKeyModal() {
+            document.getElementById('generateKeyModal').classList.remove('hidden');
+        }
+
+        function showAddWebhookModal() {
+            document.getElementById('addWebhookModal').classList.remove('hidden');
+        }
+
+        function showDeleteModal() {
+            document.getElementById('deleteModal').classList.remove('hidden');
+        }
+
+        function showResetModal() {
+            document.getElementById('resetModal').classList.remove('hidden');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.add('hidden');
+        }
+
+        // Actions
+        function addTeamMember() {
+            showSaveNotification();
+            closeModal('addMemberModal');
+        }
+
+        function removeTeamMember(element) {
+            if (confirm('멤버를 제거하시겠습니까?')) {
+                element.closest('.flex').parentElement.remove();
+                showSaveNotification();
+            }
+        }
+
+        function generateApiKey() {
+            alert('✓ API 키가 생성되었습니다: sk_live_abc123...');
+            closeModal('generateKeyModal');
+        }
+
+        function revokeKey(element) {
+            if (confirm('이 API 키를 폐지하시겠습니까?')) {
+                element.closest('.flex').parentElement.remove();
+                showSaveNotification();
+            }
+        }
+
+        function addWebhook() {
+            showSaveNotification();
+            closeModal('addWebhookModal');
+        }
+
+        function removeWebhook(element) {
+            if (confirm('이 Webhook을 삭제하시겠습니까?')) {
+                element.closest('.p-4').remove();
+                showSaveNotification();
+            }
+        }
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text);
+            alert('✓ 복사되었습니다');
+        }
+
+        function editRole(role) {
+            alert(`${role} 역할 편집 페이지`);
+        }
+
+        function connectSlack() {
+            alert('Slack 연동 인증 페이지로 이동합니다...');
+        }
+
+        function connectZapier() {
+            alert('Zapier 연동 인증 페이지로 이동합니다...');
+        }
+
+        function connectN8n() {
+            alert('n8n 연동 인증 페이지로 이동합니다...');
+        }
+
+        function showApiTester() {
+            alert('API 테스터를 열고 있습니다...');
+        }
+
+        function exportAllData() {
+            alert('✓ 데이터 내보내기 시작\n파일: softfactory-export-2026-02-26.zip');
+        }
+
+        function showSelectiveExportModal() {
+            alert('데이터 선택 내보내기 대화상자');
+        }
+
+        function manageDataSubjectRequests() {
+            alert('데이터 주체 권리 요청 관리 페이지');
+        }
+
+        function editPrivacyPolicy() {
+            alert('개인정보 처리방침 편집 페이지');
+        }
+
+        function manageConsents() {
+            alert('동의 관리 페이지');
+        }
+
+        function exportLogs() {
+            alert('✓ 로그가 내보내졌습니다: debug-logs-2026-02-26.zip');
+        }
+
+        function deleteOrganization() {
+            alert('✓ 조직이 삭제되었습니다');
+            closeModal('deleteModal');
+        }
+
+        function resetSettings() {
+            alert('✓ 모든 설정이 초기화되었습니다');
+            closeModal('resetModal');
+            location.reload();
+        }
+
+        function showSaveNotification() {
+            const header = document.querySelector('header');
+            const existingNotif = header.querySelector('.save-notif');
+            if (existingNotif) existingNotif.remove();
+
+            const notif = document.createElement('div');
+            notif.className = 'save-notif fixed top-4 right-4 px-4 py-2 bg-green-600 text-white rounded-lg transition';
+            notif.textContent = '✓ 변경사항이 저장되었습니다';
+            document.body.appendChild(notif);
+
+            setTimeout(() => notif.remove(), 3000);
+        }
+    </script>
+    <script src="../mobile-optimization.js" defer></script>
+</body>
+</html>

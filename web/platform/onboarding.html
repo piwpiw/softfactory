@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#111827">
+    <meta name="description" content="SoftFactory 온보딩">
+    <title>온보딩 — SoftFactory</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="api.js"></script>
+    <style>
+        body {
+            font-family: Inter, 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+        }
+        .step {
+            display: none;
+        }
+        .step.active {
+            display: block;
+        }
+        .step-progress {
+            transition: width 0.35s cubic-bezier(.4, 0, .2, 1);
+        }
+        .service-card {
+            border: 1px solid rgba(148, 163, 184, 0.25);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .service-card:hover {
+            border-color: #8b5cf6;
+            background: rgba(139, 92, 246, 0.08);
+            transform: translateY(-1px);
+        }
+        .service-card.selected {
+            border-color: #8b5cf6;
+            background: rgba(139, 92, 246, 0.14);
+        }
+        .check-circle {
+            opacity: 0;
+            transform: scale(0.7);
+            transition: all 0.2s;
+        }
+        .service-card.selected .check-circle {
+            opacity: 1;
+            transform: scale(1);
+        }
+        .avatar {
+            width: 76px;
+            height: 76px;
+            border-radius: 9999px;
+            background: #6d28d9;
+            color: #fff;
+            font-size: 1.8rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        .avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .avatar-wrap {
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.25);
+            position: relative;
+            cursor: pointer;
+        }
+        .avatar-wrap:after {
+            content: '편집';
+            position: absolute;
+            right: 0;
+            bottom: 0;
+            transform: translate(25%, 25%);
+            font-size: 0.66rem;
+            background: #1e293b;
+            border: 1px solid #475569;
+            color: #f1f5f9;
+            border-radius: 9999px;
+            padding: 2px 6px;
+        }
+        .confetti {
+            position: fixed;
+            top: -12px;
+            width: 8px;
+            height: 8px;
+            z-index: 9999;
+            pointer-events: none;
+            border-radius: 2px;
+            animation: fall 3.4s linear forwards;
+        }
+        @keyframes fall {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(110vh) rotate(720deg); opacity: 0.1; }
+        }
+        @media (max-width: 680px) {
+            .wizard {
+                padding: 1.4rem !important;
+            }
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex items-center justify-center p-4">
+    <div class="w-full max-w-lg">
+        <div class="flex justify-end mb-4">
+            <button id="skip-btn" type="button" class="text-xs px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300 hover:text-white hover:bg-slate-700 transition">
+                건너뛰기 →
+            </button>
+        </div>
+
+        <div class="mb-6">
+            <div class="flex items-center justify-between text-xs text-slate-400 mb-2">
+                <span id="step-label">Step 1 / 5</span>
+                <span id="step-pct">20%</span>
+            </div>
+            <div class="h-1.5 bg-slate-800 rounded-full overflow-hidden">
+                <div id="progress-bar" class="h-1.5 bg-violet-500 rounded-full step-progress" style="width: 20%"></div>
+            </div>
+        </div>
+
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-8 shadow-2xl wizard">
+            <div id="step-1" class="step active">
+                <div class="text-center">
+                    <p class="text-xs uppercase tracking-[0.25em] text-violet-300 mb-3">Welcome</p>
+                    <h1 class="text-2xl font-bold text-white mb-2">서비스 시작 안내</h1>
+                    <p id="welcome-message" class="text-slate-400 mb-6">
+                        SoftFactory에 오신 것을 환영합니다. 계정 환경을 바로 설정하고 바로 시작하세요.
+                    </p>
+                    <div class="grid grid-cols-3 gap-3 text-sm mb-8">
+                        <div class="bg-slate-800 rounded-lg p-3 text-center">
+                            <p class="text-xl">📱</p>
+                            <p class="mt-1 text-slate-300">SNS Auto</p>
+                        </div>
+                        <div class="bg-slate-800 rounded-lg p-3 text-center">
+                            <p class="text-xl">⭐</p>
+                            <p class="mt-1 text-slate-300">Review</p>
+                        </div>
+                        <div class="bg-slate-800 rounded-lg p-3 text-center">
+                            <p class="text-xl">🤖</p>
+                            <p class="mt-1 text-slate-300">AI Automation</p>
+                        </div>
+                    </div>
+                    <button id="start-btn" type="button" class="w-full py-3 bg-violet-600 hover:bg-violet-700 text-white rounded-xl font-semibold">
+                        시작하기 →
+                    </button>
+                </div>
+            </div>
+
+            <div id="step-2" class="step">
+                <h2 class="text-xl font-bold text-white mb-1">서비스 선택</h2>
+                <p class="text-slate-400 text-sm mb-6">가입한 계정에서 사용할 서비스를 먼저 선택하세요.</p>
+                <div id="service-list" class="space-y-3 mb-8">
+                    <label class="service-card p-4 rounded-xl bg-slate-800 flex items-center gap-4" data-service="sns">
+                        <input type="checkbox" class="service-checkbox sr-only" value="sns">
+                        <span class="text-3xl">📱</span>
+                        <div class="flex-1">
+                            <p class="font-semibold text-white">SNS Auto</p>
+                            <p class="text-xs text-slate-400">게시물 발행, 자동화, 리포트</p>
+                        </div>
+                        <span class="check-circle text-violet-300">✔</span>
+                    </label>
+                    <label class="service-card p-4 rounded-xl bg-slate-800 flex items-center gap-4" data-service="review">
+                        <input type="checkbox" class="service-checkbox sr-only" value="review">
+                        <span class="text-3xl">⭐</span>
+                        <div class="flex-1">
+                            <p class="font-semibold text-white">Review</p>
+                            <p class="text-xs text-slate-400">리뷰 수집, 반응 분석, 운영 최적화</p>
+                        </div>
+                        <span class="check-circle text-violet-300">✔</span>
+                    </label>
+                    <label class="service-card p-4 rounded-xl bg-slate-800 flex items-center gap-4" data-service="coocook">
+                        <input type="checkbox" class="service-checkbox sr-only" value="coocook">
+                        <span class="text-3xl">🍳</span>
+                        <div class="flex-1">
+                            <p class="font-semibold text-white">CooCook</p>
+                            <p class="text-xs text-slate-400">콘텐츠 제작, 큐레이션, 협업 워크플로우</p>
+                        </div>
+                        <span class="check-circle text-violet-300">✔</span>
+                    </label>
+                    <label class="service-card p-4 rounded-xl bg-slate-800 flex items-center gap-4" data-service="ai">
+                        <input type="checkbox" class="service-checkbox sr-only" value="ai">
+                        <span class="text-3xl">🤖</span>
+                        <div class="flex-1">
+                            <p class="font-semibold text-white">AI Automation</p>
+                            <p class="text-xs text-slate-400">AI 기반 자동화, 텍스트 생성</p>
+                        </div>
+                        <span class="check-circle text-violet-300">✔</span>
+                    </label>
+                </div>
+                <div class="flex gap-3">
+                    <button data-prev type="button" class="prev-btn flex-1 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl">이전</button>
+                    <button id="step2-next" type="button" class="flex-1 py-2.5 bg-violet-600 hover:bg-violet-700 text-white rounded-xl">다음 →</button>
+                </div>
+            </div>
+
+            <div id="step-3" class="step">
+                <h2 class="text-xl font-bold text-white mb-1">프로필 설정</h2>
+                <p class="text-slate-400 text-sm mb-6">이름과 업종을 저장하고 바로 다음 단계로 이동하세요.</p>
+
+                <div class="flex flex-col items-center mb-6">
+                    <label class="avatar-wrap rounded-full">
+                        <div id="avatar-preview" class="avatar">S</div>
+                        <input type="file" id="avatar-input" accept="image/*" class="hidden">
+                    </label>
+                    <p class="text-xs text-slate-500 mt-2">클릭해 아바타를 업로드하세요</p>
+                </div>
+
+                <div class="space-y-4 mb-8">
+                    <div>
+                        <label for="profile-name" class="block text-sm font-medium text-slate-300 mb-1.5">이름</label>
+                        <input id="profile-name" type="text" placeholder="홍길동" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-white">
+                    </div>
+                    <div>
+                        <label for="profile-industry" class="block text-sm font-medium text-slate-300 mb-1.5">업종</label>
+                        <select id="profile-industry" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-white">
+                            <option value="" disabled selected>선택하세요</option>
+                            <option value="ecommerce">이커머스 / 온라인몰</option>
+                            <option value="food">식음료</option>
+                            <option value="beauty">뷰티 / 패션</option>
+                            <option value="it">IT / SaaS</option>
+                            <option value="marketing">마케팅 / 광고</option>
+                            <option value="media">미디어 / 커뮤니티</option>
+                            <option value="education">교육</option>
+                            <option value="health">헬스케어</option>
+                            <option value="other">기타</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="flex gap-3">
+                    <button data-prev type="button" class="prev-btn flex-1 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl">이전</button>
+                    <button id="step3-next" type="button" class="flex-1 py-2.5 bg-violet-600 hover:bg-violet-700 text-white rounded-xl">다음 →</button>
+                </div>
+            </div>
+
+            <div id="step-4" class="step">
+                <h2 class="text-xl font-bold text-white mb-1">바로가기 추천</h2>
+                <p class="text-slate-400 text-sm mb-6">선택한 서비스의 진입 경로를 준비했습니다.</p>
+                <div id="action-cards" class="space-y-3 mb-8"></div>
+                <div class="flex gap-3">
+                    <button data-prev type="button" class="prev-btn flex-1 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl">이전</button>
+                    <button id="step4-next" type="button" class="flex-1 py-2.5 bg-violet-600 hover:bg-violet-700 text-white rounded-xl">다음 →</button>
+                </div>
+            </div>
+
+            <div id="step-5" class="step">
+                <div class="text-center py-3">
+                    <div class="mx-auto w-24 h-24 rounded-full bg-violet-900/40 border border-violet-500/50 flex items-center justify-center text-4xl mb-6">✓</div>
+                    <h2 class="text-2xl font-bold text-white mb-2">온보딩 완료</h2>
+                    <p class="text-slate-400 mb-8 text-sm leading-relaxed">
+                        설정이 완료되었습니다. 이제 바로 대시보드에서 시작할 수 있습니다.
+                    </p>
+                    <div id="finish-summary" class="bg-slate-800 border border-slate-700 rounded-xl p-4 mb-8 text-left text-sm space-y-2"></div>
+                    <div class="flex flex-col gap-3">
+                        <button id="go-dashboard" type="button" class="w-full py-3 bg-violet-600 hover:bg-violet-700 text-white rounded-xl">대시보드 바로가기</button>
+                        <a href="help.html" class="w-full py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-center">도움말 보기</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            const STORAGE_KEY = 'sf_onboarding_state_v2';
+            const state = {
+                currentStep: 1,
+                totalSteps: 5,
+                selectedServices: [],
+                name: '',
+                industry: '',
+                avatarDataUrl: ''
+            };
+
+            const serviceMap = {
+                sns: { icon: '📱', label: 'SNS Auto', desc: '게시물 자동화, 분석, 리포트', href: '../sns-auto/index.html' },
+                review: { icon: '⭐', label: 'Review', desc: '리뷰 수집/분석/알림', href: '../review/index.html' },
+                coocook: { icon: '🍳', label: 'CooCook', desc: '콘텐츠 제작 워크플로우', href: '../coocook/index.html' },
+                ai: { icon: '🤖', label: 'AI Automation', desc: '문안 생성, 자동화 규칙', href: '../ai-automation/index.html' }
+            };
+
+            function loadState() {
+                try {
+                    const saved = localStorage.getItem(STORAGE_KEY);
+                    if (!saved) return;
+                    const parsed = JSON.parse(saved);
+                    Object.assign(state, parsed || {});
+                } catch (_) {}
+            }
+
+            function saveState() {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify({
+                    currentStep: state.currentStep,
+                    selectedServices: state.selectedServices,
+                    name: state.name,
+                    industry: state.industry
+                }));
+            }
+
+            function renderStep(step) {
+                for (let i = 1; i <= state.totalSteps; i++) {
+                    const target = document.getElementById(`step-${i}`);
+                    if (target) target.classList.toggle('active', i === step);
+                }
+                updateProgress();
+                if (step === 1) renderStep1();
+                if (step === 3) renderStep3();
+                if (step === 4) renderStep4();
+                if (step === 5) renderStep5();
+            }
+
+            function updateProgress() {
+                const pct = Math.max(1, Math.round((state.currentStep / state.totalSteps) * 100));
+                const bar = document.getElementById('progress-bar');
+                const label = document.getElementById('step-label');
+                const pctEl = document.getElementById('step-pct');
+                if (bar) bar.style.width = pct + '%';
+                if (label) label.textContent = `Step ${state.currentStep} / ${state.totalSteps}`;
+                if (pctEl) pctEl.textContent = `${pct}%`;
+            }
+
+            function collectStepData() {
+                if (state.currentStep === 2) {
+                    state.selectedServices = Array.from(document.querySelectorAll('.service-checkbox:checked')).map((cb) => cb.value);
+                }
+                if (state.currentStep === 3) {
+                    const nameInput = document.getElementById('profile-name');
+                    const industryInput = document.getElementById('profile-industry');
+                    state.name = (nameInput && nameInput.value.trim()) || '';
+                    state.industry = (industryInput && industryInput.value) || '';
+                }
+            }
+
+            function showError(el, message) {
+                if (!el) return;
+                el.textContent = message;
+                el.classList.remove('hidden');
+                clearTimeout(showError.tid);
+                showError.tid = setTimeout(() => { el.classList.add('hidden'); }, 2500);
+            }
+
+            function renderStep1() {
+                const user = typeof getUser === 'function' ? getUser() : {};
+                const userName = user && user.name ? user.name : '사용자';
+                const box = document.getElementById('welcome-message');
+                if (box) {
+                    box.innerHTML = `<strong class="text-white">${escapeHtml(userName)}</strong>님, SoftFactory 온보딩에 오신 것을 환영합니다.<br><span class="text-sm">최적 환경으로 바로 시작할 수 있게 도와드릴게요.</span>`;
+                }
+                state.name = state.name || userName;
+            }
+
+            function renderStep3() {
+                const nameInput = document.getElementById('profile-name');
+                const industryInput = document.getElementById('profile-industry');
+                if (nameInput && state.name) nameInput.value = state.name;
+                if (industryInput && state.industry) industryInput.value = state.industry;
+                updateAvatarPreview();
+            }
+
+            function renderStep4() {
+                const container = document.getElementById('action-cards');
+                if (!container) return;
+                const selected = state.selectedServices.length > 0 ? state.selectedServices : Object.keys(serviceMap);
+                container.innerHTML = '';
+                selected.forEach((service) => {
+                    const row = serviceMap[service];
+                    if (!row) return;
+                    const card = document.createElement('a');
+                    card.className = 'flex items-center gap-4 p-4 bg-slate-800 border border-slate-700 rounded-xl hover:border-violet-500 transition';
+                    card.href = row.href;
+                    card.innerHTML = `
+                        <span class="text-2xl">${row.icon}</span>
+                        <div class="flex-1">
+                          <p class="font-semibold text-white">${row.label}</p>
+                          <p class="text-xs text-slate-400">${row.desc}</p>
+                        </div>
+                        <span class="text-xs text-violet-300">바로가기</span>
+                    `;
+                    container.appendChild(card);
+                });
+            }
+
+            function renderStep5() {
+                const summary = document.getElementById('finish-summary');
+                if (!summary) return;
+                const serviceLabels = state.selectedServices.length ? state.selectedServices.map((key) => serviceMap[key] ? serviceMap[key].label : key).join(', ') : '선택한 항목 없음';
+                summary.innerHTML = [
+                    `<div class="flex items-center gap-2 text-slate-300"><span class="text-violet-300">✓</span>이름: <span class="text-white font-medium">${escapeHtml(state.name || '-')}</span></div>`,
+                    `<div class="flex items-center gap-2 text-slate-300"><span class="text-violet-300">✓</span>업종: <span class="text-white font-medium">${state.industry || '-'}</span></div>`,
+                    `<div class="flex items-center gap-2 text-slate-300"><span class="text-violet-300">✓</span>선택 서비스: <span class="text-white font-medium">${serviceLabels}</span></div>`
+                ].join('');
+                launchConfetti();
+            }
+
+            function goToStep(next) {
+                if (next < 1 || next > state.totalSteps) return;
+                collectStepData();
+                if (next === 3 && state.currentStep === 2 && state.selectedServices.length === 0) {
+                    alert('최소 1개 이상의 서비스를 선택해주세요.');
+                    return;
+                }
+                if (next === 5 && state.currentStep === 4) {
+                    if (!state.name) {
+                        alert('이름은 필수 입력 항목입니다.');
+                        goToStep(3);
+                        return;
+                    }
+                }
+
+                state.currentStep = next;
+                saveState();
+                renderStep(state.currentStep);
+            }
+
+            function handleCardSelection(e) {
+                const target = e.target.closest('.service-card');
+                if (!target) return;
+                const checkbox = target.querySelector('.service-checkbox');
+                if (!checkbox) return;
+                checkbox.checked = !checkbox.checked;
+                target.classList.toggle('selected', checkbox.checked);
+            }
+
+            function updateAvatarPreview() {
+                const avatar = document.getElementById('avatar-preview');
+                if (!avatar) return;
+                if (state.avatarDataUrl) {
+                    avatar.innerHTML = `<img src="${state.avatarDataUrl}" alt="avatar" />`;
+                } else {
+                    const char = (state.name || 'S').trim().charAt(0).toUpperCase() || 'S';
+                    avatar.textContent = char;
+                }
+            }
+
+            function updateAvatar(e) {
+                const file = e.target.files && e.target.files[0];
+                if (!file || !file.type.startsWith('image/')) return;
+                const reader = new FileReader();
+                reader.onload = (evt) => {
+                    state.avatarDataUrl = evt.target.result;
+                    updateAvatarPreview();
+                };
+                reader.readAsDataURL(file);
+            }
+
+            function escapeHtml(value) {
+                return String(value)
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;')
+                    .replace(/'/g, '&#39;');
+            }
+
+            function launchConfetti() {
+                const colors = ['#8b5cf6', '#a78bfa', '#f59e0b', '#10b981', '#60a5fa', '#f472b6'];
+                for (let i = 0; i < 50; i += 1) {
+                    const piece = document.createElement('div');
+                    piece.className = 'confetti';
+                    piece.style.left = `${Math.random() * 100}vw`;
+                    piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+                    piece.style.animationDuration = `${1.4 + Math.random() * 1.8}s`;
+                    piece.style.animationDelay = `${Math.random() * 0.4}s`;
+                    piece.style.opacity = `${0.7 + Math.random() * 0.3}`;
+                    piece.style.transform = `rotate(${Math.random() * 360}deg)`;
+                    document.body.appendChild(piece);
+                    setTimeout(() => piece.remove(), 3500);
+                }
+            }
+
+            document.getElementById('start-btn')?.addEventListener('click', () => goToStep(2));
+            document.getElementById('step2-next')?.addEventListener('click', () => goToStep(3));
+            document.getElementById('step3-next')?.addEventListener('click', () => {
+                const name = document.getElementById('profile-name').value.trim();
+                if (!name) {
+                    const n = document.getElementById('profile-name');
+                    n.focus();
+                    n.classList.add('border-red-400');
+                    return showError(n, '이름은 필수입니다.');
+                }
+                document.getElementById('profile-name').classList.remove('border-red-400');
+                goToStep(4);
+            });
+            document.getElementById('step4-next')?.addEventListener('click', () => goToStep(5));
+            document.getElementById('go-dashboard')?.addEventListener('click', () => {
+                localStorage.setItem('onboarding_complete', '1');
+                localStorage.setItem('onboarding_completed_at', new Date().toISOString());
+                localStorage.removeItem(STORAGE_KEY);
+                window.location.href = 'dashboard.html';
+            });
+            document.getElementById('skip-btn')?.addEventListener('click', () => {
+                localStorage.setItem('onboarding_complete', '1');
+                window.location.href = 'dashboard.html';
+            });
+            document.querySelectorAll('.prev-btn').forEach((btn) => {
+                btn.addEventListener('click', () => goToStep(state.currentStep - 1));
+            });
+            document.getElementById('service-list')?.addEventListener('click', handleCardSelection);
+            document.getElementById('avatar-input')?.addEventListener('change', updateAvatar);
+            document.getElementById('avatar-preview')?.addEventListener('click', () => {
+                document.getElementById('avatar-input').click();
+            });
+            document.getElementById('profile-name')?.addEventListener('input', (e) => {
+                state.name = e.target.value.trim();
+                updateAvatarPreview();
+            });
+            document.getElementById('profile-industry')?.addEventListener('change', (e) => {
+                state.industry = e.target.value;
+            });
+
+            loadState();
+            renderStep(state.currentStep);
+            if (state.currentStep === 2 || state.currentStep === 3 || state.currentStep === 4 || state.currentStep === 5) {
+                collectStepData();
+            }
+
+            // Restore step-2 selection if resuming
+            if (state.selectedServices.length > 0) {
+                state.selectedServices.forEach((svc) => {
+                    const cb = document.querySelector(`.service-checkbox[value="${svc}"]`);
+                    if (cb) {
+                        cb.checked = true;
+                        cb.closest('.service-card')?.classList.add('selected');
+                    }
+                });
+            }
+        })();
+    </script>
+</body>
+</html>

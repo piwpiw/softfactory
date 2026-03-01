@@ -1,0 +1,169 @@
+{
+  "n8n": {
+    "version": "1.45.0",
+    "environment": "production",
+    "credentials": {
+      "path": "D:/Project/n8n/credentials",
+      "overwrite": true
+    },
+    "workflows": {
+      "path": "D:/Project/n8n/workflows",
+      "activeByDefault": true
+    },
+    "logging": {
+      "level": "info",
+      "console": true,
+      "file": {
+        "enabled": true,
+        "path": "D:/Project/logs/n8n",
+        "maxFiles": 30,
+        "maxSize": "50mb"
+      }
+    },
+    "api": {
+      "port": 5678,
+      "host": "0.0.0.0",
+      "cors": {
+        "enabled": true,
+        "origin": "*"
+      }
+    },
+    "ui": {
+      "enabled": true,
+      "port": 5679
+    },
+    "endpoints": {
+      "webhook": "http://localhost:5678/webhook",
+      "webhookTest": "http://localhost:5678/webhook-test"
+    },
+    "database": {
+      "type": "sqlite",
+      "sqlite": {
+        "path": "D:/Project/.n8n/database.sqlite"
+      },
+      "logging": {
+        "enabled": false
+      }
+    },
+    "executions": {
+      "timeout": 3600,
+      "maxTimeout": 36000,
+      "mode": "queue",
+      "pruneData": true,
+      "pruneDataMaxAge": 7776000,
+      "pruneDataSoftDeleteDays": 14,
+      "saveDataOnError": "all",
+      "saveDataOnSuccess": "all"
+    },
+    "queue": {
+      "bull": {
+        "port": 6379,
+        "host": "localhost",
+        "db": 0,
+        "prefix": "n8n"
+      }
+    },
+    "workers": {
+      "mode": "simple",
+      "runningMode": "regular",
+      "concurrency": 5
+    },
+    "nodes": {
+      "include": [
+        "n8n-nodes-base.*.*.js"
+      ],
+      "exclude": [],
+      "errorTriggerType": "regularNode"
+    },
+    "publicApi": {
+      "enabled": true,
+      "path": "api"
+    }
+  },
+  "integrations": {
+    "gmail": {
+      "enabled": true,
+      "nodeType": "n8n-nodes-base.gmail",
+      "credentialsName": "Gmail OAuth",
+      "scopes": [
+        "https://www.googleapis.com/auth/gmail.send",
+        "https://www.googleapis.com/auth/gmail.readonly"
+      ]
+    },
+    "notion": {
+      "enabled": true,
+      "nodeType": "n8n-nodes-base.notion",
+      "credentialsName": "Notion API",
+      "databaseId": "YOUR_NOTION_DATABASE_ID"
+    },
+    "telegram": {
+      "enabled": true,
+      "nodeType": "n8n-nodes-base.telegram",
+      "credentialsName": "Telegram Bot",
+      "botToken": "ENV:TELEGRAM_BOT_TOKEN"
+    }
+  },
+  "schedules": {
+    "morning_brief": {
+      "cronTime": "0 5 * * *",
+      "description": "Daily morning brief - 5 AM KST",
+      "timezone": "Asia/Seoul",
+      "enabled": true
+    },
+    "mid_morning_check": {
+      "cronTime": "0 10 * * *",
+      "description": "Mid-morning check - 10 AM KST",
+      "timezone": "Asia/Seoul",
+      "enabled": true
+    },
+    "afternoon_update": {
+      "cronTime": "0 15 * * *",
+      "description": "Afternoon update - 3 PM KST",
+      "timezone": "Asia/Seoul",
+      "enabled": true
+    },
+    "evening_status": {
+      "cronTime": "0 17 * * *",
+      "description": "Evening status - 5 PM KST",
+      "timezone": "Asia/Seoul",
+      "enabled": true
+    },
+    "night_summary": {
+      "cronTime": "0 22 * * *",
+      "description": "Night summary - 10 PM KST",
+      "timezone": "Asia/Seoul",
+      "enabled": true
+    }
+  },
+  "monitoring": {
+    "enabled": true,
+    "metrics": {
+      "enabled": true,
+      "prefix": "n8n_"
+    },
+    "healthCheck": {
+      "enabled": true,
+      "interval": 60000
+    },
+    "alerting": {
+      "enabled": true,
+      "onExecutionError": true,
+      "onExecutionTimeout": true
+    }
+  },
+  "security": {
+    "jwtAuth": {
+      "enabled": true,
+      "secret": "ENV:N8N_JWT_SECRET"
+    },
+    "rateLimit": {
+      "enabled": true,
+      "windowMs": 900000,
+      "maxRequests": 100
+    },
+    "cors": {
+      "enabled": true,
+      "credentials": true
+    }
+  }
+}

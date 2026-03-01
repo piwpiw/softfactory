@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#111827">
+    <meta name="description" content="SoftFactory 외부 서비스 연동 관리">
+    <title>통합 설정 — SoftFactory</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="api.js"></script>
+    <link rel="stylesheet" href="../responsive-framework.css">
+    <link rel="stylesheet" href="../accessibility.css">
+    <link rel="stylesheet" href="platform-dashboard-ui.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .soft-input {
+            border: 1px solid var(--sf-panel-border);
+            background: rgba(15,23,42,0.85);
+            color: var(--sf-text-main);
+        }
+        .soft-input:focus {
+            border-color: var(--sf-accent);
+            outline: none;
+            box-shadow: 0 0 0 3px var(--sf-accent-soft);
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 antialiased soft-shell">
+    <a href="#main" class="skip-to-main sr-only">메인 콘텐츠로 이동</a>
+
+    <div class="flex h-screen overflow-hidden">
+        <aside class="w-64 soft-sidebar border-r border-slate-800 flex flex-col shrink-0">
+            <div class="p-6 border-b border-slate-800">
+                <div class="flex items-center gap-3">
+                    <span class="text-2xl" aria-hidden="true">🏭</span>
+                    <div>
+                        <h1 class="font-bold text-white">SoftFactory</h1>
+                        <p class="text-xs text-slate-400">Premium SaaS</p>
+                    </div>
+                </div>
+            </div>
+            <nav class="flex-1 p-6 space-y-2 overflow-y-auto" aria-label="사용자 네비게이션">
+                <button class="hamburger" aria-label="네비게이션 메뉴 열기" type="button"><span></span><span></span><span></span></button>
+                <a href="dashboard.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-slate-800 transition">📊 대시보드</a>
+                <a href="performance.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-slate-800 transition">📈 성능 & ROI</a>
+                <a href="billing.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-slate-800 transition">💳 결제 내역</a>
+                <a href="invoices.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-slate-800 transition">🧾 영수증 내역</a>
+                <a href="profile.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-slate-800 transition">👤 계정</a>
+                <a href="admin.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-slate-800 transition">⚙️ 관리자</a>
+
+                <div class="my-6 border-t border-slate-800"></div>
+                <p class="section-title text-xs font-semibold text-slate-400 uppercase px-4 mb-3">서비스</p>
+                <a href="../sns-auto/index.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-slate-800 transition">📱 SNS Auto</a>
+                <a href="../review/index.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-slate-800 transition">⭐ Review</a>
+                <a href="../coocook/index.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-slate-800 transition">🍳 CooCook</a>
+                <a href="../ai-automation/index.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-slate-800 transition">🤖 AI Automation</a>
+                <a href="../webapp-builder/index.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-slate-800 transition">💻 WebApp Builder</a>
+            </nav>
+            <div class="p-6 border-t border-slate-800 soft-user-panel">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-white" id="userName">Demo User</p>
+                        <p class="text-xs text-slate-400" id="userEmail">demo@softfactory.com</p>
+                    </div>
+                    <button onclick="logout()" class="p-2 hover:bg-slate-800 rounded-lg transition" title="로그아웃" type="button">🚪</button>
+                </div>
+            </div>
+        </aside>
+
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <header class="soft-topbar px-6 py-4 flex items-start justify-between gap-4 shrink-0">
+                <div>
+                    <h2 class="text-xl font-bold text-white">통합 설정</h2>
+                    <p class="text-xs text-slate-400">SNS API, 결제, 알림 연동을 한 곳에서 관리</p>
+                </div>
+                <a href="help.html" class="soft-btn px-3 py-2 rounded-lg text-sm">❓ 도움말</a>
+            </header>
+
+            <main id="main" class="flex-1 overflow-y-auto soft-main space-y-6">
+                <section class="soft-card p-6">
+                    <h3 class="text-lg font-bold text-white mb-4">이용 가능한 연동</h3>
+                    <div id="catalog" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+                </section>
+
+                <section class="soft-card p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-bold text-white">연동된 서비스</h3>
+                        <span class="text-xs text-slate-500" id="connectedCount">0건</span>
+                    </div>
+                    <div id="connections" class="space-y-3"></div>
+                </section>
+
+                <section class="soft-card p-6">
+                    <h3 class="text-lg font-bold text-white mb-4">Webhook 설정</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="text-sm text-slate-300 mb-1 block">Webhook URL</label>
+                            <input id="webhookUrl" class="soft-input w-full px-4 py-2.5 rounded-lg text-sm" value="https://app.softfactory.com/webhook" readonly>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <label class="flex items-center gap-3 text-sm text-slate-300">
+                                <input type="checkbox" id="eventCampaign" checked class="w-4 h-4 accent-indigo-600">
+                                <span>캠페인 완료 이벤트</span>
+                            </label>
+                            <label class="flex items-center gap-3 text-sm text-slate-300">
+                                <input type="checkbox" id="eventPost" checked class="w-4 h-4 accent-indigo-600">
+                                <span>포스트 발행 이벤트</span>
+                            </label>
+                            <label class="flex items-center gap-3 text-sm text-slate-300">
+                                <input type="checkbox" id="eventBilling" class="w-4 h-4 accent-indigo-600">
+                                <span>결제 완료 이벤트</span>
+                            </label>
+                            <label class="flex items-center gap-3 text-sm text-slate-300">
+                                <input type="checkbox" id="eventAlert" class="w-4 h-4 accent-indigo-600">
+                                <span>이상 감지 알림</span>
+                            </label>
+                        </div>
+                        <div class="flex flex-wrap gap-3">
+                            <button onclick="saveWebhookSettings()" class="soft-btn px-4 py-2 rounded-lg text-sm">저장</button>
+                            <button onclick="testWebhook()" class="soft-btn soft-btn-ghost px-4 py-2 rounded-lg text-sm">테스트 발송</button>
+                        </div>
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        const INTEGRATIONS = [
+            { id: 'instagram', name: 'Instagram', desc: 'SNS Auto 계정 연동', connected: false },
+            { id: 'facebook', name: 'Facebook', desc: 'Facebook Pages 연동', connected: false },
+            { id: 'twitter', name: 'Twitter / X', desc: '트윗 자동화 및 스케줄링', connected: true },
+            { id: 'linkedin', name: 'LinkedIn', desc: '회사 페이지 관리', connected: false },
+            { id: 'stripe', name: 'Stripe', desc: '결제 및 구독 관리', connected: true },
+            { id: 'slack', name: 'Slack', desc: '알림 및 커뮤니케이션', connected: false }
+        ];
+
+        function safeText(id, value) {
+            const el = document.getElementById(id);
+            if (el) el.textContent = value;
+        }
+
+        function setUserInfo() {
+            const user = getUser ? getUser() : null;
+            if (user) {
+                safeText('userName', user.name || 'Demo User');
+                safeText('userEmail', user.email || 'demo@softfactory.com');
+            }
+        }
+
+        function renderCatalog() {
+            const host = document.getElementById('catalog');
+            host.innerHTML = INTEGRATIONS.map((item) => {
+                const connectedClass = item.connected ? 'bg-green-900/25 border-green-500/40' : 'bg-slate-800 border-slate-700';
+                const btnLabel = item.connected ? '연결 해제' : '연결';
+                const btnClass = item.connected ? 'soft-btn-ghost' : 'soft-btn';
+                return (
+                    '<article class="rounded-lg border p-4 ' + connectedClass + '">' +
+                        '<div class="flex items-start justify-between">' +
+                            '<div>' +
+                                '<p class="font-bold text-white">' + item.name + '</p>' +
+                                '<p class="text-sm text-slate-400 mt-1">' + item.desc + '</p>' +
+                                '<p class="text-xs text-slate-500 mt-2">상태: ' + (item.connected ? '연동됨' : '미연결') + '</p>' +
+                            '</div>' +
+                            '<button data-id="' + item.id + '" class="px-3 py-1.5 text-sm rounded-lg ' + (item.connected ? 'soft-btn-ghost' : 'soft-btn') + '">' + btnLabel + '</button>' +
+                        '</div>' +
+                    '</article>'
+                );
+            }).join('');
+
+            host.querySelectorAll('button[data-id]').forEach((btn) => {
+                btn.addEventListener('click', () => {
+                    const id = btn.getAttribute('data-id');
+                    toggleIntegration(id);
+                });
+            });
+        }
+
+        function renderConnections() {
+            const rows = INTEGRATIONS.filter((item) => item.connected);
+            safeText('connectedCount', `${rows.length}건`);
+            const host = document.getElementById('connections');
+            if (!rows.length) {
+                host.innerHTML = '<p class="text-sm text-slate-400">현재 연동된 서비스가 없습니다.</p>';
+                return;
+            }
+            host.innerHTML = rows.map((item) => (
+                '<div class="soft-card p-4 flex items-center justify-between">' +
+                    '<div>' +
+                        '<p class="font-medium text-white">' + item.name + '</p>' +
+                        '<p class="text-sm text-slate-400">계정/연결 상태: active • 마지막 갱신: ' + new Date().toLocaleDateString('ko-KR') + '</p>' +
+                    '</div>' +
+                    '<button data-id="' + item.id + '" class="soft-btn-ghost px-3 py-1.5 rounded-lg text-sm">상세</button>' +
+                '</div>'
+            )).join('');
+            host.querySelectorAll('button[data-id]').forEach((btn) => {
+                btn.addEventListener('click', () => {
+                    const id = btn.getAttribute('data-id');
+                    if (typeof showToast === 'function') {
+                        showToast(id + ' 연동 상세를 확인했습니다.');
+                    }
+                });
+            });
+        }
+
+        function toggleIntegration(id) {
+            const target = INTEGRATIONS.find((item) => item.id === id);
+            if (!target) return;
+            target.connected = !target.connected;
+            if (typeof showToast === 'function') {
+                showToast(`${target.name} 연동 ${target.connected ? '연결' : '해제'} 처리됨`);
+            }
+            renderCatalog();
+            renderConnections();
+        }
+
+        function saveWebhookSettings() {
+            const payload = {
+                url: document.getElementById('webhookUrl').value,
+                events: {
+                    campaign_complete: document.getElementById('eventCampaign').checked,
+                    post_published: document.getElementById('eventPost').checked,
+                    billing_completed: document.getElementById('eventBilling').checked,
+                    alert: document.getElementById('eventAlert').checked
+                }
+            };
+            if (typeof showToast === 'function') {
+                showToast('Webhook 설정이 저장되었습니다', 'success');
+                console.debug('webhook payload', payload);
+            }
+        }
+
+        function testWebhook() {
+            if (typeof showToast === 'function') {
+                showToast('Webhook 테스트 요청을 전송했습니다.');
+            }
+        }
+
+        function logout() {
+            if (typeof clearAuthToken === 'function') clearAuthToken();
+            window.location.href = 'login.html';
+        }
+
+        function init() {
+            if (typeof requireAuth === 'function') requireAuth();
+            setUserInfo();
+            renderCatalog();
+            renderConnections();
+        }
+
+        init();
+    </script>
+    <script src="../mobile-optimization.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#111827">
+<title>기능 비교 — SoftFactory</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+    </style>
+    <link rel="stylesheet" href="../responsive-framework.css">
+  </head>
+<body class="bg-slate-950 text-slate-100 antialiased">
+    <div class="max-w-6xl mx-auto px-6 py-12">
+        <div class="mb-12 text-center">
+            <a href="billing.html" class="text-indigo-400 hover:text-indigo-300 transition">← 요금제로 돌아가기</a>
+            <h1 class="text-4xl font-bold text-white mt-4">✨ 기능 비교</h1>
+            <p class="text-slate-400 mt-2">각 요금제에서 사용할 수 있는 기능을 확인하세요</p>
+        </div>
+
+        <!-- Feature Categories -->
+        <div class="space-y-8">
+            <!-- SNS Auto Features -->
+            <div class="bg-slate-800 rounded-xl p-8 border border-slate-700">
+                <h2 class="text-2xl font-bold text-white mb-6 flex items-center gap-2">
+                    <span class="text-pink-400">📱</span> SNS Auto 기능
+                </h2>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead>
+                            <tr class="border-b border-slate-600">
+                                <th class="text-left py-4 px-4 text-white font-medium">기능</th>
+                                <th class="text-center py-4 px-4 text-slate-300">Starter</th>
+                                <th class="text-center py-4 px-4 text-slate-300">Pro</th>
+                                <th class="text-center py-4 px-4 text-slate-300">Enterprise</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="border-b border-slate-700 hover:bg-slate-700/30 transition">
+                                <td class="py-4 px-4">포스트 스케줄링</td>
+                                <td class="text-center">✅</td>
+                                <td class="text-center">✅</td>
+                                <td class="text-center">✅</td>
+                            </tr>
+                            <tr class="border-b border-slate-700 hover:bg-slate-700/30 transition">
+                                <td class="py-4 px-4">계정 연동 (최대)</td>
+                                <td class="text-center text-slate-300">3개</td>
+                                <td class="text-center text-slate-300">10개</td>
+                                <td class="text-center text-slate-300">무제한</td>
+                            </tr>
+                            <tr class="border-b border-slate-700 hover:bg-slate-700/30 transition">
+                                <td class="py-4 px-4">분석 대시보드</td>
+                                <td class="text-center">✅</td>
+                                <td class="text-center">✅</td>
+                                <td class="text-center">✅</td>
+                            </tr>
+                            <tr class="border-b border-slate-700 hover:bg-slate-700/30 transition">
+                                <td class="py-4 px-4">AI 콘텐츠 작성</td>
+                                <td class="text-center text-slate-500">❌</td>
+                                <td class="text-center">✅</td>
+                                <td class="text-center">✅</td>
+                            </tr>
+                            <tr class="hover:bg-slate-700/30 transition">
+                                <td class="py-4 px-4">협업 도구</td>
+                                <td class="text-center text-slate-500">❌</td>
+                                <td class="text-center text-slate-500">❌</td>
+                                <td class="text-center">✅</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Review Campaign Features -->
+            <div class="bg-slate-800 rounded-xl p-8 border border-slate-700">
+                <h2 class="text-2xl font-bold text-white mb-6 flex items-center gap-2">
+                    <span class="text-amber-400">⭐</span> Review Campaign 기능
+                </h2>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead>
+                            <tr class="border-b border-slate-600">
+                                <th class="text-left py-4 px-4 text-white font-medium">기능</th>
+                                <th class="text-center py-4 px-4 text-slate-300">Starter</th>
+                                <th class="text-center py-4 px-4 text-slate-300">Pro</th>
+                                <th class="text-center py-4 px-4 text-slate-300">Enterprise</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="border-b border-slate-700 hover:bg-slate-700/30 transition">
+                                <td class="py-4 px-4">캠페인 생성</td>
+                                <td class="text-center">✅</td>
+                                <td class="text-center">✅</td>
+                                <td class="text-center">✅</td>
+                            </tr>
+                            <tr class="border-b border-slate-700 hover:bg-slate-700/30 transition">
+                                <td class="py-4 px-4">신청자 모집 (최대)</td>
+                                <td class="text-center text-slate-300">50명</td>
+                                <td class="text-center text-slate-300">500명</td>
+                                <td class="text-center text-slate-300">무제한</td>
+                            </tr>
+                            <tr class="border-b border-slate-700 hover:bg-slate-700/30 transition">
+                                <td class="py-4 px-4">리워드 관리</td>
+                                <td class="text-center">✅</td>
+                                <td class="text-center">✅</td>
+                                <td class="text-center">✅</td>
+                            </tr>
+                            <tr class="border-b border-slate-700 hover:bg-slate-700/30 transition">
+                                <td class="py-4 px-4">자동 신청 심사</td>
+                                <td class="text-center text-slate-500">❌</td>
+                                <td class="text-center">✅</td>
+                                <td class="text-center">✅</td>
+                            </tr>
+                            <tr class="hover:bg-slate-700/30 transition">
+                                <td class="py-4 px-4">전용 계정 관리자</td>
+                                <td class="text-center text-slate-500">❌</td>
+                                <td class="text-center text-slate-500">❌</td>
+                                <td class="text-center">✅</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- CooCook Features -->
+            <div class="bg-slate-800 rounded-xl p-8 border border-slate-700">
+                <h2 class="text-2xl font-bold text-white mb-6 flex items-center gap-2">
+                    <span class="text-orange-400">🍳</span> CooCook 기능
+                </h2>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead>
+                            <tr class="border-b border-slate-600">
+                                <th class="text-left py-4 px-4 text-white font-medium">기능</th>
+                                <th class="text-center py-4 px-4 text-slate-300">Starter</th>
+                                <th class="text-center py-4 px-4 text-slate-300">Pro</th>
+                                <th class="text-center py-4 px-4 text-slate-300">Enterprise</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="border-b border-slate-700 hover:bg-slate-700/30 transition">
+                                <td class="py-4 px-4">셰프 검색 및 예약</td>
+                                <td class="text-center">✅</td>
+                                <td class="text-center">✅</td>
+                                <td class="text-center">✅</td>
+                            </tr>
+                            <tr class="border-b border-slate-700 hover:bg-slate-700/30 transition">
+                                <td class="py-4 px-4">월 예약 (최대)</td>
+                                <td class="text-center text-slate-300">2회</td>
+                                <td class="text-center text-slate-300">8회</td>
+                                <td class="text-center text-slate-300">무제한</td>
+                            </tr>
+                            <tr class="border-b border-slate-700 hover:bg-slate-700/30 transition">
+                                <td class="py-4 px-4">그룹 예약</td>
+                                <td class="text-center text-slate-500">❌</td>
+                                <td class="text-center">✅</td>
+                                <td class="text-center">✅</td>
+                            </tr>
+                            <tr class="border-b border-slate-700 hover:bg-slate-700/30 transition">
+                                <td class="py-4 px-4">맞춤 메뉴</td>
+                                <td class="text-center text-slate-500">❌</td>
+                                <td class="text-center">✅</td>
+                                <td class="text-center">✅</td>
+                            </tr>
+                            <tr class="hover:bg-slate-700/30 transition">
+                                <td class="py-4 px-4">24시간 고객지원</td>
+                                <td class="text-center text-slate-500">❌</td>
+                                <td class="text-center text-slate-500">❌</td>
+                                <td class="text-center">✅</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- AI Automation Features -->
+            <div class="bg-slate-800 rounded-xl p-8 border border-slate-700">
+                <h2 class="text-2xl font-bold text-white mb-6 flex items-center gap-2">
+                    <span class="text-cyan-400">🤖</span> AI Automation 기능
+                </h2>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead>
+                            <tr class="border-b border-slate-600">
+                                <th class="text-left py-4 px-4 text-white font-medium">기능</th>
+                                <th class="text-center py-4 px-4 text-slate-300">Starter</th>
+                                <th class="text-center py-4 px-4 text-slate-300">Pro</th>
+                                <th class="text-center py-4 px-4 text-slate-300">Enterprise</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="border-b border-slate-700 hover:bg-slate-700/30 transition">
+                                <td class="py-4 px-4">AI 직원 생성</td>
+                                <td class="text-center">✅</td>
+                                <td class="text-center">✅</td>
+                                <td class="text-center">✅</td>
+                            </tr>
+                            <tr class="border-b border-slate-700 hover:bg-slate-700/30 transition">
+                                <td class="py-4 px-4">동시 직원 (최대)</td>
+                                <td class="text-center text-slate-300">1명</td>
+                                <td class="text-center text-slate-300">5명</td>
+                                <td class="text-center text-slate-300">무제한</td>
+                            </tr>
+                            <tr class="border-b border-slate-700 hover:bg-slate-700/30 transition">
+                                <td class="py-4 px-4">시나리오 템플릿</td>
+                                <td class="text-center text-slate-300">5개</td>
+                                <td class="text-center text-slate-300">20개</td>
+                                <td class="text-center text-slate-300">무제한</td>
+                            </tr>
+                            <tr class="border-b border-slate-700 hover:bg-slate-700/30 transition">
+                                <td class="py-4 px-4">커스텀 시나리오</td>
+                                <td class="text-center text-slate-500">❌</td>
+                                <td class="text-center">✅</td>
+                                <td class="text-center">✅</td>
+                            </tr>
+                            <tr class="hover:bg-slate-700/30 transition">
+                                <td class="py-4 px-4">API 통합</td>
+                                <td class="text-center text-slate-500">❌</td>
+                                <td class="text-center text-slate-500">❌</td>
+                                <td class="text-center">✅</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- WebApp Builder Features -->
+            <div class="bg-slate-800 rounded-xl p-8 border border-slate-700">
+                <h2 class="text-2xl font-bold text-white mb-6 flex items-center gap-2">
+                    <span class="text-violet-400">💻</span> WebApp Builder 기능
+                </h2>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead>
+                            <tr class="border-b border-slate-600">
+                                <th class="text-left py-4 px-4 text-white font-medium">기능</th>
+                                <th class="text-center py-4 px-4 text-slate-300">1회</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="border-b border-slate-700 hover:bg-slate-700/30 transition">
+                                <td class="py-4 px-4">8주 부트캠프</td>
+                                <td class="text-center">✅</td>
+                            </tr>
+                            <tr class="border-b border-slate-700 hover:bg-slate-700/30 transition">
+                                <td class="py-4 px-4">웹앱 개발 학습</td>
+                                <td class="text-center">✅</td>
+                            </tr>
+                            <tr class="border-b border-slate-700 hover:bg-slate-700/30 transition">
+                                <td class="py-4 px-4">업무 자동화 실습</td>
+                                <td class="text-center">✅</td>
+                            </tr>
+                            <tr class="border-b border-slate-700 hover:bg-slate-700/30 transition">
+                                <td class="py-4 px-4">라이브 배포</td>
+                                <td class="text-center">✅</td>
+                            </tr>
+                            <tr class="hover:bg-slate-700/30 transition">
+                                <td class="py-4 px-4">평생 커뮤니티 접근</td>
+                                <td class="text-center">✅</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Support Features -->
+        <div class="mt-12 bg-slate-800 rounded-xl p-8 border border-slate-700">
+            <h2 class="text-2xl font-bold text-white mb-6">🎯 지원 및 서비스</h2>
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead>
+                        <tr class="border-b border-slate-600">
+                            <th class="text-left py-4 px-4 text-white font-medium">기능</th>
+                            <th class="text-center py-4 px-4 text-slate-300">Starter</th>
+                            <th class="text-center py-4 px-4 text-slate-300">Pro</th>
+                            <th class="text-center py-4 px-4 text-slate-300">Enterprise</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="border-b border-slate-700 hover:bg-slate-700/30 transition">
+                            <td class="py-4 px-4">이메일 지원</td>
+                            <td class="text-center">✅</td>
+                            <td class="text-center">✅</td>
+                            <td class="text-center">✅</td>
+                        </tr>
+                        <tr class="border-b border-slate-700 hover:bg-slate-700/30 transition">
+                            <td class="py-4 px-4">응답 시간</td>
+                            <td class="text-center text-slate-300">24시간</td>
+                            <td class="text-center text-slate-300">12시간</td>
+                            <td class="text-center text-slate-300">1시간</td>
+                        </tr>
+                        <tr class="border-b border-slate-700 hover:bg-slate-700/30 transition">
+                            <td class="py-4 px-4">채팅 지원</td>
+                            <td class="text-center text-slate-500">❌</td>
+                            <td class="text-center">✅</td>
+                            <td class="text-center">✅</td>
+                        </tr>
+                        <tr class="border-b border-slate-700 hover:bg-slate-700/30 transition">
+                            <td class="py-4 px-4">전화 지원</td>
+                            <td class="text-center text-slate-500">❌</td>
+                            <td class="text-center text-slate-500">❌</td>
+                            <td class="text-center">✅</td>
+                        </tr>
+                        <tr class="hover:bg-slate-700/30 transition">
+                            <td class="py-4 px-4">전용 계정 관리자</td>
+                            <td class="text-center text-slate-500">❌</td>
+                            <td class="text-center text-slate-500">❌</td>
+                            <td class="text-center">✅</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="mt-12 text-center">
+            <a href="billing.html" class="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition">요금제 선택하기</a>
+        </div>
+    </div>
+    <script src="../mobile-optimization.js" defer></script>
+</body>
+</html>

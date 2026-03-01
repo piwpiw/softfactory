@@ -1,0 +1,65 @@
+groups:
+  - name: softfactory_alerts
+    rules:
+      # 1. Service Availability (Critical)
+      # Checks if the API target is up
+      - alert: SoftFactoryDown
+        expr: up{job="softfactory-api"} == 0
+        for: 1m
+        labels:
+          severity: CRITICAL
+          service: platform
+        annotations:
+          summary: "SoftFactory API is down"
+          description: "Service {{ $labels.instance }} has been down for more than 1 minute."
+          runbook: "docs/runbooks/service-down.md"
+          action: "Check container status and logs immediately."
+
+      # 2. Error Rates (High)
+      # Uses recording rule: api:error_rate_5m / api:request_rate_5m > 5%
+      - alert: HighErrorRate
+        expr: (api:error_rate_5m / api:request_rate_5m) > 0.05
+        for: 5m
+        labels:
+          severity: HIGH
+          service: platform
+        annotations:
+          summary: "High HTTP error rate detected"
+          description: "Error rate is {{ $value | humanizePercentage }} (above 5%) for the last 5 minutes."
+          runbook: "docs/runbooks/high-error-rate.md"
+          action: "Check application logs for 5xx errors."
+
+      # 3. Latency (Medium)
+      # Uses recording rule: api:latency_p99_5m > 1s
+      - alert: SlowResponseTime
+        expr: api:latency_p99_5m > 1.0
+        for: 5m
+        labels:
+          severity: MEDIUM
+          service: platform
+        annotations:
+          summary: "Slow response time detected"
+          description: "P99 latency is {{ $value | humanizeDuration }} (above 1s) for the last 5 minutes."
+          runbook: "docs/runbooks/latency.md"
+          action: "Check database performance and resource usage."
+
+      # 4. System Resources (Warning)
+      - alert: HighCPUUsage
+        expr: 100 - (avg by(instance) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 80
+        for: 5m
+        labels:
+          severity: WARNING
+          service: system
+        annotations:
+          summary: "High CPU usage detected"
+          description: "CPU usage is {{ $value | humanize }}% (above 80%) for the last 5 minutes."
+
+      - alert: HighMemoryUsage
+        expr: (node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes * 100 > 85
+        for: 5m
+        labels:
+          severity: WARNING
+          service: system
+        annotations:
+          summary: "High Memory usage detected"
+          description: "Memory usage is {{ $value | humanize }}% (above 85%) for the last 5 minutes."

@@ -1,0 +1,263 @@
+{
+  "metadata": {
+    "version": "1.0",
+    "updated_at": "2026-02-25T13:22:00Z",
+    "session_id": "main-2026-02-25",
+    "total_budget": 200000,
+    "status": "ACTIVE"
+  },
+  "session_summary": {
+    "total_tokens_used": 227000,
+    "total_budget": 200000,
+    "remaining_tokens": -27000,
+    "budget_efficiency": "113.5% (OVER)",
+    "session_status": "⚠️ OVER BUDGET — Immediate optimization required"
+  },
+  "projects": [
+    {
+      "project_id": "M-001",
+      "name": "Infrastructure",
+      "status": "COMPLETED",
+      "tokens_budgeted": 30000,
+      "tokens_actual": 33000,
+      "efficiency": "✅ 110% (ACCEPTABLE)",
+      "lines_of_code": 350,
+      "lines_per_token": 1.06,
+      "phases": {
+        "phase_1": { "budgeted": 5000, "actual": 6000 },
+        "phase_2": { "budgeted": 15000, "actual": 18000 },
+        "phase_3": { "budgeted": 7000, "actual": 6500 },
+        "phase_4": { "budgeted": 3000, "actual": 2500 }
+      }
+    },
+    {
+      "project_id": "M-002",
+      "name": "CooCook MVP",
+      "status": "IN_PROGRESS (Phase 3 QA)",
+      "tokens_budgeted": 65000,
+      "tokens_actual": 44000,
+      "efficiency": "✅ 68% (EXCELLENT)",
+      "lines_of_code": 2100,
+      "lines_per_token": 0.48,
+      "phases": {
+        "phase_1": { "budgeted": 10000, "actual": 8500, "status": "✅ COMPLETE" },
+        "phase_2": { "budgeted": 35000, "actual": 24000, "status": "✅ COMPLETE (32% under budget!)" },
+        "phase_3": { "budgeted": 15000, "actual": 11500, "status": "🔄 IN_PROGRESS (23% under)" },
+        "phase_4": { "budgeted": 5000, "actual": 0, "status": "⏳ PENDING" }
+      },
+      "optimizations_applied": [
+        "Prompt compression (Phase 2: -8%)",
+        "Context caching (Patterns reused from M-001)"
+      ]
+    },
+    {
+      "project_id": "M-002-Extended",
+      "name": "Payment & Review System",
+      "status": "COMPLETED",
+      "tokens_budgeted": 30000,
+      "tokens_actual": 24000,
+      "efficiency": "✅ 80% (GOOD)",
+      "lines_of_code": 520,
+      "lines_per_token": 0.22,
+      "note": "Reused coocook patterns, saved 20% tokens"
+    },
+    {
+      "project_id": "M-004",
+      "name": "JARVIS Dashboard",
+      "status": "COMPLETED",
+      "tokens_budgeted": 45000,
+      "tokens_actual": 40000,
+      "efficiency": "✅ 89% (GOOD)",
+      "lines_of_code": 711,
+      "lines_per_token": 0.18
+    },
+    {
+      "project_id": "M-005",
+      "name": "Sonolbot v2.0",
+      "status": "COMPLETED",
+      "tokens_budgeted": 35000,
+      "tokens_actual": 27000,
+      "efficiency": "✅ 77% (GOOD)",
+      "lines_of_code": 1200,
+      "lines_per_token": 0.44
+    },
+    {
+      "project_id": "M-006",
+      "name": "국내 체험단 크롤링 MVP",
+      "status": "IN_PROGRESS (Phase 2 Development)",
+      "tokens_budgeted": 65000,
+      "tokens_actual": 26000,
+      "efficiency": "✅ 40% USED (40% REMAINING = VERY GOOD)",
+      "lines_of_code": 680,
+      "lines_per_token": 0.26,
+      "estimated_final": 26000,
+      "phases": {
+        "phase_0": { "budgeted": 1000, "actual": 800, "status": "✅ COMPLETE" },
+        "phase_1": { "budgeted": 15000, "actual": 8200, "status": "✅ COMPLETE (45% under!)" },
+        "phase_2": { "budgeted": 35000, "actual": 17000, "status": "🔄 IN_PROGRESS (51% remaining)" },
+        "phase_3": { "budgeted": 10000, "actual": 0, "status": "⏳ PENDING" },
+        "phase_4": { "budgeted": 4000, "actual": 0, "status": "⏳ PENDING" }
+      },
+      "optimizations_applied": [
+        "Batch processing (Phase 1: -45%)",
+        "Code template reuse (Phase 2 starting)",
+        "API spec compression"
+      ],
+      "prediction": {
+        "phase_2_estimated_remaining": 17000,
+        "phase_3_estimated": 8000,
+        "phase_4_estimated": 2000,
+        "total_estimated_final": 26000,
+        "confidence": "HIGH (Phase 1 pattern clear)"
+      }
+    }
+  ],
+  "agent_performance": {
+    "business_strategist": {
+      "projects_led": ["M-001", "M-002", "M-004", "M-005", "M-006"],
+      "total_tokens_used": 28000,
+      "average_per_project": 5600,
+      "efficiency_target": 8000,
+      "status": "✅ BELOW TARGET (65% of budget)"
+    },
+    "architect": {
+      "projects_led": ["M-001", "M-002", "M-004", "M-005", "M-006"],
+      "total_tokens_used": 42000,
+      "average_per_project": 8400,
+      "efficiency_target": 15000,
+      "status": "✅ BELOW TARGET (56% of budget)"
+    },
+    "dev_lead": {
+      "projects_led": ["M-001", "M-002", "M-002-Extended", "M-004", "M-005", "M-006"],
+      "total_tokens_used": 115000,
+      "average_per_project": 19167,
+      "efficiency_target": 50000,
+      "status": "⚠️ MONITOR (38% of budget per project, but cumulative high)"
+    },
+    "qa_engineer": {
+      "projects_led": ["M-001", "M-002", "M-004", "M-005", "M-006"],
+      "total_tokens_used": 32000,
+      "average_per_project": 6400,
+      "efficiency_target": 15000,
+      "status": "✅ BELOW TARGET (43% of budget)"
+    },
+    "devops": {
+      "projects_led": ["M-001", "M-002", "M-004", "M-005", "M-006"],
+      "total_tokens_used": 10000,
+      "average_per_project": 2000,
+      "efficiency_target": 10000,
+      "status": "✅ WELL BELOW TARGET (20% of budget)"
+    }
+  },
+  "optimization_history": {
+    "2026-02-25_13:02": {
+      "action": "Batch processing applied to M-006 Phase 1",
+      "tokens_saved": 6500,
+      "efficiency_gain": "45% reduction in burn rate"
+    },
+    "2026-02-25_13:15": {
+      "action": "Context caching (patterns.md) applied to M-006 Phase 2",
+      "tokens_saved": 3200,
+      "efficiency_gain": "18% reduction"
+    },
+    "2026-02-25_13:22": {
+      "action": "API spec compression applied",
+      "tokens_saved": 1500,
+      "efficiency_gain": "8% reduction"
+    }
+  },
+  "alerts": [
+    {
+      "severity": "🔴 CRITICAL",
+      "message": "Session OVER BUDGET by 27,000 tokens",
+      "recommendation": "Implement aggressive optimization for M-006 Phase 2-4",
+      "action_taken": "Dev Lead switching to maximum compression mode"
+    },
+    {
+      "severity": "🟡 WARNING",
+      "message": "M-006 Phase 2 burn rate elevated (510 tokens/min → 295 tokens/min after optimization)",
+      "recommendation": "Continue monitoring; apply template-based development",
+      "status": "MONITORING"
+    },
+    {
+      "severity": "🟢 INFO",
+      "message": "M-002 QA phase consuming only 77% of budget",
+      "recommendation": "Can proceed to Phase 4 with confidence",
+      "status": "OK"
+    }
+  ],
+  "optimization_opportunities": [
+    {
+      "opportunity": "Reuse test templates across M-002/M-006/future",
+      "estimated_savings": "5,000-8,000 tokens per QA phase",
+      "effort": "LOW (15 min setup)"
+    },
+    {
+      "opportunity": "Create 'API endpoint template' library",
+      "estimated_savings": "3,000-5,000 tokens per API-heavy project",
+      "effort": "MEDIUM (45 min)"
+    },
+    {
+      "opportunity": "Standardize Phase 4 deployment scripts",
+      "estimated_savings": "2,000-3,000 tokens per deployment",
+      "effort": "LOW (30 min)"
+    },
+    {
+      "opportunity": "Implement prompt compression filters in Orchestrator",
+      "estimated_savings": "15-20% across all phases",
+      "effort": "HIGH (2 hours, but one-time)"
+    }
+  ],
+  "recovery_plan": {
+    "status": "ACTIVE",
+    "goal": "Get back to 200K budget by next session",
+    "strategy": [
+      {
+        "phase": "NOW (M-006 Completion)",
+        "actions": [
+          "Apply max compression to Phase 2-4",
+          "Use only essential prompts, no elaboration",
+          "Reuse patterns extensively",
+          "Target: Complete M-006 in 18,000 additional tokens (vs 39,000 budgeted)"
+        ],
+        "expected_result": "Total session: 227K → 208K (within budget)"
+      },
+      {
+        "phase": "Next Session (M-007+)",
+        "actions": [
+          "Start with token budget 180K (conservative)",
+          "Use all optimization templates created in this session",
+          "Apply early exit conditions",
+          "Target: 30% token reduction"
+        ],
+        "expected_result": "M-007: 65K → 45K budget"
+      },
+      {
+        "phase": "Month 2+",
+        "actions": [
+          "Maintain 140K/session efficiency (30% reduction)",
+          "Build library of reusable patterns",
+          "Scale to 10+ concurrent projects"
+        ],
+        "expected_result": "5-6 medium projects per session"
+      }
+    ]
+  },
+  "next_actions": {
+    "immediate": [
+      "Compress M-006 Phase 2 prompts (5% additional savings)",
+      "Activate template-based dev for remaining phases",
+      "Monitor Phase 3-4 carefully"
+    ],
+    "within_1_hour": [
+      "Complete M-006 MVP",
+      "Document lessons learned in cost-log.md",
+      "Update token-budget-strategy.md with actual ratios"
+    ],
+    "for_next_session": [
+      "Create Phase 2 development template (50 common patterns)",
+      "Create QA test template library",
+      "Implement prompt compression filter in Orchestrator"
+    ]
+  }
+}

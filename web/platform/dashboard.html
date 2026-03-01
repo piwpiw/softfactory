@@ -1,0 +1,317 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#020617">
+    <title>Platinum Dashboard — SoftFactory</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <script src="api.js"></script>
+    <style>
+        :root {
+            --primary-amber: #f59e0b;
+            --primary-dark: #020617;
+            --glass-bg: rgba(15, 23, 42, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: radial-gradient(circle at top right, #1e1b4b, #020617);
+            color: #f8fafc;
+        }
+
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        .premium-gradient-text {
+            background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 50%, #fef3c7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .service-card {
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .service-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            border-color: rgba(245, 158, 11, 0.5);
+            background: rgba(15, 23, 42, 0.9);
+        }
+
+        .scroll-hide::-webkit-scrollbar {
+            display: none;
+        }
+
+        @keyframes pulse-gold {
+            0% {
+                box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4);
+            }
+
+            70% {
+                box-shadow: 0 0 0 10px rgba(245, 158, 11, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(245, 158, 11, 0);
+            }
+        }
+
+        .pulse-gold {
+            animation: pulse-gold 2s infinite;
+        }
+    </style>
+</head>
+
+<body class="overflow-hidden">
+    <div class="flex h-screen">
+        <!-- Platinum Sidebar -->
+        <aside class="w-72 glass-panel border-r border-slate-800/50 flex flex-col z-50">
+            <div class="p-8 border-b border-slate-800/50">
+                <div class="flex items-center gap-4">
+                    <div
+                        class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-amber-600 to-amber-400 p-0.5 shadow-lg shadow-amber-900/20">
+                        <div
+                            class="w-full h-full bg-slate-950 rounded-2xl flex items-center justify-center text-2xl text-amber-500 font-black">
+                            SF</div>
+                    </div>
+                    <div>
+                        <h1 class="font-black text-white text-lg tracking-tight uppercase">SoftFactory</h1>
+                        <p class="text-[10px] text-amber-500 font-bold tracking-[0.2em]">PLATINUM DASHBOARD</p>
+                    </div>
+                </div>
+            </div>
+
+            <nav class="flex-1 p-6 space-y-1.5 overflow-y-auto scroll-hide">
+                <p class="text-[10px] font-black text-slate-500 uppercase px-4 mb-4 tracking-widest leading-none">Global
+                    Control</p>
+                <a href="dashboard.html"
+                    class="flex items-center gap-4 px-5 py-3.5 rounded-xl bg-amber-500/10 text-amber-500 font-bold border-l-2 border-amber-500 transition-all">
+                    <span>📊</span><span class="text-sm">종합 대시보드</span>
+                </a>
+                <a href="performance.html"
+                    class="flex items-center gap-4 px-5 py-3.5 rounded-xl text-slate-400 font-medium hover:bg-slate-800/50 hover:text-white transition-all">
+                    <span>📈</span><span class="text-sm">성능 모니터링</span>
+                </a>
+
+                <p class="text-[10px] font-black text-slate-500 uppercase px-4 mb-4 mt-8 tracking-widest leading-none">
+                    Operations</p>
+                <a href="../review/index.html"
+                    class="flex items-center justify-between px-5 py-3.5 rounded-xl text-slate-400 font-medium hover:bg-slate-800/50 hover:text-white transition-all group">
+                    <div class="flex items-center gap-4">
+                        <span class="group-hover:scale-125 transition-transform">⭐</span><span class="text-sm">Review
+                            Platinum</span>
+                    </div>
+                    <span class="bg-amber-500/10 text-amber-500 text-[8px] font-black px-1.5 py-0.5 rounded">NEW</span>
+                </a>
+                <a href="../sns-auto/index.html"
+                    class="flex items-center gap-4 px-5 py-3.5 rounded-xl text-slate-400 font-medium hover:bg-slate-800/50 hover:text-white transition-all">
+                    <span>📱</span><span class="text-sm">SNS Auto</span>
+                </a>
+                <a href="../ai-automation/index.html"
+                    class="flex items-center gap-4 px-5 py-3.5 rounded-xl text-slate-400 font-medium hover:bg-slate-800/50 hover:text-white transition-all">
+                    <span>🤖</span><span class="text-sm">AI Core</span>
+                </a>
+            </nav>
+
+            <div class="p-6 border-t border-slate-800/50">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center text-xs">👤</div>
+                        <span class="text-sm font-bold text-white">Guest User</span>
+                    </div>
+                    <button onclick="logout()" class="p-2 hover:bg-slate-800 rounded-lg text-slate-500">🚪</button>
+                </div>
+            </div>
+        </aside>
+
+        <div class="flex-1 flex flex-col overflow-hidden relative">
+            <header class="h-24 px-10 flex items-center justify-between shrink-0 z-40">
+                <div>
+                    <h2 class="text-3xl font-black text-white tracking-tight">System Status</h2>
+                    <p class="text-xs text-slate-400 mt-1 font-medium flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                        모든 서비스가 정상적으로 동작 중입니다. (Global Sync Active)
+                    </p>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div class="flex items-center gap-2 bg-slate-900 border border-slate-800 px-4 py-2 rounded-2xl">
+                        <span class="text-[10px] text-slate-500 font-black uppercase">Sync</span>
+                        <span class="text-xs font-bold text-white">Live</span>
+                    </div>
+                </div>
+            </header>
+
+            <main class="flex-1 overflow-y-auto p-10 pt-0 scroll-hide space-y-10">
+                <!-- KPI Section -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <article class="glass-panel p-8 rounded-[2rem] border-slate-800/50 relative overflow-hidden group">
+                        <div
+                            class="absolute -right-4 -top-4 text-6xl opacity-5 group-hover:scale-110 transition-transform">
+                            💰</div>
+                        <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Total MRR</p>
+                        <p class="text-3xl font-black text-white tracking-tighter">₩2,450,000</p>
+                        <p class="text-xs mt-3 text-green-500 font-bold">+12.4% <span
+                                class="text-slate-500 font-medium">vs last month</span></p>
+                    </article>
+                    <article class="glass-panel p-8 rounded-[2rem] border-slate-800/50 relative overflow-hidden group">
+                        <div
+                            class="absolute -right-4 -top-4 text-6xl opacity-5 group-hover:scale-110 transition-transform">
+                            ⚡</div>
+                        <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Active Services
+                        </p>
+                        <p class="text-3xl font-black text-white tracking-tighter">5 Nodes</p>
+                        <p class="text-xs mt-3 text-slate-500 font-bold">Platinum Tier Active</p>
+                    </article>
+                    <article class="glass-panel p-8 rounded-[2rem] border-slate-800/50 relative overflow-hidden group">
+                        <div
+                            class="absolute -right-4 -top-4 text-6xl opacity-5 group-hover:scale-110 transition-transform">
+                            🏆</div>
+                        <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Avg ROI</p>
+                        <p class="text-3xl font-black text-amber-500 tracking-tighter">342%</p>
+                        <p class="text-xs mt-3 text-green-500 font-bold">+5.2%p <span
+                                class="text-slate-500 font-medium">gain</span></p>
+                    </article>
+                    <article class="glass-panel p-8 rounded-[2rem] border-slate-800/50 relative overflow-hidden group">
+                        <div
+                            class="absolute -right-4 -top-4 text-6xl opacity-5 group-hover:scale-110 transition-transform">
+                            🚀</div>
+                        <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Node Uptime</p>
+                        <p class="text-3xl font-black text-indigo-400 tracking-tighter">99.9%</p>
+                        <p class="text-xs mt-3 text-slate-500 font-bold">Stable Core v2.5</p>
+                    </article>
+                </div>
+
+                <!-- Main Charts -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div class="glass-panel rounded-[2.5rem] p-10 border-slate-800/50">
+                        <h3 class="text-xl font-black text-white mb-8">Revenue Growth</h3>
+                        <div class="h-[300px]">
+                            <canvas id="growthChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="glass-panel rounded-[2.5rem] p-10 border-slate-800/50">
+                        <h3 class="text-xl font-black text-white mb-8">Service Utilization</h3>
+                        <div class="h-[300px]">
+                            <canvas id="usageChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Service Grid -->
+                <section class="pb-20">
+                    <h3 class="text-xl font-black text-white mb-8 flex items-center gap-3">
+                        <span class="text-amber-500">✨</span> Available Modules
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
+                        <a href="../review/index.html"
+                            class="service-card glass-panel p-8 rounded-[2rem] text-center space-y-4">
+                            <span class="text-4xl block">⭐</span>
+                            <div>
+                                <h4 class="text-base font-black text-white">Review Platinum</h4>
+                                <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Revenue Hub
+                                </p>
+                            </div>
+                        </a>
+                        <a href="../sns-auto/index.html"
+                            class="service-card glass-panel p-8 rounded-[2rem] text-center space-y-4">
+                            <span class="text-4xl block">📱</span>
+                            <div>
+                                <h4 class="text-base font-black text-white">SNS Auto</h4>
+                                <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Growth Engine
+                                </p>
+                            </div>
+                        </a>
+                        <div
+                            class="service-card glass-panel p-8 rounded-[2rem] text-center space-y-4 opacity-50 cursor-not-allowed">
+                            <span class="text-4xl block grayscale">🍳</span>
+                            <div>
+                                <h4 class="text-base font-black text-white">CooCook</h4>
+                                <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Recipe AI</p>
+                            </div>
+                        </div>
+                        <a href="../ai-automation/index.html"
+                            class="service-card glass-panel p-8 rounded-[2rem] text-center space-y-4">
+                            <span class="text-4xl block">🤖</span>
+                            <div>
+                                <h4 class="text-base font-black text-white">AI Core</h4>
+                                <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Automation</p>
+                            </div>
+                        </a>
+                        <a href="../webapp-builder/index.html"
+                            class="service-card glass-panel p-8 rounded-[2rem] text-center space-y-4">
+                            <span class="text-4xl block">💻</span>
+                            <div>
+                                <h4 class="text-base font-black text-white">App Builder</h4>
+                                <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest">No-Code Dev
+                                </p>
+                            </div>
+                        </a>
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const ctx1 = document.getElementById('growthChart').getContext('2d');
+            new Chart(ctx1, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    datasets: [{
+                        label: 'Revenue',
+                        data: [1200000, 1500000, 1300000, 1800000, 2200000, 2450000],
+                        borderColor: '#f59e0b',
+                        backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { display: false },
+                        x: { grid: { display: false }, ticks: { color: '#64748b' } }
+                    }
+                }
+            });
+
+            const ctx2 = document.getElementById('usageChart').getContext('2d');
+            new Chart(ctx2, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Review', 'SNS', 'AI', 'Builder'],
+                    datasets: [{
+                        data: [45, 25, 20, 10],
+                        backgroundColor: ['#f59e0b', '#6366f1', '#10b981', '#64748b'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'bottom', labels: { color: '#94a3b8', font: { size: 10 } } } }
+                }
+            });
+        });
+
+        function logout() { location.href = '../login.html'; }
+    </script>
+</body>
+
+</html>

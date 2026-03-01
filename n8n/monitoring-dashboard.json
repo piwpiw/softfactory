@@ -1,0 +1,365 @@
+{
+  "dashboard": {
+    "name": "n8n SoftFactory Daily Reports",
+    "description": "Real-time monitoring of n8n workflow executions and report automation",
+    "version": "1.0",
+    "created": "2026-02-25",
+    "refreshInterval": "30s",
+    "timezone": "Asia/Seoul",
+    "panels": [
+      {
+        "id": 1,
+        "type": "stat",
+        "title": "Total Executions (Today)",
+        "position": { "x": 0, "y": 0, "w": 4, "h": 3 },
+        "targets": [
+          {
+            "metric": "n8n_workflow_execution_total",
+            "labels": { "workflow": "Daily Report Automation" },
+            "function": "increase(24h)"
+          }
+        ],
+        "thresholds": {
+          "mode": "absolute",
+          "steps": [
+            { "color": "red", "value": null },
+            { "color": "yellow", "value": 3 },
+            { "color": "green", "value": 5 }
+          ]
+        }
+      },
+      {
+        "id": 2,
+        "type": "stat",
+        "title": "Success Rate",
+        "position": { "x": 4, "y": 0, "w": 4, "h": 3 },
+        "targets": [
+          {
+            "metric": "n8n_workflow_execution_success_ratio",
+            "labels": { "workflow": "Daily Report Automation" }
+          }
+        ],
+        "unit": "percent",
+        "thresholds": {
+          "mode": "absolute",
+          "steps": [
+            { "color": "red", "value": null },
+            { "color": "yellow", "value": 80 },
+            { "color": "green", "value": 95 }
+          ]
+        }
+      },
+      {
+        "id": 3,
+        "type": "stat",
+        "title": "Avg Duration (seconds)",
+        "position": { "x": 8, "y": 0, "w": 4, "h": 3 },
+        "targets": [
+          {
+            "metric": "n8n_workflow_execution_duration_seconds",
+            "labels": { "workflow": "Daily Report Automation" },
+            "function": "avg"
+          }
+        ],
+        "unit": "s"
+      },
+      {
+        "id": 4,
+        "type": "timeseries",
+        "title": "Execution Timeline",
+        "position": { "x": 0, "y": 3, "w": 12, "h": 5 },
+        "targets": [
+          {
+            "metric": "n8n_workflow_execution_total",
+            "labels": { "workflow": "Daily Report Automation" },
+            "legendFormat": "Total Executions"
+          },
+          {
+            "metric": "n8n_workflow_execution_failed_total",
+            "labels": { "workflow": "Daily Report Automation" },
+            "legendFormat": "Failed Executions"
+          }
+        ],
+        "axes": {
+          "y": {
+            "label": "Number of Executions",
+            "min": 0
+          }
+        }
+      },
+      {
+        "id": 5,
+        "type": "table",
+        "title": "Recent Executions",
+        "position": { "x": 0, "y": 8, "w": 12, "h": 6 },
+        "columns": [
+          { "name": "Timestamp", "type": "time" },
+          { "name": "Workflow", "type": "string" },
+          { "name": "Status", "type": "status" },
+          { "name": "Duration", "type": "number" },
+          { "name": "Gmail", "type": "status" },
+          { "name": "Notion", "type": "status" },
+          { "name": "Telegram", "type": "status" }
+        ],
+        "data": [
+          {
+            "timestamp": "2026-02-25 22:00:00",
+            "workflow": "Daily Report Automation",
+            "status": "success",
+            "duration": 2.5,
+            "gmail": "success",
+            "notion": "success",
+            "telegram": "success"
+          },
+          {
+            "timestamp": "2026-02-25 17:00:00",
+            "workflow": "Daily Report Automation",
+            "status": "success",
+            "duration": 3.1,
+            "gmail": "success",
+            "notion": "success",
+            "telegram": "success"
+          },
+          {
+            "timestamp": "2026-02-25 15:00:00",
+            "workflow": "Daily Report Automation",
+            "status": "success",
+            "duration": 2.8,
+            "gmail": "success",
+            "notion": "success",
+            "telegram": "success"
+          },
+          {
+            "timestamp": "2026-02-25 10:00:00",
+            "workflow": "Daily Report Automation",
+            "status": "success",
+            "duration": 2.4,
+            "gmail": "success",
+            "notion": "success",
+            "telegram": "success"
+          },
+          {
+            "timestamp": "2026-02-25 05:00:00",
+            "workflow": "Daily Report Automation",
+            "status": "success",
+            "duration": 2.7,
+            "gmail": "success",
+            "notion": "success",
+            "telegram": "success"
+          }
+        ]
+      },
+      {
+        "id": 6,
+        "type": "stat",
+        "title": "Gmail Reports Sent",
+        "position": { "x": 0, "y": 14, "w": 4, "h": 3 },
+        "targets": [
+          {
+            "metric": "n8n_node_execution_total",
+            "labels": { "node": "Send Email (Gmail)", "status": "success" },
+            "function": "increase(24h)"
+          }
+        ],
+        "color": "blue"
+      },
+      {
+        "id": 7,
+        "type": "stat",
+        "title": "Notion Pages Created",
+        "position": { "x": 4, "y": 14, "w": 4, "h": 3 },
+        "targets": [
+          {
+            "metric": "n8n_node_execution_total",
+            "labels": { "node": "Save to Notion", "status": "success" },
+            "function": "increase(24h)"
+          }
+        ],
+        "color": "purple"
+      },
+      {
+        "id": 8,
+        "type": "stat",
+        "title": "Telegram Messages Sent",
+        "position": { "x": 8, "y": 14, "w": 4, "h": 3 },
+        "targets": [
+          {
+            "metric": "n8n_node_execution_total",
+            "labels": { "node": "Send to Telegram", "status": "success" },
+            "function": "increase(24h)"
+          }
+        ],
+        "color": "cyan"
+      },
+      {
+        "id": 9,
+        "type": "graph",
+        "title": "Execution Duration Trend",
+        "position": { "x": 0, "y": 17, "w": 6, "h": 4 },
+        "targets": [
+          {
+            "metric": "n8n_workflow_execution_duration_seconds",
+            "labels": { "workflow": "Daily Report Automation" },
+            "legendFormat": "Duration (seconds)"
+          }
+        ],
+        "yaxis": {
+          "label": "Seconds",
+          "min": 0
+        }
+      },
+      {
+        "id": 10,
+        "type": "graph",
+        "title": "Error Rate Trend",
+        "position": { "x": 6, "y": 17, "w": 6, "h": 4 },
+        "targets": [
+          {
+            "metric": "n8n_workflow_execution_failed_ratio",
+            "labels": { "workflow": "Daily Report Automation" },
+            "legendFormat": "Error Rate"
+          }
+        ],
+        "yaxis": {
+          "label": "Percentage",
+          "min": 0,
+          "max": 100
+        }
+      },
+      {
+        "id": 11,
+        "type": "alerts",
+        "title": "Active Alerts",
+        "position": { "x": 0, "y": 21, "w": 12, "h": 3 },
+        "alerts": [
+          {
+            "name": "High Error Rate",
+            "condition": "error_rate > 5%",
+            "severity": "critical",
+            "status": "ok"
+          },
+          {
+            "name": "Slow Execution",
+            "condition": "avg_duration > 10s",
+            "severity": "warning",
+            "status": "ok"
+          },
+          {
+            "name": "Missing Execution",
+            "condition": "no_execution_in(1h)",
+            "severity": "warning",
+            "status": "ok"
+          }
+        ]
+      }
+    ],
+    "rows": [
+      {
+        "id": "overview",
+        "title": "Overview",
+        "panels": [1, 2, 3]
+      },
+      {
+        "id": "timeline",
+        "title": "Execution Timeline",
+        "panels": [4]
+      },
+      {
+        "id": "details",
+        "title": "Detailed Execution History",
+        "panels": [5]
+      },
+      {
+        "id": "integration",
+        "title": "Integration Status",
+        "panels": [6, 7, 8]
+      },
+      {
+        "id": "trends",
+        "title": "Performance Trends",
+        "panels": [9, 10]
+      },
+      {
+        "id": "alerts",
+        "title": "Alerts & Notifications",
+        "panels": [11]
+      }
+    ]
+  },
+  "datasources": [
+    {
+      "name": "Prometheus",
+      "type": "prometheus",
+      "url": "http://localhost:9090",
+      "default": true,
+      "access": "proxy"
+    }
+  ],
+  "templating": {
+    "list": [
+      {
+        "name": "workflow",
+        "type": "query",
+        "label": "Workflow",
+        "value": "Daily Report Automation",
+        "datasource": "Prometheus",
+        "query": "label_values(n8n_workflow_execution_total, workflow)"
+      },
+      {
+        "name": "status",
+        "type": "custom",
+        "label": "Status",
+        "value": "all",
+        "options": [
+          { "text": "All", "value": "all" },
+          { "text": "Success", "value": "success" },
+          { "text": "Failed", "value": "failed" }
+        ]
+      },
+      {
+        "name": "time_range",
+        "type": "custom",
+        "label": "Time Range",
+        "value": "24h",
+        "options": [
+          { "text": "Last Hour", "value": "1h" },
+          { "text": "Last 24 Hours", "value": "24h" },
+          { "text": "Last 7 Days", "value": "7d" },
+          { "text": "Last 30 Days", "value": "30d" }
+        ]
+      }
+    ]
+  },
+  "annotations": {
+    "list": [
+      {
+        "name": "Deployments",
+        "datasource": "Prometheus",
+        "expr": "n8n_deployment_info",
+        "tagKeys": "version,status",
+        "textKeys": "message"
+      },
+      {
+        "name": "Configuration Changes",
+        "datasource": "Prometheus",
+        "expr": "n8n_config_change_info",
+        "tagKeys": "component",
+        "textKeys": "change"
+      }
+    ]
+  },
+  "settings": {
+    "autoRefresh": true,
+    "refreshInterval": "30s",
+    "timezone": "Asia/Seoul",
+    "theme": "dark"
+  },
+  "shared": {
+    "enabled": true,
+    "users": ["admin"],
+    "permissions": {
+      "edit": ["admin"],
+      "view": ["admin", "readonly"]
+    }
+  }
+}

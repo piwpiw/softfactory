@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#111827">
+<title>JARVIS 대시보드 — 10 팀 / 70 스킬</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .team-card { transition: all 0.3s ease; }
+        .team-card:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(0,0,0,0.3); }
+        .progress-bar { background: linear-gradient(90deg, #10b981, #059669); }
+        .live-indicator { animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        .skill-badge { display: inline-block; padding: 4px 8px; border-radius: 4px; margin: 2px; font-size: 12px; }
+        .skill-complete { background: #10b981; color: white; }
+        .skill-progress { background: #f59e0b; color: white; }
+        .skill-pending { background: #6b7280; color: white; }
+    </style>
+    <link rel="stylesheet" href="../responsive-framework.css">
+  </head>
+<body class="bg-gradient-to-b from-gray-900 via-gray-800 to-black text-white">
+    <!-- Header -->
+    <nav class="bg-gradient-to-r from-gray-900 to-gray-800 border-b border-cyan-500/30 px-6 py-4 sticky top-0 z-50">
+    <button class="hamburger" aria-label="Toggle navigation menu">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <h1 class="text-3xl font-black bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">JARVIS</h1>
+                <p class="text-gray-400 text-sm">Enterprise Multi-Agent System</p>
+            </div>
+            <div class="flex items-center gap-6">
+                <div class="text-right">
+                    <p class="text-2xl font-bold text-cyan-400" id="completion-percent">40%</p>
+                    <p class="text-xs text-gray-400">Complete</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="live-indicator w-3 h-3 bg-green-400 rounded-full"></span>
+                    <p class="text-sm text-gray-300">Real-time Update</p>
+                </div>
+                <a href="/index.html" class="text-gray-400 hover:text-cyan-400 transition">← 홈</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="p-6 max-w-7xl mx-auto space-y-6">
+        <!-- System Overview -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div class="bg-gray-800/50 border border-gray-700 p-6 rounded-lg backdrop-blur">
+                <p class="text-xs text-gray-400 uppercase tracking-wider mb-2">활성 팀</p>
+                <p class="text-4xl font-black text-green-400" id="active-teams-count">7</p>
+                <p class="text-sm text-gray-400 mt-2">/ 10 팀</p>
+            </div>
+            <div class="bg-gray-800/50 border border-gray-700 p-6 rounded-lg backdrop-blur">
+                <p class="text-xs text-gray-400 uppercase tracking-wider mb-2">스킬 완성도</p>
+                <p class="text-4xl font-black text-orange-400" id="skills-complete-count">28</p>
+                <p class="text-sm text-gray-400 mt-2">/ 70 스킬</p>
+            </div>
+            <div class="bg-gray-800/50 border border-gray-700 p-6 rounded-lg backdrop-blur">
+                <p class="text-xs text-gray-400 uppercase tracking-wider mb-2">평균 진행률</p>
+                <p class="text-4xl font-black text-blue-400" id="avg-progress">35%</p>
+                <p class="text-sm text-gray-400 mt-2">전체 팀</p>
+            </div>
+            <div class="bg-gray-800/50 border border-gray-700 p-6 rounded-lg backdrop-blur">
+                <p class="text-xs text-gray-400 uppercase tracking-wider mb-2">업타임</p>
+                <p class="text-4xl font-black text-green-400" id="system-uptime">99.98%</p>
+                <p class="text-sm text-green-400 mt-2">✅ 정상</p>
+            </div>
+        </div>
+
+        <!-- Team Progress Section -->
+        <div class="bg-gray-800/50 border border-gray-700 rounded-lg p-6 backdrop-blur">
+            <div class="flex justify-between items-center mb-6">
+                <div>
+                    <h2 class="text-2xl font-bold">10개 팀 진행 상황</h2>
+                    <p class="text-gray-400 text-sm mt-1">실시간 업데이트 · 모든 팀</p>
+                </div>
+                <button onclick="refreshTeams()" class="bg-cyan-600 hover:bg-cyan-700 px-4 py-2 rounded font-medium transition">
+                    🔄 새로고침
+                </button>
+            </div>
+
+            <div id="teams-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Teams dynamically loaded -->
+            </div>
+        </div>
+
+        <!-- Timeline Section -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Milestones -->
+            <div class="lg:col-span-2 bg-gray-800/50 border border-gray-700 rounded-lg p-6 backdrop-blur">
+                <h3 class="text-xl font-bold mb-4">마일스톤 타임라인</h3>
+                <div id="milestones" class="space-y-3">
+                    <!-- Dynamically loaded -->
+                </div>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="bg-gray-800/50 border border-gray-700 rounded-lg p-6 backdrop-blur">
+                <h3 class="text-xl font-bold mb-4">팀별 분석</h3>
+                <div id="team-stats" class="space-y-2 text-sm">
+                    <!-- Dynamically loaded -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Skills Distribution -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div class="bg-gray-800/50 border border-gray-700 rounded-lg p-6 backdrop-blur">
+                <h3 class="text-xl font-bold mb-4">스킬 배포 현황</h3>
+                <canvas id="skills-chart" height="80"></canvas>
+            </div>
+            <div class="bg-gray-800/50 border border-gray-700 rounded-lg p-6 backdrop-blur">
+                <h3 class="text-xl font-bold mb-4">팀 성과 분포</h3>
+                <canvas id="teams-chart" height="80"></canvas>
+            </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="bg-gray-800/50 border border-gray-700 rounded-lg p-6 backdrop-blur">
+            <h3 class="text-xl font-bold mb-4">실시간 활동</h3>
+            <div id="activity-log" class="bg-gray-900/50 rounded p-4 max-h-64 overflow-y-auto space-y-2 font-mono text-sm">
+                <p class="text-gray-500">[시스템] Dashboard 초기화됨</p>
+            </div>
+        </div>
+
+        <!-- Commands Reference -->
+        <div class="bg-gray-800/50 border border-gray-700 rounded-lg p-6 backdrop-blur">
+            <h3 class="text-xl font-bold mb-4">명령어 레퍼런스</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="bg-gray-900/30 p-3 rounded border border-gray-700">
+                    <p class="font-mono text-cyan-400 mb-1">/progress</p>
+                    <p class="text-xs text-gray-400">자세한 진행도 시각화</p>
+                </div>
+                <div class="bg-gray-900/30 p-3 rounded border border-gray-700">
+                    <p class="font-mono text-cyan-400 mb-1">/timeline</p>
+                    <p class="text-xs text-gray-400">마일스톤 일정표 보기</p>
+                </div>
+                <div class="bg-gray-900/30 p-3 rounded border border-gray-700">
+                    <p class="font-mono text-cyan-400 mb-1">/breakdown</p>
+                    <p class="text-xs text-gray-400">팀별 상세 분석</p>
+                </div>
+                <div class="bg-gray-900/30 p-3 rounded border border-gray-700">
+                    <p class="font-mono text-cyan-400 mb-1">/status</p>
+                    <p class="text-xs text-gray-400">시스템 상태 확인</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const API_BASE = '/api/v1';
+        const TEAMS_DATA = [
+            { id: 1, name: 'Team 01 — Dispatcher', progress: 85, skills: 8, status: 'active', color: '#10b981' },
+            { id: 2, name: 'Team 02 — Product Manager', progress: 72, skills: 7, status: 'active', color: '#3b82f6' },
+            { id: 3, name: 'Team 03 — Market Analyst', progress: 65, skills: 6, status: 'active', color: '#f59e0b' },
+            { id: 4, name: 'Team 04 — Architect', progress: 78, skills: 7, status: 'active', color: '#8b5cf6' },
+            { id: 5, name: 'Team 05 — Backend Dev', progress: 62, skills: 5, status: 'progress', color: '#ec4899' },
+            { id: 6, name: 'Team 06 — Frontend Dev', progress: 58, skills: 5, status: 'progress', color: '#14b8a6' },
+            { id: 7, name: 'Team 07 — QA Engineer', progress: 45, skills: 4, status: 'progress', color: '#06b6d4' },
+            { id: 8, name: 'Team 08 — Security Auditor', progress: 35, skills: 3, status: 'pending', color: '#f87171' },
+            { id: 9, name: 'Team 09 — DevOps Engineer', progress: 28, skills: 2, status: 'pending', color: '#fbbf24' },
+            { id: 10, name: 'Team 10 — Telegram Reporter', progress: 15, skills: 1, status: 'pending', color: '#a78bfa' }
+        ];
+
+        async function loadDashboard() {
+            try {
+                // Load teams data
+                const activeTeams = TEAMS_DATA.filter(t => t.status === 'active').length;
+                const totalSkills = TEAMS_DATA.reduce((sum, t) => sum + t.skills, 0);
+                const avgProgress = Math.round(TEAMS_DATA.reduce((sum, t) => sum + t.progress, 0) / TEAMS_DATA.length);
+
+                // Update summary
+                document.getElementById('active-teams-count').textContent = activeTeams;
+                document.getElementById('skills-complete-count').textContent = totalSkills;
+                document.getElementById('avg-progress').textContent = avgProgress + '%';
+                document.getElementById('completion-percent').textContent = avgProgress + '%';
+
+                // Render teams grid
+                renderTeamsGrid();
+
+                // Render milestones
+                renderMilestones();
+
+                // Render team stats
+                renderTeamStats();
+
+                // Create charts
+                createCharts();
+
+                // Start WebSocket connection
+                startRealtimeUpdates();
+
+                addLog(`[Dashboard] 10개 팀 데이터 로드됨 (${totalSkills}/70 스킬)`);
+            } catch (e) {
+                console.error('Dashboard load error:', e);
+                addLog(`[Error] ${e.message}`);
+            }
+        }
+
+        function renderTeamsGrid() {
+            const grid = document.getElementById('teams-grid');
+            grid.innerHTML = TEAMS_DATA.map(team => `
+                <div class="team-card bg-gray-900/50 border border-gray-700 p-5 rounded-lg hover:border-cyan-500/50">
+                    <div class="flex justify-between items-start mb-3">
+                        <div>
+                            <h4 class="font-bold text-base">${team.name}</h4>
+                            <div class="flex gap-1 mt-2">
+                                ${Array(team.skills).fill(0).map((_, i) => `<span class="skill-badge skill-complete">✓</span>`).join('')}
+                                ${Array(7 - team.skills).fill(0).map((_, i) => `<span class="skill-badge skill-pending">○</span>`).join('')}
+                            </div>
+                        </div>
+                        <span class="text-2xl font-black" style="color: ${team.color}">${team.progress}%</span>
+                    </div>
+                    <div class="w-full bg-gray-800 rounded-full h-2 overflow-hidden">
+                        <div class="progress-bar h-full" style="width: ${team.progress}%; background-color: ${team.color}"></div>
+                    </div>
+                    <div class="flex justify-between mt-3 text-xs text-gray-400">
+                        <span>${team.skills}/7 스킬</span>
+                        <span class="text-${team.status === 'active' ? 'green' : team.status === 'progress' ? 'orange' : 'gray'}-400">
+                            ${team.status === 'active' ? '✅ 활성' : team.status === 'progress' ? '⏳ 진행중' : '⏸️ 대기'}
+                        </span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderMilestones() {
+            const milestones = document.getElementById('milestones');
+            const timelineData = [
+                { date: '2026-02-25', title: 'Governance v3.0 배포', status: '✅ 완료' },
+                { date: '2026-02-27', title: '팀 05-06 QA 검증', status: '⏳ 진행중' },
+                { date: '2026-03-01', title: '전체 통합 테스트', status: '⏸️ 예정' },
+                { date: '2026-03-15', title: 'Production 배포', status: '⏸️ 예정' }
+            ];
+
+            milestones.innerHTML = timelineData.map((m, i) => `
+                <div class="flex gap-4">
+                    <div class="flex flex-col items-center">
+                        <div class="w-4 h-4 rounded-full" style="background: ${m.status.includes('완료') ? '#10b981' : m.status.includes('진행') ? '#f59e0b' : '#6b7280'}"></div>
+                        ${i < timelineData.length - 1 ? '<div class="w-0.5 h-12 bg-gray-700"></div>' : ''}
+                    </div>
+                    <div class="pb-4">
+                        <p class="font-mono text-sm text-gray-400">${m.date}</p>
+                        <p class="font-semibold">${m.title}</p>
+                        <p class="text-xs text-gray-400">${m.status}</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderTeamStats() {
+            const stats = document.getElementById('team-stats');
+            const statData = [
+                { label: '최고 진행률', value: '85%', team: 'Team 01' },
+                { label: '평균 진행률', value: '53%', team: '전체' },
+                { label: '총 스킬', value: '70개', team: 'All teams' },
+                { label: '활성 팀', value: '7개', team: '활성 중' }
+            ];
+
+            stats.innerHTML = statData.map(s => `
+                <div class="bg-gray-900/50 p-3 rounded border border-gray-700">
+                    <p class="text-gray-400">${s.label}</p>
+                    <p class="text-xl font-black text-cyan-400">${s.value}</p>
+                    <p class="text-xs text-gray-500">${s.team}</p>
+                </div>
+            `).join('');
+        }
+
+        function createCharts() {
+            // Skills Distribution Chart
+            const skillsCtx = document.getElementById('skills-chart').getContext('2d');
+            new Chart(skillsCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['완료 (28)', '진행중 (25)', '대기 (17)'],
+                    datasets: [{
+                        data: [28, 25, 17],
+                        backgroundColor: ['#10b981', '#f59e0b', '#6b7280'],
+                        borderColor: '#1f2937',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { labels: { color: '#d1d5db' } }
+                    }
+                }
+            });
+
+            // Teams Performance Chart
+            const teamsCtx = document.getElementById('teams-chart').getContext('2d');
+            new Chart(teamsCtx, {
+                type: 'bar',
+                data: {
+                    labels: TEAMS_DATA.map(t => `T${t.id}`),
+                    datasets: [{
+                        label: '진행률 (%)',
+                        data: TEAMS_DATA.map(t => t.progress),
+                        backgroundColor: TEAMS_DATA.map(t => t.color),
+                        borderColor: '#374151',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    plugins: {
+                        legend: { labels: { color: '#d1d5db' } }
+                    },
+                    scales: {
+                        x: { ticks: { color: '#d1d5db' }, max: 100 },
+                        y: { ticks: { color: '#d1d5db' } }
+                    }
+                }
+            });
+        }
+
+        function startRealtimeUpdates() {
+            // Simulate real-time updates via polling
+            setInterval(() => {
+                TEAMS_DATA.forEach(team => {
+                    if (team.progress < 100) {
+                        team.progress += Math.floor(Math.random() * 3);
+                    }
+                });
+                renderTeamsGrid();
+            }, 5000);
+        }
+
+        function refreshTeams() {
+            addLog('[Action] 팀 데이터 새로고침됨');
+            loadDashboard();
+        }
+
+        function addLog(message) {
+            const log = document.getElementById('activity-log');
+            const time = new Date().toLocaleTimeString();
+            const entry = document.createElement('p');
+            entry.className = 'text-gray-400';
+            entry.textContent = `[${time}] ${message}`;
+            log.appendChild(entry);
+            log.scrollTop = log.scrollHeight;
+        }
+
+        // Initialize on load
+        window.addEventListener('load', loadDashboard);
+    </script>
+    <script src="../mobile-optimization.js" defer></script>
+</body>
+</html>

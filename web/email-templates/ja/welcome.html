@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background: #111827; color: #fff; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
+        .header h1 { margin: 0; color: #F97316; }
+        .content { background: #f9fafb; padding: 30px; border-radius: 0 0 8px 8px; }
+        .button { display: inline-block; background: #F97316; color: #fff; padding: 10px 20px; text-decoration: none; border-radius: 4px; margin: 20px 0; }
+        .footer { text-align: center; color: #666; font-size: 12px; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 JARVIS</h1>
+            <p>チーム運営システムへようこそ</p>
+        </div>
+        <div class="content">
+            <p>{{name}}様へ</p>
+
+            <p>JARVISへようこそ！アカウントが正常に作成されました。</p>
+
+            <p>以下の機能にアクセスできるようになりました:</p>
+            <ul>
+                <li>チーム運営と管理</li>
+                <li>パフォーマンス分析とレポート</li>
+                <li>コラボレーションツールと通信</li>
+                <li>自動化されたワークフロー</li>
+            </ul>
+
+            <p>開始するには、以下のボタンをクリックしてください:</p>
+            <a href="{{login_url}}" class="button">アカウントを確認</a>
+
+            <p><strong>ログイン情報:</strong></p>
+            <ul>
+                <li>メールアドレス: {{email}}</li>
+                <li>一時パスワード: {{temporary_password}}</li>
+            </ul>
+
+            <p>セキュリティのため、初回ログイン時にパスワードを変更してください。</p>
+
+            <p>ご不明な点がありましたら、<a href="mailto:support@jarvis.com">support@jarvis.com</a>にお問い合わせください。</p>
+
+            <p>ありがとうございます,<br>JARVISチーム</p>
+        </div>
+        <div class="footer">
+            <p>&copy; 2026 JARVIS. すべての権利を保有しています。</p>
+            <p><a href="{{unsubscribe_url}}">購読解除</a></p>
+        </div>
+    </div>
+</body>
+</html>

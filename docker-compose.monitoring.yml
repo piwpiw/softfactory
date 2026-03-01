@@ -1,0 +1,186 @@
+version: '3.8'
+
+# SoftFactory Complete Monitoring Stack
+# Includes: Prometheus, Grafana, AlertManager, ELK Stack (Elasticsearch, Logstash, Kibana)
+#
+# Start: docker-compose -f docker-compose.monitoring.yml up -d
+# Access:
+#   - Grafana:       http://localhost:3000 (admin/admin)
+#   - Prometheus:    http://localhost:9090
+#   - AlertManager:  http://localhost:9093
+#   - Kibana:        http://localhost:5601
+#   - Elasticsearch: http://localhost:9200
+#
+# Stop:  docker-compose -f docker-compose.monitoring.yml down
+
+services:
+
+  # ============ PROMETHEUS ============
+  # Time-series metrics database
+  # Scrapes /api/metrics/prometheus every 15 seconds
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: softfactory-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./orchestrator/prometheus-config.yml:/etc/prometheus/prometheus.yml
+      - ./orchestrator/alert-rules.yml:/etc/prometheus/alert-rules.yml
+      - prometheus-data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=30d'  # Keep data for 30 days
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+    networks:
+      - monitoring
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:9090"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ============ ALERTMANAGER ============
+  # Alert routing and notification manager
+  # Routes alerts to Slack, Email, PagerDuty, etc.
+  alertmanager:
+    image: prom/alertmanager:latest
+    container_name: softfactory-alertmanager
+    ports:
+      - "9093:9093"
+    volumes:
+      - ./orchestrator/alertmanager-config.yml:/etc/alertmanager/alertmanager.yml
+      - alertmanager-data:/alertmanager
+    command:
+      - '--config.file=/etc/alertmanager/alertmanager.yml'
+      - '--storage.path=/alertmanager'
+    networks:
+      - monitoring
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:9093"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ============ GRAFANA ============
+  # Metrics visualization and dashboarding
+  # Default credentials: admin / admin
+  # Password MUST be changed on first login!
+  grafana:
+    image: grafana/grafana:latest
+    container_name: softfactory-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_INSTALL_PLUGINS=grafana-worldmap-panel,grafana-piechart-panel
+    volumes:
+      - grafana-storage:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning
+    networks:
+      - monitoring
+    depends_on:
+      - prometheus
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ============ ELASTICSEARCH ============
+  # Log storage and full-text search
+  # Stores logs from Logstash in time-series indices
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.6.0
+    container_name: softfactory-elasticsearch
+    environment:
+      - discovery.type=single-node
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+      - xpack.security.enabled=false  # Disable security for local dev (ENABLE in production!)
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/data
+    networks:
+      - monitoring
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9200/_health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ============ LOGSTASH ============
+  # Log parsing and shipping to Elasticsearch
+  # Reads JSON logs from logs/app.log
+  logstash:
+    image: docker.elastic.co/logstash/logstash:8.6.0
+    container_name: softfactory-logstash
+    environment:
+      - ES_HOST=elasticsearch
+      - PIPELINE_WORKERS=2
+      - QUEUE_TYPE=memory
+    volumes:
+      - ./orchestrator/logstash-config.conf:/usr/share/logstash/pipeline/logstash.conf
+      - ./logs:/logs:ro  # Mount logs directory (read-only)
+    ports:
+      - "5000:5000"
+    networks:
+      - monitoring
+    depends_on:
+      - elasticsearch
+    restart: unless-stopped
+    command: logstash -f /usr/share/logstash/pipeline/logstash.conf
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9600"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ============ KIBANA ============
+  # Log visualization and analysis
+  # Query and visualize logs stored in Elasticsearch
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.6.0
+    container_name: softfactory-kibana
+    ports:
+      - "5601:5601"
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      - ELASTICSEARCH_USERNAME=elastic
+      - ELASTICSEARCH_PASSWORD=changeme
+    volumes:
+      - kibana-data:/usr/share/kibana/data
+    networks:
+      - monitoring
+    depends_on:
+      - elasticsearch
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5601/api/status"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+networks:
+  monitoring:
+    driver: bridge
+
+volumes:
+  prometheus-data:
+    driver: local
+  alertmanager-data:
+    driver: local
+  grafana-storage:
+    driver: local
+  elasticsearch-data:
+    driver: local
+  kibana-data:
+    driver: local

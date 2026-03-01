@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#111827">
+<title>알림 — SoftFactory</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="api.js"></script>
+    <style>body { font-family: 'Inter', sans-serif; }</style>
+    <link rel="stylesheet" href="../responsive-framework.css">
+  </head>
+<body class="bg-slate-950 text-slate-100">
+    <div class="flex h-screen overflow-hidden">
+        <aside class="w-64 bg-slate-900 border-r border-slate-800 flex flex-col shrink-0">
+            <div class="p-6 border-b border-slate-800">
+                <a href="dashboard.html" class="flex items-center gap-3">
+                    <span class="text-2xl">🏭</span>
+                    <div><h1 class="font-bold text-white">SoftFactory</h1></div>
+                </a>
+            </div>
+            <nav class="flex-1 p-6 space-y-2">
+    <button class="hamburger" aria-label="Toggle navigation menu">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+                <a href="notifications.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg bg-indigo-600 text-white font-medium">🔔 알림</a>
+                <a href="dashboard.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">📊 대시</a>
+            </nav>
+        </aside>
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <header class="h-16 bg-slate-900 border-b border-slate-800 px-6 flex items-center justify-between shrink-0">
+                <h2 class="text-xl font-bold text-white">🔔 알림</h2>
+                <button class="text-sm text-slate-400 hover:text-white">모두 읽음</button>
+            </header>
+            <main class="flex-1 overflow-y-auto p-6">
+                <div class="max-w-3xl space-y-3">
+                    <div class="bg-slate-800 rounded-lg p-6 border border-indigo-600 border-l-4 hover:bg-slate-700 transition cursor-pointer">
+                        <div class="flex items-start justify-between">
+                            <div>
+                                <p class="font-semibold text-white">📧 이메일 알림 설정됨</p>
+                                <p class="text-sm text-slate-400 mt-1">모든 알림이 이메일로 전송됩니다</p>
+                                <p class="text-xs text-slate-500 mt-2">2026-02-24 14:30</p>
+                            </div>
+                            <span class="text-2xl">🔔</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-800 rounded-lg p-6 border border-slate-700 hover:bg-slate-700 transition cursor-pointer">
+                        <div class="flex items-start justify-between">
+                            <div>
+                                <p class="font-semibold text-white">🍳 CooCook 예약 확정</p>
+                                <p class="text-sm text-slate-400 mt-1">Chef Park 예약이 확정되었습니다</p>
+                                <p class="text-xs text-slate-500 mt-2">2026-02-24 10:15</p>
+                            </div>
+                            <span class="text-2xl">✅</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-800 rounded-lg p-6 border border-slate-700 hover:bg-slate-700 transition cursor-pointer">
+                        <div class="flex items-start justify-between">
+                            <div>
+                                <p class="font-semibold text-white">⭐ 캠페인 신청 승인됨</p>
+                                <p class="text-sm text-slate-400 mt-1">Skincare Product Launch 캠페인에 승인되었습니다</p>
+                                <p class="text-xs text-slate-500 mt-2">2026-02-23 16:45</p>
+                            </div>
+                            <span class="text-2xl">👍</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-800 rounded-lg p-6 border border-slate-700 hover:bg-slate-700 transition cursor-pointer">
+                        <div class="flex items-start justify-between">
+                            <div>
+                                <p class="font-semibold text-white">💳 구독 갱신됨</p>
+                                <p class="text-sm text-slate-400 mt-1">월간 구독이 갱신되었습니다</p>
+                                <p class="text-xs text-slate-500 mt-2">2026-02-24 00:00</p>
+                            </div>
+                            <span class="text-2xl">💰</span>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+    <script>
+        requireAuth();
+    </script>
+    <script src="../mobile-optimization.js" defer></script>
+</body>
+</html>

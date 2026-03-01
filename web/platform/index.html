@@ -1,0 +1,237 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#111827">
+    <meta name="description" content="SoftFactory 사용자 대시보드">
+    <title>대시보드 — SoftFactory</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="api.js"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+        button:focus, a:focus, [tabindex]:focus { outline: 3px solid #ec4899; outline-offset: 2px; }
+        .range-btn {
+            border: 1px solid rgba(148, 163, 184, 0.22);
+            background: rgba(15, 23, 42, 0.72);
+            color: #cbd5e1;
+            border-radius: 10px;
+            padding: 0.42rem 0.7rem;
+            font-size: 0.75rem;
+            font-weight: 700;
+            transition: all 0.2s ease;
+            line-height: 1.2;
+        }
+        .range-btn:hover { border-color: rgba(129, 140, 248, 0.55); color: #ffffff; transform: translateY(-1px); }
+        .range-btn.active { background: linear-gradient(135deg, #6366f1, #8b5cf8); border-color: rgba(129, 140, 248, 0.9); color: #ffffff; }
+        .metric-up { color: #4ade80; }
+        .metric-down { color: #fda4af; }
+        .export-modal { background: rgba(2, 6, 23, 0.72); backdrop-filter: blur(4px); }
+        .export-item {
+            width: 100%;
+            border: 1px solid rgba(148, 163, 184, 0.25);
+            background: rgba(15, 23, 42, 0.82);
+            color: #f8fafc;
+            border-radius: 12px;
+            padding: 0.75rem;
+            text-align: left;
+            font-size: 0.875rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+        .export-item:hover { border-color: rgba(129, 140, 248, 0.55); transform: translateY(-1px); }
+    </style>
+    <link rel="stylesheet" href="../responsive-framework.css">
+    <link rel="stylesheet" href="../accessibility.css">
+    <link rel="stylesheet" href="platform-dashboard-ui.css">
+</head>
+<body class="bg-slate-950 text-slate-100 antialiased soft-shell">
+    <a href="#main" class="skip-to-main sr-only">메인 콘텐츠로 이동</a>
+
+    <div class="flex h-screen overflow-hidden">
+        <aside class="w-64 soft-sidebar border-r border-slate-800 flex flex-col shrink-0">
+            <div class="p-6 border-b border-slate-800">
+                <div class="flex items-center gap-3">
+                    <span class="text-2xl" aria-hidden="true">🏭</span>
+                    <div>
+                        <h1 class="font-bold text-white">SoftFactory</h1>
+                        <p class="text-xs text-slate-400">Premium SaaS</p>
+                    </div>
+                </div>
+            </div>
+
+            <nav class="flex-1 p-6 space-y-2 overflow-y-auto" aria-label="사용자 네비게이션">
+                <button class="hamburger" aria-label="네비게이션 메뉴 열기">
+                    <span></span><span></span><span></span>
+                </button>
+                <a href="dashboard.html" aria-current="page" class="soft-nav-link active flex items-center gap-3 px-4 py-2.5 rounded-lg">
+                    <span aria-hidden="true">📊</span> 대시보드
+                </a>
+                <a href="performance.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-slate-800 transition">
+                    <span aria-hidden="true">📈</span> 성능 & ROI
+                </a>
+                <a href="billing.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-slate-800 transition">
+                    <span aria-hidden="true">💳</span> 결제 내역
+                </a>
+                <a href="profile.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-slate-800 transition">
+                    <span aria-hidden="true">👤</span> 계정
+                </a>
+                <a href="admin.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-slate-800 transition">
+                    <span aria-hidden="true">⚙️</span> 관리자
+                </a>
+
+                <div class="my-6 border-t border-slate-800"></div>
+
+                <p class="section-title text-xs font-semibold text-slate-400 uppercase px-4 mb-3">서비스</p>
+                <a href="../sns-auto/index.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-slate-800 transition">
+                    <span aria-hidden="true">📱</span> SNS Auto
+                </a>
+                <a href="../review/index.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-slate-800 transition">
+                    <span aria-hidden="true">⭐</span> Review
+                </a>
+                <a href="../coocook/index.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-slate-800 transition">
+                    <span aria-hidden="true">🍳</span> CooCook
+                </a>
+                <a href="../ai-automation/index.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-slate-800 transition">
+                    <span aria-hidden="true">🤖</span> AI Automation
+                </a>
+                <a href="../webapp-builder/index.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-slate-800 transition">
+                    <span aria-hidden="true">💻</span> WebApp Builder
+                </a>
+            </nav>
+
+            <div class="p-6 border-t border-slate-800 soft-user-panel">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-white" id="userName">Demo User</p>
+                        <p class="text-xs text-slate-400" id="userEmail">demo@softfactory.com</p>
+                    </div>
+                    <button onclick="logout()" class="p-2 hover:bg-slate-800 rounded-lg transition" title="로그아웃">🚪</button>
+                </div>
+            </div>
+        </aside>
+
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <header class="soft-topbar px-6 py-4 flex items-start justify-between gap-4 shrink-0">
+                <div>
+                    <h2 class="text-xl font-bold text-white">사용자 대시보드</h2>
+                    <p class="text-xs text-slate-400" id="lastUpdated">마지막 동기화: -</p>
+                </div>
+                <div class="flex flex-col items-end gap-2">
+                    <div class="flex items-center gap-2" role="group" aria-label="조회 기간">
+                        <button class="range-btn" data-range="7d" type="button">7일</button>
+                        <button class="range-btn active" data-range="30d" type="button">30일</button>
+                        <button class="range-btn" data-range="90d" type="button">90일</button>
+                        <button class="range-btn" data-range="1y" type="button">1년</button>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button id="refreshButton" type="button" class="soft-btn px-3 py-2 rounded-lg text-sm">데이터 새로고침</button>
+                        <button id="openExportButton" type="button" class="soft-btn px-3 py-2 rounded-lg text-sm">데이터 내보내기</button>
+                        <a href="billing.html" class="soft-btn soft-btn-primary px-3 py-2 rounded-lg text-sm">요금제 관리</a>
+                    </div>
+                </div>
+            </header>
+
+            <main id="main" class="flex-1 overflow-y-auto soft-main space-y-6">
+                <div id="kpiSection" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+                    <article class="soft-card soft-kpi p-6">
+                        <p class="label text-slate-400 text-sm font-medium mb-2">월 매출</p>
+                        <p class="value" id="monthlyMRR">-</p>
+                        <p class="text-xs mt-2 metric-up" id="mrrTrend">+0% 전월 대비</p>
+                    </article>
+                    <article class="soft-card soft-kpi p-6">
+                        <p class="label text-slate-400 text-sm font-medium mb-2">활성 서비스</p>
+                        <p class="value" id="activeServices">0</p>
+                        <p class="text-xs mt-2 text-slate-500">구독 중인 서비스</p>
+                    </article>
+                    <article class="soft-card soft-kpi p-6">
+                        <p class="label text-slate-400 text-sm font-medium mb-2">누적 지출</p>
+                        <p class="value" id="totalSpent">-</p>
+                        <p class="text-xs mt-2 text-slate-500">실적 집계</p>
+                    </article>
+                    <article class="soft-card soft-kpi p-6">
+                        <p class="label text-slate-400 text-sm font-medium mb-2">평균 ROI</p>
+                        <p class="value" id="avgRoi">0%</p>
+                        <p class="text-xs mt-2 metric-up" id="roiTrend">+0.0%p</p>
+                    </article>
+                </div>
+
+                <section class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                    <article class="soft-card p-6"><h3 class="text-lg font-bold text-white mb-4">매출 추이</h3><div class="soft-chart"><canvas id="spendingChart" style="height: 280px;"></canvas></div></article>
+                    <article class="soft-card p-6"><h3 class="text-lg font-bold text-white mb-4">서비스 구성</h3><div class="soft-chart"><canvas id="serviceMixChart" style="height: 280px;"></canvas></div></article>
+                    <article class="soft-card p-6"><h3 class="text-lg font-bold text-white mb-4">오늘 vs 어제</h3><div class="soft-chart"><canvas id="compareChart" style="height: 280px;"></canvas></div></article>
+                    <article class="soft-card p-6"><h3 class="text-lg font-bold text-white mb-4">지역별 매출</h3><div class="soft-chart"><canvas id="regionalChart" style="height: 280px;"></canvas></div></article>
+                </section>
+
+                <section>
+                    <h3 class="text-lg font-bold text-white mb-4">구독 상품</h3>
+                    <div id="servicesGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+                        <div class="soft-card p-6 animate-pulse"><div class="h-6 bg-slate-700 rounded mb-4 w-3/4"></div><div class="space-y-3"><div class="h-4 bg-slate-700 rounded"></div><div class="h-4 bg-slate-700 rounded w-5/6"></div></div></div>
+                    </div>
+                </section>
+
+                <section>
+                    <h3 class="text-lg font-bold text-white mb-4">최근 요금제 상태</h3>
+                    <div class="soft-table-wrap">
+                        <table class="soft-table text-sm">
+                            <thead>
+                                <tr class="border-b border-slate-700">
+                                    <th class="text-left py-3 px-4">상품</th>
+                                    <th class="text-left py-3 px-4">금액</th>
+                                    <th class="text-left py-3 px-4">결제 예정일</th>
+                                    <th class="text-left py-3 px-4">상태</th>
+                                </tr>
+                            </thead>
+                            <tbody id="billingTable">
+                                <tr class="border-b border-slate-700">
+                                    <td class="py-3 px-4 text-slate-300" colspan="4">로딩 중...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <section class="soft-card p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-bold text-white">실시간 알림</h3>
+                        <span class="text-xs text-slate-500">기본 조회 기간: 30일</span>
+                    </div>
+                    <ul id="liveAlerts" class="space-y-3">
+                        <li class="text-sm text-slate-400">실시간 알림을 불러오는 중입니다.</li>
+                    </ul>
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <div id="exportModal" class="fixed inset-0 hidden items-center justify-center export-modal z-[1200]" aria-hidden="true">
+        <div class="soft-card w-[92vw] max-w-md p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-bold text-white">내보내기</h3>
+                <button id="closeExportButton" type="button" class="soft-btn px-2 py-1 rounded">닫기</button>
+            </div>
+            <p class="text-sm text-slate-400 mb-4">선택한 기간(<span id="exportRangeLabel">30일</span>)의 데이터를 내보냅니다.</p>
+            <div class="space-y-2">
+                <button class="export-item" data-export-format="csv" type="button">CSV 파일</button>
+                <button class="export-item" data-export-format="json" type="button">JSON 파일</button>
+                <button class="export-item" data-export-format="pdf" type="button">PDF 미리보기</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        if (typeof requireAuth === 'function') {
+            requireAuth();
+        }
+    </script>
+    <script src="dashboard-enhanced.js" defer></script>
+    <script src="../mobile-optimization.js" defer></script>
+</body>
+</html>

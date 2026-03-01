@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#111827">
+<title>CooCook — SoftFactory</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="../platform/api.js"></script>
+    <style>body { font-family: 'Inter', sans-serif; }</style>
+    <link rel="stylesheet" href="../responsive-framework.css">
+  </head>
+<body class="bg-slate-950 text-slate-100">
+    <div class="flex h-screen overflow-hidden">
+        <aside class="w-64 bg-slate-900 border-r border-slate-800 flex flex-col shrink-0">
+            <div class="p-6 border-b border-slate-800">
+                <a href="../platform/dashboard.html" class="flex items-center gap-3">
+                    <span class="text-2xl">🏭</span>
+                    <div><h1 class="font-bold text-white text-sm">SoftFactory</h1><p class="text-xs text-slate-400">← Back</p></div>
+                </a>
+            </div>
+            <nav class="flex-1 p-6 space-y-2 overflow-y-auto">
+    <button class="hamburger" aria-label="Toggle navigation menu">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+                <p class="text-xs font-semibold text-slate-400 uppercase px-4 mb-3">🍳 CooCook</p>
+                <a href="index.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg bg-orange-600 text-white font-medium">🏠 홈</a>
+                <a href="explore.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">🔍 탐색</a>
+                <a href="my-bookings.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">📅 내 예약</a>
+            </nav>
+            <div class="p-6 border-t border-slate-800">
+                <button onclick="logout()" class="p-2 hover:bg-slate-800 rounded-lg">🚪</button>
+            </div>
+        </aside>
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <header class="h-16 bg-slate-900 border-b border-slate-800 px-6 flex items-center justify-between shrink-0">
+                <div><h2 class="text-xl font-bold text-white">🍳 CooCook - 셰프 마켓플레이스</h2><p class="text-xs text-slate-400">로컬 셰프와 요리 경험</p></div>
+                <a href="explore.html" class="px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-lg font-medium text-sm">셰프 탐색</a>
+            </header>
+            <main class="flex-1 overflow-y-auto p-6 space-y-6">
+                <!-- Hero Section -->
+                <div class="bg-gradient-to-r from-orange-900 to-orange-950 rounded-xl p-8 border border-orange-700">
+                    <h1 class="text-3xl font-bold text-white mb-2">맛있는 경험을 예약하세요</h1>
+                    <p class="text-orange-200 mb-4">서울의 최고 셰프들과 함께하는 특별한 요리 경험</p>
+                    <a href="explore.html" class="inline-block px-6 py-3 bg-orange-600 hover:bg-orange-700 text-white rounded-lg font-semibold transition">지금 예약하기</a>
+                </div>
+
+                <!-- Stats -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-slate-800 rounded-xl p-6 border border-slate-700">
+                        <p class="text-slate-400 text-sm mb-2">활동 중인 셰프</p>
+                        <p class="text-3xl font-bold text-white">5</p>
+                    </div>
+                    <div class="bg-slate-800 rounded-xl p-6 border border-slate-700">
+                        <p class="text-slate-400 text-sm mb-2">총 예약</p>
+                        <p class="text-3xl font-bold text-orange-400">24</p>
+                    </div>
+                    <div class="bg-slate-800 rounded-xl p-6 border border-slate-700">
+                        <p class="text-slate-400 text-sm mb-2">평균 만족도</p>
+                        <p class="text-3xl font-bold text-white">4.8★</p>
+                    </div>
+                </div>
+
+                <!-- Recommended Chefs -->
+                <div>
+                    <h3 class="text-lg font-bold text-white mb-4">⭐ 추천 셰프</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4" id="chefsGrid">
+                        <div class="bg-slate-800 rounded-lg p-4 border border-slate-700 animate-pulse">
+                            <div class="h-6 bg-slate-700 rounded mb-4 w-3/4"></div>
+                            <div class="space-y-2">
+                                <div class="h-4 bg-slate-700 rounded"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+    <script>
+        requireAuth();
+
+        async function init() {
+            try {
+                const data = await getChefs();
+                renderChefs(data.chefs || []);
+            } catch (error) {
+                showError('셰프 로드 실패');
+            }
+        }
+
+        function renderChefs(chefs) {
+            const grid = document.getElementById('chefsGrid');
+            grid.innerHTML = '';
+            (chefs || []).slice(0, 5).forEach(chef => {
+                const html = `
+                    <a href="chef-detail.html?id=${chef.id}" class="bg-gradient-to-br from-orange-900/30 to-orange-900/10 rounded-lg p-5 border-2 border-orange-600 hover:border-opacity-100 transition block">
+                        <div class="text-3xl mb-2">${chef.image || '👨‍🍳'}</div>
+                        <h4 class="font-semibold text-white">${chef.name}</h4>
+                        <p class="text-xs text-orange-400 mb-2">${chef.cuisine_type}</p>
+                        <p class="text-xs text-slate-400 mb-3">${formatKRW(chef.price_per_session)}</p>
+                        <p class="text-sm text-yellow-400">⭐ ${chef.rating} (${chef.rating_count})</p>
+                    </a>
+                `;
+                grid.innerHTML += html;
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+    <script src="../mobile-optimization.js" defer></script>
+</body>
+</html>

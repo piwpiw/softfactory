@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#111827">
+<title>🎁 체험단 통합 플랫폼 - Experience Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .listing-card {
+            transition: all 0.3s ease;
+        }
+        .listing-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+        .site-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .site-coupang_eats { background-color: #6C3483; color: white; }
+        .site-danggeun { background-color: #E74C3C; color: white; }
+        .site-soomgo { background-color: #3498DB; color: white; }
+        .site-today_deal { background-color: #27AE60; color: white; }
+        .deadline-soon {
+            color: #E74C3C;
+            font-weight: 600;
+        }
+        .skeleton {
+            background: linear-gradient(90deg, #1f2937 25%, #374151 50%, #1f2937 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+        }
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+    </style>
+    <link rel="stylesheet" href="../responsive-framework.css">
+  </head>
+<body class="bg-gray-900 text-gray-100">
+    <!-- Header -->
+    <header class="bg-gradient-to-r from-purple-900 to-indigo-900 py-6 px-4 shadow-lg">
+        <div class="max-w-7xl mx-auto">
+            <div class="flex justify-between items-center mb-4">
+                <div>
+                    <h1 class="text-4xl font-bold mb-2">🎁 체험단 통합 플랫폼</h1>
+                    <p class="text-gray-200">한국 주요 체험단 사이트의 공고를 한곳에서 보세요</p>
+                </div>
+                <div class="text-right">
+                    <p class="text-2xl font-bold text-yellow-400" id="totalCount">-</p>
+                    <p class="text-sm text-gray-300">총 공고 수</p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 py-8">
+        <!-- Controls Section -->
+        <div class="bg-gray-800 rounded-lg p-6 mb-8 shadow-lg">
+            <!-- Site Filter -->
+            <div class="mb-6">
+                <h2 class="text-sm font-semibold text-gray-300 mb-3">📍 체험단 사이트 필터</h2>
+                <div class="flex flex-wrap gap-2">
+                    <button onclick="filterBySite('all')" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition">
+                        전체 보기
+                    </button>
+                    <button onclick="filterBySite('coupang_eats')" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition">
+                        🍔 쿠팡이츠
+                    </button>
+                    <button onclick="filterBySite('danggeun')" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition">
+                        🚗 당근마켓
+                    </button>
+                    <button onclick="filterBySite('soomgo')" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition">
+                        🔧 숨고
+                    </button>
+                    <button onclick="filterBySite('today_deal')" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition">
+                        🎯 오늘의딜
+                    </button>
+                </div>
+            </div>
+
+            <!-- Category Filter -->
+            <div class="mb-6">
+                <h2 class="text-sm font-semibold text-gray-300 mb-3">🏷️ 카테고리 필터</h2>
+                <div id="categoryFilter" class="flex flex-wrap gap-2">
+                    <button onclick="filterByCategory('all')" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition">
+                        모든 카테고리
+                    </button>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex gap-3">
+                <button onclick="refreshListings()" class="px-6 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition flex items-center gap-2">
+                    🔄 새로고침
+                </button>
+                <button onclick="triggerCrawl()" class="px-6 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-lg transition flex items-center gap-2">
+                    🕷️ 크롤링 시작
+                </button>
+                <div class="ml-auto">
+                    <p class="text-xs text-gray-400">최근 업데이트: <span id="lastUpdate">방금</span></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Listings Grid -->
+        <div id="listingsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Skeletons (loading state) -->
+            <div class="listing-card bg-gray-800 rounded-lg overflow-hidden shadow-lg">
+                <div class="skeleton h-40 w-full"></div>
+                <div class="p-4">
+                    <div class="skeleton h-4 w-3/4 mb-3 rounded"></div>
+                    <div class="skeleton h-3 w-full mb-2 rounded"></div>
+                    <div class="skeleton h-3 w-2/3 rounded"></div>
+                </div>
+            </div>
+            <div class="listing-card bg-gray-800 rounded-lg overflow-hidden shadow-lg">
+                <div class="skeleton h-40 w-full"></div>
+                <div class="p-4">
+                    <div class="skeleton h-4 w-3/4 mb-3 rounded"></div>
+                    <div class="skeleton h-3 w-full mb-2 rounded"></div>
+                    <div class="skeleton h-3 w-2/3 rounded"></div>
+                </div>
+            </div>
+            <div class="listing-card bg-gray-800 rounded-lg overflow-hidden shadow-lg">
+                <div class="skeleton h-40 w-full"></div>
+                <div class="p-4">
+                    <div class="skeleton h-4 w-3/4 mb-3 rounded"></div>
+                    <div class="skeleton h-3 w-full mb-2 rounded"></div>
+                    <div class="skeleton h-3 w-2/3 rounded"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 py-6 px-4 mt-12 border-t border-gray-700">
+        <div class="max-w-7xl mx-auto text-center text-gray-400 text-sm">
+            <p>M-006 국내 체험단 통합 플랫폼 | MVP v1.0 | 실시간 데이터 제공</p>
+        </div>
+    </footer>
+
+    <script>
+        let currentSiteFilter = 'all';
+        let currentCategoryFilter = 'all';
+        let allListings = [];
+        let categories = new Set();
+
+        // Initialize
+        window.addEventListener('load', () => {
+            loadCategories();
+            loadListings();
+        });
+
+        async function loadCategories() {
+            try {
+                const res = await fetch('/api/experience/categories');
+                const data = await res.json();
+                const categoryFilter = document.getElementById('categoryFilter');
+
+                categoryFilter.innerHTML = '<button onclick="filterByCategory(\'all\')" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition">모든 카테고리</button>';
+
+                data.categories.forEach(cat => {
+                    const btn = document.createElement('button');
+                    btn.className = 'px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition';
+                    btn.textContent = `🏷️ ${cat}`;
+                    btn.onclick = () => filterByCategory(cat);
+                    categoryFilter.appendChild(btn);
+                });
+            } catch (error) {
+                console.error('카테고리 로드 실패:', error);
+            }
+        }
+
+        async function loadListings() {
+            try {
+                const params = new URLSearchParams();
+                if (currentSiteFilter !== 'all') params.append('site', currentSiteFilter);
+                if (currentCategoryFilter !== 'all') params.append('category', currentCategoryFilter);
+
+                const res = await fetch(`/api/experience/listings?${params}`);
+                const data = await res.json();
+                allListings = data.data;
+
+                renderListings();
+                updateStats();
+                updateLastUpdate();
+            } catch (error) {
+                console.error('공고 로드 실패:', error);
+                document.getElementById('listingsContainer').innerHTML =
+                    '<div class="col-span-full text-center text-red-400 py-8">공고를 불러올 수 없습니다. 다시 시도해주세요.</div>';
+            }
+        }
+
+        function renderListings() {
+            const container = document.getElementById('listingsContainer');
+
+            if (allListings.length === 0) {
+                container.innerHTML = '<div class="col-span-full text-center text-gray-400 py-8">해당하는 공고가 없습니다.</div>';
+                return;
+            }
+
+            const daysUntilDeadline = (deadline) => {
+                const now = new Date();
+                const deadlineDate = new Date(deadline);
+                const diff = deadlineDate - now;
+                const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
+                return days;
+            };
+
+            const getSiteColor = (site) => {
+                const colors = {
+                    'coupang_eats': '🍔',
+                    'danggeun': '🚗',
+                    'soomgo': '🔧',
+                    'today_deal': '🎯'
+                };
+                return colors[site] || '📌';
+            };
+
+            container.innerHTML = allListings.map((listing, idx) => {
+                const days = daysUntilDeadline(listing.deadline);
+                const isUrgent = days <= 3;
+
+                return `
+                    <div class="listing-card bg-gray-800 rounded-lg overflow-hidden shadow-lg hover:shadow-2xl">
+                        <div class="h-40 bg-gradient-to-br from-gray-700 to-gray-900 flex items-center justify-center overflow-hidden">
+                            <img src="${listing.image_url}" alt="${listing.title}" class="w-full h-full object-cover" onerror="this.src='https://via.placeholder.com/300x200?text=Experience'">
+                        </div>
+
+                        <div class="p-4">
+                            <div class="flex items-start justify-between mb-2">
+                                <span class="site-badge site-${listing.site}">${getSiteColor(listing.site)} ${listing.site.replace('_', ' ')}</span>
+                                ${isUrgent ? '<span class="text-xs bg-red-600 text-white px-2 py-1 rounded font-semibold">⏰ 긴급</span>' : ''}
+                            </div>
+
+                            <h3 class="text-lg font-bold mb-2 line-clamp-2 hover:text-blue-300">${listing.title}</h3>
+
+                            <div class="mb-3 space-y-1 text-sm text-gray-300">
+                                <p>📁 ${listing.category || '미분류'}</p>
+                                <p class="${isUrgent ? 'deadline-soon' : ''}">
+                                    📅 마감: ${days}일 남음 (${new Date(listing.deadline).toLocaleDateString('ko-KR')})
+                                </p>
+                                <p>🎁 ${listing.reward || '미정'}</p>
+                            </div>
+
+                            <p class="text-sm text-gray-400 mb-4 line-clamp-2">${listing.description || ''}</p>
+
+                            <a href="${listing.url}" target="_blank" class="block w-full text-center bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg transition font-semibold">
+                                자세히 보기 →
+                            </a>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        async function updateStats() {
+            try {
+                const res = await fetch('/api/experience/stats');
+                const stats = await res.json();
+                document.getElementById('totalCount').textContent = stats.total_listings;
+            } catch (error) {
+                console.error('통계 로드 실패:', error);
+            }
+        }
+
+        function updateLastUpdate() {
+            const now = new Date();
+            const hours = now.getHours().toString().padStart(2, '0');
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            document.getElementById('lastUpdate').textContent = `${hours}:${minutes}`;
+        }
+
+        function filterBySite(site) {
+            currentSiteFilter = site;
+            loadListings();
+        }
+
+        function filterByCategory(category) {
+            currentCategoryFilter = category;
+            loadListings();
+        }
+
+        function refreshListings() {
+            loadListings();
+            updateStats();
+        }
+
+        async function triggerCrawl() {
+            try {
+                const btn = event.target.closest('button');
+                const originalText = btn.innerHTML;
+                btn.innerHTML = '⏳ 크롤링 중...';
+                btn.disabled = true;
+
+                const res = await fetch('/api/experience/crawl', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({})
+                });
+
+                const result = await res.json();
+
+                if (result.status === 'success') {
+                    loadListings();
+                    alert(`✅ 크롤링 완료!\n총 ${result.total_listings_found || 0}개의 공고를 찾았습니다.`);
+                } else {
+                    alert('❌ 크롤링 중 오류가 발생했습니다.');
+                }
+
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            } catch (error) {
+                console.error('크롤링 실패:', error);
+                alert('❌ 크롤링 요청 실패');
+                event.target.closest('button').disabled = false;
+                event.target.closest('button').innerHTML = '🕷️ 크롤링 시작';
+            }
+        }
+
+        // Auto-refresh every 5 minutes
+        setInterval(() => {
+            console.log('자동 새로고침...');
+            loadListings();
+        }, 5 * 60 * 1000);
+    </script>
+    <script src="../mobile-optimization.js" defer></script>
+</body>
+</html>

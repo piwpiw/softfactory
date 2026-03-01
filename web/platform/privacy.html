@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#111827">
+    <title>개인정보 처리방침 — SoftFactory</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .prose h2 { font-size: 1.375rem; font-weight: 700; color: white; margin-top: 2.5rem; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid #334155; }
+        .prose h3 { font-size: 1.05rem; font-weight: 600; color: #e2e8f0; margin-top: 1.5rem; margin-bottom: 0.5rem; }
+        .prose p  { color: #cbd5e1; line-height: 1.75; margin-bottom: 0.75rem; }
+        .prose ul { color: #cbd5e1; line-height: 1.75; margin-bottom: 0.75rem; padding-left: 1.5rem; list-style-type: disc; }
+        .prose li { margin-bottom: 0.25rem; }
+        .prose table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+        .prose th { background: #1e293b; color: #e2e8f0; padding: 0.625rem 1rem; text-align: left; font-weight: 600; border: 1px solid #334155; }
+        .prose td { color: #cbd5e1; padding: 0.625rem 1rem; border: 1px solid #334155; vertical-align: top; }
+        .prose tr:nth-child(even) td { background: #0f172a; }
+        .toc-link { display: block; padding: 0.375rem 0.75rem; color: #94a3b8; border-radius: 0.5rem; font-size: 0.875rem; transition: all 0.2s; text-decoration: none; }
+        .toc-link:hover { background: #1e293b; color: #e2e8f0; }
+    </style>
+    <link rel="stylesheet" href="../responsive-framework.css">
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen">
+
+    <!-- Header -->
+    <div class="bg-slate-900 border-b border-slate-800 px-6 py-4">
+        <div class="max-w-5xl mx-auto flex items-center justify-between">
+            <a href="index.html" class="flex items-center gap-2 text-white font-bold text-lg">
+                <span>SoftFactory</span>
+            </a>
+            <nav class="flex gap-4 text-sm text-slate-400">
+                <a href="terms.html" class="hover:text-white transition">이용약관</a>
+                <a href="privacy.html" class="text-violet-400 font-medium">개인정보처리방침</a>
+            </nav>
+        </div>
+    </div>
+
+    <div class="max-w-5xl mx-auto px-6 py-12 lg:flex lg:gap-12">
+
+        <!-- Table of Contents (desktop sidebar) -->
+        <aside class="hidden lg:block w-64 shrink-0">
+            <div class="sticky top-8">
+                <p class="text-xs font-semibold text-slate-500 uppercase tracking-widest mb-3">목차</p>
+                <nav class="space-y-1">
+                    <a href="#section1" class="toc-link">1. 수집하는 개인정보 항목</a>
+                    <a href="#section2" class="toc-link">2. 개인정보 수집 목적</a>
+                    <a href="#section3" class="toc-link">3. 개인정보 보유 기간</a>
+                    <a href="#section4" class="toc-link">4. 개인정보 제3자 제공</a>
+                    <a href="#section5" class="toc-link">5. 개인정보 처리 위탁</a>
+                    <a href="#section6" class="toc-link">6. 정보주체의 권리·의무</a>
+                    <a href="#section7" class="toc-link">7. 개인정보 파기</a>
+                    <a href="#section8" class="toc-link">8. 개인정보 보호책임자</a>
+                    <a href="#section9" class="toc-link">9. 시행일</a>
+                </nav>
+            </div>
+        </aside>
+
+        <!-- Content -->
+        <main class="flex-1 min-w-0">
+            <div class="mb-10">
+                <div class="inline-block px-3 py-1 bg-violet-900/40 text-violet-300 text-xs font-medium rounded-full mb-4">법적 문서</div>
+                <h1 class="text-3xl lg:text-4xl font-bold text-white mb-3">개인정보 처리방침</h1>
+                <p class="text-slate-400">시행일: 2026년 1월 1일 &nbsp;|&nbsp; 최종 수정: 2026년 2월 1일</p>
+                <div class="mt-4 p-4 bg-violet-900/20 border border-violet-700/30 rounded-xl text-sm text-violet-200">
+                    소프트팩토리(이하 "회사")는 정보주체의 개인정보를 중요시하며, 「개인정보 보호법」,
+                    「정보통신망 이용촉진 및 정보보호 등에 관한 법률」 및 유럽 일반 개인정보보호규정(GDPR)을
+                    준수합니다. 본 방침은 회사가 수집하는 개인정보의 항목, 수집·이용 목적, 보유 기간 및
+                    정보주체의 권리에 대해 안내합니다.
+                </div>
+            </div>
+
+            <div class="prose">
+
+                <!-- Section 1 -->
+                <h2 id="section1">제1조 수집하는 개인정보 항목</h2>
+
+                <h3>1.1 필수 수집 항목</h3>
+                <table>
+                    <thead><tr><th>구분</th><th>수집 항목</th><th>수집 시점</th></tr></thead>
+                    <tbody>
+                        <tr><td>회원 가입</td><td>이메일 주소, 비밀번호(암호화 저장), 이름</td><td>가입 시</td></tr>
+                        <tr><td>소셜 로그인</td><td>이메일, 이름, 프로필 사진, 소셜 계정 ID (Google / Facebook / Kakao)</td><td>소셜 로그인 시</td></tr>
+                        <tr><td>서비스 이용</td><td>서비스 이용 기록, 접속 IP, 브라우저 정보, 기기 정보</td><td>서비스 이용 시</td></tr>
+                        <tr><td>결제</td><td>카드사명, 결제 수단 종류, 결제 금액, 거래 ID (실 카드번호는 Stripe에서 관리)</td><td>유료 구독 시</td></tr>
+                    </tbody>
+                </table>
+
+                <h3>1.2 선택 수집 항목</h3>
+                <table>
+                    <thead><tr><th>구분</th><th>수집 항목</th><th>미제공 시 불이익</th></tr></thead>
+                    <tbody>
+                        <tr><td>프로필 설정</td><td>프로필 사진, 업종, 직업</td><td>일부 UI 기능 제한</td></tr>
+                        <tr><td>SNS 연동</td><td>SNS 계정 정보, 액세스 토큰 (암호화 저장)</td><td>SNS 자동화 기능 사용 불가</td></tr>
+                        <tr><td>체험단</td><td>블로그/SNS URL, 팔로워 수</td><td>체험단 신청 불가</td></tr>
+                        <tr><td>마케팅</td><td>이메일 수신 동의 여부</td><td>프로모션 알림 미수신</td></tr>
+                    </tbody>
+                </table>
+
+                <h3>1.3 자동 수집 항목</h3>
+                <ul>
+                    <li>쿠키(Cookie), 세션(Session), 웹 비콘</li>
+                    <li>방문 일시, 서비스 이용 기록, 불량 이용 기록</li>
+                    <li>IP 주소, 기기 고유 식별자(기기 ID), 브라우저 종류 및 버전</li>
+                    <li>운영체제 및 플랫폼 정보</li>
+                </ul>
+
+                <!-- Section 2 -->
+                <h2 id="section2">제2조 개인정보 수집 목적</h2>
+                <table>
+                    <thead><tr><th>처리 목적</th><th>법적 근거</th></tr></thead>
+                    <tbody>
+                        <tr><td>회원 가입 및 본인 확인, 계정 관리</td><td>계약 이행 (GDPR Art. 6(1)(b))</td></tr>
+                        <tr><td>유료 서비스 제공 및 구독 관리</td><td>계약 이행 (GDPR Art. 6(1)(b))</td></tr>
+                        <tr><td>결제 처리 및 환불</td><td>계약 이행 · 법적 의무 (GDPR Art. 6(1)(b),(c))</td></tr>
+                        <tr><td>고객 지원 및 분쟁 해결</td><td>정당한 이익 (GDPR Art. 6(1)(f))</td></tr>
+                        <tr><td>서비스 개선 및 신규 기능 개발</td><td>정당한 이익 (GDPR Art. 6(1)(f))</td></tr>
+                        <tr><td>맞춤형 마케팅 및 프로모션 발송</td><td>동의 (GDPR Art. 6(1)(a)) — 수신 동의자에 한함</td></tr>
+                        <tr><td>서비스 부정 이용 방지 및 보안</td><td>법적 의무 · 정당한 이익 (GDPR Art. 6(1)(c),(f))</td></tr>
+                        <tr><td>법적 의무 이행 (세금, 회계 등)</td><td>법적 의무 (GDPR Art. 6(1)(c))</td></tr>
+                    </tbody>
+                </table>
+
+                <!-- Section 3 -->
+                <h2 id="section3">제3조 개인정보 보유 기간</h2>
+                <p>원칙적으로 개인정보 수집 및 이용 목적이 달성된 후에는 지체 없이 파기합니다. 단, 다음 사유에 해당하는 경우 일정 기간 보유합니다.</p>
+
+                <h3>3.1 회사 내부 방침에 의한 보유</h3>
+                <table>
+                    <thead><tr><th>항목</th><th>보유 기간</th><th>사유</th></tr></thead>
+                    <tbody>
+                        <tr><td>회원 정보</td><td>탈퇴 후 30일</td><td>부정 이용 방지, 분쟁 해결</td></tr>
+                        <tr><td>구독 이력</td><td>탈퇴 후 5년</td><td>세금 · 회계 의무</td></tr>
+                        <tr><td>결제 내역</td><td>결제일로부터 5년</td><td>전자상거래법, 세금계산서 보존 의무</td></tr>
+                        <tr><td>고객 문의 내역</td><td>처리 완료 후 1년</td><td>분쟁 해결 근거</td></tr>
+                        <tr><td>부정 이용 기록</td><td>1년</td><td>재가입 방지</td></tr>
+                    </tbody>
+                </table>
+
+                <h3>3.2 관련 법령에 의한 보유</h3>
+                <table>
+                    <thead><tr><th>근거 법령</th><th>항목</th><th>보유 기간</th></tr></thead>
+                    <tbody>
+                        <tr><td>전자상거래 등에서의 소비자보호에 관한 법률</td><td>계약 또는 청약 철회 기록</td><td>5년</td></tr>
+                        <tr><td>전자상거래 등에서의 소비자보호에 관한 법률</td><td>대금 결제 및 재화 공급 기록</td><td>5년</td></tr>
+                        <tr><td>전자상거래 등에서의 소비자보호에 관한 법률</td><td>소비자 불만 및 분쟁 처리 기록</td><td>3년</td></tr>
+                        <tr><td>통신비밀보호법</td><td>서비스 접속 로그</td><td>3개월</td></tr>
+                    </tbody>
+                </table>
+
+                <!-- Section 4 -->
+                <h2 id="section4">제4조 개인정보 제3자 제공</h2>
+                <p>회사는 원칙적으로 정보주체의 개인정보를 제3자에게 제공하지 않습니다. 다만, 아래의 경우에는 예외로 합니다.</p>
+                <ul>
+                    <li>정보주체가 사전에 동의한 경우</li>
+                    <li>법률의 특별한 규정 또는 법령상 의무 준수를 위해 불가피한 경우</li>
+                    <li>수사기관이 법령에서 정한 절차와 방법에 따라 요청한 경우</li>
+                </ul>
+
+                <h3>4.1 결제 처리 — Stripe, Inc.</h3>
+                <table>
+                    <thead><tr><th>항목</th><th>내용</th></tr></thead>
+                    <tbody>
+                        <tr><td>제공받는 자</td><td>Stripe, Inc. (미국)</td></tr>
+                        <tr><td>제공 목적</td><td>신용카드 결제, 구독 관리, 환불 처리</td></tr>
+                        <tr><td>제공 항목</td><td>이메일, 결제 금액, 결제 수단 정보 (카드 정보는 Stripe 서버에서만 처리)</td></tr>
+                        <tr><td>보유 기간</td><td>결제 완료 후 7년 (Stripe 정책 및 법적 의무)</td></tr>
+                        <tr><td>개인정보보호 정책</td><td><a href="https://stripe.com/privacy" target="_blank" rel="noopener noreferrer" class="text-violet-400 hover:underline">https://stripe.com/privacy</a></td></tr>
+                    </tbody>
+                </table>
+
+                <h3>4.2 이메일 서비스 — SendGrid (Twilio)</h3>
+                <table>
+                    <thead><tr><th>항목</th><th>내용</th></tr></thead>
+                    <tbody>
+                        <tr><td>제공받는 자</td><td>Twilio SendGrid, Inc. (미국)</td></tr>
+                        <tr><td>제공 목적</td><td>서비스 안내 이메일, 인증 메일, 알림 발송</td></tr>
+                        <tr><td>제공 항목</td><td>이메일 주소, 이름</td></tr>
+                        <tr><td>보유 기간</td><td>발송 완료 후 30일</td></tr>
+                        <tr><td>개인정보보호 정책</td><td><a href="https://www.twilio.com/en-us/legal/privacy" target="_blank" rel="noopener noreferrer" class="text-violet-400 hover:underline">https://www.twilio.com/legal/privacy</a></td></tr>
+                    </tbody>
+                </table>
+
+                <h3>4.3 클라우드 인프라 — Amazon Web Services (AWS)</h3>
+                <table>
+                    <thead><tr><th>항목</th><th>내용</th></tr></thead>
+                    <tbody>
+                        <tr><td>제공받는 자</td><td>Amazon Web Services, Inc. (미국)</td></tr>
+                        <tr><td>제공 목적</td><td>서버 운영, 파일 저장(S3), 데이터베이스 호스팅</td></tr>
+                        <tr><td>제공 항목</td><td>서비스 운영에 필요한 모든 개인정보 (암호화 전송 및 저장)</td></tr>
+                        <tr><td>보유 기간</td><td>서비스 운영 기간</td></tr>
+                        <tr><td>개인정보보호 정책</td><td><a href="https://aws.amazon.com/ko/privacy/" target="_blank" rel="noopener noreferrer" class="text-violet-400 hover:underline">https://aws.amazon.com/privacy/</a></td></tr>
+                    </tbody>
+                </table>
+
+                <!-- Section 5 -->
+                <h2 id="section5">제5조 개인정보 처리 위탁</h2>
+                <p>회사는 원활한 서비스 제공을 위해 아래와 같이 개인정보 처리 업무를 위탁하고 있습니다. 위탁 계약 시 개인정보 보호 관련 법규 준수, 개인정보에 관한 비밀유지, 제3자 제공 금지 및 사고 시 책임 부담 등을 명시하고 있습니다.</p>
+                <table>
+                    <thead><tr><th>수탁 업체</th><th>위탁 업무</th><th>위탁 기간</th></tr></thead>
+                    <tbody>
+                        <tr><td>Stripe, Inc.</td><td>결제 처리, 구독 관리</td><td>서비스 이용 기간</td></tr>
+                        <tr><td>Twilio SendGrid</td><td>이메일 발송 서비스</td><td>서비스 이용 기간</td></tr>
+                        <tr><td>Amazon Web Services</td><td>서버 및 데이터 저장 인프라</td><td>서비스 운영 기간</td></tr>
+                        <tr><td>Anthropic, PBC</td><td>AI 기능 처리 (Claude API)</td><td>AI 기능 이용 시</td></tr>
+                        <tr><td>Sentry, Inc.</td><td>오류 모니터링 및 성능 분석</td><td>서비스 운영 기간</td></tr>
+                    </tbody>
+                </table>
+
+                <!-- Section 6 -->
+                <h2 id="section6">제6조 정보주체의 권리·의무 및 행사방법</h2>
+                <p>정보주체(이용자)는 언제든지 다음의 권리를 행사할 수 있습니다.</p>
+                <ul>
+                    <li><strong>열람권:</strong> 회사가 보유하고 있는 자신의 개인정보 처리 현황 및 내용을 열람할 수 있습니다.</li>
+                    <li><strong>정정·삭제 요청권:</strong> 개인정보가 사실과 다르거나 부정확한 경우 정정 또는 삭제를 요청할 수 있습니다.</li>
+                    <li><strong>처리 정지 요청권:</strong> 개인정보 처리의 중지를 요청할 수 있습니다. (단, 법령상 의무 이행 등 불가피한 경우 제외)</li>
+                    <li><strong>이동권 (데이터 포터빌리티):</strong> 자신의 개인정보를 구조화된 형식(JSON)으로 내려받을 수 있습니다. (「마이데이터 내보내기」 기능 제공)</li>
+                    <li><strong>동의 철회권:</strong> 개인정보 처리에 대한 동의를 언제든지 철회할 수 있습니다. (마케팅 수신 동의 포함)</li>
+                    <li><strong>잊힐 권리 (계정 삭제):</strong> 서비스 탈퇴 및 개인정보 삭제를 요청할 수 있습니다. 회계·법적 의무 이행에 필요한 최소 정보는 익명화 처리 후 법정 기간 보관됩니다.</li>
+                </ul>
+
+                <h3>6.1 권리 행사 방법</h3>
+                <ul>
+                    <li><strong>앱 내 자가 처리:</strong> [설정 → 계정 → 내 데이터 내보내기 / 계정 삭제]</li>
+                    <li><strong>이메일 요청:</strong> privacy@softfactory.kr</li>
+                    <li><strong>서면 요청:</strong> 아래 개인정보 보호책임자 주소로 발송</li>
+                </ul>
+                <p>요청 접수 후 10영업일 이내에 처리하며, 처리 결과를 이메일로 통보합니다.
+                정보주체의 대리인이 요청하는 경우 위임장 및 대리인 신분증을 제출해야 합니다.</p>
+
+                <h3>6.2 권리 행사 제한 사유</h3>
+                <p>다음의 경우 정보주체의 요청을 거절하거나 제한할 수 있습니다.</p>
+                <ul>
+                    <li>법률에 특별한 규정이 있거나 법령상 의무 준수를 위해 불가피한 경우</li>
+                    <li>다른 사람의 생명·신체를 해할 우려가 있거나 타인의 재산과 그 밖의 이익을 부당하게 침해할 우려가 있는 경우</li>
+                    <li>서비스 사기, 악용 방지를 위한 경우</li>
+                </ul>
+
+                <!-- Section 7 -->
+                <h2 id="section7">제7조 개인정보 파기</h2>
+                <p>회사는 개인정보 보유 기간의 경과, 처리 목적 달성 등 개인정보가 불필요하게 되었을 때에는 지체 없이 해당 개인정보를 파기합니다.</p>
+
+                <h3>7.1 파기 절차</h3>
+                <ul>
+                    <li>파기 대상: 보유 기간 만료 또는 처리 목적이 달성된 개인정보</li>
+                    <li>파기 방법: 전자적 파일 형태의 경우 복원이 불가능한 방법으로 영구 삭제; 종이 문서의 경우 분쇄 또는 소각</li>
+                    <li>파기 주기: 월 1회 정기 점검 및 파기 처리</li>
+                </ul>
+
+                <h3>7.2 미파기 개인정보 처리</h3>
+                <p>법령에 따라 보존해야 하는 경우, 해당 개인정보 또는 개인정보 파일을 별도의 데이터베이스(DB)로 옮기거나 보관장소를 달리하여 보존합니다. 법령에 의한 보존 기간 이후 해당 정보를 지체 없이 파기합니다.</p>
+
+                <!-- Section 8 -->
+                <h2 id="section8">제8조 개인정보 보호책임자</h2>
+                <p>회사는 개인정보 처리에 관한 업무를 총괄해서 책임지고, 개인정보 처리와 관련한 정보주체의 불만 처리 및 피해 구제 등을 위하여 아래와 같이 개인정보 보호책임자를 지정하고 있습니다.</p>
+
+                <div class="bg-slate-800 rounded-xl p-6 border border-slate-700 my-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <p class="text-xs text-slate-500 uppercase tracking-widest mb-1">개인정보 보호책임자</p>
+                            <p class="font-semibold text-white">소프트팩토리 개인정보보호팀</p>
+                            <p class="text-slate-300 text-sm mt-1">이메일: privacy@softfactory.kr</p>
+                            <p class="text-slate-300 text-sm">처리 기한: 10영업일 이내</p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-slate-500 uppercase tracking-widest mb-1">불만 접수 및 피해 구제</p>
+                            <p class="text-slate-300 text-sm mt-1">개인정보침해신고센터: <a href="https://privacy.kisa.or.kr" class="text-violet-400 hover:underline" target="_blank" rel="noopener noreferrer">privacy.kisa.or.kr</a> (국번 없이 118)</p>
+                            <p class="text-slate-300 text-sm">개인정보 분쟁조정위원회: <a href="https://www.kopico.go.kr" class="text-violet-400 hover:underline" target="_blank" rel="noopener noreferrer">www.kopico.go.kr</a> (1833-6972)</p>
+                            <p class="text-slate-300 text-sm">대검찰청 사이버수사과: <a href="https://www.spo.go.kr" class="text-violet-400 hover:underline" target="_blank" rel="noopener noreferrer">www.spo.go.kr</a> (국번 없이 1301)</p>
+                            <p class="text-slate-300 text-sm">경찰청 사이버안전국: <a href="https://ecrm.cyber.go.kr" class="text-violet-400 hover:underline" target="_blank" rel="noopener noreferrer">ecrm.cyber.go.kr</a> (국번 없이 182)</p>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>8.1 보안 조치</h3>
+                <p>회사는 개인정보보호법 제29조에 따라 다음과 같이 안전성 확보에 필요한 기술적·관리적·물리적 조치를 취하고 있습니다.</p>
+                <ul>
+                    <li>개인정보 암호화: 비밀번호는 복호화 불가능한 일방향 암호화(bcrypt/PBKDF2) 적용; 소셜 액세스 토큰은 AES-256 암호화 저장</li>
+                    <li>전송 구간 보호: TLS 1.2 이상 적용 (HTTPS 강제 리다이렉트)</li>
+                    <li>접근 통제: 개인정보 처리 시스템에 대한 접근 권한 최소화 원칙 적용 (RBAC)</li>
+                    <li>침해 사고 대비: Sentry를 이용한 실시간 오류 모니터링, 이상 접근 자동 차단</li>
+                    <li>취약점 관리: OWASP Top 10 기준 주기적 보안 점검</li>
+                    <li>정기 교육: 개인정보 처리 직원 대상 개인정보보호법 정기 교육 실시</li>
+                </ul>
+
+                <!-- Section 9 -->
+                <h2 id="section9">제9조 시행일</h2>
+                <p>본 개인정보 처리방침은 <strong>2026년 1월 1일</strong>부터 시행합니다.</p>
+                <p>회사가 개인정보 처리방침을 개정하는 경우에는 개정 시행일로부터 최소 7일 전에 서비스 공지사항 또는 이메일을 통해 고지합니다.
+                   중요한 내용 변경(수집 항목, 목적, 보유 기간, 제3자 제공)이 있을 경우 최소 30일 이전에 고지합니다.</p>
+
+                <div class="bg-slate-800 rounded-xl p-5 border border-slate-700 text-sm text-slate-400 mt-6">
+                    <strong class="text-slate-200">이전 버전</strong><br>
+                    해당 없음 (최초 시행)
+                </div>
+
+            </div><!-- /.prose -->
+
+            <!-- Footer actions -->
+            <div class="mt-12 pt-6 border-t border-slate-800 flex flex-wrap gap-3">
+                <a href="index.html" class="inline-flex items-center gap-2 px-5 py-2.5 bg-violet-600 hover:bg-violet-700 text-white rounded-lg font-semibold transition text-sm">
+                    대시보드로 돌아가기
+                </a>
+                <a href="terms.html" class="inline-flex items-center gap-2 px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg font-semibold transition text-sm">
+                    이용약관 보기
+                </a>
+                <a href="data-export.html" class="inline-flex items-center gap-2 px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg font-semibold transition text-sm">
+                    내 데이터 내보내기
+                </a>
+            </div>
+
+        </main>
+    </div>
+
+    <script src="/web/platform/cookie-consent.js" defer></script>
+    <script src="../mobile-optimization.js" defer></script>
+</body>
+</html>

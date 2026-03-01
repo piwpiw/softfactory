@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#111827">
+    <title>도움말 & 지원 — SoftFactory</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="api.js"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+
+        /* Accordion */
+        details summary { list-style: none; cursor: pointer; }
+        details summary::-webkit-details-marker { display: none; }
+        details[open] summary .chevron { transform: rotate(180deg); }
+        details[open] summary { color: #a78bfa; }
+        .chevron { transition: transform .25s ease; }
+
+        details .answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height .3s ease;
+        }
+        details[open] .answer {
+            max-height: 600px;
+        }
+
+        /* Search highlight */
+        .highlight { background: rgba(124,58,237,.3); border-radius: 2px; padding: 0 2px; }
+
+        /* Sidebar nav */
+        .nav-item { transition: background .15s, color .15s; }
+        .nav-item:hover { background: #1e293b; }
+        .nav-item.active { background: #4c1d95; color: white; }
+
+        /* Cards */
+        .guide-card { transition: border-color .2s, transform .15s; }
+        .guide-card:hover { border-color: #7c3aed; transform: translateY(-2px); }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+
+        @media (max-width: 768px) {
+            .sidebar { display: none; }
+        }
+    </style>
+    <link rel="stylesheet" href="../responsive-framework.css">
+</head>
+<body class="bg-slate-950 text-slate-100">
+
+    <div class="flex h-screen overflow-hidden">
+
+        <!-- Sidebar -->
+        <aside class="sidebar w-64 bg-slate-900 border-r border-slate-800 flex flex-col shrink-0 overflow-y-auto">
+            <div class="p-5 border-b border-slate-800">
+                <a href="dashboard.html" class="flex items-center gap-3">
+                    <span class="font-bold text-white text-lg">SoftFactory</span>
+                </a>
+            </div>
+            <nav class="flex-1 p-4 space-y-1">
+                <a href="dashboard.html" class="nav-item flex items-center gap-3 px-3 py-2 rounded-lg text-slate-400 text-sm">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                    대시보드
+                </a>
+                <a href="help.html" class="nav-item active flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    도움말
+                </a>
+                <a href="onboarding.html" class="nav-item flex items-center gap-3 px-3 py-2 rounded-lg text-slate-400 text-sm">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                    시작하기
+                </a>
+                <a href="settings.html" class="nav-item flex items-center gap-3 px-3 py-2 rounded-lg text-slate-400 text-sm">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                    설정
+                </a>
+            </nav>
+            <div class="p-4 border-t border-slate-800">
+                <a href="privacy.html" class="text-xs text-slate-500 hover:text-slate-300 transition block">개인정보처리방침</a>
+                <a href="terms.html" class="text-xs text-slate-500 hover:text-slate-300 transition block mt-1">이용약관</a>
+            </div>
+        </aside>
+
+        <!-- Main content -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+
+            <!-- Top header -->
+            <header class="h-14 bg-slate-900 border-b border-slate-800 px-5 flex items-center gap-4 shrink-0">
+                <!-- Mobile sidebar toggle -->
+                <button class="lg:hidden text-slate-400 hover:text-white" aria-label="메뉴 열기">
+                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+                </button>
+                <h1 class="text-base font-semibold text-white">도움말 & 지원</h1>
+                <div class="ml-auto flex items-center gap-3">
+                    <a href="dashboard.html" class="text-sm text-slate-400 hover:text-white transition">&#x2190; 대시보드</a>
+                </div>
+            </header>
+
+            <!-- Scrollable content -->
+            <main class="flex-1 overflow-y-auto p-5 lg:p-8">
+                <div class="max-w-3xl mx-auto">
+
+                    <!-- Search bar -->
+                    <div class="relative mb-8">
+                        <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                        <input id="search-input" type="search" placeholder="질문을 검색하세요..."
+                            class="w-full bg-slate-800 border border-slate-700 rounded-xl pl-12 pr-4 py-3 text-white placeholder-slate-500 focus:border-violet-500 focus:outline-none transition">
+                        <div id="search-hint" class="absolute right-4 top-1/2 -translate-y-1/2 text-xs text-slate-600">Enter</div>
+                    </div>
+
+                    <!-- ===== Section 1: FAQ ===== -->
+                    <section id="faq-section" class="mb-12">
+                        <h2 class="text-lg font-bold text-white mb-5 flex items-center gap-2">
+                            <span class="w-7 h-7 bg-violet-900/50 rounded-lg flex items-center justify-center text-sm">?</span>
+                            자주 묻는 질문
+                        </h2>
+
+                        <div id="faq-list" class="space-y-3">
+
+                            <!-- FAQ Item -->
+                            <details class="bg-slate-800 rounded-xl border border-slate-700 overflow-hidden group faq-item" data-tags="계정 로그인 비밀번호">
+                                <summary class="flex items-center justify-between px-5 py-4 font-medium text-slate-100 group-open:text-violet-300 transition">
+                                    <span class="faq-q">비밀번호를 잊어버렸어요. 어떻게 재설정하나요?</span>
+                                    <svg class="chevron w-4 h-4 text-slate-500 flex-shrink-0 ml-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                                </summary>
+                                <div class="answer px-5 pb-4">
+                                    <p class="text-slate-300 text-sm leading-relaxed">
+                                        로그인 페이지에서 <strong class="text-white">「비밀번호 찾기」</strong>를 클릭하세요.
+                                        가입 시 사용한 이메일 주소를 입력하면 재설정 링크가 발송됩니다.
+                                        이메일이 도착하지 않으면 스팸 폴더를 확인하거나
+                                        고객센터(support@softfactory.kr)로 문의해 주세요.
+                                    </p>
+                                </div>
+                            </details>
+
+                            <details class="bg-slate-800 rounded-xl border border-slate-700 overflow-hidden group faq-item" data-tags="구독 결제 요금 플랜">
+                                <summary class="flex items-center justify-between px-5 py-4 font-medium text-slate-100 group-open:text-violet-300 transition">
+                                    <span class="faq-q">구독을 취소하면 언제부터 서비스가 중단되나요?</span>
+                                    <svg class="chevron w-4 h-4 text-slate-500 flex-shrink-0 ml-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                                </summary>
+                                <div class="answer px-5 pb-4">
+                                    <p class="text-slate-300 text-sm leading-relaxed">
+                                        구독을 취소해도 <strong class="text-white">현재 결제 기간 종료일까지</strong>는 서비스를 계속 사용할 수 있습니다.
+                                        예를 들어 월간 구독을 15일에 취소하면 그달 말까지 이용 가능하며, 다음 달 자동 결제가 중단됩니다.
+                                        취소는 [설정 → 결제 → 구독 취소]에서 진행하세요.
+                                    </p>
+                                </div>
+                            </details>
+
+                            <details class="bg-slate-800 rounded-xl border border-slate-700 overflow-hidden group faq-item" data-tags="결제 환불 정책">
+                                <summary class="flex items-center justify-between px-5 py-4 font-medium text-slate-100 group-open:text-violet-300 transition">
+                                    <span class="faq-q">환불 정책은 어떻게 되나요?</span>
+                                    <svg class="chevron w-4 h-4 text-slate-500 flex-shrink-0 ml-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                                </summary>
+                                <div class="answer px-5 pb-4">
+                                    <p class="text-slate-300 text-sm leading-relaxed">
+                                        최초 결제 후 <strong class="text-white">7일 이내</strong> 서비스 미이용 조건으로 전액 환불이 가능합니다.
+                                        7일이 지난 경우 월간 구독은 환불이 어렵습니다.
+                                        연간 구독은 결제 후 30일 이내 전액 환불, 30일 초과 시 잔여 월 비례 환불이 적용됩니다.
+                                        환불 요청은 <a href="mailto:support@softfactory.kr" class="text-violet-400 hover:underline">support@softfactory.kr</a>로 접수해 주세요.
+                                    </p>
+                                </div>
+                            </details>
+
+                            <details class="bg-slate-800 rounded-xl border border-slate-700 overflow-hidden group faq-item" data-tags="SNS 자동화 계정 연동">
+                                <summary class="flex items-center justify-between px-5 py-4 font-medium text-slate-100 group-open:text-violet-300 transition">
+                                    <span class="faq-q">SNS 계정은 어떻게 연동하나요?</span>
+                                    <svg class="chevron w-4 h-4 text-slate-500 flex-shrink-0 ml-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                                </summary>
+                                <div class="answer px-5 pb-4">
+                                    <ol class="text-slate-300 text-sm leading-relaxed space-y-1 list-decimal pl-4">
+                                        <li>좌측 메뉴에서 <strong class="text-white">SNS 자동화</strong>를 선택합니다.</li>
+                                        <li><strong class="text-white">계정 관리</strong> 탭에서 <strong class="text-white">[+ 계정 추가]</strong> 버튼을 클릭합니다.</li>
+                                        <li>연결할 플랫폼(Instagram, Twitter, Facebook 등)을 선택합니다.</li>
+                                        <li>OAuth 인증 팝업에서 해당 플랫폼 계정으로 로그인하고 권한을 허용합니다.</li>
+                                        <li>연동이 완료되면 계정 목록에 표시됩니다.</li>
+                                    </ol>
+                                </div>
+                            </details>
+
+                            <details class="bg-slate-800 rounded-xl border border-slate-700 overflow-hidden group faq-item" data-tags="체험단 신청 리뷰">
+                                <summary class="flex items-center justify-between px-5 py-4 font-medium text-slate-100 group-open:text-violet-300 transition">
+                                    <span class="faq-q">체험단 자동 신청은 어떻게 설정하나요?</span>
+                                    <svg class="chevron w-4 h-4 text-slate-500 flex-shrink-0 ml-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                                </summary>
+                                <div class="answer px-5 pb-4">
+                                    <p class="text-slate-300 text-sm leading-relaxed">
+                                        체험단 관리 메뉴에서 <strong class="text-white">[자동 신청 규칙]</strong>을 설정하면,
+                                        조건에 맞는 캠페인이 등록될 때 자동으로 신청됩니다.
+                                        관심 카테고리, 최소 보상 금액, 플랫폼 유형 등 다양한 필터를 지정할 수 있습니다.
+                                        자동 신청은 하루 최대 10건으로 제한됩니다 (Pro 플랜: 무제한).
+                                    </p>
+                                </div>
+                            </details>
+
+                            <details class="bg-slate-800 rounded-xl border border-slate-700 overflow-hidden group faq-item" data-tags="보안 계정 삭제 데이터">
+                                <summary class="flex items-center justify-between px-5 py-4 font-medium text-slate-100 group-open:text-violet-300 transition">
+                                    <span class="faq-q">내 계정과 데이터를 완전히 삭제할 수 있나요?</span>
+                                    <svg class="chevron w-4 h-4 text-slate-500 flex-shrink-0 ml-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                                </summary>
+                                <div class="answer px-5 pb-4">
+                                    <p class="text-slate-300 text-sm leading-relaxed">
+                                        네, 가능합니다. <strong class="text-white">[설정 → 계정 → 계정 삭제]</strong>에서 요청하실 수 있습니다.
+                                        삭제 시 개인정보는 즉시 익명화 처리됩니다.
+                                        단, 법률(전자상거래법, 세법)에 따라 거래 내역은 최대 5년간 익명 상태로 보관됩니다.
+                                        삭제 전에 <strong class="text-white">[내 데이터 내보내기]</strong>로 데이터를 백업하는 것을 권장합니다.
+                                    </p>
+                                </div>
+                            </details>
+
+                            <details class="bg-slate-800 rounded-xl border border-slate-700 overflow-hidden group faq-item" data-tags="AI 자동화 AI 직원">
+                                <summary class="flex items-center justify-between px-5 py-4 font-medium text-slate-100 group-open:text-violet-300 transition">
+                                    <span class="faq-q">AI 자동화 기능은 어떻게 사용하나요?</span>
+                                    <svg class="chevron w-4 h-4 text-slate-500 flex-shrink-0 ml-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                                </summary>
+                                <div class="answer px-5 pb-4">
+                                    <p class="text-slate-300 text-sm leading-relaxed">
+                                        AI 자동화 메뉴에서 <strong class="text-white">AI 직원</strong>을 생성할 수 있습니다.
+                                        업무 유형(고객 응대, 콘텐츠 생성, 데이터 분석 등)을 선택하고 지시사항을 입력하면
+                                        AI가 자동으로 해당 업무를 처리합니다. Anthropic Claude를 기반으로 동작합니다.
+                                    </p>
+                                </div>
+                            </details>
+
+                        </div><!-- /#faq-list -->
+
+                        <p id="no-results" class="hidden text-slate-500 text-sm text-center py-8">검색 결과가 없습니다. 다른 키워드로 검색해 보세요.</p>
+                    </section>
+
+                    <!-- ===== Section 2: Feature Guides ===== -->
+                    <section id="guides-section" class="mb-12">
+                        <h2 class="text-lg font-bold text-white mb-5 flex items-center gap-2">
+                            <span class="w-7 h-7 bg-violet-900/50 rounded-lg flex items-center justify-center text-sm">&#x1F4D6;</span>
+                            기능별 가이드
+                        </h2>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+                            <a href="../sns-auto/index.html" class="guide-card bg-slate-800 rounded-xl p-5 border border-slate-700 block">
+                                <div class="text-2xl mb-3">📱</div>
+                                <h3 class="font-semibold text-white mb-1">SNS 자동화 가이드</h3>
+                                <p class="text-xs text-slate-400 leading-relaxed">계정 연동, AI 게시물 생성, 예약 발행, 성과 분석까지 단계별로 안내합니다.</p>
+                                <span class="inline-block mt-3 text-xs text-violet-400 font-medium">가이드 보기 &rarr;</span>
+                            </a>
+
+                            <a href="../review/index.html" class="guide-card bg-slate-800 rounded-xl p-5 border border-slate-700 block">
+                                <div class="text-2xl mb-3">⭐</div>
+                                <h3 class="font-semibold text-white mb-1">체험단 관리 가이드</h3>
+                                <p class="text-xs text-slate-400 leading-relaxed">캠페인 탐색, 자동 신청 설정, 당첨 추적, 리뷰 관리 방법을 알아보세요.</p>
+                                <span class="inline-block mt-3 text-xs text-violet-400 font-medium">가이드 보기 &rarr;</span>
+                            </a>
+
+                            <a href="billing.html" class="guide-card bg-slate-800 rounded-xl p-5 border border-slate-700 block">
+                                <div class="text-2xl mb-3">💳</div>
+                                <h3 class="font-semibold text-white mb-1">결제 및 구독 가이드</h3>
+                                <p class="text-xs text-slate-400 leading-relaxed">플랜 비교, 결제 수단 등록, 영수증 발행, 구독 변경 방법을 안내합니다.</p>
+                                <span class="inline-block mt-3 text-xs text-violet-400 font-medium">가이드 보기 &rarr;</span>
+                            </a>
+
+                            <a href="../ai-automation/index.html" class="guide-card bg-slate-800 rounded-xl p-5 border border-slate-700 block">
+                                <div class="text-2xl mb-3">🤖</div>
+                                <h3 class="font-semibold text-white mb-1">AI 자동화 가이드</h3>
+                                <p class="text-xs text-slate-400 leading-relaxed">AI 직원 생성, 업무 설정, 자동화 워크플로우 구성 방법을 배우세요.</p>
+                                <span class="inline-block mt-3 text-xs text-violet-400 font-medium">가이드 보기 &rarr;</span>
+                            </a>
+
+                            <a href="data-export.html" class="guide-card bg-slate-800 rounded-xl p-5 border border-slate-700 block">
+                                <div class="text-2xl mb-3">📦</div>
+                                <h3 class="font-semibold text-white mb-1">데이터 관리 가이드</h3>
+                                <p class="text-xs text-slate-400 leading-relaxed">내 데이터 내보내기, 계정 삭제, 개인정보 권리 행사 방법을 설명합니다.</p>
+                                <span class="inline-block mt-3 text-xs text-violet-400 font-medium">가이드 보기 &rarr;</span>
+                            </a>
+
+                            <a href="api-reference.html" class="guide-card bg-slate-800 rounded-xl p-5 border border-slate-700 block">
+                                <div class="text-2xl mb-3">&#x1F4BB;</div>
+                                <h3 class="font-semibold text-white mb-1">API 개발자 가이드</h3>
+                                <p class="text-xs text-slate-400 leading-relaxed">REST API 레퍼런스, 인증 방법, 웹훅 설정, 예제 코드를 제공합니다.</p>
+                                <span class="inline-block mt-3 text-xs text-violet-400 font-medium">API 문서 보기 &rarr;</span>
+                            </a>
+
+                        </div>
+                    </section>
+
+                    <!-- ===== Section 3: Contact ===== -->
+                    <section id="contact-section">
+                        <h2 class="text-lg font-bold text-white mb-5 flex items-center gap-2">
+                            <span class="w-7 h-7 bg-violet-900/50 rounded-lg flex items-center justify-center text-sm">&#x1F4AC;</span>
+                            문의하기
+                        </h2>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+
+                            <a href="mailto:support@softfactory.kr"
+                               class="guide-card flex items-start gap-4 bg-slate-800 rounded-xl p-5 border border-slate-700">
+                                <div class="w-10 h-10 bg-violet-900/50 rounded-xl flex items-center justify-center flex-shrink-0">
+                                    <svg class="w-5 h-5 text-violet-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                                </div>
+                                <div>
+                                    <p class="font-semibold text-white text-sm">이메일 문의</p>
+                                    <p class="text-slate-400 text-xs mt-1">support@softfactory.kr</p>
+                                    <p class="text-slate-500 text-xs mt-1">평일 기준 1영업일 이내 답변</p>
+                                </div>
+                            </a>
+
+                            <a href="https://t.me/softfactorybot" target="_blank" rel="noopener noreferrer"
+                               class="guide-card flex items-start gap-4 bg-slate-800 rounded-xl p-5 border border-slate-700">
+                                <div class="w-10 h-10 bg-blue-900/50 rounded-xl flex items-center justify-center flex-shrink-0">
+                                    <svg class="w-5 h-5 text-blue-400" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8l-1.69 7.96c-.12.56-.46.69-.93.43l-2.57-1.89-1.24 1.19c-.14.14-.26.26-.53.26l.19-2.66 4.83-4.36c.21-.19-.05-.29-.33-.1L7.19 14.3l-2.54-.8c-.55-.17-.56-.55.12-.82l9.93-3.83c.46-.17.86.11.94.15z"/></svg>
+                                </div>
+                                <div>
+                                    <p class="font-semibold text-white text-sm">Telegram 지원</p>
+                                    <p class="text-slate-400 text-xs mt-1">@softfactorybot</p>
+                                    <p class="text-slate-500 text-xs mt-1">빠른 응답 · 업무 시간 내</p>
+                                </div>
+                            </a>
+
+                        </div>
+
+                        <div class="bg-gradient-to-r from-violet-900/30 to-indigo-900/30 rounded-xl p-6 border border-violet-700/30 text-center">
+                            <p class="text-white font-semibold mb-1">아직 답을 찾지 못하셨나요?</p>
+                            <p class="text-slate-400 text-sm mb-4">고객센터 팀이 평일 09:00 ~ 18:00 (KST) 도움을 드립니다.</p>
+                            <a href="contact.html"
+                               class="inline-block px-6 py-2.5 bg-violet-600 hover:bg-violet-700 text-white font-semibold rounded-xl transition text-sm">
+                                1:1 문의하기
+                            </a>
+                        </div>
+                    </section>
+
+                </div><!-- /.max-w-3xl -->
+            </main>
+        </div><!-- /.flex-1 -->
+    </div><!-- /.flex.h-screen -->
+
+    <script>
+    (function () {
+        'use strict';
+
+        // ---- FAQ Search ----
+        var searchInput = document.getElementById('search-input');
+        var faqItems = document.querySelectorAll('.faq-item');
+        var noResults = document.getElementById('no-results');
+
+        function filterFAQ(query) {
+            query = query.toLowerCase().trim();
+            var visibleCount = 0;
+
+            faqItems.forEach(function (item) {
+                var qEl = item.querySelector('.faq-q');
+                var answerEl = item.querySelector('.answer');
+                var tags = (item.dataset.tags || '').toLowerCase();
+                var qText = qEl ? qEl.textContent.toLowerCase() : '';
+                var aText = answerEl ? answerEl.textContent.toLowerCase() : '';
+
+                var match = !query || qText.includes(query) || aText.includes(query) || tags.includes(query);
+
+                item.style.display = match ? '' : 'none';
+                if (match) visibleCount++;
+
+                // Remove old highlights
+                if (qEl) qEl.innerHTML = qEl.textContent;
+
+                // Apply highlight on match
+                if (match && query && qEl) {
+                    var re = new RegExp('(' + escapeRegExp(query) + ')', 'gi');
+                    qEl.innerHTML = qEl.textContent.replace(re, '<mark class="highlight">$1</mark>');
+                }
+            });
+
+            noResults.classList.toggle('hidden', visibleCount > 0);
+        }
+
+        function escapeRegExp(str) {
+            return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        }
+
+        searchInput.addEventListener('input', function () {
+            filterFAQ(this.value);
+        });
+
+        searchInput.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') {
+                this.value = '';
+                filterFAQ('');
+            }
+        });
+
+        // ---- Require auth ----
+        if (typeof requireAuth === 'function') requireAuth();
+
+    })();
+    </script>
+
+    <script src="/web/platform/cookie-consent.js" defer></script>
+    <script src="../mobile-optimization.js" defer></script>
+</body>
+</html>

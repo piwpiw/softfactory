@@ -1,0 +1,1205 @@
+"""Review Campaign Service - Influencer & Reviewer Campaigns + 체험단 Aggregation"""
+from flask import Blueprint, request, jsonify, g
+from datetime import datetime, timedelta
+from sqlalchemy import and_, or_, desc
+from ..models import (db, Campaign, CampaignApplication, ReviewListing, ReviewAccount,
+                      ReviewApplication, ReviewAutoRule)
+from ..auth import require_auth, require_subscription
+
+review_bp = Blueprint('review', __name__, url_prefix='/api/review')
+
+
+@review_bp.route('/campaigns', methods=['GET'])
+def get_campaigns():
+    """List campaigns with filters"""
+    query = Campaign.query.filter_by(status='active')
+
+    # Filters
+    category = request.args.get('category')
+    page = request.args.get('page', 1, type=int)
+    per_page = request.args.get('per_page', 12, type=int)
+
+    if category:
+        query = query.filter_by(category=category)
+
+    # Filter by deadline (not expired)
+    query = query.filter(Campaign.deadline >= datetime.utcnow())
+
+    result = query.order_by(Campaign.created_at.desc()).paginate(page=page, per_page=per_page)
+
+    campaigns_data = []
+    for campaign in result.items:
+        app_count = CampaignApplication.query.filter_by(campaign_id=campaign.id).count()
+        campaigns_data.append({
+            'id': campaign.id,
+            'title': campaign.title,
+            'product_name': campaign.product_name,
+            'category': campaign.category,
+            'reward_type': campaign.reward_type,
+            'reward_value': campaign.reward_value,
+            'max_reviewers': campaign.max_reviewers,
+            'applications_count': app_count,
+            'deadline': campaign.deadline.isoformat(),
+            'created_at': campaign.created_at.isoformat(),
+        })
+
+    return jsonify({
+        'campaigns': campaigns_data,
+        'total': result.total,
+        'pages': result.pages,
+        'current_page': page
+    }), 200
+
+
+@review_bp.route('/campaigns/<int:campaign_id>', methods=['GET'])
+def get_campaign_detail(campaign_id):
+    """Get campaign details"""
+    campaign = Campaign.query.get(campaign_id)
+
+    if not campaign:
+        return jsonify({'error': 'Campaign not found'}), 404
+
+    app_count = CampaignApplication.query.filter_by(campaign_id=campaign.id).count()
+
+    return jsonify({
+        'id': campaign.id,
+        'title': campaign.title,
+        'description': campaign.description,
+        'product_name': campaign.product_name,
+        'category': campaign.category,
+        'reward_type': campaign.reward_type,
+        'reward_value': campaign.reward_value,
+        'max_reviewers': campaign.max_reviewers,
+        'applications_count': app_count,
+        'spots_available': max(0, campaign.max_reviewers - app_count),
+        'deadline': campaign.deadline.isoformat(),
+        'status': campaign.status,
+        'created_at': campaign.created_at.isoformat(),
+    }), 200
+
+
+@review_bp.route('/campaigns', methods=['POST'])
+@require_auth
+@require_subscription('review')
+def create_campaign():
+    """Create campaign (campaign creator)"""
+    data = request.get_json()
+
+    required = ['title', 'product_name', 'category', 'reward_type', 'reward_value', 'max_reviewers', 'deadline']
+    if not all(data.get(field) for field in required):
+        return jsonify({'error': 'Missing required fields'}), 400
+
+    try:
+        deadline = datetime.fromisoformat(data['deadline'])
+    except (ValueError, TypeError):
+        return jsonify({'error': 'Invalid deadline format'}), 400
+
+    campaign = Campaign(
+        creator_id=g.user_id,
+        title=data['title'],
+        product_name=data['product_name'],
+        description=data.get('description', ''),
+        category=data['category'],
+        reward_type=data['reward_type'],
+        reward_value=data['reward_value'],
+        max_reviewers=int(data['max_reviewers']),
+        deadline=deadline,
+        status='active'
+    )
+
+    db.session.add(campaign)
+    db.session.commit()
+
+    return jsonify({
+        'id': campaign.id,
+        'message': 'Campaign created successfully'
+    }), 201
+
+
+@review_bp.route('/campaigns/<int:campaign_id>/apply', methods=['POST'])
+@require_auth
+def apply_campaign(campaign_id):
+    """Apply to campaign (reviewer)"""
+    campaign = Campaign.query.get(campaign_id)
+
+    if not campaign or campaign.status != 'active':
+        return jsonify({'error': 'Campaign not found or closed'}), 404
+
+    if campaign.deadline < datetime.utcnow():
+        return jsonify({'error': 'Campaign deadline passed'}), 400
+
+    # Check if already applied
+    existing = CampaignApplication.query.filter_by(
+        campaign_id=campaign_id,
+        user_id=g.user_id
+    ).first()
+
+    if existing:
+        return jsonify({'error': 'Already applied to this campaign'}), 400
+
+    # Check if spots available
+    app_count = CampaignApplication.query.filter_by(campaign_id=campaign_id).count()
+    if app_count >= campaign.max_reviewers:
+        return jsonify({'error': 'Campaign is full'}), 400
+
+    data = request.get_json()
+
+    required = ['message']
+    if not all(data.get(field) for field in required):
+        return jsonify({'error': 'Missing required fields'}), 400
+
+    application = CampaignApplication(
+        campaign_id=campaign_id,
+        user_id=g.user_id,
+        message=data['message'],
+        sns_link=data.get('sns_link'),
+        follower_count=data.get('follower_count', 0),
+        status='pending'
+    )
+
+    db.session.add(application)
+    db.session.commit()
+
+    return jsonify({
+        'id': application.id,
+        'message': 'Application submitted successfully'
+    }), 201
+
+
+@review_bp.route('/my-campaigns', methods=['GET'])
+@require_auth
+@require_subscription('review')
+def get_my_campaigns():
+    """Get user's created campaigns"""
+    campaigns = Campaign.query.filter_by(creator_id=g.user_id).all()
+
+    campaigns_data = []
+    for campaign in campaigns:
+        app_count = CampaignApplication.query.filter_by(campaign_id=campaign.id).count()
+        campaigns_data.append({
+            'id': campaign.id,
+            'title': campaign.title,
+            'product_name': campaign.product_name,
+            'category': campaign.category,
+            'max_reviewers': campaign.max_reviewers,
+            'applications_count': app_count,
+            'deadline': campaign.deadline.isoformat(),
+            'status': campaign.status,
+        })
+
+    return jsonify(campaigns_data), 200
+
+
+@review_bp.route('/my-applications', methods=['GET'])
+@require_auth
+def get_my_applications():
+    """Get user's campaign applications"""
+    applications = CampaignApplication.query.filter_by(user_id=g.user_id).all()
+
+    apps_data = []
+    for app in applications:
+        apps_data.append({
+            'id': app.id,
+            'campaign_title': app.campaign.title,
+            'product_name': app.campaign.product_name,
+            'reward_value': app.campaign.reward_value,
+            'status': app.status,
+            'applied_at': app.created_at.isoformat(),
+        })
+
+    return jsonify(apps_data), 200
+
+
+@review_bp.route('/campaigns/<int:campaign_id>/applications', methods=['GET'])
+@require_auth
+@require_subscription('review')
+def get_campaign_applications(campaign_id):
+    """Get applications for a campaign (creator only)"""
+    campaign = Campaign.query.get(campaign_id)
+
+    if not campaign:
+        return jsonify({'error': 'Campaign not found'}), 404
+
+    if campaign.creator_id != g.user_id:
+        return jsonify({'error': 'Not authorized'}), 403
+
+    applications = CampaignApplication.query.filter_by(campaign_id=campaign_id).all()
+
+    apps_data = []
+    for app in applications:
+        apps_data.append({
+            'id': app.id,
+            'user_name': app.user.name,
+            'user_email': app.user.email,
+            'message': app.message,
+            'sns_link': app.sns_link,
+            'follower_count': app.follower_count,
+            'status': app.status,
+        })
+
+    return jsonify(apps_data), 200
+
+
+@review_bp.route('/applications/<int:application_id>', methods=['PUT'])
+@require_auth
+@require_subscription('review')
+def update_application(application_id):
+    """Approve or reject application"""
+    application = CampaignApplication.query.get(application_id)
+
+    if not application:
+        return jsonify({'error': 'Application not found'}), 404
+
+    if application.campaign.creator_id != g.user_id:
+        return jsonify({'error': 'Not authorized'}), 403
+
+    data = request.get_json()
+    if 'status' in data:
+        if data['status'] not in ['pending', 'approved', 'rejected']:
+            return jsonify({'error': 'Invalid status'}), 400
+
+        application.status = data['status']
+        db.session.commit()
+
+    return jsonify({'message': 'Application updated'}), 200
+
+
+# ============ 체험단 모음 (Review Listings Aggregation) ============
+
+@review_bp.route('/aggregated', methods=['GET'])
+def get_aggregated_listings():
+    """
+    List aggregated review listings from all platforms with filters & sorting
+
+    Query params:
+    - category: filter by category (food, beauty, tech, fashion)
+    - min_reward: minimum reward value
+    - max_reward: maximum reward value
+    - platforms: comma-separated platform codes (revu, reviewplace, wible)
+    - sort: latest (default), reward_high, applicants_few
+    - page: page number (default: 1)
+    - limit: items per page (default: 50, max: 100)
+
+    Response: {listings: [...], total, page, limit, filters_applied}
+    """
+    try:
+        # Filters
+        category = request.args.get('category')
+        min_reward = request.args.get('min_reward', type=int)
+        max_reward = request.args.get('max_reward', type=int)
+        platforms = request.args.get('platforms', '').split(',') if request.args.get('platforms') else []
+        sort_by = request.args.get('sort', 'latest')
+        page = request.args.get('page', 1, type=int)
+        limit = request.args.get('limit', 50, type=int)
+
+        # Validate limit
+        limit = min(limit, 100)
+        page = max(page, 1)
+
+        # Build query
+        query = ReviewListing.query.filter_by(status='active')
+
+        # Apply filters
+        if category:
+            query = query.filter_by(category=category)
+
+        if min_reward:
+            query = query.filter(ReviewListing.reward_value >= min_reward)
+
+        if max_reward:
+            query = query.filter(ReviewListing.reward_value <= max_reward)
+
+        if platforms and platforms[0]:
+            query = query.filter(ReviewListing.source_platform.in_(platforms))
+
+        # Filter by deadline (not expired)
+        query = query.filter(ReviewListing.deadline >= datetime.utcnow())
+
+        # Apply sorting
+        if sort_by == 'reward_high':
+            query = query.order_by(desc(ReviewListing.reward_value))
+        elif sort_by == 'applicants_few':
+            query = query.order_by(ReviewListing.current_applicants.asc())
+        else:  # 'latest'
+            query = query.order_by(desc(ReviewListing.scraped_at))
+
+        # Pagination
+        total = query.count()
+        offset = (page - 1) * limit
+        listings = query.offset(offset).limit(limit).all()
+
+        listings_data = [l.to_dict() for l in listings]
+
+        return jsonify({
+            'success': True,
+            'data': {
+                'listings': listings_data,
+                'total': total,
+                'page': page,
+                'limit': limit,
+                'pages': (total + limit - 1) // limit,
+                'filters_applied': {
+                    'category': category,
+                    'min_reward': min_reward,
+                    'max_reward': max_reward,
+                    'platforms': platforms if platforms[0] else None,
+                    'sort': sort_by
+                }
+            }
+        }), 200
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@review_bp.route('/scrape/now', methods=['POST'])
+@require_auth
+@require_subscription('review')
+def trigger_scrape_now():
+    """
+    Trigger immediate scraping of all review listing platforms
+
+    Response: {success: true, task_id, status, message}
+    """
+    try:
+        # In production, this would trigger async job queue (Celery/RQ)
+        # For now, we'll simulate it
+        task_id = f"scrape_{datetime.utcnow().timestamp()}"
+
+        return jsonify({
+            'success': True,
+            'task_id': task_id,
+            'status': 'queued',
+            'message': 'Scraping job queued. Check /scrape/status for progress'
+        }), 202
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@review_bp.route('/scrape/status', methods=['GET'])
+@require_auth
+@require_subscription('review')
+def get_scrape_status():
+    """Get status of current/recent scraping tasks"""
+    try:
+        # In production, fetch from job queue backend
+        # For now, return dummy status
+        return jsonify({
+            'success': True,
+            'data': {
+                'current_job': None,
+                'last_scrape': ReviewListing.query.order_by(desc(ReviewListing.scraped_at)).first().scraped_at.isoformat() if ReviewListing.query.count() > 0 else None,
+                'total_listings': ReviewListing.query.count(),
+                'active_listings': ReviewListing.query.filter_by(status='active').count()
+            }
+        }), 200
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+# ============ Bookmarks ============
+
+@review_bp.route('/listings/<int:listing_id>/bookmark', methods=['POST'])
+@require_auth
+def add_bookmark(listing_id):
+    """Add listing to user's bookmarks"""
+    try:
+        listing = ReviewListing.query.get(listing_id)
+        if not listing:
+            return jsonify({'error': 'Listing not found'}), 404
+
+        # Check if already bookmarked
+        from ..models import ReviewBookmark
+        existing = ReviewBookmark.query.filter_by(
+            user_id=g.user_id,
+            listing_id=listing_id
+        ).first()
+
+        if existing:
+            return jsonify({'error': 'Already bookmarked'}), 400
+
+        bookmark = ReviewBookmark(user_id=g.user_id, listing_id=listing_id)
+        db.session.add(bookmark)
+        db.session.commit()
+
+        return jsonify({'success': True, 'message': 'Listing bookmarked'}), 201
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@review_bp.route('/listings/<int:listing_id>/bookmark', methods=['DELETE'])
+@require_auth
+def remove_bookmark(listing_id):
+    """Remove listing from user's bookmarks"""
+    try:
+        from ..models import ReviewBookmark
+        bookmark = ReviewBookmark.query.filter_by(
+            user_id=g.user_id,
+            listing_id=listing_id
+        ).first()
+
+        if not bookmark:
+            return jsonify({'error': 'Bookmark not found'}), 404
+
+        db.session.delete(bookmark)
+        db.session.commit()
+
+        return jsonify({'success': True, 'message': 'Bookmark removed'}), 200
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@review_bp.route('/bookmarks', methods=['GET'])
+@require_auth
+def get_user_bookmarks():
+    """Get user's bookmarked listings with pagination"""
+    try:
+        from ..models import ReviewBookmark
+        page = request.args.get('page', 1, type=int)
+        limit = request.args.get('limit', 50, type=int)
+        limit = min(limit, 100)
+        page = max(page, 1)
+
+        query = ReviewBookmark.query.filter_by(user_id=g.user_id)
+        total = query.count()
+        offset = (page - 1) * limit
+
+        bookmarks = query.order_by(desc(ReviewBookmark.created_at)).offset(offset).limit(limit).all()
+
+        listings_data = [b.listing.to_dict() for b in bookmarks]
+
+        return jsonify({
+            'success': True,
+            'data': {
+                'listings': listings_data,
+                'total': total,
+                'page': page,
+                'limit': limit
+            }
+        }), 200
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+# ============ Review Accounts Management ============
+
+@review_bp.route('/accounts', methods=['GET'])
+@require_auth
+def get_review_accounts():
+    """Get user's review accounts"""
+    try:
+        accounts = ReviewAccount.query.filter_by(user_id=g.user_id).all()
+
+        return jsonify({
+            'success': True,
+            'data': [a.to_dict() for a in accounts]
+        }), 200
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@review_bp.route('/accounts', methods=['POST'])
+@require_auth
+def create_review_account():
+    """Create a new review account"""
+    try:
+        data = request.get_json()
+
+        required = ['platform', 'account_name']
+        if not all(data.get(field) for field in required):
+            return jsonify({'error': 'Missing required fields'}), 400
+
+        account = ReviewAccount(
+            user_id=g.user_id,
+            platform=data['platform'],
+            account_name=data['account_name'],
+            account_url=data.get('account_url'),
+            follower_count=data.get('follower_count', 0),
+            is_active=True
+        )
+
+        db.session.add(account)
+        db.session.commit()
+
+        return jsonify({
+            'success': True,
+            'data': account.to_dict()
+        }), 201
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@review_bp.route('/accounts/<int:account_id>', methods=['PUT'])
+@require_auth
+def update_review_account(account_id):
+    """Update review account"""
+    try:
+        account = ReviewAccount.query.filter_by(
+            id=account_id,
+            user_id=g.user_id
+        ).first()
+
+        if not account:
+            return jsonify({'error': 'Account not found'}), 404
+
+        data = request.get_json()
+
+        if 'account_name' in data:
+            account.account_name = data['account_name']
+        if 'account_url' in data:
+            account.account_url = data['account_url']
+        if 'follower_count' in data:
+            account.follower_count = data['follower_count']
+        if 'is_active' in data:
+            account.is_active = data['is_active']
+
+        db.session.commit()
+
+        return jsonify({
+            'success': True,
+            'data': account.to_dict()
+        }), 200
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@review_bp.route('/accounts/<int:account_id>', methods=['DELETE'])
+@require_auth
+def delete_review_account(account_id):
+    """Delete review account"""
+    try:
+        account = ReviewAccount.query.filter_by(
+            id=account_id,
+            user_id=g.user_id
+        ).first()
+
+        if not account:
+            return jsonify({'error': 'Account not found'}), 404
+
+        db.session.delete(account)
+        db.session.commit()
+
+        return jsonify({'success': True, 'message': 'Account deleted'}), 200
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+# ============ Review Applications Management ============
+
+@review_bp.route('/applications', methods=['GET'])
+@require_auth
+def get_user_applications():
+    """Get user's review applications with filters"""
+    try:
+        status_filter = request.args.get('status')
+        date_from = request.args.get('date_from')
+        date_to = request.args.get('date_to')
+        page = request.args.get('page', 1, type=int)
+        limit = request.args.get('limit', 50, type=int)
+        limit = min(limit, 100)
+        page = max(page, 1)
+
+        query = ReviewApplication.query.filter(
+            ReviewApplication.account_id.in_(
+                db.session.query(ReviewAccount.id).filter_by(user_id=g.user_id)
+            )
+        )
+
+        if status_filter:
+            query = query.filter_by(status=status_filter)
+
+        if date_from:
+            try:
+                date_from = datetime.fromisoformat(date_from)
+                query = query.filter(ReviewApplication.applied_at >= date_from)
+            except:
+                pass
+
+        if date_to:
+            try:
+                date_to = datetime.fromisoformat(date_to)
+                query = query.filter(ReviewApplication.applied_at <= date_to)
+            except:
+                pass
+
+        total = query.count()
+        offset = (page - 1) * limit
+
+        applications = query.order_by(desc(ReviewApplication.applied_at)).offset(offset).limit(limit).all()
+
+        apps_data = [a.to_dict() for a in applications]
+
+        return jsonify({
+            'success': True,
+            'data': {
+                'applications': apps_data,
+                'total': total,
+                'page': page,
+                'limit': limit
+            }
+        }), 200
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@review_bp.route('/applications', methods=['POST'])
+@require_auth
+def create_application():
+    """
+    Create a new review application
+
+    Body: {
+      listing_id: int,
+      account_id: int,
+      notes: str (optional)
+    }
+    """
+    try:
+        data = request.get_json()
+
+        required = ['listing_id', 'account_id']
+        if not all(data.get(field) for field in required):
+            return jsonify({'error': 'Missing required fields'}), 400
+
+        listing = ReviewListing.query.get(data['listing_id'])
+        if not listing:
+            return jsonify({'error': 'Listing not found'}), 404
+
+        account = ReviewAccount.query.filter_by(
+            id=data['account_id'],
+            user_id=g.user_id
+        ).first()
+        if not account:
+            return jsonify({'error': 'Account not found'}), 404
+
+        # Check if already applied with this account
+        existing = ReviewApplication.query.filter_by(
+            listing_id=data['listing_id'],
+            account_id=data['account_id']
+        ).first()
+
+        if existing:
+            return jsonify({'error': 'Already applied with this account'}), 400
+
+        application = ReviewApplication(
+            listing_id=data['listing_id'],
+            account_id=data['account_id'],
+            status='applied',
+            notes=data.get('notes')
+        )
+
+        db.session.add(application)
+        # Increment current_applicants count
+        listing.current_applicants = (listing.current_applicants or 0) + 1
+        db.session.commit()
+
+        return jsonify({
+            'success': True,
+            'data': application.to_dict()
+        }), 201
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@review_bp.route('/applications/<int:application_id>', methods=['PUT'])
+@require_auth
+def update_review_application(application_id):
+    """Update review application status"""
+    try:
+        application = ReviewApplication.query.get(application_id)
+        if not application:
+            return jsonify({'error': 'Application not found'}), 404
+
+        # Verify ownership
+        account = ReviewAccount.query.get(application.account_id)
+        if account.user_id != g.user_id:
+            return jsonify({'error': 'Not authorized'}), 403
+
+        data = request.get_json()
+
+        if 'status' in data:
+            valid_statuses = ['applied', 'selected', 'rejected', 'completed']
+            if data['status'] not in valid_statuses:
+                return jsonify({'error': f'Invalid status. Valid: {valid_statuses}'}), 400
+            application.status = data['status']
+
+        if 'notes' in data:
+            application.notes = data['notes']
+
+        if 'result' in data:
+            application.result = data['result']
+
+        if 'review_url' in data:
+            application.review_url = data['review_url']
+
+        if 'review_posted_at' in data:
+            try:
+                application.review_posted_at = datetime.fromisoformat(data['review_posted_at'])
+            except:
+                pass
+
+        db.session.commit()
+
+        return jsonify({
+            'success': True,
+            'data': application.to_dict()
+        }), 200
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+# ============ Auto-Apply Rules ============
+
+@review_bp.route('/auto-apply/rules', methods=['GET'])
+@require_auth
+def get_auto_rules():
+    """Get user's auto-apply rules"""
+    try:
+        rules = ReviewAutoRule.query.filter_by(user_id=g.user_id).all()
+
+        return jsonify({
+            'success': True,
+            'data': [r.to_dict() for r in rules]
+        }), 200
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@review_bp.route('/auto-apply/rules', methods=['POST'])
+@require_auth
+def create_auto_rule():
+    """
+    Create auto-apply rule
+
+    Body: {
+      name: str,
+      categories: [str],
+      min_reward: int,
+      max_applicants_ratio: float,
+      preferred_accounts: [int]
+    }
+    """
+    try:
+        data = request.get_json()
+
+        if not data.get('name'):
+            return jsonify({'error': 'Name required'}), 400
+
+        rule = ReviewAutoRule(
+            user_id=g.user_id,
+            name=data['name'],
+            categories=data.get('categories', []),
+            min_reward=data.get('min_reward', 0),
+            max_applicants_ratio=data.get('max_applicants_ratio', 0.5),
+            preferred_accounts=data.get('preferred_accounts', []),
+            is_active=True
+        )
+
+        db.session.add(rule)
+        db.session.commit()
+
+        return jsonify({
+            'success': True,
+            'data': rule.to_dict()
+        }), 201
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@review_bp.route('/auto-apply/rules/<int:rule_id>', methods=['PUT'])
+@require_auth
+def update_auto_rule(rule_id):
+    """Update auto-apply rule"""
+    try:
+        rule = ReviewAutoRule.query.filter_by(
+            id=rule_id,
+            user_id=g.user_id
+        ).first()
+
+        if not rule:
+            return jsonify({'error': 'Rule not found'}), 404
+
+        data = request.get_json()
+
+        if 'name' in data:
+            rule.name = data['name']
+        if 'categories' in data:
+            rule.categories = data['categories']
+        if 'min_reward' in data:
+            rule.min_reward = data['min_reward']
+        if 'max_applicants_ratio' in data:
+            rule.max_applicants_ratio = data['max_applicants_ratio']
+        if 'preferred_accounts' in data:
+            rule.preferred_accounts = data['preferred_accounts']
+        if 'is_active' in data:
+            rule.is_active = data['is_active']
+
+        db.session.commit()
+
+        return jsonify({
+            'success': True,
+            'data': rule.to_dict()
+        }), 200
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@review_bp.route('/auto-apply/rules/<int:rule_id>', methods=['DELETE'])
+@require_auth
+def delete_auto_rule(rule_id):
+    """Delete auto-apply rule"""
+    try:
+        rule = ReviewAutoRule.query.filter_by(
+            id=rule_id,
+            user_id=g.user_id
+        ).first()
+
+        if not rule:
+            return jsonify({'error': 'Rule not found'}), 404
+
+        db.session.delete(rule)
+        db.session.commit()
+
+        return jsonify({'success': True, 'message': 'Rule deleted'}), 200
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@review_bp.route('/auto-apply/run', methods=['POST'])
+@require_auth
+def run_auto_apply():
+    """
+    Execute auto-apply immediately for user's rules
+
+    Response: {success: true, applied_count, task_id}
+    """
+    try:
+        rules = ReviewAutoRule.query.filter_by(user_id=g.user_id, is_active=True).all()
+
+        if not rules:
+            return jsonify({
+                'success': True,
+                'applied_count': 0,
+                'message': 'No active rules found'
+            }), 200
+
+        # In production, this would trigger async job
+        # For now, simulate
+        task_id = f"auto_apply_{datetime.utcnow().timestamp()}"
+
+        return jsonify({
+            'success': True,
+            'applied_count': 0,
+            'task_id': task_id,
+            'message': 'Auto-apply job queued'
+        }), 202
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+# ============ Dashboard & Analytics ============
+
+@review_bp.route('/dashboard', methods=['GET'])
+@require_auth
+def get_review_dashboard():
+    """Get user's review dashboard stats"""
+    try:
+        from ..models import ReviewBookmark
+
+        # Get user's accounts
+        accounts = ReviewAccount.query.filter_by(user_id=g.user_id).all()
+        account_ids = [a.id for a in accounts]
+
+        # Stats
+        total_applied = ReviewApplication.query.filter(
+            ReviewApplication.account_id.in_(account_ids)
+        ).count()
+
+        selected_count = ReviewApplication.query.filter(
+            ReviewApplication.account_id.in_(account_ids),
+            ReviewApplication.status == 'selected'
+        ).count()
+
+        select_rate = (selected_count / total_applied * 100) if total_applied > 0 else 0
+
+        # Bookmarks
+        bookmarks_count = ReviewBookmark.query.filter_by(user_id=g.user_id).count()
+
+        # Category breakdown (top categories from applications)
+        category_stats = {}
+        if account_ids:
+            apps = ReviewApplication.query.filter(
+                ReviewApplication.account_id.in_(account_ids)
+            ).all()
+            for app in apps:
+                category = app.listing.category
+                if category not in category_stats:
+                    category_stats[category] = 0
+                category_stats[category] += 1
+
+        return jsonify({
+            'success': True,
+            'data': {
+                'total_applied': total_applied,
+                'selected_count': selected_count,
+                'select_rate': round(select_rate, 2),
+                'bookmarks': bookmarks_count,
+                'active_accounts': len([a for a in accounts if a.is_active]),
+                'category_breakdown': category_stats,
+                'total_reward_value': sum([
+                    a.listing.reward_value for a in ReviewApplication.query.filter(
+                        ReviewApplication.account_id.in_(account_ids)
+                    ).all() if a.listing.reward_value
+                ]) if account_ids else 0
+            }
+        }), 200
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@review_bp.route('/analytics', methods=['GET'])
+@require_auth
+def get_review_analytics():
+    """Get detailed review analytics (by date, category, platform)"""
+    try:
+        accounts = ReviewAccount.query.filter_by(user_id=g.user_id).all()
+        account_ids = [a.id for a in accounts]
+
+        if not account_ids:
+            return jsonify({
+                'success': True,
+                'data': {
+                    'by_date': [],
+                    'by_category': {},
+                    'by_platform': {},
+                    'by_status': {}
+                }
+            }), 200
+
+        applications = ReviewApplication.query.filter(
+            ReviewApplication.account_id.in_(account_ids)
+        ).all()
+
+        # By date
+        by_date = {}
+        for app in applications:
+            date_key = app.applied_at.date().isoformat()
+            if date_key not in by_date:
+                by_date[date_key] = 0
+            by_date[date_key] += 1
+
+        # By category
+        by_category = {}
+        for app in applications:
+            cat = app.listing.category
+            if cat not in by_category:
+                by_category[cat] = 0
+            by_category[cat] += 1
+
+        # By platform
+        by_platform = {}
+        for app in applications:
+            plat = app.listing.source_platform
+            if plat not in by_platform:
+                by_platform[plat] = 0
+            by_platform[plat] += 1
+
+        # By status
+        by_status = {}
+        for app in applications:
+            status = app.status
+            if status not in by_status:
+                by_status[status] = 0
+            by_status[status] += 1
+
+        return jsonify({
+            'success': True,
+            'data': {
+                'by_date': sorted(by_date.items()),
+                'by_category': by_category,
+                'by_platform': by_platform,
+                'by_status': by_status,
+                'total_applications': len(applications)
+            }
+        }), 200
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+# ============ Daangn (당근마켓) Stub ============
+
+@review_bp.route('/daangn/nearby', methods=['GET'])
+def get_daangn_nearby():
+    """
+    Stub: Get nearby experience listings from Daangn (당근마켓)
+
+    In production, would integrate with Daangn API
+    """
+    try:
+        lat = request.args.get('lat', type=float)
+        lng = request.args.get('lng', type=float)
+        radius = request.args.get('radius', 5, type=int)  # km
+
+        if not lat or not lng:
+            return jsonify({'error': 'lat and lng required'}), 400
+
+        # Stub response - in production would call Daangn API
+        return jsonify({
+            'success': True,
+            'data': {
+                'listings': [],
+                'location_based': True,
+                'lat': lat,
+                'lng': lng,
+                'radius_km': radius,
+                'note': 'Daangn integration coming soon'
+            }
+        }), 200
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@review_bp.route('/scraper/status', methods=['GET'])
+def scraper_status():
+    """
+    Get status of review listing scrapers.
+
+    Returns information about available scrapers and last scrape time.
+    """
+    try:
+        from backend.services.review_scrapers import list_available_platforms
+        from backend.models import ReviewListing
+
+        platforms = list_available_platforms()
+        platform_stats = {}
+
+        for platform in platforms:
+            count = ReviewListing.query.filter_by(source_platform=platform).count()
+            last_listing = ReviewListing.query.filter_by(source_platform=platform).order_by(
+                ReviewListing.scraped_at.desc()
+            ).first()
+
+            platform_stats[platform] = {
+                'total_listings': count,
+                'last_scraped': last_listing.scraped_at.isoformat() if last_listing else None
+            }
+
+        return jsonify({
+            'success': True,
+            'data': {
+                'available_platforms': platforms,
+                'platform_statistics': platform_stats,
+                'total_listings': ReviewListing.query.count(),
+                'scheduler_status': 'active'
+            }
+        }), 200
+
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@review_bp.route('/scraper/run', methods=['POST'])
+@require_auth
+def run_scraper():
+    """
+    Manually trigger review listing scraper.
+
+    Only available to authenticated users. Runs in background thread.
+
+    Query parameters:
+    - platforms: Comma-separated list of platforms to scrape (e.g., 'moaview,inflexer')
+      If not provided, all platforms are scraped.
+    """
+    try:
+        from backend.services.review_scrapers import aggregate_all_listings, aggregate_specific_platforms
+        from threading import Thread
+        from datetime import datetime
+
+        platforms_param = request.args.get('platforms', '')
+        platforms = [p.strip() for p in platforms_param.split(',') if p.strip()]
+
+        # Run in background to avoid timeout
+        def run_in_background():
+            try:
+                logger = logging.getLogger('review.scraper.manual')
+                logger.info(f"Manual scraper triggered by user {g.user.id}")
+
+                if platforms:
+                    results = aggregate_specific_platforms(platforms, max_workers=2)
+                    logger.info(f"Scraped specific platforms: {results}")
+                else:
+                    results = aggregate_all_listings(max_workers=3)
+                    logger.info(f"Scraped all platforms: {results}")
+
+            except Exception as e:
+                logger = logging.getLogger('review.scraper.manual')
+                logger.error(f"Error in manual scraper: {e}", exc_info=True)
+
+        thread = Thread(target=run_in_background, daemon=True)
+        thread.start()
+
+        return jsonify({
+            'success': True,
+            'data': {
+                'message': 'Scraper job started in background',
+                'platforms': platforms if platforms else 'all',
+                'started_at': datetime.utcnow().isoformat()
+            }
+        }), 200
+
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@review_bp.route('/listings/by-platform/<platform>', methods=['GET'])
+def get_listings_by_platform(platform: str):
+    """
+    Get review listings from a specific platform.
+
+    Parameters:
+    - limit: Number of listings to return (default: 20, max: 100)
+    - offset: Pagination offset (default: 0)
+    - sort: Sort by 'deadline' or 'reward' (default: 'deadline')
+    """
+    try:
+        from backend.models import ReviewListing
+
+        limit = request.args.get('limit', 20, type=int)
+        offset = request.args.get('offset', 0, type=int)
+        sort = request.args.get('sort', 'deadline')
+
+        # Validate platform
+        from backend.services.review_scrapers import list_available_platforms
+        if platform not in list_available_platforms():
+            return jsonify({'error': f'Unknown platform: {platform}'}), 400
+
+        # Limit and validate
+        limit = min(limit, 100)
+
+        # Query
+        query = ReviewListing.query.filter_by(
+            source_platform=platform,
+            status='active'
+        )
+
+        # Sort
+        if sort == 'reward':
+            query = query.order_by(ReviewListing.reward_value.desc())
+        else:  # default to deadline
+            query = query.order_by(ReviewListing.deadline.asc())
+
+        total = query.count()
+        listings = query.offset(offset).limit(limit).all()
+
+        return jsonify({
+            'success': True,
+            'data': {
+                'listings': [listing.to_dict() for listing in listings],
+                'total': total,
+                'offset': offset,
+                'limit': limit,
+                'platform': platform
+            }
+        }), 200
+
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500

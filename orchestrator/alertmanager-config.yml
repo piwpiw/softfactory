@@ -1,0 +1,174 @@
+# AlertManager Configuration for SoftFactory
+# Version: 1.1 (Security Hardening)
+# Updated: 2026-02-26
+#
+# Routes alerts from Prometheus to notification channels (Slack, Email, PagerDuty)
+# Edit slack_api_url, email config, and pagerduty_service_key for your environment
+
+global:
+  # How long to wait for alerts with same group to arrive before sending initial notification
+  resolve_timeout: 5m
+
+  # Default Slack webhook (update with your URL)
+  slack_api_url: '${SLACK_WEBHOOK_URL}'
+
+  # SMTP configuration for email notifications
+  smtp_smarthost: 'smtp.gmail.com:587'
+  smtp_auth_username: '${SMTP_USERNAME}'
+  smtp_auth_password: '${SMTP_PASSWORD}'
+  smtp_require_tls: true
+
+  # Email from address
+  smtp_from: '${SMTP_FROM_ADDRESS}'
+
+# Top-level routing configuration
+# Routes define how alerts are grouped, deduplicated, and sent to receivers
+route:
+  # Default receiver if no routes match
+  receiver: 'default-slack'
+
+  # Group alerts by these labels
+  group_by: ['alertname', 'cluster', 'service']
+
+  # How long to wait before sending initial notification (allows grouping)
+  group_wait: 10s
+
+  # How long before a new group is formed (after adding first alert)
+  group_interval: 10s
+
+  # How often to re-send unchanged alerts
+  repeat_interval: 4h
+
+  # Sub-routes for different severity levels
+  routes:
+    # CRITICAL alerts → PagerDuty (page on-call) + Slack
+    - match:
+        severity: CRITICAL
+      receiver: 'pagerduty-critical'
+      repeat_interval: 15m
+      continue: true  # Send to both PagerDuty AND default-slack
+
+    # HIGH priority → Slack + Email
+    - match:
+        severity: HIGH
+      receiver: 'team-slack-high'
+      repeat_interval: 30m
+      continue: true  # Send to email too
+
+    # MEDIUM priority → Slack only
+    - match:
+        severity: MEDIUM
+      receiver: 'team-slack-medium'
+      repeat_interval: 1h
+
+    # LOW/INFO → No notification (optional: send to email daily digest)
+    - match:
+        severity: LOW
+      receiver: 'null'  # Do nothing for LOW priority
+
+# Receivers define notification channels
+receivers:
+  # Null receiver (silently drop alerts)
+  - name: 'null'
+
+  # Default: Team Slack (#alerts channel)
+  - name: 'default-slack'
+    slack_configs:
+      - api_url: '${SLACK_WEBHOOK_URL}'
+        channel: '#alerts'
+        icon_emoji: ':warning:'
+        title: '{{ .GroupLabels.alertname }}'
+        text: |
+          *Severity:* {{ .GroupLabels.severity }}
+          *Component:* {{ .GroupLabels.component }}
+          *{{ .CommonAnnotations.summary }}*
+          {{ .CommonAnnotations.description }}
+
+          *Runbook:* {{ .CommonAnnotations.runbook }}
+          *Action:* {{ .CommonAnnotations.action }}
+        send_resolved: true
+        color: '{{ if eq .Status "firing" }}danger{{ else }}good{{ end }}'
+
+  # HIGH priority → Team Slack + notification
+  - name: 'team-slack-high'
+    slack_configs:
+      - api_url: '${SLACK_WEBHOOK_URL}'
+        channel: '#alerts-high'
+        icon_emoji: ':rotating_light:'
+        title: 'HIGH: {{ .GroupLabels.alertname }}'
+        text: |
+          *{{ .CommonAnnotations.summary }}*
+          {{ .CommonAnnotations.description }}
+
+          @team-oncall - Quick response needed!
+          {{ .CommonAnnotations.action }}
+        send_resolved: true
+        color: 'warning'
+
+    # Also send email
+    email_configs:
+      - to: 'team@softfactory.local'
+        from: '${SMTP_FROM_ADDRESS}'
+        smarthost: 'smtp.gmail.com:587'
+        auth_username: '${SMTP_USERNAME}'
+        auth_password: '${SMTP_PASSWORD}'
+        require_tls: true
+        headers:
+          Subject: 'SoftFactory Alert: {{ .GroupLabels.alertname }}'
+        html: |
+          <h2>{{ .CommonAnnotations.summary }}</h2>
+          <p>{{ .CommonAnnotations.description }}</p>
+          <p><strong>Action:</strong> {{ .CommonAnnotations.action }}</p>
+          <p><strong>Runbook:</strong> {{ .CommonAnnotations.runbook }}</p>
+
+  # MEDIUM priority → Slack
+  - name: 'team-slack-medium'
+    slack_configs:
+      - api_url: '${SLACK_WEBHOOK_URL}'
+        channel: '#alerts-medium'
+        icon_emoji: ':warning:'
+        title: 'MEDIUM: {{ .GroupLabels.alertname }}'
+        text: '{{ .CommonAnnotations.summary }}'
+        send_resolved: true
+
+  # CRITICAL → PagerDuty (pages on-call engineer)
+  - name: 'pagerduty-critical'
+    pagerduty_configs:
+      - service_key: '${PAGERDUTY_SERVICE_KEY}'  # Integration Key from PagerDuty
+        description: '{{ .GroupLabels.alertname }}: {{ .CommonAnnotations.summary }}'
+        details:
+          description: '{{ .CommonAnnotations.description }}'
+          runbook: '{{ .CommonAnnotations.runbook }}'
+          action: '{{ .CommonAnnotations.action }}'
+        client: 'Prometheus/SoftFactory'
+        client_url: 'http://prometheus.softfactory.local:9090'
+
+  # Optional: Webhook for custom integrations (Discord, Microsoft Teams, etc.)
+  - name: 'discord-webhooks'
+    webhook_configs:
+      - url: '${DISCORD_WEBHOOK_URL}'
+        send_resolved: true
+
+# Inhibition rules allow you to mute certain alerts under specific conditions
+# Example: Don't page for high-error-rate if API is already down
+inhibit_rules:
+  # Inhibit HighErrorRate if SoftFactoryDown is already firing
+  - source_match:
+      alertname: 'SoftFactoryDown'
+    target_match:
+      alertname: 'HighErrorRate'
+    equal: ['cluster', 'service']  # Only inhibit same cluster/service
+
+  # Inhibit slow response if requests are erroring
+  - source_match:
+      alertname: 'HighErrorRate'
+    target_match:
+      alertname: 'SlowResponseTime'
+    equal: ['cluster', 'service']
+
+  # Inhibit memory/CPU alerts if service is already down
+  - source_match:
+      alertname: 'SoftFactoryDown'
+    target_match_re:
+      alertname: 'HighMemoryUsage|HighCPUUsage'
+    equal: ['cluster', 'service']

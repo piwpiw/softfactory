@@ -1,0 +1,77 @@
+version: 2
+
+updates:
+  # Python dependencies
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "03:00"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "github-username"
+    labels:
+      - "dependencies"
+      - "python"
+    pull-request-branch-name:
+      separator: "-"
+    commit-message:
+      prefix: "chore(deps)"
+      include: "scope"
+
+  # GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "03:30"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "github-username"
+    labels:
+      - "dependencies"
+      - "github-actions"
+    pull-request-branch-name:
+      separator: "-"
+    commit-message:
+      prefix: "ci(deps)"
+
+  # Docker dependencies
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "04:00"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "github-username"
+    labels:
+      - "dependencies"
+      - "docker"
+    pull-request-branch-name:
+      separator: "-"
+    commit-message:
+      prefix: "chore(docker)"
+
+  # npm dependencies (if applicable)
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "04:30"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "github-username"
+    labels:
+      - "dependencies"
+      - "npm"
+    pull-request-branch-name:
+      separator: "-"
+    commit-message:
+      prefix: "chore(npm)"
+    allow:
+      - dependency-type: "all"

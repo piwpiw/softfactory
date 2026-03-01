@@ -1,0 +1,1712 @@
+openapi: 3.0.3
+info:
+  title: SoftFactory Platform API
+  description: |
+    SoftFactory is a multi-service SaaS platform providing SNS automation,
+    review campaign management, chef booking (CooCook), AI business automation,
+    and a webapp builder bootcamp.
+
+    **Authentication:** All authenticated endpoints require a Bearer token via
+    the `Authorization` header. Use `demo_token` for testing purposes.
+  version: 1.0.0
+  contact:
+    name: SoftFactory Dev Team
+
+servers:
+  - url: http://localhost:8000
+    description: Local development server
+  - url: http://localhost:9000
+    description: Production local server
+
+tags:
+  - name: Health
+    description: System health checks
+  - name: Auth
+    description: Authentication and user management
+  - name: Platform
+    description: Platform management and admin
+  - name: Payment
+    description: Stripe payment and subscription management
+  - name: SNS Auto
+    description: Social media automation service
+  - name: Review
+    description: Review campaign and listing management
+  - name: CooCook
+    description: Chef booking platform
+  - name: AI Automation
+    description: AI employee automation service
+  - name: WebApp Builder
+    description: Bootcamp and webapp creation
+  - name: Dashboard
+    description: Executive dashboard metrics
+  - name: Analytics
+    description: Advanced analytics and reporting
+  - name: Performance
+    description: ROI and performance metrics
+  - name: Settings
+    description: Organization and integration settings
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: |
+        JWT access token. Use `demo_token` for demo/testing mode.
+
+  schemas:
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Human-readable error message"
+
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        email:
+          type: string
+          format: email
+          example: "user@example.com"
+        name:
+          type: string
+          example: "John Doe"
+        role:
+          type: string
+          enum: [user, admin]
+          example: "user"
+
+    AuthTokens:
+      type: object
+      properties:
+        access_token:
+          type: string
+        refresh_token:
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+
+    Product:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        slug:
+          type: string
+        monthly_price:
+          type: number
+          format: float
+        annual_price:
+          type: number
+          format: float
+        is_active:
+          type: boolean
+
+    Subscription:
+      type: object
+      properties:
+        id:
+          type: integer
+        product_id:
+          type: integer
+        plan_type:
+          type: string
+          enum: [monthly, annual]
+        status:
+          type: string
+          enum: [active, canceled]
+        current_period_end:
+          type: string
+          format: date-time
+
+    SNSAccount:
+      type: object
+      properties:
+        id:
+          type: integer
+        platform:
+          type: string
+          example: "instagram"
+        account_name:
+          type: string
+          example: "@mybrand"
+        is_active:
+          type: boolean
+        post_count:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+
+    SNSPost:
+      type: object
+      properties:
+        id:
+          type: integer
+        account_name:
+          type: string
+        platform:
+          type: string
+        content:
+          type: string
+        status:
+          type: string
+          enum: [draft, scheduled, published]
+        template_type:
+          type: string
+          enum: [card_news, blog_post, reel, shorts, carousel]
+        scheduled_at:
+          type: string
+          format: date-time
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+
+    Campaign:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        product_name:
+          type: string
+        category:
+          type: string
+        reward_type:
+          type: string
+        reward_value:
+          type: number
+        max_reviewers:
+          type: integer
+        applications_count:
+          type: integer
+        deadline:
+          type: string
+          format: date-time
+        status:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+
+    Chef:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        bio:
+          type: string
+        cuisine_type:
+          type: string
+        location:
+          type: string
+        price_per_session:
+          type: number
+          format: float
+        rating:
+          type: number
+          format: float
+        rating_count:
+          type: integer
+
+    Booking:
+      type: object
+      properties:
+        id:
+          type: integer
+        chef_name:
+          type: string
+        booking_date:
+          type: string
+          format: date
+        duration_hours:
+          type: integer
+        total_price:
+          type: number
+        status:
+          type: string
+          enum: [pending, confirmed, completed, canceled]
+        special_requests:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+
+    AIEmployee:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        scenario_type:
+          type: string
+          enum: [email, social, customer_service, data_entry, scheduling]
+        description:
+          type: string
+        status:
+          type: string
+          enum: [draft, training, active]
+
+    HealthResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [ok, degraded]
+        database:
+          type: string
+          enum: [connected, disconnected]
+        services:
+          type: object
+          properties:
+            sns_auto:
+              type: string
+            review:
+              type: string
+            coocook:
+              type: string
+            ai_automation:
+              type: string
+            webapp_builder:
+              type: string
+        version:
+          type: string
+          example: "1.0.0"
+        uptime:
+          type: string
+          example: "2h 15m 30s"
+
+    PaginatedResponse:
+      type: object
+      properties:
+        total:
+          type: integer
+        pages:
+          type: integer
+        current_page:
+          type: integer
+
+  parameters:
+    PageParam:
+      name: page
+      in: query
+      schema:
+        type: integer
+        default: 1
+    PerPageParam:
+      name: per_page
+      in: query
+      schema:
+        type: integer
+        default: 20
+
+paths:
+  /health:
+    get:
+      tags: [Health]
+      summary: System health check
+      description: Returns database connectivity, service status, version, and uptime.
+      responses:
+        '200':
+          description: System healthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+        '503':
+          description: System degraded
+
+  # ========== AUTH ==========
+  /api/auth/register:
+    post:
+      tags: [Auth]
+      summary: Register new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password, name]
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  minLength: 6
+                name:
+                  type: string
+      responses:
+        '201':
+          description: User registered
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthTokens'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/auth/login:
+    post:
+      tags: [Auth]
+      summary: Login user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthTokens'
+        '400':
+          description: Missing fields
+        '401':
+          description: Invalid credentials
+        '403':
+          description: Account inactive
+
+  /api/auth/refresh:
+    post:
+      tags: [Auth]
+      summary: Refresh access token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [refresh_token]
+              properties:
+                refresh_token:
+                  type: string
+      responses:
+        '200':
+          description: Tokens refreshed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  access_token:
+                    type: string
+                  refresh_token:
+                    type: string
+        '401':
+          description: Invalid refresh token
+
+  /api/auth/me:
+    get:
+      tags: [Auth]
+      summary: Get current user info
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: User info
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          description: Unauthorized
+
+  /api/auth/oauth/{provider}/url:
+    get:
+      tags: [Auth]
+      summary: Get OAuth authorization URL
+      parameters:
+        - name: provider
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [google, facebook, kakao]
+      responses:
+        '200':
+          description: Authorization URL
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  auth_url:
+                    type: string
+                  state:
+                    type: string
+
+  /api/auth/oauth/{provider}/callback:
+    post:
+      tags: [Auth]
+      summary: Handle OAuth callback
+      parameters:
+        - name: provider
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [google, facebook, kakao]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [code]
+              properties:
+                code:
+                  type: string
+                state:
+                  type: string
+      responses:
+        '200':
+          description: OAuth login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthTokens'
+
+  # ========== PLATFORM ==========
+  /api/platform/products:
+    get:
+      tags: [Platform]
+      summary: Get all active products
+      responses:
+        '200':
+          description: Product list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Product'
+
+  /api/platform/dashboard:
+    get:
+      tags: [Platform]
+      summary: User dashboard with subscription status
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Dashboard data
+
+  /api/platform/admin/users:
+    get:
+      tags: [Platform]
+      summary: List all users (admin only)
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/PerPageParam'
+      responses:
+        '200':
+          description: User list
+        '403':
+          description: Admin access required
+
+  /api/platform/admin/revenue:
+    get:
+      tags: [Platform]
+      summary: Revenue statistics (admin only)
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Revenue data
+        '403':
+          description: Admin access required
+
+  /api/platform/admin/executive-dashboard:
+    get:
+      tags: [Platform]
+      summary: C-level executive dashboard (admin only)
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Executive metrics
+
+  # ========== PAYMENT ==========
+  /api/payment/plans:
+    get:
+      tags: [Payment]
+      summary: Get all product plans
+      responses:
+        '200':
+          description: Plans list
+
+  /api/payment/checkout:
+    post:
+      tags: [Payment]
+      summary: Create Stripe checkout session
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [product_id]
+              properties:
+                product_id:
+                  type: integer
+                plan_type:
+                  type: string
+                  enum: [monthly, annual]
+                  default: monthly
+      responses:
+        '200':
+          description: Checkout URL
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  checkout_url:
+                    type: string
+        '400':
+          description: Payment unavailable or already subscribed
+
+  /api/payment/subscriptions:
+    get:
+      tags: [Payment]
+      summary: Get user subscriptions
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Subscription list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Subscription'
+
+  /api/payment/subscriptions/{subscription_id}:
+    delete:
+      tags: [Payment]
+      summary: Cancel subscription
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: subscription_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Subscription canceled
+        '404':
+          description: Not found
+
+  /api/payment/webhook:
+    post:
+      tags: [Payment]
+      summary: Stripe webhook handler
+      description: Handles Stripe webhook events (subscription cancellation, etc.)
+      responses:
+        '200':
+          description: Webhook processed
+
+  # ========== SNS AUTO ==========
+  /api/sns/accounts:
+    get:
+      tags: [SNS Auto]
+      summary: Get linked SNS accounts
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Account list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SNSAccount'
+    post:
+      tags: [SNS Auto]
+      summary: Link SNS account
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [platform, account_name]
+              properties:
+                platform:
+                  type: string
+                  example: "instagram"
+                account_name:
+                  type: string
+                  example: "@mybrand"
+      responses:
+        '201':
+          description: Account linked
+
+  /api/sns/accounts/{account_id}:
+    delete:
+      tags: [SNS Auto]
+      summary: Unlink SNS account
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: account_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Account unlinked
+
+  /api/sns/posts:
+    get:
+      tags: [SNS Auto]
+      summary: Get SNS posts (paginated)
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: account_id
+          in: query
+          schema:
+            type: integer
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [draft, scheduled, published]
+        - $ref: '#/components/parameters/PageParam'
+      responses:
+        '200':
+          description: Post list
+    post:
+      tags: [SNS Auto]
+      summary: Create SNS post
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [account_id, content, template_type]
+              properties:
+                account_id:
+                  type: integer
+                content:
+                  type: string
+                template_type:
+                  type: string
+                  enum: [card_news, blog_post, reel, shorts, carousel]
+      responses:
+        '201':
+          description: Post created
+
+  /api/sns/posts/{post_id}/publish:
+    post:
+      tags: [SNS Auto]
+      summary: Publish or schedule post
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: post_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                scheduled_at:
+                  type: string
+                  format: date-time
+                  description: Omit for immediate publish
+      responses:
+        '200':
+          description: Post published/scheduled
+
+  /api/sns/posts/{post_id}:
+    delete:
+      tags: [SNS Auto]
+      summary: Delete post
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: post_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Post deleted
+        '400':
+          description: Cannot delete published posts
+
+  /api/sns/templates:
+    get:
+      tags: [SNS Auto]
+      summary: Get available post templates
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Template catalog
+
+  /api/sns/trending:
+    get:
+      tags: [SNS Auto]
+      summary: Get trending topics by platform
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: platform
+          in: query
+          schema:
+            type: string
+            enum: [instagram, tiktok, twitter, linkedin, facebook]
+      responses:
+        '200':
+          description: Trending data
+
+  /api/sns/ai/generate:
+    post:
+      tags: [SNS Auto]
+      summary: AI-generate post content
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [topic, tone, language, platform]
+              properties:
+                topic:
+                  type: string
+                tone:
+                  type: string
+                  enum: [professional, casual, humorous, inspiring]
+                language:
+                  type: string
+                  example: "ko"
+                platform:
+                  type: string
+                charLimit:
+                  type: integer
+                  default: 280
+      responses:
+        '200':
+          description: Generated content
+
+  /api/sns/ai/repurpose:
+    post:
+      tags: [SNS Auto]
+      summary: AI content repurposing
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [content, source_platform, target_platforms]
+              properties:
+                content:
+                  type: string
+                source_platform:
+                  type: string
+                target_platforms:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '200':
+          description: Repurposed content
+
+  /api/sns/roi:
+    get:
+      tags: [SNS Auto]
+      summary: ROI metrics
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: date_from
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: date_to
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: platform
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ROI data
+
+  # ========== REVIEW ==========
+  /api/review/campaigns:
+    get:
+      tags: [Review]
+      summary: List active campaigns
+      parameters:
+        - name: category
+          in: query
+          schema:
+            type: string
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/PerPageParam'
+      responses:
+        '200':
+          description: Campaign list
+    post:
+      tags: [Review]
+      summary: Create campaign
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [title, product_name, category, reward_type, reward_value, max_reviewers, deadline]
+              properties:
+                title:
+                  type: string
+                product_name:
+                  type: string
+                category:
+                  type: string
+                description:
+                  type: string
+                reward_type:
+                  type: string
+                reward_value:
+                  type: number
+                max_reviewers:
+                  type: integer
+                deadline:
+                  type: string
+                  format: date-time
+      responses:
+        '201':
+          description: Campaign created
+
+  /api/review/campaigns/{campaign_id}:
+    get:
+      tags: [Review]
+      summary: Get campaign details
+      parameters:
+        - name: campaign_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Campaign details
+
+  /api/review/campaigns/{campaign_id}/apply:
+    post:
+      tags: [Review]
+      summary: Apply to campaign
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: campaign_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [message]
+              properties:
+                message:
+                  type: string
+                sns_link:
+                  type: string
+                follower_count:
+                  type: integer
+      responses:
+        '201':
+          description: Application submitted
+
+  /api/review/listings:
+    get:
+      tags: [Review]
+      summary: Get scraped listings
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: category
+          in: query
+          schema:
+            type: string
+        - name: platform
+          in: query
+          schema:
+            type: string
+        - name: reward_type
+          in: query
+          schema:
+            type: string
+        - name: min_reward
+          in: query
+          schema:
+            type: integer
+        - name: max_reward
+          in: query
+          schema:
+            type: integer
+        - name: sort_by
+          in: query
+          schema:
+            type: string
+            enum: [deadline, reward_value, created]
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/PerPageParam'
+      responses:
+        '200':
+          description: Listing list
+
+  /api/review/listings/search:
+    get:
+      tags: [Review]
+      summary: Search listings by keyword
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: q
+          in: query
+          required: true
+          schema:
+            type: string
+            minLength: 2
+      responses:
+        '200':
+          description: Search results
+
+  /api/review/accounts:
+    get:
+      tags: [Review]
+      summary: Get review accounts
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Account list
+    post:
+      tags: [Review]
+      summary: Create review account
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [platform, account_name]
+              properties:
+                platform:
+                  type: string
+                  enum: [naver, instagram, blog, youtube, tiktok, facebook]
+                account_name:
+                  type: string
+                follower_count:
+                  type: integer
+                category_tags:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '201':
+          description: Account created
+
+  /api/review/auto-rules:
+    get:
+      tags: [Review]
+      summary: Get auto-apply rules
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Rule list
+    post:
+      tags: [Review]
+      summary: Create auto-apply rule
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name]
+              properties:
+                name:
+                  type: string
+                target_categories:
+                  type: array
+                  items:
+                    type: string
+                min_reward:
+                  type: integer
+                max_reward:
+                  type: integer
+                is_active:
+                  type: boolean
+      responses:
+        '201':
+          description: Rule created
+
+  # ========== COOCOOK ==========
+  /api/coocook/chefs:
+    get:
+      tags: [CooCook]
+      summary: List chefs
+      parameters:
+        - name: cuisine
+          in: query
+          schema:
+            type: string
+        - name: location
+          in: query
+          schema:
+            type: string
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/PerPageParam'
+      responses:
+        '200':
+          description: Chef list
+    post:
+      tags: [CooCook]
+      summary: Register as chef
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, cuisine_type, location, price_per_session]
+              properties:
+                name:
+                  type: string
+                bio:
+                  type: string
+                cuisine_type:
+                  type: string
+                location:
+                  type: string
+                price_per_session:
+                  type: number
+      responses:
+        '201':
+          description: Chef registered
+
+  /api/coocook/chefs/{chef_id}:
+    get:
+      tags: [CooCook]
+      summary: Get chef details
+      parameters:
+        - name: chef_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Chef details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Chef'
+
+  /api/coocook/bookings:
+    get:
+      tags: [CooCook]
+      summary: Get user bookings
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Booking list
+    post:
+      tags: [CooCook]
+      summary: Create booking
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [chef_id, booking_date, duration_hours]
+              properties:
+                chef_id:
+                  type: integer
+                booking_date:
+                  type: string
+                  format: date
+                duration_hours:
+                  type: integer
+                special_requests:
+                  type: string
+      responses:
+        '201':
+          description: Booking created
+
+  /api/coocook/bookings/{booking_id}:
+    get:
+      tags: [CooCook]
+      summary: Get booking details
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: booking_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Booking details
+    put:
+      tags: [CooCook]
+      summary: Update booking status (chef only)
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: booking_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+      responses:
+        '200':
+          description: Booking updated
+
+  # ========== AI AUTOMATION ==========
+  /api/ai-automation/plans:
+    get:
+      tags: [AI Automation]
+      summary: Get subscription plans
+      responses:
+        '200':
+          description: Plans
+
+  /api/ai-automation/scenarios:
+    get:
+      tags: [AI Automation]
+      summary: Get automation scenarios
+      parameters:
+        - name: category
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Scenario list
+
+  /api/ai-automation/employees:
+    get:
+      tags: [AI Automation]
+      summary: Get AI employees
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Employee list
+    post:
+      tags: [AI Automation]
+      summary: Create AI employee
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, scenario_type]
+              properties:
+                name:
+                  type: string
+                scenario_type:
+                  type: string
+                  enum: [email, social, customer_service, data_entry, scheduling]
+                description:
+                  type: string
+      responses:
+        '201':
+          description: Employee created
+
+  /api/ai-automation/employees/{employee_id}/deploy:
+    post:
+      tags: [AI Automation]
+      summary: Deploy AI employee
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: employee_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Employee deployed
+
+  /api/ai-automation/employees/{employee_id}/activate:
+    post:
+      tags: [AI Automation]
+      summary: Activate AI employee
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: employee_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Employee activated
+
+  /api/ai-automation/dashboard:
+    get:
+      tags: [AI Automation]
+      summary: Automation dashboard summary
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Dashboard data
+
+  # ========== WEBAPP BUILDER ==========
+  /api/webapp-builder/plans:
+    get:
+      tags: [WebApp Builder]
+      summary: Get bootcamp plans
+      responses:
+        '200':
+          description: Plans
+
+  /api/webapp-builder/courses:
+    get:
+      tags: [WebApp Builder]
+      summary: Get bootcamp courses
+      responses:
+        '200':
+          description: Courses
+
+  /api/webapp-builder/enroll:
+    post:
+      tags: [WebApp Builder]
+      summary: Enroll in bootcamp
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [plan_type]
+              properties:
+                plan_type:
+                  type: string
+                  enum: [weekday, weekend]
+      responses:
+        '201':
+          description: Enrolled
+
+  /api/webapp-builder/webapps:
+    get:
+      tags: [WebApp Builder]
+      summary: Get user webapps
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Webapp list
+    post:
+      tags: [WebApp Builder]
+      summary: Create webapp project
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name]
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+      responses:
+        '201':
+          description: Webapp created
+
+  /api/webapp-builder/webapps/{webapp_id}/deploy:
+    post:
+      tags: [WebApp Builder]
+      summary: Deploy webapp
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: webapp_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Webapp deployed
+
+  /api/webapp-builder/dashboard:
+    get:
+      tags: [WebApp Builder]
+      summary: Bootcamp dashboard
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Dashboard data
+
+  # ========== DASHBOARD ==========
+  /api/dashboard/kpis:
+    get:
+      tags: [Dashboard]
+      summary: Get KPI metrics
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: KPI data
+
+  /api/dashboard/charts:
+    get:
+      tags: [Dashboard]
+      summary: Get chart data
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Chart data
+
+  /api/dashboard/summary:
+    get:
+      tags: [Dashboard]
+      summary: Dashboard summary
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Summary data
+
+  # ========== ANALYTICS ==========
+  /api/analytics/advanced:
+    get:
+      tags: [Analytics]
+      summary: Advanced analytics
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: metric
+          in: query
+          schema:
+            type: string
+            default: revenue
+        - name: period
+          in: query
+          schema:
+            type: string
+            default: "30"
+      responses:
+        '200':
+          description: Analytics data
+
+  /api/analytics/cohort:
+    get:
+      tags: [Analytics]
+      summary: Cohort analysis
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Cohort data
+
+  /api/analytics/funnel:
+    get:
+      tags: [Analytics]
+      summary: Conversion funnel
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Funnel data
+
+  /api/analytics/service-metrics:
+    get:
+      tags: [Analytics]
+      summary: Per-service metrics
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Service metrics
+
+  /api/analytics/trends:
+    get:
+      tags: [Analytics]
+      summary: Market trends
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: days
+          in: query
+          schema:
+            type: integer
+            default: 30
+      responses:
+        '200':
+          description: Trend data
+
+  # ========== PERFORMANCE ==========
+  /api/performance/roi:
+    get:
+      tags: [Performance]
+      summary: Overall ROI metrics
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: ROI data
+
+  /api/performance/product-roi:
+    get:
+      tags: [Performance]
+      summary: Per-product ROI
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Product ROI data
+
+  /api/performance/efficiency:
+    get:
+      tags: [Performance]
+      summary: Efficiency metrics
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Efficiency data
+
+  /api/performance/forecast:
+    get:
+      tags: [Performance]
+      summary: ROI forecast
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Forecast data
+
+  /api/performance/benchmarks:
+    get:
+      tags: [Performance]
+      summary: Industry benchmarks
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Benchmark data
+
+  # ========== SETTINGS ==========
+  /api/settings/organization:
+    get:
+      tags: [Settings]
+      summary: Get organization settings
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Settings
+    put:
+      tags: [Settings]
+      summary: Update organization settings
+      security:
+        - BearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                organization_name:
+                  type: string
+                timezone:
+                  type: string
+                language:
+                  type: string
+                currency:
+                  type: string
+                theme:
+                  type: string
+                  enum: [light, dark]
+      responses:
+        '200':
+          description: Settings updated
+
+  /api/settings/integrations:
+    get:
+      tags: [Settings]
+      summary: Get integrations
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Integration list
+
+  /api/settings/integrations/{platform}/connect:
+    post:
+      tags: [Settings]
+      summary: Connect integration
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: platform
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Connection initiated
+
+  /api/settings/integrations/{account_id}/disconnect:
+    post:
+      tags: [Settings]
+      summary: Disconnect integration
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: account_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Disconnected
+
+  /api/settings/api-keys:
+    get:
+      tags: [Settings]
+      summary: Get API keys
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: API key list
+
+  /api/settings/webhook-endpoints:
+    get:
+      tags: [Settings]
+      summary: Get webhook endpoints
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Webhook list
+
+  /api/settings/notifications:
+    get:
+      tags: [Settings]
+      summary: Get notification settings
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Notification prefs
+
+  /api/settings/billing:
+    get:
+      tags: [Settings]
+      summary: Get billing settings
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Billing data

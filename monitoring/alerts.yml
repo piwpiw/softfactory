@@ -1,0 +1,93 @@
+groups:
+  - name: softfactory-alerts
+    interval: 30s
+    rules:
+      - alert: ApiDown
+        expr: up{job="softfactory-api"} == 0
+        for: 5m
+        labels:
+          severity: critical
+          service: api
+        annotations:
+          summary: "API is down"
+          description: "SoftFactory API has been unreachable for more than 5 minutes."
+
+      - alert: HighErrorRate
+        expr: rate(http_requests_total{status=~"5.."}[5m]) > 0.05
+        for: 5m
+        labels:
+          severity: warning
+          service: api
+        annotations:
+          summary: "High error rate detected"
+          description: "API error rate exceeds 5% over the last 5 minutes."
+
+      - alert: DatabaseConnectionHigh
+        expr: pg_stat_activity_count > 80
+        for: 5m
+        labels:
+          severity: warning
+          service: postgres
+        annotations:
+          summary: "Database connections > 80"
+          description: "PostgreSQL has more than 80 active connections."
+
+      - alert: DiskSpaceRunningOut
+        expr: node_filesystem_avail_bytes / node_filesystem_size_bytes < 0.1
+        for: 5m
+        labels:
+          severity: critical
+          service: node
+        annotations:
+          summary: "Disk space < 10%"
+          description: "Available disk space is below 10% threshold."
+
+      - alert: RedisDown
+        expr: up{job="redis"} == 0
+        for: 2m
+        labels:
+          severity: critical
+          service: redis
+        annotations:
+          summary: "Redis is down"
+          description: "Redis cache service has been unreachable for more than 2 minutes."
+
+      - alert: RedisMemoryHigh
+        expr: redis_memory_used_bytes / redis_memory_max_bytes > 0.85
+        for: 5m
+        labels:
+          severity: warning
+          service: redis
+        annotations:
+          summary: "Redis memory usage above 85%"
+          description: "Redis is using more than 85% of allocated memory."
+
+      - alert: ElasticsearchDown
+        expr: up{job="elasticsearch"} == 0
+        for: 5m
+        labels:
+          severity: critical
+          service: elasticsearch
+        annotations:
+          summary: "Elasticsearch is down"
+          description: "Elasticsearch has been unreachable for more than 5 minutes."
+
+      - alert: ElasticsearchClusterYellow
+        expr: elasticsearch_cluster_health_status{color="yellow"} == 1
+        for: 10m
+        labels:
+          severity: warning
+          service: elasticsearch
+        annotations:
+          summary: "Elasticsearch cluster health is YELLOW"
+          description: "One or more Elasticsearch replica shards are unassigned."
+
+      - alert: HighResponseTime
+        expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m])) > 2
+        for: 5m
+        labels:
+          severity: warning
+          service: api
+        annotations:
+          summary: "95th percentile response time > 2s"
+          description: "API response time P95 exceeds 2 seconds."

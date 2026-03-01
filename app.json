@@ -1,0 +1,36 @@
+{
+  "name": "🤖 JARVIS — CooCook Operations",
+  "description": "Intelligent AI-powered operations management platform for daily project launches",
+  "keywords": ["operations", "ai", "automation", "project-management"],
+  "repository": "https://github.com/coocook/jarvis",
+  "success_url": "/",
+  "env": {
+    "TELEGRAM_BOT_TOKEN": {
+      "description": "Telegram Bot Token (get from @BotFather)",
+      "required": false
+    },
+    "TELEGRAM_CHAT_ID": {
+      "description": "Telegram Chat ID for notifications",
+      "required": false
+    },
+    "ANTHROPIC_API_KEY": {
+      "description": "Anthropic Claude API Key",
+      "required": true
+    },
+    "FLASK_ENV": {
+      "description": "Flask environment (development/production)",
+      "value": "production"
+    }
+  },
+  "addons": [
+    {
+      "plan": "heroku-postgresql:hobby-dev",
+      "as": "DATABASE"
+    }
+  ],
+  "buildpacks": [
+    {
+      "url": "heroku/python"
+    }
+  ]
+}

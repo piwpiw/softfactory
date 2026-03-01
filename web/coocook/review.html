@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#111827">
+<title>리뷰 작성 — CooCook | SoftFactory</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="../platform/api.js"></script>
+    <style>body { font-family: 'Inter', sans-serif; }</style>
+    <link rel="stylesheet" href="../responsive-framework.css">
+  </head>
+<body class="bg-slate-950 text-slate-100">
+    <div class="flex h-screen overflow-hidden">
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <header class="h-16 bg-slate-900 border-b border-slate-800 px-6 flex items-center justify-between shrink-0">
+                <h2 class="text-xl font-bold text-white">⭐ 리뷰 작성</h2>
+                <a href="my-bookings.html" class="text-slate-400 hover:text-white">← 돌아가기</a>
+            </header>
+            <main class="flex-1 overflow-y-auto p-6">
+                <div class="grid grid-cols-3 gap-6">
+                    <!-- Review Form -->
+                    <div class="col-span-2 space-y-6">
+                        <div class="bg-slate-800 rounded-xl p-8 border border-slate-700">
+                            <h3 class="text-lg font-bold text-white mb-6">경험을 평가해주세요</h3>
+
+                            <!-- Chef Info Card -->
+                            <div class="bg-slate-900 rounded-lg p-6 mb-8 border border-slate-700">
+                                <div class="flex items-center gap-4">
+                                    <div class="text-4xl" id="chef-emoji">🇰🇷</div>
+                                    <div>
+                                        <p class="text-xs text-slate-400">셰프</p>
+                                        <p id="chef-name" class="text-xl font-bold text-white">Chef Park</p>
+                                        <p id="chef-cuisine" class="text-sm text-slate-400">Korean Cuisine</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Booking Info -->
+                            <div class="bg-slate-900 rounded-lg p-6 mb-8 border border-slate-700">
+                                <p class="text-xs text-slate-400 mb-4 font-bold">예약 정보</p>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <p class="text-xs text-slate-400">날짜</p>
+                                        <p id="booking-date" class="font-bold text-white">2026-03-01</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-xs text-slate-400">소요 시간</p>
+                                        <p id="duration" class="font-bold text-white">2시간</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Star Rating -->
+                            <div class="mb-8">
+                                <label class="block text-sm font-bold text-white mb-4">⭐ 만족도 평가</label>
+                                <div class="flex gap-3">
+                                    <button onclick="setRating(1)" class="rating-btn text-4xl opacity-40 hover:opacity-100 transition" data-rating="1">⭐</button>
+                                    <button onclick="setRating(2)" class="rating-btn text-4xl opacity-40 hover:opacity-100 transition" data-rating="2">⭐</button>
+                                    <button onclick="setRating(3)" class="rating-btn text-4xl opacity-40 hover:opacity-100 transition" data-rating="3">⭐</button>
+                                    <button onclick="setRating(4)" class="rating-btn text-4xl opacity-40 hover:opacity-100 transition" data-rating="4">⭐</button>
+                                    <button onclick="setRating(5)" class="rating-btn text-4xl opacity-100 transition" data-rating="5">⭐</button>
+                                </div>
+                                <p id="rating-text" class="text-sm text-orange-400 mt-2">⭐ 5점 - 매우 만족</p>
+                            </div>
+
+                            <!-- Rating Categories -->
+                            <div class="mb-8 space-y-4">
+                                <p class="text-sm font-bold text-white">평가 항목</p>
+
+                                <div class="space-y-4">
+                                    <div class="flex items-center justify-between p-3 bg-slate-900 rounded-lg border border-slate-700">
+                                        <span class="text-slate-300">👨‍🍳 요리 수준</span>
+                                        <div class="flex gap-1">
+                                            <span class="text-lg">⭐</span><span class="text-lg">⭐</span><span class="text-lg">⭐</span><span class="text-lg">⭐</span><span class="text-lg opacity-40">⭐</span>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center justify-between p-3 bg-slate-900 rounded-lg border border-slate-700">
+                                        <span class="text-slate-300">😊 친절함</span>
+                                        <div class="flex gap-1">
+                                            <span class="text-lg">⭐</span><span class="text-lg">⭐</span><span class="text-lg">⭐</span><span class="text-lg">⭐</span><span class="text-lg">⭐</span>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center justify-between p-3 bg-slate-900 rounded-lg border border-slate-700">
+                                        <span class="text-slate-300">🏠 위생/위치</span>
+                                        <div class="flex gap-1">
+                                            <span class="text-lg">⭐</span><span class="text-lg">⭐</span><span class="text-lg">⭐</span><span class="text-lg">⭐</span><span class="text-lg">⭐</span>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center justify-between p-3 bg-slate-900 rounded-lg border border-slate-700">
+                                        <span class="text-slate-300">💰 가격/만족도</span>
+                                        <div class="flex gap-1">
+                                            <span class="text-lg">⭐</span><span class="text-lg">⭐</span><span class="text-lg">⭐</span><span class="text-lg">⭐</span><span class="text-lg opacity-40">⭐</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Comment -->
+                            <div class="mb-8">
+                                <label class="block text-sm font-bold text-white mb-2">💭 리뷰 작성 (선택사항)</label>
+                                <textarea id="review-comment" placeholder="당신의 경험을 자유롭게 공유해주세요. 다른 고객들에게 도움이 됩니다!" class="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-orange-600 resize-none" rows="6"></textarea>
+                                <p class="text-xs text-slate-400 mt-1">최대 500자</p>
+                            </div>
+
+                            <!-- Tags/Quick Comments -->
+                            <div class="mb-8">
+                                <label class="block text-sm font-bold text-white mb-3">빠른 평가 선택 (선택사항)</label>
+                                <div class="grid grid-cols-3 gap-3">
+                                    <button class="px-4 py-2 rounded-lg bg-slate-700 hover:bg-orange-600 text-slate-300 hover:text-white text-sm font-bold transition">✓ 정말 맛있어요</button>
+                                    <button class="px-4 py-2 rounded-lg bg-slate-700 hover:bg-orange-600 text-slate-300 hover:text-white text-sm font-bold transition">✓ 친절했어요</button>
+                                    <button class="px-4 py-2 rounded-lg bg-slate-700 hover:bg-orange-600 text-slate-300 hover:text-white text-sm font-bold transition">✓ 깨끗해요</button>
+                                    <button class="px-4 py-2 rounded-lg bg-slate-700 hover:bg-orange-600 text-slate-300 hover:text-white text-sm font-bold transition">✓ 추천합니다</button>
+                                    <button class="px-4 py-2 rounded-lg bg-slate-700 hover:bg-orange-600 text-slate-300 hover:text-white text-sm font-bold transition">✓ 다시 이용할게요</button>
+                                    <button class="px-4 py-2 rounded-lg bg-slate-700 hover:bg-orange-600 text-slate-300 hover:text-white text-sm font-bold transition">✓ 친구에게 추천</button>
+                                </div>
+                            </div>
+
+                            <!-- Action Buttons -->
+                            <div class="flex gap-4">
+                                <button onclick="cancelReview()" class="flex-1 px-6 py-3 rounded-lg border-2 border-slate-700 text-slate-300 hover:border-slate-600 font-bold">
+                                    취소
+                                </button>
+                                <button onclick="submitReview()" class="flex-1 px-6 py-3 rounded-lg bg-gradient-to-r from-orange-600 to-orange-500 text-white font-bold hover:from-orange-700 hover:to-orange-600 transition">
+                                    ✓ 리뷰 제출
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Summary Sidebar -->
+                    <div class="bg-gradient-to-br from-blue-900/30 to-blue-900/10 rounded-xl p-6 border-2 border-blue-600 h-fit">
+                        <h3 class="text-lg font-bold text-white mb-6">📊 당신의 평가</h3>
+
+                        <div class="space-y-4 mb-6 pb-6 border-b border-blue-700">
+                            <div class="text-center">
+                                <p id="display-rating" class="text-4xl font-bold text-orange-400">⭐⭐⭐⭐⭐</p>
+                                <p id="display-text" class="text-sm text-slate-300 mt-2">5점 - 매우 만족</p>
+                            </div>
+                        </div>
+
+                        <!-- Impact Info -->
+                        <div class="space-y-3">
+                            <div class="p-3 bg-blue-900/30 rounded-lg border border-blue-700">
+                                <p class="text-xs font-bold text-white">당신의 리뷰는...</p>
+                                <ul class="text-xs text-blue-200 mt-2 space-y-1">
+                                    <li>✓ 다른 고객들이 참고합니다</li>
+                                    <li>✓ 셰프 평가에 반영됩니다</li>
+                                    <li>✓ 커뮤니티를 건강하게 합니다</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Helpful Note -->
+                        <div class="mt-6 p-4 bg-green-900/20 border border-green-700 rounded-lg">
+                            <p class="text-xs text-green-200">
+                                💚 정성스러운 리뷰는 커뮤니티의 신뢰를 높입니다
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        let selectedRating = 5;
+
+        // Get booking ID from URL params
+        const params = new URLSearchParams(window.location.search);
+        const bookingId = params.get('booking_id');
+
+        // Load booking details
+        async function loadBooking() {
+            try {
+                const booking = await getBookingDetail(bookingId);
+                const chef = await getChefDetail(booking.chef_id);
+
+                document.getElementById('chef-name').textContent = chef.name;
+                document.getElementById('chef-cuisine').textContent = chef.cuisine_type + ' Cuisine';
+                document.getElementById('booking-date').textContent = booking.booking_date;
+                document.getElementById('duration').textContent = `${booking.duration_hours}시간`;
+
+                // Set emoji based on cuisine
+                const emojis = {
+                    'Korean': '🇰🇷',
+                    'Italian': '🇮🇹',
+                    'Japanese': '🇯🇵',
+                    'French': '🇫🇷',
+                    'Mexican': '🇲🇽'
+                };
+                document.getElementById('chef-emoji').textContent = emojis[chef.cuisine_type] || '👨‍🍳';
+            } catch (error) {
+                console.error('Error loading booking:', error);
+                alert('예약 정보를 불러올 수 없습니다');
+                window.location.href = 'my-bookings.html';
+            }
+        }
+
+        function setRating(rating) {
+            selectedRating = rating;
+
+            // Update button styles
+            document.querySelectorAll('.rating-btn').forEach(btn => {
+                const btnRating = parseInt(btn.dataset.rating);
+                btn.style.opacity = btnRating <= rating ? '1' : '0.4';
+            });
+
+            // Update text
+            const ratingTexts = {
+                1: '☹️ 1점 - 별로였어요',
+                2: '😐 2점 - 그저 그래요',
+                3: '🙂 3점 - 괜찮아요',
+                4: '😊 4점 - 만족해요',
+                5: '😍 5점 - 매우 만족'
+            };
+
+            document.getElementById('rating-text').textContent = ratingTexts[rating];
+            document.getElementById('display-rating').textContent = '⭐'.repeat(rating);
+            document.getElementById('display-text').textContent = ratingTexts[rating];
+        }
+
+        async function submitReview() {
+            const comment = document.getElementById('review-comment').value;
+
+            try {
+                const result = await window.submitBookingReview(bookingId, selectedRating, comment);
+                alert(`리뷰가 등록되었습니다!\n${result.chef_rating.toFixed(1)}점 - 총 ${result.rating_count}개`);
+                window.location.href = 'my-bookings.html?reviewed=' + bookingId;
+            } catch (error) {
+                console.error('Error submitting review:', error);
+                alert('리뷰 제출 중 오류가 발생했습니다');
+            }
+        }
+
+        function cancelReview() {
+            if (confirm('리뷰 작성을 취소하시겠습니까?')) {
+                window.location.href = 'my-bookings.html';
+            }
+        }
+
+        // Initialize
+        setRating(5);
+        loadBooking();
+    </script>
+    <script src="../mobile-optimization.js" defer></script>
+</body>
+</html>

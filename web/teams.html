@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#111827">
+<title>Teams - JARVIS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="responsive-framework.css">
+  </head>
+<body class="bg-gray-900 text-white">
+    <nav class="bg-gray-800 border-b border-gray-700 px-6 py-4 flex justify-between items-center">
+    <button class="hamburger" aria-label="Toggle navigation menu">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+        <h1 class="text-2xl font-bold">Team Management</h1>
+        <a href="index.html" class="text-gray-400 hover:text-white">← 홈</a>
+    </nav>
+
+    <main class="p-6 max-w-6xl mx-auto">
+        <!-- Team Stats -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+            <div class="bg-orange-600 p-4 rounded">
+                <div class="text-sm">전체 팀</div>
+                <div id="total-teams" class="text-3xl font-bold">-</div>
+            </div>
+            <div class="bg-blue-600 p-4 rounded">
+                <div class="text-sm">팀원 수</div>
+                <div id="total-members" class="text-3xl font-bold">-</div>
+            </div>
+            <div class="bg-green-600 p-4 rounded">
+                <div class="text-sm">활용률</div>
+                <div id="avg-util" class="text-3xl font-bold">-</div>
+            </div>
+            <div class="bg-purple-600 p-4 rounded">
+                <div class="text-sm">상태</div>
+                <div id="team-status" class="text-3xl font-bold">-</div>
+            </div>
+        </div>
+
+        <!-- Teams Grid -->
+        <div id="teams-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div class="bg-gray-800 p-4 rounded animate-pulse">로딩 중...</div>
+        </div>
+    </main>
+
+    <script>
+        async function loadTeams() {
+            try {
+                const res = await fetch('/api/v1/teams');
+                const data = await res.json();
+
+                // Stats
+                document.getElementById('total-teams').textContent = data.summary.total_teams;
+                document.getElementById('total-members').textContent = data.summary.total_members;
+                document.getElementById('avg-util').textContent = data.summary.avg_utilization;
+                document.getElementById('team-status').textContent = data.summary.status;
+
+                // Teams
+                const html = data.teams.map(t => `
+                    <div class="bg-gray-800 p-6 rounded-lg hover:bg-gray-700 transition cursor-pointer">
+                        <h3 class="text-xl font-bold mb-2">${t.name}</h3>
+                        <p class="text-sm text-gray-400 mb-3">${t.members}명 • ${t.utilization}% 활용</p>
+                        <div class="bg-gray-700 rounded-full h-2 mb-3">
+                            <div class="bg-orange-500 h-2 rounded-full" style="width: ${t.utilization}%"></div>
+                        </div>
+                        <p class="text-sm">📌 ${t.current_task}</p>
+                    </div>
+                `).join('');
+
+                document.getElementById('teams-container').innerHTML = html;
+            } catch (e) {}
+        }
+
+        loadTeams();
+    </script>
+    <script src="mobile-optimization.js" defer></script>
+</body>
+<html lang="ko">
+<head>
+    <title>👥 팀 관리 — JARVIS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .skill-item {
+            background: #f9fafb;
+            border-left: 4px solid #3b82f6;
+            padding: 12px;
+            margin: 8px 0;
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .skill-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .skill-active { background: #dcfce7; color: #166534; }
+        .skill-progress { background: #fef3c7; color: #92400e; }
+        .skill-blocked { background: #fee2e2; color: #991b1b; }
+        .progress-bar {
+            background: linear-gradient(90deg, #f97316, #fb923c);
+            border-radius: 4px;
+            height: 8px;
+            overflow: hidden;
+        }
+        .team-card {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .team-card:hover {
+            border-color: #f97316;
+            box-shadow: 0 4px 12px rgba(249, 115, 22, 0.2);
+        }
+        .team-card.selected {
+            border-color: #f97316;
+            background: linear-gradient(135deg, #fffbeb, #fef3c7);
+        }
+    </style>
+    <link rel="stylesheet" href="responsive-framework.css">
+  </head>
+<body class="bg-gray-50">
+    <div class="min-h-screen">
+        <!-- Header -->
+        <div class="bg-white border-b border-gray-200 sticky top-0 z-50">
+            <div class="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-900">👥 팀 관리</h1>
+                        <p class="text-sm text-gray-600">JARVIS 팀 스킬 관리 센터</p>
+                    </div>
+                    <a href="operations.html" class="text-orange-600 hover:text-orange-700 font-semibold">← 돌아가기</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
+            <!-- 전체 팀 요약 -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                <div class="bg-white rounded-lg shadow p-4">
+                    <p class="text-sm text-gray-600">📊 전체 스킬 완성도</p>
+                    <p class="text-3xl font-bold text-orange-600 mt-2">40%</p>
+                    <p class="text-xs text-gray-500 mt-2">29/70 skills active</p>
+                </div>
+                <div class="bg-white rounded-lg shadow p-4">
+                    <p class="text-sm text-gray-600">✅ 활성 팀</p>
+                    <p class="text-3xl font-bold text-green-600 mt-2">7/10</p>
+                    <p class="text-xs text-gray-500 mt-2">50%+ skill level</p>
+                </div>
+                <div class="bg-white rounded-lg shadow p-4">
+                    <p class="text-sm text-gray-600">⏳ 업그레이드 대기</p>
+                    <p class="text-3xl font-bold text-yellow-600 mt-2">3/10</p>
+                    <p class="text-xs text-gray-500 mt-2">Needs attention</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- 팀 리스트 -->
+                <div class="lg:col-span-2">
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <h2 class="text-lg font-bold mb-4">🏢 10개 팀</h2>
+                        <div id="teams-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <!-- 팀 카드들이 여기 생성됨 -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 팀 상세 정보 -->
+                <div class="bg-white rounded-lg shadow p-6" id="team-detail" style="display: none;">
+                    <h2 id="team-name" class="text-lg font-bold mb-4">팀 선택</h2>
+
+                    <div class="mb-4">
+                        <p class="text-sm text-gray-600 mb-2">스킬 완성도</p>
+                        <div class="text-2xl font-bold text-orange-600" id="team-percent">0%</div>
+                        <div class="progress-bar mt-2" style="width: 100%;">
+                            <div id="team-progress-fill" style="width: 0%; height: 100%; background: linear-gradient(90deg, #16a34a, #22c55e);"></div>
+                        </div>
+                    </div>
+
+                    <div class="mb-6 p-3 bg-blue-50 rounded">
+                        <p class="text-sm text-blue-900" id="team-description">팀 설명</p>
+                    </div>
+
+                    <h3 class="font-semibold text-gray-900 mb-3">스킬 상태</h3>
+                    <div id="team-skills" class="space-y-2 mb-6" style="max-height: 300px; overflow-y: auto;">
+                        <!-- 스킬들이 여기 생성됨 -->
+                    </div>
+
+                    <button
+                        id="upgrade-btn"
+                        onclick="upgradeTeam()"
+                        class="w-full bg-orange-500 text-white py-2 rounded-lg font-semibold hover:bg-orange-600 transition"
+                    >
+                        🔧 팀 업그레이드
+                    </button>
+                </div>
+            </div>
+
+            <!-- 팀별 성과 -->
+            <div class="bg-white rounded-lg shadow p-6 mt-6">
+                <h2 class="text-lg font-bold mb-4">📊 팀별 성과</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+                    <div class="p-4 bg-gradient-to-br from-orange-50 to-orange-100 rounded">
+                        <p class="text-sm text-gray-700">🧭 Team 01</p>
+                        <p class="text-2xl font-bold text-orange-600">60%</p>
+                        <p class="text-xs text-gray-600 mt-1">3/5 skills</p>
+                    </div>
+                    <div class="p-4 bg-gradient-to-br from-blue-50 to-blue-100 rounded">
+                        <p class="text-sm text-gray-700">📋 Team 02</p>
+                        <p class="text-2xl font-bold text-blue-600">50%</p>
+                        <p class="text-xs text-gray-600 mt-1">3/6 skills</p>
+                    </div>
+                    <div class="p-4 bg-gradient-to-br from-purple-50 to-purple-100 rounded">
+                        <p class="text-sm text-gray-700">⚙️ Team 05</p>
+                        <p class="text-2xl font-bold text-purple-600">37%</p>
+                        <p class="text-xs text-gray-600 mt-1">3/8 skills</p>
+                    </div>
+                    <div class="p-4 bg-gradient-to-br from-pink-50 to-pink-100 rounded">
+                        <p class="text-sm text-gray-700">🎨 Team 06</p>
+                        <p class="text-2xl font-bold text-pink-600">28%</p>
+                        <p class="text-xs text-gray-600 mt-1">2/7 skills</p>
+                    </div>
+                    <div class="p-4 bg-gradient-to-br from-red-50 to-red-100 rounded">
+                        <p class="text-sm text-gray-700">🚀 Team 09</p>
+                        <p class="text-2xl font-bold text-red-600">14%</p>
+                        <p class="text-xs text-gray-600 mt-1">1/7 skills</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 업그레이드 로그 -->
+            <div class="bg-white rounded-lg shadow p-6 mt-6">
+                <h2 class="text-lg font-bold mb-4">📝 최근 업그레이드</h2>
+                <div class="space-y-2 text-sm text-gray-700 font-mono">
+                    <p>✅ 2026-02-23 09:45 — Team 05: Redis Caching 완료</p>
+                    <p>✅ 2026-02-23 08:20 — Team 06: Responsive Design 진행 중 (75%)</p>
+                    <p>⏳ 2026-02-22 18:15 — Team 09: Kubernetes 설치 중 (50%)</p>
+                    <p>❌ 2026-02-22 14:30 — Team 07: Performance Testing (Blocked)</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = "http://localhost:5000/api/v1";
+        let selectedTeam = null;
+
+        const TEAM_SKILLS = {
+            "01": {
+                "name": "🧭 Team 01: Chief Dispatcher",
+                "description": "프로젝트 우선순위 지정 및 팀 조율",
+                "icon": "🧭",
+                "skills": [
+                    { name: "WSJF Prioritization", status: "active", percent: 100 },
+                    { name: "Conflict Resolution", status: "active", percent: 100 },
+                    { name: "Pipeline Orchestration", status: "active", percent: 100 },
+                    { name: "Risk Assessment", status: "progress", percent: 45 },
+                    { name: "Team Sync", status: "blocked", percent: 0 },
+                ]
+            },
+            "05": {
+                "name": "⚙️ Team 05: Backend Developer",
+                "description": "API 개발 및 데이터베이스 구현",
+                "icon": "⚙️",
+                "skills": [
+                    { name: "TDD", status: "active", percent: 100 },
+                    { name: "Clean Architecture", status: "active", percent: 100 },
+                    { name: "API Development", status: "active", percent: 100 },
+                    { name: "Database Implementation", status: "progress", percent: 35 },
+                    { name: "Caching Strategy", status: "blocked", percent: 0 },
+                    { name: "Message Queues", status: "blocked", percent: 0 },
+                    { name: "Authentication", status: "blocked", percent: 0 },
+                    { name: "Performance Tuning", status: "blocked", percent: 0 },
+                ]
+            },
+            "06": {
+                "name": "🎨 Team 06: Frontend Developer",
+                "description": "UI/UX 개발 및 반응형 디자인",
+                "icon": "🎨",
+                "skills": [
+                    { name: "Atomic Design", status: "active", percent: 100 },
+                    { name: "WCAG 2.1", status: "active", percent: 100 },
+                    { name: "BDD Testing", status: "progress", percent: 30 },
+                    { name: "React/Next.js", status: "progress", percent: 60 },
+                    { name: "UX Research", status: "blocked", percent: 0 },
+                    { name: "Performance Optimization", status: "blocked", percent: 0 },
+                    { name: "Responsive Design", status: "blocked", percent: 0 },
+                ]
+            },
+            "09": {
+                "name": "🚀 Team 09: DevOps Engineer",
+                "description": "인프라 관리 및 배포 자동화",
+                "icon": "🚀",
+                "skills": [
+                    { name: "SLO/SLI", status: "active", percent: 100 },
+                    { name: "GitOps", status: "progress", percent: 55 },
+                    { name: "Blue-Green Deployment", status: "progress", percent: 60 },
+                    { name: "Container Orchestration", status: "blocked", percent: 0 },
+                    { name: "Monitoring & Alerting", status: "blocked", percent: 0 },
+                    { name: "Database Replication", status: "blocked", percent: 0 },
+                    { name: "Disaster Recovery", status: "blocked", percent: 0 },
+                ]
+            },
+        };
+
+        async function apiCall(endpoint, method = "GET", data = null) {
+            try {
+                const options = {
+                    method: method,
+                    headers: { "Content-Type": "application/json" },
+                };
+                if (data) options.body = JSON.stringify(data);
+
+                const response = await fetch(API_BASE + endpoint, options);
+                return await response.json();
+            } catch (error) {
+                console.error("API Error:", error);
+                return null;
+            }
+        }
+
+        async function loadTeams() {
+            const result = await apiCall("/teams");
+            if (!result || !result.teams) return;
+
+            const grid = document.getElementById("teams-grid");
+            grid.innerHTML = "";
+
+            result.teams.forEach(team => {
+                const card = document.createElement("div");
+                card.className = "team-card";
+                card.innerHTML = `
+                    <div class="flex justify-between items-start mb-2">
+                        <div>
+                            <p class="font-semibold text-gray-900">${team.name}</p>
+                        </div>
+                        <span class="text-2xl">${TEAM_SKILLS[team.id]?.icon || "🏢"}</span>
+                    </div>
+                    <div class="mt-3">
+                        <div class="text-sm font-semibold text-orange-600">${team.skill_percent}%</div>
+                        <div class="progress-bar mt-1" style="width: 100%;">
+                            <div style="width: ${team.skill_percent}%; height: 100%; background: linear-gradient(90deg, #f97316, #fb923c);"></div>
+                        </div>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-2">${team.skills}</p>
+                `;
+                card.onclick = () => selectTeam(team.id);
+                grid.appendChild(card);
+            });
+        }
+
+        function selectTeam(teamId) {
+            selectedTeam = teamId;
+            const teamData = TEAM_SKILLS[teamId];
+
+            if (!teamData) return;
+
+            // UI 업데이트
+            document.getElementById("team-name").textContent = teamData.name;
+            document.getElementById("team-description").textContent = teamData.description;
+            document.getElementById("team-percent").textContent = Math.round(teamData.skills.filter(s => s.status === "active").length / teamData.skills.length * 100) + "%";
+            document.getElementById("team-progress-fill").style.width = Math.round(teamData.skills.filter(s => s.status === "active").length / teamData.skills.length * 100) + "%";
+
+            // 스킬 리스트
+            const skillsList = document.getElementById("team-skills");
+            skillsList.innerHTML = "";
+            teamData.skills.forEach(skill => {
+                const badgeClass = skill.status === "active" ? "skill-active" : skill.status === "progress" ? "skill-progress" : "skill-blocked";
+                const statusText = skill.status === "active" ? "✅ Active" : skill.status === "progress" ? "⏳ Progress" : "❌ Blocked";
+
+                const item = document.createElement("div");
+                item.className = "skill-item";
+                item.innerHTML = `
+                    <span>${skill.name}</span>
+                    <div class="flex items-center gap-2">
+                        <span class="skill-badge ${badgeClass}">${statusText}</span>
+                        <span class="text-xs text-gray-600">${skill.percent}%</span>
+                    </div>
+                `;
+                skillsList.appendChild(item);
+            });
+
+            document.getElementById("team-detail").style.display = "block";
+
+            // 팀 카드 선택 상태 업데이트
+            document.querySelectorAll(".team-card").forEach((card, idx) => {
+                card.classList.remove("selected");
+            });
+            event.currentTarget.classList.add("selected");
+        }
+
+        async function upgradeTeam() {
+            if (!selectedTeam) return;
+            const result = await apiCall(`/teams/${selectedTeam}/upgrade`, "POST");
+            if (result) {
+                alert(`🔧 업그레이드 시작\n\n${result.team_name}\n${result.skills_to_install}개 스킬 설치\n예상: ${result.estimated_time}`);
+            }
+        }
+
+        // 초기화
+        loadTeams();
+    </script>
+</body>
+</html>

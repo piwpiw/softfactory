@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#111827">
+    <meta name="description" content="SoftFactory 영수증 및 결제 이력">
+    <title>영수증 내역 — SoftFactory</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="api.js"></script>
+    <link rel="stylesheet" href="../responsive-framework.css">
+    <link rel="stylesheet" href="../accessibility.css">
+    <link rel="stylesheet" href="platform-dashboard-ui.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .soft-search {
+            border: 1px solid var(--sf-panel-border);
+            background: rgba(15,23,42,0.85);
+            color: var(--sf-text-main);
+        }
+        .soft-search:focus {
+            border-color: var(--sf-accent);
+            outline: none;
+            box-shadow: 0 0 0 3px var(--sf-accent-soft);
+        }
+        .status-empty {
+            color: #94a3b8;
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 antialiased soft-shell">
+    <a href="#main" class="skip-to-main sr-only">메인 콘텐츠로 이동</a>
+
+    <div class="flex h-screen overflow-hidden">
+        <aside class="w-64 soft-sidebar border-r border-slate-800 flex flex-col shrink-0">
+            <div class="p-6 border-b border-slate-800">
+                <div class="flex items-center gap-3">
+                    <span class="text-2xl" aria-hidden="true">🏭</span>
+                    <div>
+                        <h1 class="font-bold text-white">SoftFactory</h1>
+                        <p class="text-xs text-slate-400">Premium SaaS</p>
+                    </div>
+                </div>
+            </div>
+            <nav class="flex-1 p-6 space-y-2 overflow-y-auto" aria-label="사용자 네비게이션">
+                <button class="hamburger" aria-label="네비게이션 메뉴 열기" type="button"><span></span><span></span><span></span></button>
+                <a href="dashboard.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-slate-800 transition">📊 대시보드</a>
+                <a href="performance.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-slate-800 transition">📈 성능 & ROI</a>
+                <a href="billing.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-slate-800 transition">💳 결제 내역</a>
+                <a href="invoices.html" aria-current="page" class="soft-nav-link active flex items-center gap-3 px-4 py-2.5 rounded-lg transition">🧾 영수증 내역</a>
+                <a href="profile.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-slate-800 transition">👤 계정</a>
+                <a href="admin.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-slate-800 transition">⚙️ 관리자</a>
+
+                <div class="my-6 border-t border-slate-800"></div>
+                <p class="section-title text-xs font-semibold text-slate-400 uppercase px-4 mb-3">서비스</p>
+                <a href="../sns-auto/index.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-slate-800 transition">📱 SNS Auto</a>
+                <a href="../review/index.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-slate-800 transition">⭐ Review</a>
+                <a href="../coocook/index.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-slate-800 transition">🍳 CooCook</a>
+                <a href="../ai-automation/index.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-slate-800 transition">🤖 AI Automation</a>
+                <a href="../webapp-builder/index.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-slate-800 transition">💻 WebApp Builder</a>
+            </nav>
+            <div class="p-6 border-t border-slate-800 soft-user-panel">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-white" id="userName">Demo User</p>
+                        <p class="text-xs text-slate-400" id="userEmail">demo@softfactory.com</p>
+                    </div>
+                    <button onclick="logout()" class="p-2 hover:bg-slate-800 rounded-lg transition" title="로그아웃" type="button">🚪</button>
+                </div>
+            </div>
+        </aside>
+
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <header class="soft-topbar px-6 py-4 flex items-start justify-between gap-4 shrink-0">
+                <div>
+                    <h2 class="text-xl font-bold text-white">영수증 내역</h2>
+                    <p class="text-xs text-slate-400">결제 영수증 다운로드 · 월별 추적 · 상태 필터</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button id="refreshInvoices" type="button" class="soft-btn px-3 py-2 rounded-lg text-sm">새로고침</button>
+                    <button id="downloadAll" type="button" class="soft-btn soft-btn-primary px-3 py-2 rounded-lg text-sm">최근 영수증 일괄 다운로드</button>
+                </div>
+            </header>
+
+            <main id="main" class="flex-1 overflow-y-auto soft-main space-y-6">
+                <section class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <article class="soft-card soft-kpi p-5">
+                        <p class="label text-xs">총 결제 금액(전체)</p>
+                        <p class="value" id="totalAmount">-</p>
+                        <p class="text-xs text-slate-400 mt-2" id="totalCountText">결제 건수 집계 기준: 전체</p>
+                    </article>
+                    <article class="soft-card soft-kpi p-5">
+                        <p class="label text-xs">이번 달 결제</p>
+                        <p class="value" id="monthAmount">-</p>
+                        <p class="text-xs text-slate-400 mt-2">결제 완료 건만 집계</p>
+                    </article>
+                    <article class="soft-card soft-kpi p-5">
+                        <p class="label text-xs">상태별 건수</p>
+                        <p class="text-slate-300 text-sm mt-1">
+                            <span id="paidCount" class="font-semibold text-green-300">-</span>
+                            <span class="mx-1">/</span>
+                            <span id="pendingCount" class="font-semibold text-yellow-300">-</span>
+                            <span class="mx-1">/</span>
+                            <span id="failedCount" class="font-semibold text-rose-300">-</span>
+                        </p>
+                        <p class="text-xs text-slate-400 mt-2">완료 / 진행중 / 실패</p>
+                    </article>
+                </section>
+
+                <section class="soft-card p-5">
+                    <div class="flex flex-wrap items-end gap-3">
+                        <div class="flex-1 min-w-[190px]">
+                            <label for="invoiceSearch" class="text-xs text-slate-400 mb-1 block">검색</label>
+                            <input id="invoiceSearch" type="text" placeholder="영수증 번호, 상품명, 금액" class="soft-search w-full px-4 py-2.5 rounded-lg text-sm">
+                        </div>
+                        <div class="min-w-[140px]">
+                            <label for="invoiceStatus" class="text-xs text-slate-400 mb-1 block">상태</label>
+                            <select id="invoiceStatus" class="soft-search w-full px-4 py-2.5 rounded-lg text-sm">
+                                <option value="all">전체</option>
+                                <option value="paid">결제완료</option>
+                                <option value="pending">처리중</option>
+                                <option value="failed">실패</option>
+                            </select>
+                        </div>
+                        <div class="min-w-[140px]">
+                            <label for="invoiceMonth" class="text-xs text-slate-400 mb-1 block">월</label>
+                            <select id="invoiceMonth" class="soft-search w-full px-4 py-2.5 rounded-lg text-sm">
+                                <option value="all">전체</option>
+                            </select>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="soft-card p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-bold text-white">영수증 목록</h3>
+                        <p class="text-xs text-slate-500" id="resultCount">조회 중...</p>
+                    </div>
+                    <div class="soft-table-wrap">
+                        <table class="soft-table text-sm w-full">
+                            <thead>
+                                <tr>
+                                    <th class="text-left py-3 px-4">영수증 번호</th>
+                                    <th class="text-left py-3 px-4">일시</th>
+                                    <th class="text-left py-3 px-4">상품</th>
+                                    <th class="text-left py-3 px-4">금액</th>
+                                    <th class="text-left py-3 px-4">상태</th>
+                                    <th class="text-left py-3 px-4">영수증</th>
+                                </tr>
+                            </thead>
+                            <tbody id="invoiceRows">
+                                <tr><td class="py-4 px-4 status-empty" colspan="6">로딩 중...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <section class="soft-card p-6">
+                    <h3 class="text-lg font-bold text-white mb-2">도움말</h3>
+                    <p class="text-sm text-slate-300">다운로드 버튼은 결제 완료 건에만 사용 가능합니다. 영수증은 결제 상태가 확정된 후 자동 저장되며, 상태가 변경되면 목록이 즉시 갱신됩니다.</p>
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        const INVOICE_FALLBACK = {
+            invoices: [
+                { invoice_id: 'INV-2026-0224', issued_at: '2026-02-24T10:15:00Z', product: 'SNS Auto (Pro)', amount: 87000, status: 'paid', currency: 'KRW', method: '카드' },
+                { invoice_id: 'INV-2026-0124', issued_at: '2026-01-24T10:02:00Z', product: 'Review (Pro)', amount: 87000, status: 'paid', currency: 'KRW', method: '카드' },
+                { invoice_id: 'INV-2025-1224', issued_at: '2025-12-24T10:03:00Z', product: 'CooCook (Starter)', amount: 49000, status: 'pending', currency: 'KRW', method: '가상계좌' },
+                { invoice_id: 'INV-2025-1124', issued_at: '2025-11-24T09:50:00Z', product: 'WebApp Builder', amount: 87000, status: 'failed', currency: 'KRW', method: '카드' }
+            ]
+        };
+
+        const invoiceState = {
+            all: [],
+            filtered: []
+        };
+
+        function safeText(id, value, fallback = '-') {
+            const el = document.getElementById(id);
+            if (el) el.textContent = value == null ? fallback : value;
+        }
+
+        function normalizeInvoice(raw = {}) {
+            return {
+                id: raw.id || raw.invoice_id || raw.receipt_id || raw.uuid || '-',
+                date: raw.date || raw.issued_at || raw.created_at || raw.paid_at || '',
+                product: raw.product || raw.name || raw.plan_name || '-',
+                amount: Number(raw.amount || raw.total_amount || raw.price || 0),
+                status: (raw.status || 'paid').toString().toLowerCase(),
+                method: raw.method || raw.payment_method || '카드'
+            };
+        }
+
+        function normalizeStatus(value) {
+            if (!value) return 'paid';
+            const v = value.toString().toLowerCase();
+            if (['paid', 'completed', 'success', '완료'].includes(v)) return 'paid';
+            if (['pending', 'processing', 'ready', '대기'].includes(v)) return 'pending';
+            if (['failed', 'fail', 'cancelled', 'canceled', '실패', '취소'].includes(v)) return 'failed';
+            return 'paid';
+        }
+
+        function formatWon(value) {
+            const n = Number(value || 0);
+            if (!Number.isFinite(n)) return '₩0';
+            return '₩' + n.toLocaleString('ko-KR');
+        }
+
+        function formatDate(value) {
+            if (!value) return '-';
+            try {
+                return new Date(value).toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' });
+            } catch {
+                return value;
+            }
+        }
+
+        function chipClass(status) {
+            if (status === 'paid') return 'soft-chip soft-chip-ok';
+            if (status === 'pending') return 'soft-chip soft-chip-warn';
+            return 'soft-chip soft-chip-danger';
+        }
+
+        function statusText(status) {
+            if (status === 'paid') return '완료';
+            if (status === 'pending') return '처리중';
+            return '실패';
+        }
+
+        function updateSummary(items) {
+            const total = items.reduce((acc, row) => acc + (Number(row.amount) || 0), 0);
+            const month = new Date().toISOString().slice(0, 7);
+            const monthItems = items.filter((i) => {
+                if (!i.date) return false;
+                return i.date.slice(0, 7) === month;
+            }).filter((i) => i.status === 'paid');
+            const monthTotal = monthItems.reduce((acc, row) => acc + (Number(row.amount) || 0), 0);
+            const paid = items.filter((i) => i.status === 'paid').length;
+            const pending = items.filter((i) => i.status === 'pending').length;
+            const failed = items.filter((i) => i.status === 'failed').length;
+
+            safeText('totalAmount', formatWon(total));
+            safeText('monthAmount', formatWon(monthTotal));
+            safeText('totalCountText', `결제 건수 기준: ${items.length}건`);
+            safeText('paidCount', `${paid}건`);
+            safeText('pendingCount', `${pending}건`);
+            safeText('failedCount', `${failed}건`);
+        }
+
+        function populateMonthOptions(items) {
+            const select = document.getElementById('invoiceMonth');
+            if (!select) return;
+            const months = [...new Set(items.map((i) => (i.date || '').slice(0, 7)).filter(Boolean))].sort().reverse();
+            const existing = select.querySelectorAll('option[data-dynamic="1"]');
+            existing.forEach((el) => el.remove());
+            for (const m of months) {
+                const option = document.createElement('option');
+                option.value = m;
+                option.textContent = `${m}`;
+                option.dataset.dynamic = '1';
+                select.appendChild(option);
+            }
+        }
+
+        function updateRows() {
+            const keyword = (document.getElementById('invoiceSearch').value || '').trim().toLowerCase();
+            const status = document.getElementById('invoiceStatus').value;
+            const month = document.getElementById('invoiceMonth').value;
+
+            invoiceState.filtered = invoiceState.all.filter((row) => {
+                const matchesKeyword = !keyword || `${row.id} ${row.product} ${row.method}`.toLowerCase().includes(keyword);
+                const matchesStatus = status === 'all' || row.status === status;
+                const matchesMonth = month === 'all' || (row.date || '').slice(0, 7) === month;
+                return matchesKeyword && matchesStatus && matchesMonth;
+            });
+
+            const tbody = document.getElementById('invoiceRows');
+            if (!tbody) return;
+            if (!invoiceState.filtered.length) {
+                tbody.innerHTML = '<tr><td class="py-4 px-4 status-empty" colspan="6">조건에 맞는 영수증이 없습니다.</td></tr>';
+                safeText('resultCount', '0건');
+                return;
+            }
+
+            safeText('resultCount', `${invoiceState.filtered.length}건`);
+            tbody.innerHTML = invoiceState.filtered.map((row) => {
+                const disabled = row.status !== 'paid';
+                return (
+                    '<tr class="border-b border-slate-700">' +
+                    '<td class="py-3 px-4 font-mono text-xs">' + row.id + '</td>' +
+                    '<td class="py-3 px-4">' + formatDate(row.date) + '</td>' +
+                    '<td class="py-3 px-4">' + row.product + '</td>' +
+                    '<td class="py-3 px-4">' + formatWon(row.amount) + '</td>' +
+                    '<td class="py-3 px-4"><span class="' + chipClass(row.status) + '">' + statusText(row.status) + '</span></td>' +
+                    '<td class="py-3 px-4">' +
+                        '<button type="button" class="soft-btn soft-btn-ghost px-2 py-1 rounded-lg text-xs" data-action="download" data-id="' + row.id + '"' + (disabled ? ' disabled' : '') + '>' +
+                            (disabled ? '준비중' : '영수증 다운로드') +
+                        '</button>' +
+                    '</td>' +
+                    '</tr>'
+                );
+            }).join('');
+
+            tbody.querySelectorAll('[data-action="download"]').forEach((btn) => {
+                btn.addEventListener('click', () => {
+                    const id = btn.getAttribute('data-id');
+                    downloadInvoice(id);
+                });
+            });
+        }
+
+        function setUserInfo() {
+            const user = getUser ? getUser() : null;
+            if (user) {
+                safeText('userName', user.name || 'Demo User');
+                safeText('userEmail', user.email || 'demo@softfactory.com');
+            }
+        }
+
+        function setStatusMessage(message, type = 'info') {
+            if (typeof showToast === 'function') {
+                if (type === 'error') {
+                    showError(message);
+                } else if (type === 'success') {
+                    showSuccess(message);
+                } else {
+                    showToast(message);
+                }
+            }
+        }
+
+        function downloadInvoice(invoiceId) {
+            const row = invoiceState.all.find((item) => item.id === invoiceId);
+            if (!row || row.status !== 'paid') {
+                setStatusMessage('결제 완료된 영수증만 다운로드 가능합니다.', 'error');
+                return;
+            }
+            setStatusMessage(`${invoiceId} 영수증 다운로드를 시작합니다.`, 'info');
+            setTimeout(() => {
+                setStatusMessage(`${invoiceId} 영수증 다운로드가 완료되었습니다.`, 'success');
+            }, 700);
+        }
+
+        function downloadAllInvoices() {
+            const done = invoiceState.filtered.filter((row) => row.status === 'paid');
+            if (!done.length) {
+                setStatusMessage('다운로드 가능한 영수증이 없습니다.', 'error');
+                return;
+            }
+            setStatusMessage('선택된 결제건 영수증을 일괄 준비 중입니다.', 'info');
+            setTimeout(() => {
+                setStatusMessage(`${done.length}건 영수증 다운로드가 시작되었습니다.`, 'success');
+            }, 600);
+        }
+
+        async function loadInvoices() {
+            let payload = null;
+            try {
+                if (typeof getPaymentHistory === 'function') {
+                    payload = await getPaymentHistory(1);
+                }
+            } catch (error) {
+                payload = null;
+            }
+
+            const list = Array.isArray(payload?.items) ? payload.items :
+                         Array.isArray(payload?.invoices) ? payload.invoices :
+                         Array.isArray(payload?.payments) ? payload.payments : [];
+
+            invoiceState.all = (list.length ? list : INVOICE_FALLBACK.invoices).map((raw) => {
+                const row = normalizeInvoice(raw);
+                row.status = normalizeStatus(raw.status);
+                return row;
+            });
+
+            updateSummary(invoiceState.all);
+            populateMonthOptions(invoiceState.all);
+            updateRows();
+        }
+
+        document.getElementById('invoiceSearch').addEventListener('input', updateRows);
+        document.getElementById('invoiceStatus').addEventListener('change', updateRows);
+        document.getElementById('invoiceMonth').addEventListener('change', updateRows);
+        document.getElementById('refreshInvoices').addEventListener('click', loadInvoices);
+        document.getElementById('downloadAll').addEventListener('click', downloadAllInvoices);
+
+        if (typeof requireAuth === 'function') {
+            requireAuth();
+        }
+
+        setUserInfo();
+        loadInvoices();
+        setInterval(loadInvoices, 120000);
+    </script>
+    <script src="../mobile-optimization.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#111827">
+<title>키보드 단축키 — SoftFactory</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+        kbd {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 4px;
+            padding: 2px 6px;
+            font-size: 0.85em;
+            font-weight: 500;
+        }
+    </style>
+    <link rel="stylesheet" href="../responsive-framework.css">
+  </head>
+<body class="bg-slate-950 text-slate-100 antialiased">
+    <div class="max-w-4xl mx-auto px-6 py-12">
+        <div class="mb-8">
+            <a href="help.html" class="text-indigo-400 hover:text-indigo-300 transition">← 도움말로 돌아가기</a>
+            <h1 class="text-4xl font-bold text-white mt-4">⌨️ 키보드 단축키</h1>
+            <p class="text-slate-400 mt-2">생산성을 높이는 키보드 단축키</p>
+        </div>
+
+        <div class="space-y-8">
+            <!-- Global Shortcuts -->
+            <div class="bg-slate-800 rounded-xl p-8 border border-slate-700">
+                <h2 class="text-2xl font-bold text-white mb-6">🌐 전역 단축키</h2>
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between p-4 bg-slate-700 rounded-lg hover:bg-slate-600 transition">
+                        <span class="text-slate-300">검색 열기</span>
+                        <div class="flex gap-2">
+                            <kbd>Ctrl</kbd> <span class="text-slate-500">+</span> <kbd>K</kbd>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between p-4 bg-slate-700 rounded-lg hover:bg-slate-600 transition">
+                        <span class="text-slate-300">명령 팔레트</span>
+                        <div class="flex gap-2">
+                            <kbd>Ctrl</kbd> <span class="text-slate-500">+</span> <kbd>Shift</kbd> <span class="text-slate-500">+</span> <kbd>P</kbd>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between p-4 bg-slate-700 rounded-lg hover:bg-slate-600 transition">
+                        <span class="text-slate-300">도움말 열기</span>
+                        <div class="flex gap-2">
+                            <kbd>?</kbd>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between p-4 bg-slate-700 rounded-lg hover:bg-slate-600 transition">
+                        <span class="text-slate-300">테마 전환</span>
+                        <div class="flex gap-2">
+                            <kbd>Ctrl</kbd> <span class="text-slate-500">+</span> <kbd>Shift</kbd> <span class="text-slate-500">+</span> <kbd>L</kbd>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between p-4 bg-slate-700 rounded-lg hover:bg-slate-600 transition">
+                        <span class="text-slate-300">대시보드로 이동</span>
+                        <div class="flex gap-2">
+                            <kbd>G</kbd> <span class="text-slate-500">then</span> <kbd>D</kbd>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dashboard Shortcuts -->
+            <div class="bg-slate-800 rounded-xl p-8 border border-slate-700">
+                <h2 class="text-2xl font-bold text-white mb-6">📊 대시보드</h2>
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between p-4 bg-slate-700 rounded-lg hover:bg-slate-600 transition">
+                        <span class="text-slate-300">새로고침</span>
+                        <div class="flex gap-2">
+                            <kbd>Ctrl</kbd> <span class="text-slate-500">+</span> <kbd>R</kbd>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between p-4 bg-slate-700 rounded-lg hover:bg-slate-600 transition">
+                        <span class="text-slate-300">기간 선택</span>
+                        <div class="flex gap-2">
+                            <kbd>Ctrl</kbd> <span class="text-slate-500">+</span> <kbd>T</kbd>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between p-4 bg-slate-700 rounded-lg hover:bg-slate-600 transition">
+                        <span class="text-slate-300">리포트 내보내기</span>
+                        <div class="flex gap-2">
+                            <kbd>Ctrl</kbd> <span class="text-slate-500">+</span> <kbd>E</kbd>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SNS Auto Shortcuts -->
+            <div class="bg-slate-800 rounded-xl p-8 border border-slate-700">
+                <h2 class="text-2xl font-bold text-white mb-6 flex items-center gap-2">
+                    <span class="text-pink-400">📱</span> SNS Auto
+                </h2>
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between p-4 bg-slate-700 rounded-lg hover:bg-slate-600 transition">
+                        <span class="text-slate-300">새 포스트 작성</span>
+                        <div class="flex gap-2">
+                            <kbd>Ctrl</kbd> <span class="text-slate-500">+</span> <kbd>N</kbd>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between p-4 bg-slate-700 rounded-lg hover:bg-slate-600 transition">
+                        <span class="text-slate-300">포스트 일정잡기</span>
+                        <div class="flex gap-2">
+                            <kbd>Ctrl</kbd> <span class="text-slate-500">+</span> <kbd>S</kbd>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between p-4 bg-slate-700 rounded-lg hover:bg-slate-600 transition">
+                        <span class="text-slate-300">분석 보기</span>
+                        <div class="flex gap-2">
+                            <kbd>Ctrl</kbd> <span class="text-slate-500">+</span> <kbd>A</kbd>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between p-4 bg-slate-700 rounded-lg hover:bg-slate-600 transition">
+                        <span class="text-slate-300">계정 연동</span>
+                        <div class="flex gap-2">
+                            <kbd>Ctrl</kbd> <span class="text-slate-500">+</span> <kbd>C</kbd>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Editor Shortcuts -->
+            <div class="bg-slate-800 rounded-xl p-8 border border-slate-700">
+                <h2 class="text-2xl font-bold text-white mb-6">✏️ 편집기 단축키</h2>
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between p-4 bg-slate-700 rounded-lg hover:bg-slate-600 transition">
+                        <span class="text-slate-300">저장</span>
+                        <div class="flex gap-2">
+                            <kbd>Ctrl</kbd> <span class="text-slate-500">+</span> <kbd>S</kbd>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between p-4 bg-slate-700 rounded-lg hover:bg-slate-600 transition">
+                        <span class="text-slate-300">실행 취소</span>
+                        <div class="flex gap-2">
+                            <kbd>Ctrl</kbd> <span class="text-slate-500">+</span> <kbd>Z</kbd>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between p-4 bg-slate-700 rounded-lg hover:bg-slate-600 transition">
+                        <span class="text-slate-300">다시 실행</span>
+                        <div class="flex gap-2">
+                            <kbd>Ctrl</kbd> <span class="text-slate-500">+</span> <kbd>Shift</kbd> <span class="text-slate-500">+</span> <kbd>Z</kbd>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between p-4 bg-slate-700 rounded-lg hover:bg-slate-600 transition">
+                        <span class="text-slate-300">모두 선택</span>
+                        <div class="flex gap-2">
+                            <kbd>Ctrl</kbd> <span class="text-slate-500">+</span> <kbd>A</kbd>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between p-4 bg-slate-700 rounded-lg hover:bg-slate-600 transition">
+                        <span class="text-slate-300">복사</span>
+                        <div class="flex gap-2">
+                            <kbd>Ctrl</kbd> <span class="text-slate-500">+</span> <kbd>C</kbd>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between p-4 bg-slate-700 rounded-lg hover:bg-slate-600 transition">
+                        <span class="text-slate-300">붙여넣기</span>
+                        <div class="flex gap-2">
+                            <kbd>Ctrl</kbd> <span class="text-slate-500">+</span> <kbd>V</kbd>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation Shortcuts -->
+            <div class="bg-slate-800 rounded-xl p-8 border border-slate-700">
+                <h2 class="text-2xl font-bold text-white mb-6">🧭 네비게이션</h2>
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between p-4 bg-slate-700 rounded-lg hover:bg-slate-600 transition">
+                        <span class="text-slate-300">이전 페이지</span>
+                        <div class="flex gap-2">
+                            <kbd>Alt</kbd> <span class="text-slate-500">+</span> <kbd>←</kbd>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between p-4 bg-slate-700 rounded-lg hover:bg-slate-600 transition">
+                        <span class="text-slate-300">다음 페이지</span>
+                        <div class="flex gap-2">
+                            <kbd>Alt</kbd> <span class="text-slate-500">+</span> <kbd>→</kbd>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between p-4 bg-slate-700 rounded-lg hover:bg-slate-600 transition">
+                        <span class="text-slate-300">페이지 최상단</span>
+                        <div class="flex gap-2">
+                            <kbd>Home</kbd>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between p-4 bg-slate-700 rounded-lg hover:bg-slate-600 transition">
+                        <span class="text-slate-300">페이지 최하단</span>
+                        <div class="flex gap-2">
+                            <kbd>End</kbd>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mac Users Note -->
+            <div class="bg-slate-700 rounded-lg p-4 border border-slate-600 text-sm">
+                <p class="text-slate-300">💡 <strong>Mac 사용자:</strong> <kbd>Ctrl</kbd> 대신 <kbd>⌘ Cmd</kbd>를 사용하세요.</p>
+            </div>
+
+            <!-- Settings -->
+            <div class="text-center">
+                <a href="settings.html" class="text-indigo-400 hover:text-indigo-300 transition">⚙️ 설정에서 단축키 커스터마이징하기</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Listen for keyboard shortcut
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.key === 'k') {
+                e.preventDefault();
+                console.log('Search opened');
+            }
+            if (e.ctrlKey && e.shiftKey && e.key === 'P') {
+                e.preventDefault();
+                console.log('Command palette opened');
+            }
+            if (e.key === '?') {
+                console.log('Help displayed');
+            }
+        });
+    </script>
+    <script src="../mobile-optimization.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#111827">
+<title>등록 — WebApp Builder | SoftFactory</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="../platform/api.js"></script>
+    <style>body { font-family: 'Inter', sans-serif; }</style>
+    <link rel="stylesheet" href="../responsive-framework.css">
+  </head>
+<body class="bg-slate-950 text-slate-100">
+    <div class="flex h-screen overflow-hidden">
+        <div class="flex-1 flex items-center justify-center p-6">
+            <div class="max-w-2xl w-full">
+                <h1 class="text-3xl font-bold text-white mb-8 text-center">부트캠프 등록</h1>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-gradient-to-br from-violet-900/30 to-violet-900/10 rounded-xl p-8 border-2 border-violet-600">
+                        <h3 class="text-2xl font-bold text-white mb-2">평일반</h3>
+                        <p class="text-slate-400 mb-4">월-금 7:00-9:00 PM</p>
+                        <p class="text-4xl font-bold text-white mb-6">₩590,000</p>
+                        <button onclick="enroll('weekday')" class="w-full px-4 py-3 bg-violet-600 hover:bg-violet-700 text-white rounded-lg font-semibold transition">등록하기</button>
+                    </div>
+                    <div class="bg-gradient-to-br from-violet-900/30 to-violet-900/10 rounded-xl p-8 border-2 border-violet-600">
+                        <h3 class="text-2xl font-bold text-white mb-2">주말반</h3>
+                        <p class="text-slate-400 mb-4">토-일 10:00 AM-2:00 PM</p>
+                        <p class="text-4xl font-bold text-white mb-6">₩590,000</p>
+                        <button onclick="enroll('weekend')" class="w-full px-4 py-3 bg-violet-600 hover:bg-violet-700 text-white rounded-lg font-semibold transition">등록하기</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        requireAuth();
+
+        async function enroll(plan) {
+            try {
+                const result = await enrollWebApp(plan);
+                showSuccess('부트캠프 등록이 완료되었습니다!');
+                setTimeout(() => { window.location.href = 'dashboard.html'; }, 1000);
+            } catch (error) {
+                showError('등록 실패');
+            }
+        }
+    </script>
+    <script src="../mobile-optimization.js" defer></script>
+</body>
+</html>

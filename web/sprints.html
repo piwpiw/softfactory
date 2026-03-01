@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#111827">
+<title>Sprints - JARVIS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="responsive-framework.css">
+  </head>
+<body class="bg-gray-900 text-white">
+    <nav class="bg-gray-800 border-b border-gray-700 px-6 py-4 flex justify-between items-center">
+    <button class="hamburger" aria-label="Toggle navigation menu">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+        <h1 class="text-2xl font-bold">02 PM: Sprint Management</h1>
+        <a href="index.html" class="text-gray-400 hover:text-white">← 홈</a>
+    </nav>
+
+    <main class="p-6 max-w-6xl mx-auto">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="bg-orange-600 p-6 rounded-lg">
+                <h3 class="text-2xl font-bold">Sprint 24</h3>
+                <p class="text-sm mt-2">진행: 65%</p>
+                <div class="bg-gray-700 rounded-full h-3 mt-2">
+                    <div class="bg-white h-3 rounded-full" style="width: 65%"></div>
+                </div>
+            </div>
+            <div class="bg-blue-600 p-6 rounded-lg">
+                <h3 class="text-xl font-bold">12 Tasks</h3>
+                <p class="text-sm mt-2">8 완료 / 4 진행</p>
+            </div>
+            <div class="bg-green-600 p-6 rounded-lg">
+                <h3 class="text-xl font-bold">Velocity</h3>
+                <p class="text-sm mt-2">42 Story Points</p>
+            </div>
+        </div>
+
+        <div class="bg-gray-800 p-6 rounded-lg">
+            <h3 class="text-xl font-bold mb-4">진행 중인 작업</h3>
+            <div class="space-y-3">
+                <div class="flex justify-between items-center bg-gray-700 p-3 rounded">
+                    <span>API 최적화</span>
+                    <span class="bg-orange-500 px-3 py-1 rounded text-sm">진행 중</span>
+                </div>
+                <div class="flex justify-between items-center bg-gray-700 p-3 rounded">
+                    <span>UI 개선</span>
+                    <span class="bg-blue-500 px-3 py-1 rounded text-sm">준비</span>
+                </div>
+                <div class="flex justify-between items-center bg-gray-700 p-3 rounded">
+                    <span>테스트 자동화</span>
+                    <span class="bg-green-500 px-3 py-1 rounded text-sm">완료</span>
+                </div>
+            </div>
+        </div>
+
+        <button onclick="startSprint()" class="mt-6 bg-orange-600 hover:bg-orange-700 px-6 py-3 rounded font-bold">
+            Sprint 시작
+        </button>
+    </main>
+
+    <script>
+        function startSprint() {
+            alert('Sprint 25 시작! 목표: 45 Story Points');
+        }
+    </script>
+    <script src="mobile-optimization.js" defer></script>
+</body>
+</html>

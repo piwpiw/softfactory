@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#020617">
+    <title>AI Curation Hub — ReviewEverything Platinum</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <script src="../platform/api.js"></script>
+    <style>
+        :root {
+            --primary-amber: #f59e0b;
+            --primary-dark: #020617;
+            --glass-bg: rgba(15, 23, 42, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: radial-gradient(circle at top right, #1e1b4b, #020617);
+            color: #f8fafc;
+            min-height: 100vh;
+        }
+
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        .premium-gradient-text {
+            background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 50%, #fef3c7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .profit-card {
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .profit-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            border-color: rgba(245, 158, 11, 0.5);
+        }
+
+        .profit-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: 0.5s;
+            transform: skewX(-25deg);
+        }
+
+        .profit-card:hover::before {
+            left: 125%;
+        }
+
+        .scroll-hide::-webkit-scrollbar {
+            display: none;
+        }
+
+        @keyframes pulse-gold {
+            0% {
+                box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4);
+            }
+
+            70% {
+                box-shadow: 0 0 0 10px rgba(245, 158, 11, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(245, 158, 11, 0);
+            }
+        }
+
+        .pulse-gold {
+            animation: pulse-gold 2s infinite;
+        }
+
+        .sidebar-item-active {
+            background: linear-gradient(90deg, rgba(245, 158, 11, 0.2), transparent);
+            border-left: 3px solid #f59e0b;
+        }
+    </style>
+</head>
+
+<body class="overflow-hidden">
+    <div class="flex h-screen">
+        <!-- AI Advanced Sidebar -->
+        <aside class="w-72 glass-panel border-r border-slate-800/50 flex flex-col z-50">
+            <div class="p-8 border-b border-slate-800/50">
+                <div class="flex items-center gap-4">
+                    <div
+                        class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-amber-600 to-amber-400 p-0.5 shadow-lg shadow-amber-900/20">
+                        <div class="w-full h-full bg-slate-950 rounded-2xl flex items-center justify-center text-2xl">⚡
+                        </div>
+                    </div>
+                    <div>
+                        <h1 class="font-black text-white text-lg tracking-tight uppercase">ReviewEngine</h1>
+                        <p class="text-[10px] text-amber-500 font-bold tracking-[0.2em]">PLATINUM EDITION</p>
+                    </div>
+                </div>
+            </div>
+
+            <nav class="flex-1 p-6 space-y-1.5 overflow-y-auto scroll-hide">
+                <p class="text-[10px] font-black text-slate-500 uppercase px-4 mb-4 tracking-widest">Profit Center</p>
+                <a href="index.html"
+                    class="flex items-center gap-4 px-5 py-3.5 rounded-xl sidebar-item-active text-amber-500 font-bold transition-all">
+                    <span>🎯</span>
+                    <span class="text-sm">AI 탐색 (Explorer)</span>
+                </a>
+                <a href="aggregator.html"
+                    class="flex items-center gap-4 px-5 py-3.5 rounded-xl text-slate-400 font-medium hover:bg-slate-800/50 hover:text-white transition-all group">
+                    <span class="group-hover:scale-125 transition-transform">🔗</span>
+                    <span class="text-sm">종합 아카이브</span>
+                </a>
+                <a href="auto-apply.html"
+                    class="flex items-center gap-4 px-5 py-3.5 rounded-xl text-slate-400 font-medium hover:bg-slate-800/50 hover:text-white transition-all group">
+                    <span class="group-hover:scale-125 transition-transform">🤖</span>
+                    <span class="text-sm">오토파일럿 (Bot)</span>
+                </a>
+
+                <div class="pt-8 mb-4">
+                    <p class="text-[10px] font-black text-slate-500 uppercase px-4 mb-4 tracking-widest">My Assets</p>
+                    <a href="my-campaigns.html"
+                        class="flex items-center gap-4 px-5 py-3.5 rounded-xl text-slate-400 font-medium hover:bg-slate-800/50 hover:text-white transition-all group">
+                        <span>📋</span>
+                        <span class="text-sm">포트폴리오</span>
+                    </a>
+                    <a href="accounts.html"
+                        class="flex items-center gap-4 px-5 py-3.5 rounded-xl text-slate-400 font-medium hover:bg-slate-800/50 hover:text-white transition-all group">
+                        <span>👤</span>
+                        <span class="text-sm">소셜 마스터 계정</span>
+                    </a>
+                    <a href="applications.html"
+                        class="flex items-center gap-4 px-5 py-3.5 rounded-xl text-slate-400 font-medium hover:bg-slate-800/50 hover:text-white transition-all group">
+                        <span>📊</span>
+                        <span class="text-sm">리워드 정산</span>
+                    </a>
+                </div>
+            </nav>
+
+            <div class="p-6 border-t border-slate-800/50">
+                <div class="glass-panel rounded-2xl p-4 bg-slate-900/50">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="flex items-center gap-2">
+                            <div class="w-8 h-8 rounded-full bg-amber-500/20 flex items-center justify-center text-xs">
+                                🚀</div>
+                            <span class="text-xs font-bold text-white">Pro Status</span>
+                        </div>
+                        <span class="text-[10px] bg-amber-500 text-black font-black px-1.5 py-0.5 rounded">ULTRA</span>
+                    </div>
+                    <div class="w-full bg-slate-800 rounded-full h-1.5 mb-2">
+                        <div class="bg-amber-500 h-1.5 rounded-full" style="width: 85%"></div>
+                    </div>
+                    <p class="text-[10px] text-slate-400 text-center">Next level in 4 applications</p>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Dashboard Area -->
+        <div class="flex-1 flex flex-col overflow-hidden relative">
+            <!-- Background Decoration -->
+            <div
+                class="absolute top-0 right-0 w-[500px] h-[500px] bg-amber-500/5 blur-[120px] rounded-full pointer-events-none">
+            </div>
+            <div
+                class="absolute bottom-0 left-0 w-[300px] h-[300px] bg-indigo-500/5 blur-[120px] rounded-full pointer-events-none">
+            </div>
+
+            <header class="h-24 px-10 flex items-center justify-between shrink-0 z-40">
+                <div>
+                    <h2 class="text-3xl font-black text-white tracking-tight">AI Curation Hub</h2>
+                    <p class="text-xs text-slate-400 mt-1 font-medium flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                        현재 14개 플랫폼에서 실시간 최적 캠페인 분석 중
+                    </p>
+                </div>
+                <div class="flex items-center gap-6">
+                    <div class="flex flex-col items-end">
+                        <span class="text-[10px] text-slate-500 font-black uppercase tracking-widest">Est. Monthly
+                            Profit</span>
+                        <span class="text-2xl font-black premium-gradient-text tracking-tighter">₩2,450,000</span>
+                    </div>
+                    <button
+                        class="w-12 h-12 rounded-2xl glass-panel flex items-center justify-center text-xl hover:bg-slate-800 transition-colors">🔔</button>
+                    <div class="h-12 w-[1px] bg-slate-800"></div>
+                    <div class="flex items-center gap-3 glass-panel px-4 py-2 rounded-2xl">
+                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix"
+                            class="w-8 h-8 rounded-xl bg-slate-800" alt="Avatar">
+                        <span class="text-sm font-bold text-white">Demo User</span>
+                    </div>
+                </div>
+            </header>
+
+            <main class="flex-1 overflow-y-scroll p-10 scroll-hide space-y-12">
+                <!-- Insight Section -->
+                <section>
+                    <div class="flex items-center justify-between mb-8">
+                        <h3 class="text-xl font-extrabold text-white flex items-center gap-3">
+                            <span class="text-amber-500">🔥</span> Trending High-Profit
+                        </h3>
+                        <a href="aggregator.html" class="text-xs font-bold text-amber-500 hover:underline">View All
+                            Analysis →</a>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="trending-grid">
+                        <!-- Advanced Card Loader -->
+                        <div class="profit-card glass-panel rounded-[2rem] p-8 border-slate-800/50 animate-pulse">
+                            <div class="w-16 h-16 bg-slate-800 rounded-2xl mb-6"></div>
+                            <div class="h-6 bg-slate-800 rounded mb-4 w-3/4"></div>
+                            <div class="h-4 bg-slate-800 rounded mb-8 w-1/2"></div>
+                            <div class="flex justify-between items-center">
+                                <div class="h-4 bg-slate-800 rounded w-16"></div>
+                                <div class="h-8 bg-slate-800 rounded w-24"></div>
+                            </div>
+                        </div>
+                        <div class="profit-card glass-panel rounded-[2rem] p-8 border-slate-800/50 animate-pulse">
+                            <div class="w-16 h-16 bg-slate-800 rounded-2xl mb-6"></div>
+                            <div class="h-6 bg-slate-800 rounded mb-4 w-3/4"></div>
+                            <div class="h-4 bg-slate-800 rounded mb-8 w-1/2"></div>
+                            <div class="flex justify-between items-center">
+                                <div class="h-4 bg-slate-800 rounded w-16"></div>
+                                <div class="h-8 bg-slate-800 rounded w-24"></div>
+                            </div>
+                        </div>
+                        <div class="profit-card glass-panel rounded-[2rem] p-8 border-slate-800/50 animate-pulse">
+                            <div class="w-16 h-16 bg-slate-800 rounded-2xl mb-6"></div>
+                            <div class="h-6 bg-slate-800 rounded mb-4 w-3/4"></div>
+                            <div class="h-4 bg-slate-800 rounded mb-8 w-1/2"></div>
+                            <div class="flex justify-between items-center">
+                                <div class="h-4 bg-slate-800 rounded w-16"></div>
+                                <div class="h-8 bg-slate-800 rounded w-24"></div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Recommendation Engine -->
+                <section>
+                    <div
+                        class="glass-panel rounded-[2.5rem] p-10 bg-gradient-to-br from-slate-900/50 to-indigo-900/10 overflow-hidden relative border-amber-500/20">
+                        <div class="absolute top-0 right-0 p-8">
+                            <div class="w-32 h-32 bg-amber-500/10 blur-3xl rounded-full"></div>
+                        </div>
+                        <div class="relative z-10 flex flex-col md:flex-row items-center gap-10">
+                            <div class="flex-1 space-y-6">
+                                <span
+                                    class="bg-amber-500 text-black text-[10px] font-black px-3 py-1 rounded-full tracking-widest uppercase">AI
+                                    Recommendation</span>
+                                <h3 class="text-4xl font-black text-white leading-tight">매일 아침 9시,<br>당신을 위한 <span
+                                        class="premium-gradient-text">황금 리스트</span>가 생성됩니다.</h3>
+                                <p class="text-slate-400 max-w-md text-sm leading-relaxed">블로그 지수와 SNS 팔로워 활동 시간을 AI가
+                                    분석하여, 당첨 확률이 80% 이상인 캠페인만 골라서 오토파일럿이 대기합니다.</p>
+                                <div class="flex gap-4">
+                                    <button
+                                        class="px-8 py-4 bg-amber-500 text-black font-black rounded-2xl shadow-xl shadow-amber-900/20 active:scale-95 transition-all">지금
+                                        분석 시작하기</button>
+                                    <button
+                                        class="px-8 py-4 glass-panel text-white font-bold rounded-2xl hover:bg-slate-800 transition-all">설정
+                                        변경</button>
+                                </div>
+                            </div>
+                            <div class="w-full md:w-80 space-y-4">
+                                <div class="glass-panel p-5 rounded-3xl border-slate-700/50 flex items-center gap-4">
+                                    <div
+                                        class="w-10 h-10 rounded-xl bg-green-500/20 flex items-center justify-center text-green-500 font-bold">
+                                        A+</div>
+                                    <div>
+                                        <p class="text-[10px] text-slate-500 font-bold uppercase">Success Probability
+                                        </p>
+                                        <p class="text-sm font-black text-white">IT/테크 분야 92%</p>
+                                    </div>
+                                </div>
+                                <div class="glass-panel p-5 rounded-3xl border-slate-700/50 flex items-center gap-4">
+                                    <div
+                                        class="w-10 h-10 rounded-xl bg-amber-500/20 flex items-center justify-center text-amber-500 font-bold">
+                                        ROI</div>
+                                    <div>
+                                        <p class="text-[10px] text-slate-500 font-bold uppercase">Efficiency Rank</p>
+                                        <p class="text-sm font-black text-white">상위 5% 고수익 캠페인</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Category Power -->
+                <section class="pb-20">
+                    <h3 class="text-xl font-extrabold text-white flex items-center gap-3 mb-8">
+                        <span class="text-indigo-400">💎</span> Category Master
+                    </h3>
+                    <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
+                        <button
+                            class="glass-panel p-6 rounded-3xl flex flex-col items-center gap-4 group hover:border-amber-500 transition-all">
+                            <span class="text-3xl group-hover:scale-125 transition-transform">🍔</span>
+                            <span class="text-sm font-bold text-slate-300">맛집/카페</span>
+                        </button>
+                        <button
+                            class="glass-panel p-6 rounded-3xl flex flex-col items-center gap-4 group hover:border-amber-500 transition-all">
+                            <span class="text-3xl group-hover:scale-125 transition-transform">💄</span>
+                            <span class="text-sm font-bold text-slate-300">뷰티/패션</span>
+                        </button>
+                        <button
+                            class="glass-panel p-6 rounded-3xl flex flex-col items-center gap-4 group hover:border-amber-500 transition-all">
+                            <span class="text-3xl group-hover:scale-125 transition-transform">✈️</span>
+                            <span class="text-sm font-bold text-slate-300">숙박/여행</span>
+                        </button>
+                        <button
+                            class="glass-panel p-6 rounded-3xl flex flex-col items-center gap-4 group hover:border-amber-500 transition-all">
+                            <span class="text-3xl group-hover:scale-125 transition-transform">📱</span>
+                            <span class="text-sm font-bold text-slate-300">배송형/테크</span>
+                        </button>
+                        <button
+                            class="glass-panel p-6 rounded-3xl flex flex-col items-center gap-4 group hover:border-amber-500 transition-all">
+                            <span class="text-3xl group-hover:scale-125 transition-transform">🔧</span>
+                            <span class="text-sm font-bold text-slate-300">생활/서비스</span>
+                        </button>
+                        <button
+                            class="glass-panel p-6 rounded-3xl flex flex-col items-center gap-4 group hover:border-amber-500 transition-all">
+                            <span class="text-3xl group-hover:scale-125 transition-transform">📰</span>
+                            <span class="text-sm font-bold text-slate-300">기자단/원고</span>
+                        </button>
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <!-- AI Bot Quick View (Overlay) -->
+    <div class="fixed bottom-10 right-10 z-[100] group">
+        <div
+            class="absolute -top-24 right-0 w-80 glass-panel rounded-2xl p-6 bg-slate-900 shadow-2xl scale-0 group-hover:scale-100 transition-all origin-bottom-right opacity-0 group-hover:opacity-100">
+            <h4 class="text-xs font-black text-amber-500 uppercase tracking-widest mb-4">Bot Status: Active</h4>
+            <div class="space-y-3">
+                <div class="flex items-center gap-3">
+                    <div class="w-1.5 h-1.5 rounded-full bg-green-500"></div>
+                    <p class="text-[11px] text-slate-300 font-medium">Scraping Revu for new IT items...</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <div class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></div>
+                    <p class="text-[11px] text-slate-300 font-medium">Auto-apply checking credentials...</p>
+                </div>
+                <div class="mt-4 pt-4 border-t border-slate-700/50 flex items-center justify-between">
+                    <span class="text-[10px] text-slate-500">Today Applied: <span
+                            class="text-white font-bold">12</span></span>
+                    <button class="text-[10px] text-amber-500 font-black hover:underline">Full Logs →</button>
+                </div>
+            </div>
+        </div>
+        <button
+            class="w-16 h-16 bg-amber-500 text-black rounded-2xl shadow-2xl shadow-amber-500/40 flex items-center justify-center text-2xl pulse-gold active:scale-95 transition-all">
+            🤖
+        </button>
+    </div>
+
+    <script>
+        requireAuth();
+
+        async function init() {
+            try {
+                // Fetch curated campaigns with profit scoring logic
+                const data = await getCampaigns();
+                renderTrending(data.campaigns || []);
+            } catch (error) {
+                console.error('Curation Hub Load Error:', error);
+            }
+        }
+
+        function renderTrending(campaigns) {
+            const grid = document.getElementById('trending-grid');
+            grid.innerHTML = '';
+
+            // Slice top 3 for trending section
+            campaigns.slice(0, 3).forEach((c, idx) => {
+                const profitScore = 85 + (idx * 3); // Simulated AI score for demonstration
+                const card = `
+                    <div class="profit-card glass-panel rounded-[2rem] p-8 border-slate-800/50 flex flex-col cursor-pointer bg-gradient-to-br from-slate-900/40 to-slate-950">
+                        <div class="absolute top-6 right-6 flex flex-col items-end">
+                            <span class="text-[10px] text-slate-500 font-black uppercase tracking-widest mb-1">Profit Index</span>
+                            <span class="text-2xl font-black text-amber-500">${profitScore}%</span>
+                        </div>
+                        <div class="w-16 h-16 rounded-2xl bg-slate-800/50 flex items-center justify-center text-3xl mb-6 shadow-inner">
+                            ${c.image || '🎁'}
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="text-xl font-black text-white mb-2 leading-tight">${c.title}</h4>
+                            <p class="text-sm font-bold text-amber-600 mb-6">${c.reward_value}</p>
+                            
+                            <div class="flex items-center gap-4 mb-8">
+                                <div class="px-3 py-1 rounded-lg bg-slate-800/50 border border-slate-700 text-[10px] font-bold text-slate-400 tracking-tighter uppercase">
+                                    ${c.category || 'Product'}
+                                </div>
+                                <div class="px-3 py-1 rounded-lg bg-indigo-500/10 border border-indigo-500/20 text-[10px] font-bold text-indigo-400 tracking-tighter uppercase">
+                                    D-${idx + 1}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center justify-between pt-6 border-t border-slate-800/50">
+                            <div class="flex flex-col">
+                                <span class="text-[10px] text-slate-500 font-bold uppercase">Competition</span>
+                                <span class="text-xs font-black text-white">${c.current_reviewers}/${c.max_reviewers}</span>
+                            </div>
+                            <button onclick="location.href='detail.html?id=${c.id}'" class="px-6 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-xs font-black transition-all">View Detail</button>
+                        </div>
+                    </div>
+                `;
+                grid.innerHTML += card;
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+    <script src="../mobile-optimization.js" defer></script>
+</body>
+
+</html>

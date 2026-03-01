@@ -1,0 +1,437 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="theme-color" content="#111827">
+    <title>시스템 모니터링 — SoftFactory</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <script src="api.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../responsive-framework.css">
+    <link rel="stylesheet" href="../accessibility.css">
+    <link rel="stylesheet" href="platform-dashboard-ui.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .dot-ok { background: #22c55e; }
+        .dot-warning { background: #eab308; }
+        .dot-error { background: #ef4444; }
+        .dot-unknown { background: #64748b; }
+        .pulse { animation: pulse 2s cubic-bezier(0.4,0,0.6,1) infinite; }
+        @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .5; } }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 antialiased soft-shell">
+    <a href="#main" class="skip-to-main sr-only">메인 콘텐츠로 이동</a>
+
+    <div class="flex h-screen overflow-hidden">
+        <aside class="w-64 soft-sidebar border-r border-slate-800 flex flex-col shrink-0">
+            <div class="p-6 border-b border-slate-800">
+                <div class="flex items-center gap-3">
+                    <span class="text-2xl" aria-hidden="true">🏭</span>
+                    <div>
+                        <h1 class="font-bold text-white">SoftFactory</h1>
+                <p class="text-xs text-slate-400">Management</p>
+                    </div>
+                </div>
+            </div>
+
+            <nav class="flex-1 p-6 space-y-2 overflow-y-auto" aria-label="관리자 네비게이션">
+                <button class="hamburger" aria-label="Toggle navigation" type="button">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                <a href="admin.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-slate-800 transition">⚙️ 관리자</a>
+                <a href="admin-monitoring.html" aria-current="page" class="soft-nav-link active flex items-center gap-3 px-4 py-2.5 rounded-lg transition">📡 모니터링</a>
+                <a href="dashboard.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-slate-800 transition">📊 사용자 대시보드</a>
+            </nav>
+
+            <div class="p-6 border-t border-slate-800 soft-user-panel">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-white" id="userName">Demo User</p>
+                        <p class="text-xs text-slate-400" id="userEmail">demo@softfactory.com</p>
+                    </div>
+                <button onclick="logout()" class="p-2 hover:bg-slate-800 rounded-lg transition" title="로그아웃" type="button">🚪</button>
+                </div>
+            </div>
+        </aside>
+
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <header class="soft-topbar px-6 py-4 flex items-start justify-between gap-4 shrink-0">
+                <div>
+                    <h2 class="text-xl font-bold text-white">시스템 모니터링</h2>
+                    <p class="text-xs text-slate-400">헬스체크, 서비스, 스케줄러, 처리량, 오류</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <div id="refresh-indicator" class="flex items-center gap-2 text-sm text-slate-400">
+                        <div class="w-2 h-2 rounded-full bg-green-500 pulse"></div>
+                        <span>10초 간격 자동 갱신</span>
+                    </div>
+                    <button id="refreshAdminMetrics" type="button" class="soft-btn px-3 py-2 rounded-lg text-sm">지금 갱신</button>
+                    <a href="admin.html" class="soft-btn soft-btn-primary px-3 py-2 rounded-lg text-sm">관리자로 이동</a>
+                </div>
+            </header>
+
+            <main id="main" class="flex-1 overflow-y-auto soft-main space-y-6">
+                <div id="health-banner" class="rounded-xl p-4 border border-slate-700 bg-slate-800 flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div id="health-dot" class="w-4 h-4 rounded-full dot-unknown"></div>
+                        <div>
+                            <p class="font-semibold text-white text-lg" id="health-title">헬스체크 중...</p>
+                            <p class="text-slate-400 text-sm" id="health-subtitle">API 및 서비스 상태 확인 중...</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-slate-400 text-xs">버전</p>
+                        <p class="font-mono text-white" id="health-version">-</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                    <article class="soft-card p-5">
+                        <p class="text-slate-400 text-xs mb-1">가동 시간</p>
+                        <p class="text-2xl font-bold text-white" id="kpi-uptime">-</p>
+                    </article>
+                    <article class="soft-card p-5">
+                        <p class="text-slate-400 text-xs mb-1">메모리 (MB)</p>
+                        <p class="text-2xl font-bold text-white" id="kpi-memory">-</p>
+                    </article>
+                    <article class="soft-card p-5">
+                        <p class="text-slate-400 text-xs mb-1">CPU %</p>
+                        <p class="text-2xl font-bold text-white" id="kpi-cpu">-</p>
+                    </article>
+                    <article class="soft-card p-5">
+                        <p class="text-slate-400 text-xs mb-1">에러율</p>
+                        <p class="text-2xl font-bold text-white" id="kpi-error-rate">-</p>
+                    </article>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <article class="soft-card p-6">
+                        <h3 class="text-base font-semibold text-white mb-4">에러율 추이 (최근 20분)</h3>
+                        <div id="chart-error-rate" class="h-[220px]"></div>
+                    </article>
+                    <article class="soft-card p-6">
+                        <h3 class="text-base font-semibold text-white mb-4">응답시간 추이 (최근 5개)</h3>
+                        <div id="chart-response-time" class="h-[220px]"></div>
+                    </article>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <article class="soft-card p-6">
+                        <h3 class="text-base font-semibold text-white mb-4">서비스 상태</h3>
+                        <div id="services-grid" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <p class="text-slate-500 text-sm">서비스 상태 로딩 중...</p>
+                        </div>
+                    </article>
+                    <article class="soft-card p-6">
+                        <h3 class="text-base font-semibold text-white mb-4">비즈니스 요약</h3>
+                        <div class="space-y-3">
+                            <div class="flex justify-between text-sm"><span class="text-slate-400">사용자</span><span class="font-semibold text-white" id="biz-users">-</span></div>
+                            <div class="flex justify-between text-sm"><span class="text-slate-400">활성 구독</span><span class="font-semibold text-white" id="biz-subs">-</span></div>
+                            <div class="flex justify-between text-sm"><span class="text-slate-400">매출</span><span class="font-semibold text-white" id="biz-revenue">-</span></div>
+                            <div class="flex justify-between text-sm"><span class="text-slate-400">요청</span><span class="font-semibold text-white" id="biz-requests">-</span></div>
+                        </div>
+                    </article>
+                </div>
+
+                <article class="soft-card p-6">
+                    <h3 class="text-base font-semibold text-white mb-4">스케줄러 작업</h3>
+                    <div id="scheduler-table" class="overflow-x-auto">로딩 중...</div>
+                </article>
+
+                <article class="soft-card p-6">
+                    <h3 class="text-base font-semibold text-white mb-4">느린 엔드포인트 (상위 5)</h3>
+                    <div id="slow-endpoints" class="overflow-x-auto">로딩 중...</div>
+                </article>
+
+                <article class="soft-card p-6">
+                    <h3 class="text-base font-semibold text-white mb-4">최근 오류</h3>
+                    <div id="recent-errors" class="space-y-2">로딩 중...</div>
+                </article>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        if (typeof requireAuth === 'function') {
+            requireAuth();
+        }
+
+        const API_BASE = (window.API_BASE || '/api').replace(/\/$/, '');
+        const MAX_POINTS = 20;
+        const errorRateHistory = [];
+        const timeLabels = [];
+        let errorRateChart = null;
+        let responseChart = null;
+
+        const MONITOR_FALLBACK = {
+            health: {
+                status: 'ok',
+                uptime_seconds: 0,
+                version: 'demo',
+                services: {
+                    web: 'ok',
+                    api: 'ok',
+                    scheduler: 'ok'
+                },
+                memory_mb: 1024,
+                cpu_percent: 12.4
+            },
+            metrics: {
+                total_users: 0,
+                active_subscriptions: 0,
+                total_revenue: 0,
+                global_request_count: 0,
+                global_error_rate_pct: 0,
+                slowest_endpoints: [],
+                scheduler: {
+                    running: true,
+                    jobs: []
+                },
+                recent_errors: []
+            }
+        };
+
+        function initCharts() {
+            if (typeof ApexCharts === 'undefined') {
+                document.getElementById('chart-error-rate').innerHTML = '<p class="text-slate-500 text-sm">ApexCharts 라이브러리를 불러오지 못했습니다.</p>';
+                document.getElementById('chart-response-time').innerHTML = '<p class="text-slate-500 text-sm">ApexCharts 라이브러리를 불러오지 못했습니다.</p>';
+                return;
+            }
+            errorRateChart = new ApexCharts(document.getElementById('chart-error-rate'), {
+                chart: { type: 'area', height: 220, background: 'transparent', toolbar: { show: false }, animations: { enabled: false } },
+                theme: { mode: 'dark' },
+                stroke: { curve: 'smooth', width: 2 },
+                fill: { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: 0.4, opacityTo: 0.05 } },
+                colors: ['#ef4444'],
+                series: [{ name: 'Error Rate %', data: [] }],
+                xaxis: { categories: [], labels: { style: { colors: '#94a3b8', fontSize: '11px' } } },
+                yaxis: { labels: { style: { colors: '#94a3b8' }, formatter: (v) => `${v.toFixed(1)}%` } },
+                grid: { borderColor: '#1e293b' },
+                tooltip: { theme: 'dark' }
+            });
+            errorRateChart.render();
+
+            responseChart = new ApexCharts(document.getElementById('chart-response-time'), {
+                chart: { type: 'bar', height: 220, background: 'transparent', toolbar: { show: false }, animations: { enabled: false } },
+                theme: { mode: 'dark' },
+                colors: ['#6366f1'],
+                plotOptions: { bar: { borderRadius: 4, horizontal: true } },
+                series: [{ name: 'Avg ms', data: [] }],
+                xaxis: { categories: [], labels: { style: { colors: '#94a3b8', fontSize: '11px' } } },
+                yaxis: { labels: { style: { colors: '#94a3b8', fontSize: '10px' } } },
+                grid: { borderColor: '#1e293b' },
+                tooltip: { theme: 'dark' }
+            });
+            responseChart.render();
+        }
+
+        function setText(id, value) {
+            const el = document.getElementById(id);
+            if (el) el.textContent = value;
+        }
+
+        async function fetchJson(path) {
+            try {
+                const response = await apiFetch(path);
+                if (!response.ok) return null;
+                return await response.json();
+            } catch {
+                return null;
+            }
+        }
+
+        async function fetchHealth() {
+            const paths = ['/platform/health', '/health'];
+            for (const path of paths) {
+                const data = await fetchJson(path);
+                if (data) return data;
+            }
+            return null;
+        }
+
+        async function fetchAdminMetrics() {
+            const paths = ['/admin/metrics', '/platform/admin/metrics', '/api/admin/metrics'];
+            for (const path of paths) {
+                const data = await fetchJson(path.startsWith('/api') ? path : `/api${path}`);
+                if (data && !data.error) return data;
+            }
+            return null;
+        }
+
+        function serviceCard(name, statusStr) {
+            const ok = String(statusStr).toLowerCase() === 'ok' || String(statusStr).toLowerCase() === 'running';
+            const klass = ok ? 'dot-ok' : 'dot-error';
+            const textClass = ok ? 'text-green-400' : 'text-red-400';
+            const label = ok ? 'OK' : statusStr;
+            return '<div class="flex items-center gap-2 bg-slate-700/80 rounded-lg px-3 py-2"><div class="w-2.5 h-2.5 rounded-full ' + klass + '"></div><span class="text-sm text-slate-300 flex-1">' + name + '</span><span class="text-xs font-medium ' + textClass + '">' + label + '</span></div>';
+        }
+
+        function tableRow(cells) {
+            return '<tr class="border-t border-slate-700">' + cells.map((c, i) =>
+                '<td class="px-4 py-2 text-sm ' + (i === 0 ? 'text-slate-300 font-mono' : 'text-slate-400') + '">' + (c == null ? '-' : c) + '</td>'
+            ).join('') + '</tr>';
+        }
+
+        function wrapTable(header, rows) {
+            if (!rows.length) {
+                return '<p class="text-slate-500 text-sm">데이터가 없습니다.</p>';
+            }
+            const thead = '<thead><tr>' + header.map((h) => '<th class="px-4 py-2 text-left text-xs font-medium text-slate-500 uppercase">' + h + '</th>').join('') + '</tr></thead>';
+            return '<table class="w-full"><thead>' + thead + '</thead><tbody>' + rows.join('') + '</tbody></table>';
+        }
+
+        function formatUptime(seconds) {
+            if (seconds == null) return '-';
+            const s = Number(seconds);
+            const h = Math.floor(s / 3600);
+            const m = Math.floor((s % 3600) / 60);
+            const ss = Math.floor(s % 60);
+            return h + 'h ' + m + 'm ' + ss + 's';
+        }
+
+        function formatWon(v) {
+            const n = Number(v || 0);
+            return '₩' + n.toLocaleString('ko-KR');
+        }
+
+        function renderHealth(data) {
+            if (!data) {
+            setText('health-title', '헬스체크 실패');
+            setText('health-subtitle', '/health 또는 /platform/health 접근 실패');
+                setText('health-version', '-');
+                setText('kpi-uptime', '-');
+                setText('kpi-memory', '-');
+                setText('kpi-cpu', '-');
+                document.getElementById('health-dot').className = 'w-4 h-4 rounded-full dot-error';
+                document.getElementById('services-grid').innerHTML = '<p class="text-slate-500 text-sm">서비스 데이터 없음</p>';
+                return;
+            }
+
+            const ok = data.status === 'ok';
+            const dot = document.getElementById('health-dot');
+            dot.className = 'w-4 h-4 rounded-full ' + (ok ? 'dot-ok ' : 'dot-warning ') + (ok ? 'pulse' : '');
+            setText('health-title', ok ? '모든 시스템 정상' : '서비스 성능 저하 감지');
+            setText('health-subtitle', 'DB: ' + (data.database || '-') + ' | 스케줄러: ' + (data.scheduler || '-'));
+            setText('health-version', data.version || '-');
+
+            const uptime = data.uptime_seconds || data.uptime || (data.uptime_ms && Math.floor(data.uptime_ms / 1000));
+            setText('kpi-uptime', formatUptime(uptime));
+            setText('kpi-memory', data.memory_mb != null ? data.memory_mb + ' MB' : '-');
+            setText('kpi-cpu', data.cpu_percent != null ? data.cpu_percent + '%' : '-');
+
+            const services = data.services || {};
+            const html = Object.entries(services).map(([name, status]) => serviceCard(name, status)).join('');
+            document.getElementById('services-grid').innerHTML = html || '<p class="text-slate-500 text-sm">서비스 데이터 없음</p>';
+        }
+
+        function renderAdminMetrics(data) {
+            if (!data) {
+                const fallback = MONITOR_FALLBACK.metrics;
+                setText('biz-users', '0');
+                setText('biz-subs', '0');
+                setText('biz-revenue', formatWon(fallback.total_revenue));
+                setText('biz-requests', '0');
+                setText('kpi-error-rate', '-');
+                document.getElementById('scheduler-table').innerHTML = '<p class="text-slate-500 text-sm">스케줄러 데이터 없음</p>';
+                document.getElementById('slow-endpoints').innerHTML = '<p class="text-slate-500 text-sm">엔드포인트 데이터 없음</p>';
+                document.getElementById('recent-errors').innerHTML = '<p class="text-slate-500 text-sm">최근 오류 없음</p>';
+                return;
+            }
+
+            const fmt = (n) => (n == null ? '-' : Number(n).toLocaleString('ko-KR'));
+            setText('biz-users', fmt(data.total_users));
+            setText('biz-subs', fmt(data.active_subscriptions));
+            setText('biz-revenue', formatWon(data.total_revenue));
+            setText('biz-requests', fmt(data.global_request_count));
+            setText('kpi-error-rate', (data.global_error_rate_pct == null ? '-' : Number(data.global_error_rate_pct).toFixed(2) + '%'));
+
+            const now = new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            const errorRate = data.global_error_rate_pct == null ? 0 : Number(data.global_error_rate_pct);
+            errorRateHistory.push(errorRate);
+            timeLabels.push(now);
+            if (errorRateHistory.length > MAX_POINTS) {
+                errorRateHistory.shift();
+                timeLabels.shift();
+            }
+
+            if (errorRateChart) {
+                errorRateChart.updateOptions({
+                    series: [{ name: 'Error Rate %', data: errorRateHistory.slice() }],
+                    xaxis: { categories: timeLabels.slice() }
+                });
+            }
+
+            const slow = Array.isArray(data.slowest_endpoints) ? data.slowest_endpoints.slice(0, 5) : [];
+            if (responseChart) {
+                responseChart.updateOptions({
+                    series: [{ name: 'Avg ms', data: slow.map((item) => item.avg_ms || 0) }],
+                    xaxis: { categories: slow.map((item) => (item.method || '-') + ' ' + String(item.endpoint || '').slice(0, 30)) }
+                });
+            }
+
+            const jobs = data.scheduler?.jobs || [];
+            const runningText = data.scheduler?.running ? '실행 중' : '중지됨';
+            if (jobs.length) {
+                const rows = jobs.map((j) => tableRow([
+                    j.id || '-',
+                    j.name || '-',
+                    j.next_run_time ? new Date(j.next_run_time).toLocaleString('ko-KR') : '-',
+                    j.trigger || '-'
+                ]));
+                document.getElementById('scheduler-table').innerHTML = wrapTable(['작업 ID', '이름', '다음 실행', '트리거'], rows);
+            } else {
+                document.getElementById('scheduler-table').innerHTML = '<p class="text-slate-400 text-sm">' + runningText + '</p>';
+            }
+
+            const slowRows = slow.map((item) => tableRow([
+                item.endpoint || '-',
+                item.method || '-',
+                String(item.avg_ms || 0) + ' ms',
+                item.request_count || 0,
+                String(item.error_rate_pct == null ? 0 : item.error_rate_pct) + '%'
+            ]));
+            document.getElementById('slow-endpoints').innerHTML = wrapTable(['엔드포인트', '메서드', '평균(ms)', '요청', '오류 %'], slowRows);
+
+            const errs = data.recent_errors || [];
+            document.getElementById('recent-errors').innerHTML = errs.length
+                ? errs.map((e) =>
+                    '<div class="border border-slate-700 rounded-lg px-4 py-2 bg-slate-900/50 flex items-center justify-between gap-3">' +
+                    '<div class="flex items-center gap-2 min-w-0"><span class="text-red-400 font-semibold text-sm shrink-0">' + (e.status_code || 'ERR') + '</span>' +
+                    '<span class="font-mono text-sm text-slate-300 truncate">' + (e.method || '-') + ' ' + (e.endpoint || '-') + '</span></div>' +
+                    '<div class="text-right shrink-0"><span class="text-xs text-slate-500">' + (e.duration_ms != null ? e.duration_ms + ' ms' : '') + '</span><br/><span class="text-xs text-slate-500">' +
+                    (e.timestamp ? new Date(e.timestamp).toLocaleTimeString('ko-KR') : '') + '</span></div></div>'
+                ).join('')
+                : '<p class="text-green-400 text-sm">최근 오류 없음</p>';
+        }
+
+        function updateIdentity() {
+            const user = typeof getUser === 'function' ? getUser() : null;
+            if (!user) return;
+            setText('userName', user.name || 'Demo User');
+            setText('userEmail', user.email || 'demo@softfactory.com');
+        }
+
+        async function refresh() {
+            const [healthData, metricsData] = await Promise.all([ fetchHealth(), fetchAdminMetrics() ]);
+            renderHealth(healthData || MONITOR_FALLBACK.health);
+            renderAdminMetrics(metricsData || MONITOR_FALLBACK.metrics);
+        }
+
+        function bind() {
+            initCharts();
+            updateIdentity();
+            refresh();
+            setInterval(refresh, 10000);
+            document.getElementById('refreshAdminMetrics').addEventListener('click', refresh);
+        }
+
+        bind();
+    </script>
+    <script src="../mobile-optimization.js" defer></script>
+</body>
+</html>

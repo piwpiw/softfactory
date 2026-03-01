@@ -1,0 +1,36 @@
+#!/bin/sh
+# Husky commit-msg hook
+# Validates commit messages follow conventional commits format
+
+if [ -z "$HUSKY" ]; then
+  export HUSKY=0
+fi
+
+# Only run if commitlint is installed
+if ! command -v commitlint &> /dev/null; then
+  echo "commitlint is not installed. Install with: npm install --save-dev @commitlint/config-conventional @commitlint/cli"
+  exit 1
+fi
+
+# Validate commit message format
+commitlint --edit "$1"
+
+exit_code=$?
+
+if [ $exit_code -ne 0 ]; then
+  echo ""
+  echo "⚠️  Commit message format is invalid."
+  echo ""
+  echo "Commit messages must follow conventional commits format:"
+  echo "  feat: add new feature"
+  echo "  fix: fix a bug"
+  echo "  docs: update documentation"
+  echo "  style: code style changes (no logic changes)"
+  echo "  refactor: refactor code"
+  echo "  perf: performance improvements"
+  echo "  test: add or update tests"
+  echo "  chore: other changes that don't modify src or test files"
+  exit $exit_code
+fi
+
+exit 0

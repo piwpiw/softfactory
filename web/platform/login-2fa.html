@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2FA Verification - SoftFactory</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 450px;
+            width: 100%;
+            padding: 40px;
+        }
+
+        h1 {
+            font-size: 28px;
+            margin-bottom: 8px;
+            color: #1f2937;
+            text-align: center;
+        }
+
+        .subtitle {
+            color: #6b7280;
+            margin-bottom: 30px;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        .email-display {
+            background: #f3f4f6;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 30px;
+            text-align: center;
+            font-size: 13px;
+            color: #6b7280;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 12px;
+            text-align: center;
+            cursor: pointer;
+            background: none;
+            border: none;
+            font-weight: 600;
+            color: #9ca3af;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .tab.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 500;
+            color: #1f2937;
+            font-size: 14px;
+        }
+
+        .totp-input-group {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+        }
+
+        .totp-digit {
+            width: 50px;
+            height: 60px;
+            font-size: 28px;
+            font-weight: 600;
+            text-align: center;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            transition: all 0.2s;
+            font-family: 'Courier New', monospace;
+        }
+
+        .totp-digit:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.2s;
+            font-family: 'Courier New', monospace;
+            letter-spacing: 1px;
+        }
+
+        input[type="text"]:focus,
+        input[type="password"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .error {
+            background: #fee2e2;
+            border: 1px solid #fecaca;
+            color: #991b1b;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-size: 13px;
+        }
+
+        .info-box {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            color: #1e40af;
+            line-height: 1.6;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        button:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 3px solid #f0f0f0;
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s linear infinite;
+            margin-right: 8px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .help-text {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 13px;
+            color: #6b7280;
+        }
+
+        .help-text a {
+            color: #667eea;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .help-text a:hover {
+            text-decoration: underline;
+        }
+
+        .content {
+            display: none;
+        }
+
+        .content.active {
+            display: block;
+        }
+
+        .timer {
+            text-align: center;
+            color: #ef4444;
+            font-size: 12px;
+            margin-top: 10px;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 30px 20px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .totp-digit {
+                width: 40px;
+                height: 50px;
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 2FA Verification</h1>
+        <p class="subtitle">Verify your identity to continue</p>
+
+        <div class="email-display" id="emailDisplay"></div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('totp')">Authenticator</button>
+            <button class="tab" onclick="switchTab('backup')">Backup Code</button>
+        </div>
+
+        <!-- TOTP Tab -->
+        <div class="content active" id="totp-tab">
+            <div class="info-box">
+                📱 Enter the 6-digit code from your authenticator app
+            </div>
+
+            <div id="totpError" class="error" style="display: none;"></div>
+
+            <form id="totpForm" onsubmit="verifyTOTP(event)">
+                <div class="form-group">
+                    <label>Authentication Code</label>
+                    <div class="totp-input-group">
+                        <input type="text" class="totp-digit" id="digit1" maxlength="1" inputmode="numeric" />
+                        <input type="text" class="totp-digit" id="digit2" maxlength="1" inputmode="numeric" />
+                        <input type="text" class="totp-digit" id="digit3" maxlength="1" inputmode="numeric" />
+                        <input type="text" class="totp-digit" id="digit4" maxlength="1" inputmode="numeric" />
+                        <input type="text" class="totp-digit" id="digit5" maxlength="1" inputmode="numeric" />
+                        <input type="text" class="totp-digit" id="digit6" maxlength="1" inputmode="numeric" />
+                    </div>
+                </div>
+
+                <button type="submit" id="totpBtn">Verify & Login</button>
+            </form>
+
+            <div class="help-text">
+                Lost your authenticator? <a onclick="switchTab('backup')">Use a backup code instead</a>
+            </div>
+        </div>
+
+        <!-- Backup Code Tab -->
+        <div class="content" id="backup-tab">
+            <div class="info-box">
+                🔑 Enter one of your backup codes
+            </div>
+
+            <div id="backupError" class="error" style="display: none;"></div>
+
+            <form id="backupForm" onsubmit="verifyBackupCode(event)">
+                <div class="form-group">
+                    <label>Backup Code</label>
+                    <input type="text" id="backupCode" placeholder="XXXXXXXX" maxlength="8" inputmode="text" />
+                </div>
+
+                <button type="submit" id="backupBtn">Verify & Login</button>
+            </form>
+
+            <div class="help-text">
+                Don't have a backup code? <a onclick="switchTab('totp')">Use authenticator app instead</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="api.js"></script>
+    <script>
+        let currentTab = 'totp';
+        const email = sessionStorage.getItem('2fa_email') || '';
+
+        // Display email
+        document.getElementById('emailDisplay').textContent = email;
+
+        // Auto-focus first digit
+        window.addEventListener('load', () => {
+            document.getElementById('digit1').focus();
+        });
+
+        // TOTP digit input handling
+        ['digit1', 'digit2', 'digit3', 'digit4', 'digit5', 'digit6'].forEach((id, idx) => {
+            const input = document.getElementById(id);
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Backspace' && !input.value && idx > 0) {
+                    document.getElementById(`digit${idx}`).focus();
+                }
+            });
+
+            input.addEventListener('input', (e) => {
+                e.target.value = e.target.value.replace(/[^0-9]/g, '');
+                if (e.target.value && idx < 5) {
+                    document.getElementById(`digit${idx + 2}`).focus();
+                }
+                // Auto-submit if all digits filled
+                if (document.getElementById('digit6').value && document.getElementById('digit1').value) {
+                    verifyTOTP(new Event('submit'));
+                }
+            });
+        });
+
+        function switchTab(tab) {
+            currentTab = tab;
+            document.querySelectorAll('.content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
+
+            document.getElementById(`${tab}-tab`).classList.add('active');
+            event.target.classList.add('active');
+
+            // Clear errors
+            document.getElementById('totpError').style.display = 'none';
+            document.getElementById('backupError').style.display = 'none';
+
+            // Focus first input
+            if (tab === 'totp') {
+                document.getElementById('digit1').focus();
+            } else {
+                document.getElementById('backupCode').focus();
+            }
+        }
+
+        async function verifyTOTP(e) {
+            e.preventDefault();
+
+            const code = [
+                document.getElementById('digit1').value,
+                document.getElementById('digit2').value,
+                document.getElementById('digit3').value,
+                document.getElementById('digit4').value,
+                document.getElementById('digit5').value,
+                document.getElementById('digit6').value
+            ].join('');
+
+            if (code.length !== 6) {
+                showTOTPError('Please enter a complete 6-digit code');
+                return;
+            }
+
+            await submitVerification(code, null);
+        }
+
+        async function verifyBackupCode(e) {
+            e.preventDefault();
+
+            const code = document.getElementById('backupCode').value.trim();
+
+            if (!code) {
+                showBackupError('Please enter a backup code');
+                return;
+            }
+
+            await submitVerification(null, code);
+        }
+
+        async function submitVerification(totpCode, backupCode) {
+            const btn = currentTab === 'totp' ?
+                document.getElementById('totpBtn') :
+                document.getElementById('backupBtn');
+
+            btn.disabled = true;
+            btn.innerHTML = '<span class="loading"></span>Verifying...';
+
+            try {
+                const response = await fetch('/api/auth/2fa/verify', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        email: email,
+                        totp_code: totpCode || '',
+                        backup_code: backupCode || ''
+                    })
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    if (currentTab === 'totp') {
+                        showTOTPError(error.error || 'Invalid TOTP code');
+                    } else {
+                        showBackupError(error.error || 'Invalid backup code');
+                    }
+                    btn.disabled = false;
+                    btn.innerHTML = currentTab === 'totp' ? 'Verify & Login' : 'Verify & Login';
+                    return;
+                }
+
+                const data = await response.json();
+                localStorage.setItem('access_token', data.access_token);
+                localStorage.setItem('refresh_token', data.refresh_token || '');
+                localStorage.setItem('user', JSON.stringify(data.user));
+
+                sessionStorage.removeItem('2fa_email');
+                sessionStorage.removeItem('pending_password');
+
+                // Redirect after success
+                setTimeout(() => {
+                    const onboardingDone = localStorage.getItem('onboarding_complete');
+                    window.location.href = onboardingDone ? 'dashboard.html' : 'onboarding.html';
+                }, 500);
+
+            } catch (error) {
+                console.error('Verification error:', error);
+                if (currentTab === 'totp') {
+                    showTOTPError('Failed to verify code');
+                } else {
+                    showBackupError('Failed to verify code');
+                }
+                btn.disabled = false;
+                btn.innerHTML = currentTab === 'totp' ? 'Verify & Login' : 'Verify & Login';
+            }
+        }
+
+        function showTOTPError(message) {
+            const errorDiv = document.getElementById('totpError');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+        }
+
+        function showBackupError(message) {
+            const errorDiv = document.getElementById('backupError');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+        }
+
+        // Backup code auto-formatting
+        document.getElementById('backupCode').addEventListener('input', (e) => {
+            e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+        });
+    </script>
+</body>
+</html>

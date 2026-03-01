@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#111827">
+<title>문의하기 — SoftFactory</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="api.js"></script>
+    <style>body { font-family: 'Inter', sans-serif; }</style>
+    <link rel="stylesheet" href="../responsive-framework.css">
+  </head>
+<body class="bg-slate-950 text-slate-100 min-h-screen">
+    <div class="max-w-2xl mx-auto px-6 py-12">
+        <h1 class="text-4xl font-bold text-white mb-8">📞 문의하기</h1>
+
+        <div class="bg-slate-800 rounded-xl p-8 border border-slate-700">
+            <form class="space-y-6">
+                <div>
+                    <label class="block text-sm font-medium text-slate-300 mb-2">이름</label>
+                    <input type="text" required placeholder="이름" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white placeholder-slate-500 focus:border-indigo-500 focus:outline-none">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-slate-300 mb-2">이메일</label>
+                    <input type="email" required placeholder="your@email.com" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white placeholder-slate-500 focus:border-indigo-500 focus:outline-none">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-slate-300 mb-2">문의 분류</label>
+                    <select required class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white focus:border-indigo-500 focus:outline-none">
+                        <option>기술 지원</option>
+                        <option>빌링 문의</option>
+                        <option>기능 요청</option>
+                        <option>버그 신고</option>
+                        <option>기타</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-slate-300 mb-2">제목</label>
+                    <input type="text" required placeholder="문의 제목" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white placeholder-slate-500 focus:border-indigo-500 focus:outline-none">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-slate-300 mb-2">내용</label>
+                    <textarea required placeholder="상세히 설명해주세요..." class="w-full h-40 bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white placeholder-slate-500 focus:border-indigo-500 focus:outline-none resize-none"></textarea>
+                </div>
+
+                <div class="flex gap-4">
+                    <a href="index.html" class="flex-1 text-center px-4 py-3 bg-slate-700 hover:bg-slate-600 text-slate-100 rounded-lg font-medium transition">돌아가기</a>
+                    <button type="submit" class="flex-1 px-4 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition" onclick="submitContact(); return false;">문의 제출</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-slate-800 rounded-lg p-6 border border-slate-700 text-center">
+                <p class="text-2xl mb-2">📧</p>
+                <p class="font-medium text-white">이메일</p>
+                <p class="text-sm text-slate-400">support@softfactory.com</p>
+            </div>
+            <div class="bg-slate-800 rounded-lg p-6 border border-slate-700 text-center">
+                <p class="text-2xl mb-2">💬</p>
+                <p class="font-medium text-white">라이브 채팅</p>
+                <p class="text-sm text-slate-400">24/7 지원</p>
+            </div>
+            <div class="bg-slate-800 rounded-lg p-6 border border-slate-700 text-center">
+                <p class="text-2xl mb-2">📞</p>
+                <p class="font-medium text-white">전화</p>
+                <p class="text-sm text-slate-400">02-XXXX-XXXX</p>
+            </div>
+        </div>
+    </div>
+    <script>
+        function submitContact() {
+            showSuccess('문의가 제출되었습니다! 빠른 시일 내에 답변드리겠습니다.');
+            setTimeout(() => { window.location.href = 'dashboard.html'; }, 2000);
+        }
+    </script>
+    <script src="../mobile-optimization.js" defer></script>
+</body>
+</html>

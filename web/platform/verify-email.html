@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
+  <meta name="theme-color" content="#7C3AED" />
+  <title>이메일 인증 — SoftFactory</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="api.js"></script>
+  <style>
+    .code-input { letter-spacing: 0.5em; text-align: center; font-size: 2rem; font-weight: 700; }
+    .code-input::placeholder { letter-spacing: 0.1em; }
+    .spin { animation: spin 1s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center p-4">
+
+  <div class="w-full max-w-md">
+
+    <!-- Logo -->
+    <div class="text-center mb-8">
+      <h1 class="text-3xl font-bold text-white">SoftFactory</h1>
+      <p class="text-gray-400 mt-1 text-sm">이메일 인증</p>
+    </div>
+
+    <!-- Card -->
+    <div class="bg-gray-800 rounded-2xl p-8 shadow-2xl border border-gray-700">
+
+      <!-- Icon -->
+      <div class="flex justify-center mb-6">
+        <div id="statusIcon" class="w-16 h-16 rounded-full bg-purple-600/20 flex items-center justify-center">
+          <svg class="w-8 h-8 text-purple-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+          </svg>
+        </div>
+      </div>
+
+      <h2 class="text-xl font-bold text-white text-center mb-2">이메일 인증</h2>
+      <p id="subtitle" class="text-gray-400 text-sm text-center mb-8">
+        가입 시 사용한 이메일로 발송된 6자리 인증 코드를 입력하세요.
+      </p>
+
+      <!-- Alert area -->
+      <div id="alertBox" class="hidden mb-6 px-4 py-3 rounded-xl text-sm font-medium"></div>
+
+      <!-- Verification Form -->
+      <form id="verifyForm" class="space-y-5">
+        <div>
+          <label class="block text-sm font-semibold text-gray-300 mb-2">이메일 주소</label>
+          <input type="email" id="emailInput"
+            class="w-full bg-gray-700 border border-gray-600 text-white rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            placeholder="your@email.com"
+            autocomplete="email" />
+        </div>
+        <div>
+          <label class="block text-sm font-semibold text-gray-300 mb-2">인증 코드 (6자리)</label>
+          <input type="text" id="tokenInput"
+            class="code-input w-full bg-gray-700 border border-gray-600 text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            placeholder="______"
+            maxlength="6"
+            inputmode="numeric"
+            pattern="[0-9]{6}"
+            autocomplete="one-time-code" />
+        </div>
+
+        <button type="submit" id="verifyBtn"
+          class="w-full bg-purple-600 hover:bg-purple-500 text-white font-bold py-3 px-4 rounded-xl transition-colors duration-200 flex items-center justify-center gap-2">
+          <svg id="btnSpinner" class="hidden spin w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+          </svg>
+          <span id="btnText">인증하기</span>
+        </button>
+      </form>
+
+      <div class="mt-6 pt-6 border-t border-gray-700 text-center">
+        <p class="text-gray-400 text-sm mb-3">인증 코드를 받지 못하셨나요?</p>
+        <button id="resendBtn"
+          class="text-purple-400 hover:text-purple-300 text-sm font-semibold transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+          인증 이메일 재발송
+        </button>
+        <p id="resendTimer" class="hidden text-gray-500 text-xs mt-1"></p>
+      </div>
+
+      <div class="mt-4 text-center">
+        <a href="login.html" class="text-gray-500 hover:text-gray-300 text-xs transition-colors duration-200">
+          로그인으로 돌아가기
+        </a>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    const API_BASE = '/api';
+    let resendCooldown = 0;
+    let resendTimer = null;
+
+    // ── Helpers ──────────────────────────────────────────────────────────────
+
+    function showAlert(message, type) {
+      const box = document.getElementById('alertBox');
+      box.className = 'mb-6 px-4 py-3 rounded-xl text-sm font-medium';
+      if (type === 'success') {
+        box.classList.add('bg-green-500/20', 'text-green-300', 'border', 'border-green-500/30');
+      } else if (type === 'error') {
+        box.classList.add('bg-red-500/20', 'text-red-300', 'border', 'border-red-500/30');
+      } else {
+        box.classList.add('bg-blue-500/20', 'text-blue-300', 'border', 'border-blue-500/30');
+      }
+      box.textContent = message;
+      box.classList.remove('hidden');
+    }
+
+    function setLoading(loading) {
+      document.getElementById('btnSpinner').classList.toggle('hidden', !loading);
+      document.getElementById('btnText').textContent = loading ? '인증 중...' : '인증하기';
+      document.getElementById('verifyBtn').disabled = loading;
+    }
+
+    function showSuccess() {
+      document.getElementById('statusIcon').innerHTML = `
+        <div class="w-16 h-16 rounded-full bg-green-500/20 flex items-center justify-center">
+          <svg class="w-8 h-8 text-green-400" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+            <polyline points="20 6 9 17 4 12" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>`;
+      document.getElementById('subtitle').textContent = '이메일 인증이 완료되었습니다!';
+      document.getElementById('verifyForm').innerHTML = `
+        <a href="dashboard.html"
+          class="block w-full bg-purple-600 hover:bg-purple-500 text-white font-bold py-3 px-4 rounded-xl text-center transition-colors duration-200">
+          대시보드로 이동
+        </a>`;
+    }
+
+    // ── Auto-read URL params ──────────────────────────────────────────────────
+
+    (function readUrlParams() {
+      const params = new URLSearchParams(window.location.search);
+      const token = params.get('token') || params.get('code');
+      const email = params.get('email');
+      if (token) document.getElementById('tokenInput').value = token;
+      if (email) document.getElementById('emailInput').value = decodeURIComponent(email);
+      if (token && email) {
+        // Auto-submit if both params present
+        setTimeout(() => document.getElementById('verifyForm').requestSubmit(), 300);
+      }
+    })();
+
+    // ── Form Submit ───────────────────────────────────────────────────────────
+
+    document.getElementById('verifyForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const token = document.getElementById('tokenInput').value.trim();
+      const email = document.getElementById('emailInput').value.trim();
+
+      if (!token) { showAlert('인증 코드를 입력해주세요.', 'error'); return; }
+      if (token.length !== 6 || !/^\d{6}$/.test(token)) {
+        showAlert('인증 코드는 6자리 숫자여야 합니다.', 'error'); return;
+      }
+
+      setLoading(true);
+      try {
+        const body = { token };
+        if (email) body.email = email;
+        const res = await fetch(`${API_BASE}/auth/verify-email`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+        });
+        const data = await res.json();
+        if (res.ok) {
+          showAlert(data.message || '이메일이 인증되었습니다.', 'success');
+          setTimeout(showSuccess, 800);
+        } else {
+          showAlert(data.error || '인증에 실패했습니다. 다시 시도해주세요.', 'error');
+        }
+      } catch (err) {
+        showAlert('네트워크 오류가 발생했습니다. 잠시 후 다시 시도해주세요.', 'error');
+      } finally {
+        setLoading(false);
+      }
+    });
+
+    // ── Resend ────────────────────────────────────────────────────────────────
+
+    function startResendCooldown(seconds) {
+      resendCooldown = seconds;
+      const btn = document.getElementById('resendBtn');
+      const timerEl = document.getElementById('resendTimer');
+      btn.disabled = true;
+      timerEl.classList.remove('hidden');
+      resendTimer = setInterval(() => {
+        resendCooldown--;
+        timerEl.textContent = `${resendCooldown}초 후 재발송 가능`;
+        if (resendCooldown <= 0) {
+          clearInterval(resendTimer);
+          btn.disabled = false;
+          timerEl.classList.add('hidden');
+        }
+      }, 1000);
+    }
+
+    document.getElementById('resendBtn').addEventListener('click', async () => {
+      const email = document.getElementById('emailInput').value.trim();
+      if (!email) { showAlert('이메일 주소를 먼저 입력해주세요.', 'error'); return; }
+
+      try {
+        const res = await fetch(`${API_BASE}/auth/resend-verification`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email }),
+        });
+        const data = await res.json();
+        showAlert(data.message || '인증 이메일을 재발송했습니다.', 'info');
+        startResendCooldown(60);
+      } catch (err) {
+        showAlert('재발송 중 오류가 발생했습니다.', 'error');
+      }
+    });
+
+    // Auto-format: only allow digits
+    document.getElementById('tokenInput').addEventListener('input', (e) => {
+      e.target.value = e.target.value.replace(/\D/g, '').slice(0, 6);
+    });
+  </script>
+
+</body>
+</html>

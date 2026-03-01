@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#111827">
+    <meta name="description" content="SoftFactory 프리미엄 비즈니스 자동화 플랫폼 로그인 페이지">
+<title>로그인 — SoftFactory</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="api.js"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        @keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+        .fade-in { animation: fadeIn 0.3s ease-out; }
+
+        /* WCAG 2.1 AA: Focus Indicators */
+        button:focus,
+        input:focus,
+        a:focus,
+        [tabindex]:focus {
+            outline: 3px solid #ec4899;
+            outline-offset: 2px;
+        }
+
+        /* Skip to main content link (accessibility) */
+        .skip-to-main {
+            position: absolute;
+            top: -40px;
+            left: 0;
+            background: #ec4899;
+            color: white;
+            padding: 8px;
+            z-index: 100;
+        }
+        .skip-to-main:focus {
+            top: 0;
+        }
+
+        /* WCAG 2.1 AA: Color Contrast Compliance */
+        /* Text: minimum 4.5:1 for normal text, 3:1 for large text */
+        .text-slate-300 { color: #cbd5e1; } /* Improved contrast against dark backgrounds */
+        .text-slate-400 { color: #94a3b8; } /* Meets 4.5:1 on #1e293b */
+
+        /* Screen reader only text (hidden visually but available to AT) */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border-width: 0;
+        }
+
+        /* Mobile-first login styles */
+        @media (max-width: 768px) {
+            body {
+                padding: 16px !important;
+                align-items: flex-start !important;
+                padding-top: 32px !important;
+            }
+            .max-w-2xl {
+                max-width: 100% !important;
+            }
+            /* Header */
+            h1.text-4xl {
+                font-size: 1.75rem !important;
+            }
+            .text-lg {
+                font-size: 0.875rem !important;
+            }
+            .mb-12 {
+                margin-bottom: 1.5rem !important;
+            }
+            /* Cards */
+            .grid.grid-cols-1.md\:grid-cols-2 {
+                grid-template-columns: 1fr !important;
+                gap: 16px !important;
+            }
+            .rounded-xl.p-8 {
+                padding: 20px !important;
+            }
+            /* Features grid */
+            .grid.grid-cols-1.md\:grid-cols-5 {
+                grid-template-columns: repeat(3, 1fr) !important;
+                gap: 8px !important;
+            }
+            .grid.grid-cols-1.md\:grid-cols-5 .p-4 {
+                padding: 10px !important;
+            }
+            .grid.grid-cols-1.md\:grid-cols-5 .text-3xl {
+                font-size: 1.5rem !important;
+            }
+            .mt-12 {
+                margin-top: 1.5rem !important;
+            }
+            /* Input fields - larger touch targets */
+            input[type="email"],
+            input[type="password"],
+            button[type="submit"] {
+                font-size: 16px !important; /* Prevents iOS zoom */
+                padding: 12px 16px !important;
+            }
+            /* Social login buttons */
+            .grid.grid-cols-3 button {
+                min-height: 48px;
+            }
+        }
+
+        @media (max-width: 380px) {
+            .grid.grid-cols-1.md\:grid-cols-5 {
+                grid-template-columns: repeat(2, 1fr) !important;
+            }
+            h1.text-4xl {
+                font-size: 1.5rem !important;
+            }
+            .text-2xl {
+                font-size: 1rem !important;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="../responsive-framework.css">
+    <link rel="stylesheet" href="../accessibility.css">
+  </head>
+<body class="bg-slate-950 text-slate-100 antialiased min-h-screen flex items-center justify-center p-4">
+    <!-- Skip to main content -->
+    <a href="#main" class="skip-to-main" tabindex="1">메인 콘텐츠로 이동</a>
+
+    <main id="main" class="w-full max-w-2xl">
+        <!-- Header -->
+        <header class="text-center mb-12">
+            <div class="text-4xl mb-3" aria-hidden="true">🏭</div>
+            <h1 class="text-4xl font-bold text-white mb-2">SoftFactory</h1>
+            <p class="text-slate-400 text-lg">프리미엄 비즈니스 자동화 플랫폼</p>
+        </header>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Demo Mode Card -->
+            <section class="bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl p-8 border border-slate-700 hover:border-slate-600 transition">
+                <div class="flex items-center gap-3 mb-6">
+                    <span class="text-2xl" aria-hidden="true">🎮</span>
+                    <div>
+                        <h2 class="text-xl font-bold text-white">데모 모드</h2>
+                        <p class="text-xs text-slate-400">모든 기능 미리보기</p>
+                    </div>
+                </div>
+
+                <form id="demoForm" class="space-y-4">
+                    <div>
+                        <label for="passkey" class="block text-sm font-medium text-slate-300 mb-2">패스키 입력</label>
+                        <input type="password" id="passkey" placeholder="••••••" required
+                            aria-label="데모 모드 패스키 입력"
+                            aria-describedby="passkey-hint"
+                            class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white placeholder-slate-500 focus:border-indigo-500 focus:outline-none transition">
+                        <p id="passkey-hint" class="text-xs text-slate-500 mt-2">💡 힌트: <code class="bg-slate-800 px-2 py-1 rounded">demo2026</code></p>
+                    </div>
+                    <button type="submit" aria-label="데모 모드로 로그인" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 rounded-lg transition">
+                        데모 시작
+                    </button>
+                </form>
+
+                <p class="text-xs text-slate-500 text-center mt-4">Mock 데이터로 모든 기능 테스트 가능</p>
+            </section>
+
+            <!-- Real Login Card -->
+            <section class="bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl p-8 border border-slate-700">
+                <div class="flex items-center gap-3 mb-6">
+                    <span class="text-2xl" aria-hidden="true">🔐</span>
+                    <div>
+                        <h2 class="text-xl font-bold text-white">실제 로그인</h2>
+                        <p class="text-xs text-slate-400">계정으로 접속</p>
+                    </div>
+                </div>
+
+                <form id="loginForm" class="space-y-4">
+                    <div>
+                        <label for="email" class="block text-sm font-medium text-slate-300 mb-2">이메일</label>
+                        <input type="email" id="email" placeholder="admin@softfactory.com" required
+                            aria-label="이메일 주소"
+                            aria-describedby="email-example"
+                            class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white placeholder-slate-500 focus:border-indigo-500 focus:outline-none transition">
+                        <p id="email-example" class="text-xs text-slate-500 mt-1">예: admin@softfactory.com</p>
+                    </div>
+
+                    <div>
+                        <label for="password" class="block text-sm font-medium text-slate-300 mb-2">비밀번호</label>
+                        <input type="password" id="password" placeholder="••••••" required
+                            aria-label="비밀번호"
+                            class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white placeholder-slate-500 focus:border-indigo-500 focus:outline-none transition">
+                    </div>
+
+                    <div class="flex items-center gap-2">
+                        <input type="checkbox" id="remember" class="w-4 h-4 rounded border-slate-600 bg-slate-700 text-indigo-600">
+                        <label for="remember" class="text-sm text-slate-400">로그인 유지</label>
+                    </div>
+
+                    <button type="submit" aria-label="로그인 버튼" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 rounded-lg transition">
+                        로그인
+                    </button>
+                </form>
+
+                <!-- Social Login Section -->
+                <nav class="mt-6 pt-6 border-t border-slate-700" aria-label="소셜 로그인">
+                    <p class="text-xs text-slate-400 text-center mb-4">소셜 계정으로 로그인</p>
+                    <div class="grid grid-cols-3 gap-2">
+                        <!-- Google Button -->
+                        <button id="googleBtn" aria-label="Google로 로그인" class="flex items-center justify-center gap-2 bg-white text-slate-900 hover:bg-slate-100 font-semibold py-2.5 rounded-lg transition" title="Google 계정으로 로그인">
+                            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/></svg>
+                        </button>
+
+                        <!-- Facebook Button -->
+                        <button id="facebookBtn" aria-label="Facebook로 로그인" class="flex items-center justify-center gap-2 bg-blue-600 text-white hover:bg-blue-700 font-semibold py-2.5 rounded-lg transition" title="Facebook 계정으로 로그인">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                        </button>
+
+                        <!-- Kakao Button -->
+                        <button id="kakaoBtn" aria-label="Kakao로 로그인" class="flex items-center justify-center gap-2 bg-yellow-400 text-slate-900 hover:bg-yellow-500 font-semibold py-2.5 rounded-lg transition" title="Kakao 계정으로 로그인">
+                            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C6.48 2 2 5.58 2 10c0 2.72 1.44 5.12 3.72 6.72.48.36.96 1.2.84 2.04-.12.72-.72 2.4-1.44 4.44 1.92-.48 4.32-1.44 5.52-2.28.72.12 1.44.12 2.16.12 5.52 0 10-3.58 10-8s-4.48-8-10-8z"/></svg>
+                        </button>
+                    </div>
+                </nav>
+
+                <p class="text-xs text-slate-500 text-center mt-4">
+                    데모: <code class="bg-slate-800 px-2 py-1 rounded">admin@softfactory.com</code> / <code class="bg-slate-800 px-2 py-1 rounded">admin123</code>
+                </p>
+            </div>
+        </div>
+
+        <!-- Features Grid -->
+        <section class="mt-12" aria-label="제품 기능">
+            <h2 class="sr-only">SoftFactory의 5가지 핵심 기능</h2>
+            <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+                <article class="bg-slate-800 rounded-lg p-4 text-center border border-slate-700 hover:border-slate-600 transition">
+                    <div class="text-3xl mb-2" aria-hidden="true">🍳</div>
+                    <h3 class="text-sm font-medium text-slate-200">CooCook</h3>
+                    <p class="text-xs text-slate-500">셰프 마켓</p>
+                </article>
+                <article class="bg-slate-800 rounded-lg p-4 text-center border border-slate-700 hover:border-slate-600 transition">
+                    <div class="text-3xl mb-2" aria-hidden="true">📱</div>
+                    <h3 class="text-sm font-medium text-slate-200">SNS Auto</h3>
+                    <p class="text-xs text-slate-500">소셜 자동화</p>
+                </article>
+                <article class="bg-slate-800 rounded-lg p-4 text-center border border-slate-700 hover:border-slate-600 transition">
+                    <div class="text-3xl mb-2" aria-hidden="true">⭐</div>
+                    <h3 class="text-sm font-medium text-slate-200">Review</h3>
+                    <p class="text-xs text-slate-500">리뷰 캠페인</p>
+                </article>
+                <article class="bg-slate-800 rounded-lg p-4 text-center border border-slate-700 hover:border-slate-600 transition">
+                    <div class="text-3xl mb-2" aria-hidden="true">🤖</div>
+                    <h3 class="text-sm font-medium text-slate-200">AI Auto</h3>
+                    <p class="text-xs text-slate-500">AI 직원</p>
+                </article>
+                <article class="bg-slate-800 rounded-lg p-4 text-center border border-slate-700 hover:border-slate-600 transition">
+                    <div class="text-3xl mb-2" aria-hidden="true">💻</div>
+                    <h3 class="text-sm font-medium text-slate-200">WebApp</h3>
+                    <p class="text-xs text-slate-500">부트캠프</p>
+                </article>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="mt-12 text-center text-xs text-slate-500">
+            <p>🔗 백엔드: http://localhost:8000</p>
+            <p class="mt-2">© 2026 SoftFactory — Premium B2B SaaS Platform</p>
+        </footer>
+    </main>
+
+    <script>
+        // ============================================
+        // WCAG 2.1 AA: Keyboard Navigation & Accessibility
+        // ============================================
+
+        /**
+         * Announce messages to screen readers
+         */
+        function announceToScreenReader(message, priority = 'polite') {
+            const announcement = document.createElement('div');
+            announcement.setAttribute('role', 'status');
+            announcement.setAttribute('aria-live', priority);
+            announcement.setAttribute('aria-atomic', 'true');
+            announcement.className = 'sr-only';
+            announcement.textContent = message;
+            document.body.appendChild(announcement);
+
+            // Remove after announcement
+            setTimeout(() => announcement.remove(), 1000);
+        }
+
+        /**
+         * Show error messages with proper ARIA attributes
+         */
+        function showErrorAccessible(message) {
+            showError(message);
+            announceToScreenReader(`오류: ${message}`, 'assertive');
+        }
+
+        /**
+         * Show success messages with proper ARIA attributes
+         */
+        function showSuccessAccessible(message) {
+            showSuccess(message);
+            announceToScreenReader(`성공: ${message}`, 'polite');
+        }
+
+        /**
+         * Keyboard shortcut support
+         * Alt+D = Demo Mode
+         * Alt+L = Real Login
+         */
+        document.addEventListener('keydown', (e) => {
+            if (e.altKey) {
+                if (e.key === 'd' || e.key === 'D') {
+                    document.getElementById('passkey').focus();
+                    announceToScreenReader('데모 모드 패스키 입력 필드로 포커스 이동');
+                } else if (e.key === 'l' || e.key === 'L') {
+                    document.getElementById('email').focus();
+                    announceToScreenReader('이메일 입력 필드로 포커스 이동');
+                }
+            }
+            // Escape key to clear error messages
+            if (e.key === 'Escape') {
+                const alerts = document.querySelectorAll('[role="alert"]');
+                alerts.forEach(alert => alert.remove());
+            }
+        });
+
+        // OAuth Handler
+        async function handleOAuthLogin(provider) {
+            try {
+                // Get authorization URL
+                const urlResponse = await fetch(`/api/auth/oauth/${provider}/url`);
+                const urlData = await urlResponse.json();
+
+                if (urlData.error) {
+                    showError(`OAuth 오류: ${urlData.error}`);
+                    return;
+                }
+
+                // In mock mode, directly proceed to callback with mock code
+                if (urlData.mock_mode) {
+                    console.log(`OAuth in mock mode for ${provider}`);
+                    const mockCode = `mock_${provider}_code_${Date.now()}`;
+
+                    // Call callback endpoint
+                    const callbackResponse = await fetch(`/api/auth/oauth/${provider}/callback`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ code: mockCode, state: urlData.state })
+                    });
+
+                    const callbackData = await callbackResponse.json();
+
+                    if (callbackData.access_token) {
+                        localStorage.setItem('access_token', callbackData.access_token);
+                        localStorage.setItem('refresh_token', callbackData.refresh_token || '');
+                        localStorage.setItem('user', JSON.stringify(callbackData.user));
+                        showSuccess(`${provider.charAt(0).toUpperCase() + provider.slice(1)} 로그인 성공!`);
+                        setTimeout(() => {
+                            window.location.href = getPostLoginRedirect();
+                        }, 500);
+                    } else {
+                        showError(callbackData.error || 'OAuth 콜백 실패');
+                    }
+                } else {
+                    // Real OAuth flow - redirect to provider
+                    const width = 500;
+                    const height = 600;
+                    const left = (window.innerWidth - width) / 2;
+                    const top = (window.innerHeight - height) / 2;
+
+                    const popup = window.open(
+                        urlData.auth_url,
+                        `${provider}_login`,
+                        `width=${width},height=${height},left=${left},top=${top}`
+                    );
+
+                    // Store callback handler in session storage
+                    sessionStorage.setItem('oauth_provider', provider);
+                    sessionStorage.setItem('oauth_state', urlData.state);
+
+                    // Poll for callback result
+                    const checkPopup = setInterval(() => {
+                        if (popup.closed) {
+                            clearInterval(checkPopup);
+                            // Callback should have stored token
+                            const token = localStorage.getItem('access_token');
+                            if (token) {
+                                showSuccess('로그인 성공!');
+                                setTimeout(() => {
+                                    window.location.href = getPostLoginRedirect();
+                                }, 500);
+                            }
+                        }
+                    }, 500);
+                }
+            } catch (error) {
+                console.error('OAuth login error:', error);
+                showError('소셜 로그인 중 오류 발생');
+            }
+        }
+
+        // Social Login Button Handlers
+        document.getElementById('googleBtn').addEventListener('click', (e) => {
+            e.preventDefault();
+            handleOAuthLogin('google');
+        });
+
+        document.getElementById('facebookBtn').addEventListener('click', (e) => {
+            e.preventDefault();
+            handleOAuthLogin('facebook');
+        });
+
+        document.getElementById('kakaoBtn').addEventListener('click', (e) => {
+            e.preventDefault();
+            handleOAuthLogin('kakao');
+        });
+
+        /**
+         * Determine redirect target after successful login.
+         * New users (no 'onboarding_complete' key) → onboarding wizard.
+         * Returning users → dashboard.
+         */
+        function getPostLoginRedirect() {
+            const onboardingDone = localStorage.getItem('onboarding_complete');
+            return onboardingDone ? 'dashboard.html' : 'onboarding.html';
+        }
+
+        // Demo Mode Handler
+        document.getElementById('demoForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const passkey = document.getElementById('passkey').value;
+
+            if (passkey === DEMO_PASSKEY) {
+                enableDemoMode();
+                showSuccessAccessible('데모 모드 활성화!');
+                setTimeout(() => {
+                    // Demo users skip onboarding
+                    window.location.href = 'dashboard.html';
+                }, 500);
+            } else {
+                showErrorAccessible('잘못된 패스키입니다.');
+                document.getElementById('passkey').value = '';
+                document.getElementById('passkey').focus();
+            }
+        });
+
+        // Check 2FA status after password login
+        async function check2FARequired(email, password) {
+            try {
+                const response = await fetch('/api/auth/login-check-2fa', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    return data.requires_2fa;
+                }
+                return false;
+            } catch (error) {
+                console.error('2FA check error:', error);
+                return false;
+            }
+        }
+
+        // Real Login Handler with 2FA Support
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                // First, check if 2FA is enabled
+                const requires2FA = await check2FARequired(email, password);
+
+                if (requires2FA) {
+                    // Store email for 2FA verification page
+                    sessionStorage.setItem('2fa_email', email);
+                    sessionStorage.setItem('pending_password', password);
+                    showSuccessAccessible('패스워드 확인됨. 2단계 인증으로 이동합니다.');
+                    setTimeout(() => {
+                        window.location.href = 'login-2fa.html';
+                    }, 500);
+                } else {
+                    // No 2FA required, proceed with normal login
+                    const data = await login(email, password);
+                    if (data.access_token) {
+                        localStorage.setItem('access_token', data.access_token);
+                        localStorage.setItem('refresh_token', data.refresh_token || '');
+                        localStorage.setItem('user', JSON.stringify(data.user));
+                        showSuccessAccessible('로그인 성공!');
+                        setTimeout(() => {
+                            window.location.href = getPostLoginRedirect();
+                        }, 500);
+                    } else {
+                        showErrorAccessible(data.message || '로그인 실패');
+                    }
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                showErrorAccessible('로그인 중 오류 발생');
+            }
+        });
+    </script>
+    <script src="../mobile-optimization.js" defer></script>
+    <script src="/web/platform/cookie-consent.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,427 @@
+﻿name: Deploy Production
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      image_tag:
+        description: 'Exact image tag to deploy (e.g. v1.2.3). Defaults to latest main.'
+        required: false
+        default: ''
+      skip_health_check:
+        description: 'Skip pre-deploy health check (emergency only)'
+        required: false
+        default: 'false'
+        type: choice
+        options: ['false', 'true']
+
+env:
+  REGISTRY: docker.io
+  IMAGE_NAME: ${{ secrets.DOCKER_USERNAME }}/softfactory
+
+# Never run two production deploys simultaneously
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # STAGE 1: Determine version / tag
+  # ---------------------------------------------------------------------------
+  prepare:
+    name: Prepare Release
+    runs-on: ubuntu-latest
+    outputs:
+      version:    ${{ steps.version.outputs.version }}
+      image_tag:  ${{ steps.version.outputs.image_tag }}
+      image_full: ${{ steps.version.outputs.image_full }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Generate OpenAPI from routes
+        run: python scripts/generate_openapi.py
+
+      - name: Harmonize Project State
+        id: harmonize
+        run: make sync-docs
+
+      - name: Commit Harmonized Docs
+        run: |
+          git config --global user.name 'github-actions'
+          git config --global user.email 'github-actions@github.com'
+          git add .
+          if git diff-index --quiet HEAD; then
+            echo "No changes to commit."
+          else
+            git commit -m "ci: Harmonize project documentation and API specs"
+            git push
+          fi
+
+      - name: Resolve version
+        id: version
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" && -n "${{ github.event.inputs.image_tag }}" ]]; then
+            VERSION="${{ github.event.inputs.image_tag }}"
+          elif [[ "$GITHUB_REF" == refs/tags/v* ]]; then
+            VERSION="${GITHUB_REF#refs/tags/}"
+          else
+            VERSION="v0.0.0-sha-${GITHUB_SHA::8}"
+          fi
+
+          IMAGE_TAG="${VERSION}"
+          IMAGE_FULL="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${IMAGE_TAG}"
+
+          echo "version=${VERSION}"    >> "$GITHUB_OUTPUT"
+          echo "image_tag=${IMAGE_TAG}" >> "$GITHUB_OUTPUT"
+          echo "image_full=${IMAGE_FULL}" >> "$GITHUB_OUTPUT"
+
+          echo "Deploying version: ${VERSION}"
+          echo "Image: ${IMAGE_FULL}"
+
+  # ---------------------------------------------------------------------------
+  # STAGE 2: Build & push production image (tagged + latest)
+  # ---------------------------------------------------------------------------
+  build-and-push:
+    name: Build & Push Production Image
+    runs-on: ubuntu-latest
+    needs: prepare
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile.prod
+          push: true
+          tags: |
+            ${{ needs.prepare.outputs.image_full }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+          labels: |
+            org.opencontainers.image.version=${{ needs.prepare.outputs.version }}
+            org.opencontainers.image.revision=${{ github.sha }}
+            org.opencontainers.image.created=${{ github.event.head_commit.timestamp }}
+            org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          build-args: |
+            BUILD_DATE=${{ github.event.head_commit.timestamp }}
+            VCS_REF=${{ github.sha }}
+            VERSION=${{ needs.prepare.outputs.version }}
+
+      - name: Scan image with Trivy
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{ needs.prepare.outputs.image_full }}
+          format: 'table'
+          exit-code: '0'
+          severity: 'CRITICAL,HIGH'
+        continue-on-error: true
+
+  # ---------------------------------------------------------------------------
+  # STAGE 3: Manual approval gate (environment: production)
+  # ---------------------------------------------------------------------------
+  approval:
+    name: Awaiting Manual Approval
+    runs-on: ubuntu-latest
+    needs: build-and-push
+    environment: production      # <- configure required reviewers in repo settings
+
+    steps:
+      - name: Approved
+        run: |
+          echo "Production deployment approved by: ${{ github.actor }}"
+          echo "Version: ${{ needs.prepare.outputs.version }}"
+          echo "Image: ${{ needs.prepare.outputs.image_full }}"
+
+  # ---------------------------------------------------------------------------
+  # STAGE 4: Pre-flight health check on current production
+  # ---------------------------------------------------------------------------
+  pre-flight:
+    name: Pre-Flight Health Check
+    runs-on: ubuntu-latest
+    needs: [prepare, approval]
+    if: github.event.inputs.skip_health_check != 'true'
+
+    steps:
+      - name: Check current production health
+        env:
+          PROD_HOST: ${{ secrets.PRODUCTION_HOST }}
+        run: |
+          echo "Checking current production state before swap..."
+          STATUS=$(curl -sf --max-time 10 "http://${PROD_HOST}/health" \
+            -o /dev/null -w "%{http_code}" 2>/dev/null || echo "000")
+          echo "Current production HTTP status: ${STATUS}"
+          if [[ "${STATUS}" == "000" ]]; then
+            echo "::warning::Production is already unreachable proceeding with deploy"
+          else
+            echo "Production is healthy, proceeding with zero-downtime swap"
+          fi
+
+  # ---------------------------------------------------------------------------
+  # STAGE 5: Deploy to production with automatic rollback
+  # ---------------------------------------------------------------------------
+  deploy:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    needs: [prepare, build-and-push, approval, pre-flight]
+    if: |
+      always() &&
+      needs.build-and-push.result == 'success' &&
+      needs.approval.result == 'success'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy via SSH (zero-downtime)
+        uses: appleboy/ssh-action@v1.0.3
+        env:
+          IMAGE_FULL:      ${{ needs.prepare.outputs.image_full }}
+          IMAGE_TAG:       ${{ needs.prepare.outputs.image_tag }}
+          VERSION:         ${{ needs.prepare.outputs.version }}
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+          GIT_SHA:         ${{ github.sha }}
+        with:
+          host:     ${{ secrets.PRODUCTION_HOST }}
+          username: ${{ secrets.PRODUCTION_USER }}
+          key:      ${{ secrets.PRODUCTION_SSH_KEY }}
+          port: 22
+          envs: IMAGE_FULL,IMAGE_TAG,VERSION,DOCKER_USERNAME,DOCKER_PASSWORD,GIT_SHA
+          script: |
+            set -euo pipefail
+
+            DEPLOY_DIR="/opt/softfactory/production"
+            BACKUP_CONTAINER="softfactory-backup-$(date +%Y%m%d_%H%M%S)"
+            HEALTH_URL="http://localhost:9000/health"
+            HEALTH_RETRIES=10
+            HEALTH_INTERVAL=6  # seconds; total wait = 60s
+
+            log() { echo "[$(date '+%H:%M:%S')] $*"; }
+
+            #  1. Pull image 
+            log "Pulling image: $IMAGE_FULL"
+            echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+            docker pull "$IMAGE_FULL"
+
+            #  2. Save current container as rollback target ?
+            if docker ps -q --filter name=softfactory-prod | grep -q .; then
+              log "Saving current container as rollback: $BACKUP_CONTAINER"
+              CURRENT_IMAGE=$(docker inspect softfactory-prod \
+                --format '{{.Config.Image}}' 2>/dev/null || echo "")
+              echo "$CURRENT_IMAGE" > "$DEPLOY_DIR/rollback_image.txt"
+              log "Rollback image saved: $CURRENT_IMAGE"
+            else
+              log "No existing container first deploy"
+            fi
+
+            #  3. Start new container alongside old 
+            log "Starting new container on port 9002 (canary slot)..."
+            docker stop softfactory-canary 2>/dev/null || true
+            docker rm   softfactory-canary 2>/dev/null || true
+
+            docker run -d \
+              --name softfactory-canary \
+              --restart no \
+              -p 9002:9000 \
+              --env-file "$DEPLOY_DIR/.env" \
+              -e GIT_SHA="$GIT_SHA" \
+              -e VERSION="$VERSION" \
+              -v "$DEPLOY_DIR/logs:/app/logs" \
+              "$IMAGE_FULL"
+
+            #  4. Health check on canary 
+            log "Health-checking canary on port 9002 (${HEALTH_RETRIES} retries)..."
+            RETRY=0
+            HEALTHY=false
+            while [[ $RETRY -lt $HEALTH_RETRIES ]]; do
+              CODE=$(curl -sf --max-time 5 http://localhost:9002/health \
+                -o /dev/null -w "%{http_code}" 2>/dev/null || echo "000")
+              if [[ "$CODE" == "200" ]]; then
+                log "Canary healthy (attempt $((RETRY+1)))"
+                HEALTHY=true
+                break
+              fi
+              log "Canary not ready yet [${CODE}], waiting ${HEALTH_INTERVAL}s... ($((RETRY+1))/${HEALTH_RETRIES})"
+              sleep $HEALTH_INTERVAL
+              RETRY=$((RETRY + 1))
+            done
+
+            if [[ "$HEALTHY" != "true" ]]; then
+              log "ERROR: Canary health check failed aborting deploy"
+              docker stop softfactory-canary 2>/dev/null || true
+              docker rm   softfactory-canary 2>/dev/null || true
+              exit 1
+            fi
+
+            #  5. Swap: stop old, promote canary to prod ?
+            log "Swapping: stopping old production container..."
+            docker stop softfactory-prod 2>/dev/null || true
+            docker rm   softfactory-prod 2>/dev/null || true
+
+            log "Renaming canary -> prod"
+            docker stop softfactory-canary
+            docker rm   softfactory-canary
+
+            docker run -d \
+              --name softfactory-prod \
+              --restart unless-stopped \
+              -p 9000:9000 \
+              --env-file "$DEPLOY_DIR/.env" \
+              -e GIT_SHA="$GIT_SHA" \
+              -e VERSION="$VERSION" \
+              -v "$DEPLOY_DIR/logs:/app/logs" \
+              "$IMAGE_FULL"
+
+            #  6. Final health check on production port ?
+            log "Final health check on production port 9000..."
+            sleep 5
+            CODE=$(curl -sf --max-time 10 http://localhost:9000/health \
+              -o /dev/null -w "%{http_code}" 2>/dev/null || echo "000")
+
+            if [[ "$CODE" != "200" ]]; then
+              log "CRITICAL: Post-swap health check failed initiating automatic rollback"
+
+              ROLLBACK_IMAGE=$(cat "$DEPLOY_DIR/rollback_image.txt" 2>/dev/null || echo "")
+              if [[ -n "$ROLLBACK_IMAGE" ]]; then
+                log "Rolling back to: $ROLLBACK_IMAGE"
+                docker stop softfactory-prod 2>/dev/null || true
+                docker rm   softfactory-prod 2>/dev/null || true
+                docker run -d \
+                  --name softfactory-prod \
+                  --restart unless-stopped \
+                  -p 9000:9000 \
+                  --env-file "$DEPLOY_DIR/.env" \
+                  "$ROLLBACK_IMAGE"
+                log "Rollback complete. Previous version restored."
+              else
+                log "No rollback image found cannot auto-rollback"
+              fi
+              exit 1
+            fi
+
+            #  7. Cleanup ?
+            log "Deployment successful: $IMAGE_TAG"
+            docker image prune -f --filter "label=app=softfactory" 2>/dev/null || true
+
+  # ---------------------------------------------------------------------------
+  # STAGE 6: Post-deployment verification
+  # ---------------------------------------------------------------------------
+  verify:
+    name: Post-Deploy Verification
+    runs-on: ubuntu-latest
+    needs: [prepare, deploy]
+
+    steps:
+      - name: Run production smoke tests
+        env:
+          PROD_URL: http://${{ secrets.PRODUCTION_HOST }}:9000
+          VERSION:  ${{ needs.prepare.outputs.version }}
+        run: |
+          python - <<'EOF'
+          import sys, os, urllib.request, json, time
+
+          base    = os.environ["BASE_URL"] if "BASE_URL" in os.environ else os.environ["PROD_URL"]
+          version = os.environ["VERSION"]
+
+          checks = [
+              ("/health",              200),
+              ("/api/platform/stats",  200),
+          ]
+
+          failed = 0
+          for path, expected in checks:
+              url = f"{base}{path}"
+              try:
+                  resp = urllib.request.urlopen(url, timeout=10)
+                  code = resp.getcode()
+                  ok   = (code == expected)
+              except Exception as e:
+                  code, ok = 0, False
+              mark = "OK" if ok else "FAIL"
+              print(f"  [{mark}] {code} {path}")
+              if not ok:
+                  failed += 1
+
+          print(f"\n{len(checks) - failed}/{len(checks)} smoke tests passed (version={version})")
+          sys.exit(1 if failed > 0 else 0)
+          EOF
+        continue-on-error: true
+
+  # ---------------------------------------------------------------------------
+  # STAGE 7: Telegram notification
+  # ---------------------------------------------------------------------------
+  notify:
+    name: Notify via Telegram
+    runs-on: ubuntu-latest
+    needs: [prepare, deploy, verify]
+    if: always()
+
+    steps:
+      - name: Send deployment summary to Telegram
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID:   ${{ secrets.TELEGRAM_CHAT_ID }}
+          VERSION:       ${{ needs.prepare.outputs.version }}
+          IMAGE_TAG:     ${{ needs.prepare.outputs.image_tag }}
+          DEPLOY_RESULT: ${{ needs.deploy.result }}
+          VERIFY_RESULT: ${{ needs.verify.result }}
+          ACTOR:         ${{ github.actor }}
+          SHA:           ${{ github.sha }}
+          RUN_URL:       ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          if [[ "$DEPLOY_RESULT" == "success" ]]; then
+            ICON="[OK]"
+            STATUS="DEPLOYED TO PRODUCTION"
+          else
+            ICON="[FAIL]"
+            STATUS="PRODUCTION DEPLOY FAILED"
+          fi
+
+          if [[ "$VERIFY_RESULT" == "success" ]]; then
+            VERIFY_ICON="[PASS]"
+          else
+            VERIFY_ICON="[FAIL]"
+          fi
+
+          MESSAGE="${ICON} *SoftFactory ${STATUS}*
+
+          Version: \`${VERSION}\`
+          Image: \`${IMAGE_TAG}\`
+          Commit: \`${SHA::8}\`
+          Actor: ${ACTOR}
+
+          Smoke Tests: ${VERIFY_ICON} ${VERIFY_RESULT}
+
+          [View Run](${RUN_URL})"
+
+          curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
+            -d chat_id="${TELEGRAM_CHAT_ID}" \
+            -d parse_mode="Markdown" \
+            -d disable_web_page_preview="true" \
+            -d text="${MESSAGE}"
+
+

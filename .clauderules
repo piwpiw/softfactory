@@ -1,0 +1,129 @@
+# .clauderules — Agent Interaction Standard Operating Procedures
+# Deca-Agent Master Ecosystem — Max Version
+# Last Updated: 2026-02-22
+
+---
+
+## RULE 1: Sequential Thinking Mandate
+Every agent MUST internally execute the following steps before producing output or handing off:
+1. UNDERSTAND  — Restate the task in your own words
+2. DECOMPOSE   — Break it into sub-tasks
+3. EVALUATE    — Identify risks, unknowns, dependencies
+4. DECIDE      — Choose the best approach with reasoning
+5. EXECUTE     — Produce output
+6. HAND-OFF    — Pass to next agent with a structured summary
+
+---
+
+## RULE 2: Hand-Off Protocol
+Every inter-agent message MUST include:
+```
+FROM: <agent_id>/<agent_name>
+TO:   <agent_id>/<agent_name>
+MISSION: <mission_id>
+STATUS: [PENDING | IN_PROGRESS | BLOCKED | COMPLETE]
+SUMMARY: <what was done>
+OUTPUT: <file paths or data produced>
+NEXT_ACTION: <what the receiving agent should do>
+BLOCKERS: <none | description>
+```
+
+---
+
+## RULE 3: Conflict Escalation
+- If any agent detects a conflict (requirement clash, technical blocker, security risk):
+  1. STOP current work immediately
+  2. Set STATUS to BLOCKED
+  3. Call `get_bus().escalate(from_agent, conflict_description)` OR send to 01_DISPATCHER
+  4. Chief Dispatcher re-evaluates the roadmap and reissues tasks
+
+---
+
+## RULE 4: Pipeline Order
+Tasks flow in this sequence. No agent may skip ahead:
+  Task Input → Dispatcher → PM/Analyst → Architect → Dev(s) → QA/Security → DevOps → Reporter
+
+Parallel execution is allowed ONLY between:
+- PM + Market Analyst (planning phase)
+- Backend + Frontend (development phase)
+- QA + Security (validation phase)
+
+---
+
+## RULE 5: Memory Ledger Updates
+- Any agent that produces a significant output MUST update `CLAUDE.md`:
+  - Add an entry to the Change Log via `log_to_ledger(agent_name, action)`
+  - Update Mission status via `update_mission_status(mission_id, status)` if applicable
+  - Update Knowledge Base section if new project info is discovered
+
+---
+
+## RULE 6: Secret Management
+- NEVER hardcode secrets in agent source files
+- ALWAYS read from `.env` via `python-dotenv` or equivalent
+- NEVER commit `.env` to version control
+- Use `.env.example` to document required variables
+
+---
+
+## RULE 7: Agent Identity
+- Each agent must identify itself in logs: `[AGENT-ID][AGENT-NAME] message`
+- Example: `[07][QA-Engineer] Test suite passed: 42/42`
+- Use `get_logger(AGENT_ID, AGENT_NAME)` from `core`
+
+---
+
+## RULE 8: Telegram Reporter Trigger
+- Agent 10 (Telegram Reporter) is triggered automatically when:
+  - A mission reaches COMPLETE status
+  - A BLOCKED escalation occurs
+  - DevOps confirms a deployment
+  - Priority filter: BLOCKED (P0) and COMPLETE/DEPLOYMENT (P1) always notify
+
+---
+
+## RULE 9: Skill Application Mandate
+- Each agent MUST apply its highest-level skills before producing any output
+- Skill application order: EXPERT skills first → PRACTITIONER → WORKING → AWARENESS
+- Reference skills from `skills/` module; use `core/skills_registry.py` to look up capabilities
+- Example: PM must run RICE scoring BEFORE outputting prioritized backlog
+- Example: Architect must produce ADR BEFORE approving tech stack decisions
+- No agent may output a deliverable without applying at least one relevant Expert-level skill
+
+---
+
+## RULE 10: Document Standard Compliance
+- All formal outputs MUST use templates from `docs/standards/`
+- Document type → Template mapping:
+  - Product requirements → `docs/standards/PRD_TEMPLATE.md`
+  - Architecture decisions → `docs/standards/ADR_TEMPLATE.md`
+  - Proposals/changes → `docs/standards/RFC_TEMPLATE.md`
+  - Quality issues → `docs/standards/BUG_REPORT_TEMPLATE.md`
+  - Security findings → `docs/standards/SECURITY_REPORT_TEMPLATE.md`
+  - Test coverage → `docs/standards/TEST_PLAN_TEMPLATE.md`
+  - Deployment operations → `docs/standards/DEPLOYMENT_RUNBOOK_TEMPLATE.md`
+- Use `core/document_engine.py` generate_* functions to produce documents programmatically
+
+---
+
+## RULE 11: Consultation Obligation
+- If any agent's uncertainty on a decision exceeds 70%, they MUST consult relevant agents via ConsultationBus before proceeding
+- Uncertainty estimation:
+  - Clear requirements + familiar domain → < 30%: no consultation needed
+  - Partial requirements or unclear scope → 30–70%: optional consultation
+  - Ambiguous requirements / new domain / high-risk decision → > 70%: MANDATORY
+  - Security implications → ALWAYS consult 08/Security-Auditor regardless of confidence
+  - Architectural implications → ALWAYS consult 04/Solution-Architect
+- Use `get_bus().consult(from, to, question)` or `get_bus().broadcast(from, question, [agents])`
+- Consultation log → `logs/consultations.jsonl` (automatic)
+- Circular consultation (A→B→A) raises `ConsultationLoopError` and is automatically blocked
+
+---
+
+## RULE 12: Retrospective Obligation
+- Every mission that reaches COMPLETE status MUST have a retrospective recorded
+- Retrospective format: Start / Stop / Continue
+- Use `get_manager().record_retrospective(mission_id, what_went_well, what_to_improve, action_items, recorded_by)`
+- Retrospective log → `logs/missions.jsonl` (automatic)
+- Dispatcher (01) owns retrospective collection; Reporter (10) summarizes findings weekly
+- Action items from retrospectives feed into the next mission's planning phase

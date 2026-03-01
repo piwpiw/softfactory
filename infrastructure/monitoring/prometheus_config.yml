@@ -1,0 +1,115 @@
+# Prometheus Configuration for SoftFactory Platform Monitoring
+# Generated: 2026-02-25
+# Purpose: Scrape configuration for metrics export and alerting
+
+global:
+  # How often to scrape targets by default
+  scrape_interval: 15s
+
+  # How long until a scrape request times out
+  scrape_timeout: 10s
+
+  # How often to evaluate rules
+  evaluation_interval: 15s
+
+  # External labels to add to all time series and alerts
+  external_labels:
+    monitor: 'softfactory-prod'
+    environment: 'production'
+    service: 'platform'
+
+# Alertmanager configuration
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+            - localhost:9093
+
+# Load rules once and periodically evaluate them
+rule_files:
+  - "alerts.yml"
+  - "rules.yml"
+
+# Scrape configurations
+scrape_configs:
+  # SoftFactory API Server metrics
+  - job_name: 'softfactory-api'
+    static_configs:
+      - targets: ['localhost:8000']
+        labels:
+          instance: 'api-primary'
+          service: 'platform'
+
+    metrics_path: '/api/metrics/prometheus'
+    scrape_interval: 10s
+    scrape_timeout: 5s
+
+    # Relabel configs for adding/overwriting labels
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+      - source_labels: [__scheme__]
+        target_label: scheme
+
+  # Database metrics (if using PostgreSQL exporter)
+  - job_name: 'postgres'
+    static_configs:
+      - targets: ['localhost:9187']
+        labels:
+          service: 'database'
+    metrics_path: '/metrics'
+    scrape_interval: 15s
+    scrape_timeout: 10s
+
+  # Redis cache metrics (if using Redis exporter)
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['localhost:9121']
+        labels:
+          service: 'cache'
+    metrics_path: '/metrics'
+    scrape_interval: 15s
+    scrape_timeout: 10s
+
+  # Node exporter metrics (system-level)
+  - job_name: 'node'
+    static_configs:
+      - targets: ['localhost:9100']
+        labels:
+          service: 'system'
+    metrics_path: '/metrics'
+    scrape_interval: 15s
+    scrape_timeout: 10s
+
+  # Docker container metrics (if using cAdvisor)
+  - job_name: 'cadvisor'
+    static_configs:
+      - targets: ['localhost:8080']
+        labels:
+          service: 'containers'
+    metrics_path: '/metrics'
+    scrape_interval: 10s
+    scrape_timeout: 5s
+
+# Recording rules for performance optimization (optional)
+# These rules pre-compute commonly-used queries
+recording_rules:
+  - name: api_endpoints
+    interval: 30s
+    rules:
+      - record: 'api:request_rate_5m'
+        expr: 'rate(http_requests_total[5m])'
+
+      - record: 'api:error_rate_5m'
+        expr: 'rate(http_requests_total{status=~"5.."}[5m])'
+
+      - record: 'api:latency_p99_5m'
+        expr: 'histogram_quantile(0.99, rate(http_request_duration_seconds_bucket[5m]))'
+
+# Service discovery (optional - uncomment if using Kubernetes)
+# kubernetes_sd_configs:
+#   - role: pod
+#     namespaces:
+#       names:
+#         - default
+#         - production

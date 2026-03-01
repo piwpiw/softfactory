@@ -1,0 +1,700 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#111827">
+<title>분석 대시보드 — SoftFactory</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jspdf"></script>
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="api.js"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+        .apexcharts-canvas { margin: 0 !important; }
+        .metric-card { transition: all 0.3s ease; }
+        .metric-card:hover { transform: translateY(-2px); }
+        .pulse-dot { animation: pulse 2s infinite; }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+    </style>
+    <link rel="stylesheet" href="../responsive-framework.css">
+  </head>
+<body class="bg-slate-950 text-slate-100 antialiased">
+    <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-slate-900 border-r border-slate-800 flex flex-col shrink-0">
+            <!-- Logo -->
+            <div class="p-6 border-b border-slate-800">
+                <div class="flex items-center gap-3">
+                    <span class="text-2xl">🏭</span>
+                    <div>
+                        <h1 class="font-bold text-white">SoftFactory</h1>
+                        <p class="text-xs text-slate-400">Premium SaaS</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation -->
+            <nav class="flex-1 p-6 space-y-2 overflow-y-auto">
+    <button class="hamburger" aria-label="Toggle navigation menu">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+                <a href="dashboard.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 transition">
+                    <span>📊</span> 대시보드
+                </a>
+                <a href="analytics.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg bg-indigo-600 text-white font-medium">
+                    <span>📈</span> 분석
+                </a>
+                <a href="billing.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 transition">
+                    <span>💳</span> 결제 및 청구
+                </a>
+                <a href="profile.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 transition">
+                    <span>👤</span> 프로필
+                </a>
+                <a href="admin.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 transition">
+                    <span>⚙️</span> 관리자
+                </a>
+
+                <div class="my-6 border-t border-slate-800"></div>
+
+                <!-- Services Quick Links -->
+                <p class="text-xs font-semibold text-slate-400 uppercase px-4 mb-3">서비스</p>
+                <a href="../sns-auto/index.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 transition">
+                    <span>📱</span> SNS Auto
+                </a>
+                <a href="../review/index.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 transition">
+                    <span>⭐</span> Review
+                </a>
+                <a href="../coocook/index.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 transition">
+                    <span>🍳</span> CooCook
+                </a>
+                <a href="../ai-automation/index.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 transition">
+                    <span>🤖</span> AI Automation
+                </a>
+                <a href="../webapp-builder/index.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 transition">
+                    <span>💻</span> WebApp Builder
+                </a>
+            </nav>
+
+            <!-- User Info -->
+            <div class="p-6 border-t border-slate-800">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-white" id="userName">Demo User</p>
+                        <p class="text-xs text-slate-400" id="userEmail">demo@softfactory.com</p>
+                    </div>
+                    <button onclick="logout()" class="p-2 hover:bg-slate-800 rounded-lg transition" title="Logout">
+                        <span>🚪</span>
+                    </button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <!-- Header -->
+            <header class="h-16 bg-slate-900 border-b border-slate-800 px-6 flex items-center justify-between shrink-0">
+                <div>
+                    <h2 class="text-xl font-bold text-white">분석 대시보드</h2>
+                    <p class="text-xs text-slate-400">사용자 행동, 전환율, LTV 분석</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button onclick="exportPDF()" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition text-sm flex items-center gap-2">
+                        📄 PDF
+                    </button>
+                    <button onclick="exportCSV()" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition text-sm flex items-center gap-2">
+                        📊 CSV
+                    </button>
+                    <button onclick="toggleSettings()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg transition text-sm">
+                        ⚙️ 설정
+                    </button>
+                </div>
+            </header>
+
+            <!-- Content -->
+            <main class="flex-1 overflow-y-auto p-6 space-y-6">
+                <!-- Filters Section -->
+                <div class="bg-slate-800 rounded-xl p-5 border border-slate-700">
+                    <h3 class="text-sm font-semibold text-white mb-4 flex items-center gap-2">
+                        <span>🔍</span> 필터 & 비교
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <!-- Date Range -->
+                        <div>
+                            <label class="text-xs font-medium text-slate-400 block mb-2">기간 선택</label>
+                            <select id="dateRange" onchange="applyFilters()" class="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-slate-100 text-sm">
+                                <option value="7">지난 7일</option>
+                                <option value="30" selected>지난 30일</option>
+                                <option value="90">지난 90일</option>
+                                <option value="custom">커스텀 기간</option>
+                            </select>
+                        </div>
+
+                        <!-- Service Selection -->
+                        <div>
+                            <label class="text-xs font-medium text-slate-400 block mb-2">서비스</label>
+                            <select id="serviceFilter" onchange="applyFilters()" multiple class="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-slate-100 text-sm" size="1">
+                                <option value="coocook" selected>🍳 CooCook</option>
+                                <option value="sns-auto" selected>📱 SNS Auto</option>
+                                <option value="review" selected>⭐ Review</option>
+                                <option value="ai-automation" selected>🤖 AI Auto</option>
+                                <option value="webapp-builder" selected>💻 WebApp</option>
+                            </select>
+                        </div>
+
+                        <!-- Region Filter -->
+                        <div>
+                            <label class="text-xs font-medium text-slate-400 block mb-2">지역</label>
+                            <select id="regionFilter" onchange="applyFilters()" class="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-slate-100 text-sm">
+                                <option value="all" selected>전체 지역</option>
+                                <option value="korea">대한민국</option>
+                                <option value="asia">아시아</option>
+                                <option value="global">전 세계</option>
+                            </select>
+                        </div>
+
+                        <!-- User Segment -->
+                        <div>
+                            <label class="text-xs font-medium text-slate-400 block mb-2">사용자 세그먼트</label>
+                            <select id="segmentFilter" onchange="applyFilters()" class="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-slate-100 text-sm">
+                                <option value="all" selected>전체</option>
+                                <option value="new">신규 사용자</option>
+                                <option value="active">활성 사용자</option>
+                                <option value="vip">VIP</option>
+                                <option value="dormant">휴면 사용자</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Insight Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <!-- Top Growth -->
+                    <div class="bg-gradient-to-br from-green-900/30 to-green-900/10 rounded-xl p-5 border border-green-800 metric-card">
+                        <div class="flex items-start justify-between mb-3">
+                            <div>
+                                <p class="text-xs font-medium text-green-400 mb-1">🚀 이번주 성장 1위</p>
+                                <h4 class="text-lg font-bold text-white" id="topGrowthService">SNS Auto</h4>
+                            </div>
+                            <span class="text-2xl font-bold text-green-400" id="topGrowthPercent">+24.5%</span>
+                        </div>
+                        <p class="text-xs text-slate-400">전주 대비</p>
+                    </div>
+
+                    <!-- Key Metrics Change -->
+                    <div class="bg-gradient-to-br from-blue-900/30 to-blue-900/10 rounded-xl p-5 border border-blue-800 metric-card">
+                        <div class="flex items-start justify-between mb-3">
+                            <div>
+                                <p class="text-xs font-medium text-blue-400 mb-1">📊 주요 메트릭</p>
+                                <h4 class="text-lg font-bold text-white">전환율</h4>
+                            </div>
+                            <span class="text-2xl font-bold text-blue-400" id="conversionMetric">+3.2%</span>
+                        </div>
+                        <p class="text-xs text-slate-400">목표: 4.5%</p>
+                    </div>
+
+                    <!-- Anomaly Detection -->
+                    <div class="bg-gradient-to-br from-amber-900/30 to-amber-900/10 rounded-xl p-5 border border-amber-800 metric-card">
+                        <div class="flex items-start justify-between mb-3">
+                            <div>
+                                <p class="text-xs font-medium text-amber-400 mb-1">⚠️ 이상 탐지</p>
+                                <h4 class="text-lg font-bold text-white">CooCook</h4>
+                            </div>
+                            <span class="pulse-dot text-2xl">🔴</span>
+                        </div>
+                        <p class="text-xs text-amber-300">사용량 30% 급락</p>
+                    </div>
+
+                    <!-- Recommendation -->
+                    <div class="bg-gradient-to-br from-purple-900/30 to-purple-900/10 rounded-xl p-5 border border-purple-800 metric-card">
+                        <div class="flex items-start justify-between mb-3">
+                            <div>
+                                <p class="text-xs font-medium text-purple-400 mb-1">💡 추천 액션</p>
+                                <h4 class="text-lg font-bold text-white">프로모션</h4>
+                            </div>
+                            <span class="text-2xl">✨</span>
+                        </div>
+                        <p class="text-xs text-slate-400">CooCook 사용자 재참여</p>
+                    </div>
+                </div>
+
+                <!-- Charts Grid -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Time Series Forecast Chart -->
+                    <div class="bg-slate-800 rounded-xl p-6 border border-slate-700">
+                        <h3 class="text-sm font-bold text-white mb-4 flex items-center gap-2">
+                            <span>📈</span> 시계열 예측 (30일)
+                        </h3>
+                        <div id="timeSeriesChart"></div>
+                    </div>
+
+                    <!-- Service Distribution 3D Pie -->
+                    <div class="bg-slate-800 rounded-xl p-6 border border-slate-700">
+                        <h3 class="text-sm font-bold text-white mb-4 flex items-center gap-2">
+                            <span>🥧</span> 서비스별 비중
+                        </h3>
+                        <div id="serviceDistributionChart"></div>
+                    </div>
+
+                    <!-- Heatmap (Activity by Hour) -->
+                    <div class="bg-slate-800 rounded-xl p-6 border border-slate-700">
+                        <h3 class="text-sm font-bold text-white mb-4 flex items-center gap-2">
+                            <span>🔥</span> 시간대별 활동 (히트맵)
+                        </h3>
+                        <div id="heatmapChart"></div>
+                    </div>
+
+                    <!-- Scatter (Correlation) -->
+                    <div class="bg-slate-800 rounded-xl p-6 border border-slate-700">
+                        <h3 class="text-sm font-bold text-white mb-4 flex items-center gap-2">
+                            <span>⚡</span> 상관관계 (CAC vs LTV)
+                        </h3>
+                        <div id="scatterChart"></div>
+                    </div>
+                </div>
+
+                <!-- Cohort Analysis -->
+                <div class="bg-slate-800 rounded-xl p-6 border border-slate-700">
+                    <h3 class="text-sm font-bold text-white mb-4 flex items-center gap-2">
+                        <span>👥</span> 코호트 분석 (사용자 체류율)
+                    </h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-xs">
+                            <thead>
+                                <tr class="border-b border-slate-700">
+                                    <th class="text-left py-3 px-4 text-slate-400 font-medium">코호트</th>
+                                    <th class="text-center py-3 px-4 text-slate-400 font-medium">크기</th>
+                                    <th class="text-center py-3 px-4 text-slate-400 font-medium">0주</th>
+                                    <th class="text-center py-3 px-4 text-slate-400 font-medium">1주</th>
+                                    <th class="text-center py-3 px-4 text-slate-400 font-medium">2주</th>
+                                    <th class="text-center py-3 px-4 text-slate-400 font-medium">3주</th>
+                                    <th class="text-center py-3 px-4 text-slate-400 font-medium">4주</th>
+                                </tr>
+                            </thead>
+                            <tbody id="cohortTable">
+                                <tr class="border-b border-slate-700/50 hover:bg-slate-700/30">
+                                    <td class="py-3 px-4 text-slate-300">2026-02-01</td>
+                                    <td class="text-center py-3 px-4 text-slate-300">1,245</td>
+                                    <td class="text-center py-3 px-4"><span class="bg-green-600/30 text-green-300 px-2 py-1 rounded text-xs font-medium">100%</span></td>
+                                    <td class="text-center py-3 px-4"><span class="bg-green-600/30 text-green-300 px-2 py-1 rounded text-xs font-medium">87%</span></td>
+                                    <td class="text-center py-3 px-4"><span class="bg-blue-600/30 text-blue-300 px-2 py-1 rounded text-xs font-medium">72%</span></td>
+                                    <td class="text-center py-3 px-4"><span class="bg-blue-600/30 text-blue-300 px-2 py-1 rounded text-xs font-medium">68%</span></td>
+                                    <td class="text-center py-3 px-4"><span class="bg-blue-600/30 text-blue-300 px-2 py-1 rounded text-xs font-medium">65%</span></td>
+                                </tr>
+                                <tr class="border-b border-slate-700/50 hover:bg-slate-700/30">
+                                    <td class="py-3 px-4 text-slate-300">2026-02-08</td>
+                                    <td class="text-center py-3 px-4 text-slate-300">1,892</td>
+                                    <td class="text-center py-3 px-4"><span class="bg-green-600/30 text-green-300 px-2 py-1 rounded text-xs font-medium">100%</span></td>
+                                    <td class="text-center py-3 px-4"><span class="bg-green-600/30 text-green-300 px-2 py-1 rounded text-xs font-medium">91%</span></td>
+                                    <td class="text-center py-3 px-4"><span class="bg-green-600/30 text-green-300 px-2 py-1 rounded text-xs font-medium">79%</span></td>
+                                    <td class="text-center py-3 px-4"><span class="bg-blue-600/30 text-blue-300 px-2 py-1 rounded text-xs font-medium">74%</span></td>
+                                    <td class="text-center py-3 px-4">-</td>
+                                </tr>
+                                <tr class="border-b border-slate-700/50 hover:bg-slate-700/30">
+                                    <td class="py-3 px-4 text-slate-300">2026-02-15</td>
+                                    <td class="text-center py-3 px-4 text-slate-300">2,134</td>
+                                    <td class="text-center py-3 px-4"><span class="bg-green-600/30 text-green-300 px-2 py-1 rounded text-xs font-medium">100%</span></td>
+                                    <td class="text-center py-3 px-4"><span class="bg-green-600/30 text-green-300 px-2 py-1 rounded text-xs font-medium">89%</span></td>
+                                    <td class="text-center py-3 px-4"><span class="bg-blue-600/30 text-blue-300 px-2 py-1 rounded text-xs font-medium">76%</span></td>
+                                    <td class="text-center py-3 px-4">-</td>
+                                    <td class="text-center py-3 px-4">-</td>
+                                </tr>
+                                <tr class="hover:bg-slate-700/30">
+                                    <td class="py-3 px-4 text-slate-300">2026-02-22</td>
+                                    <td class="text-center py-3 px-4 text-slate-300">2,567</td>
+                                    <td class="text-center py-3 px-4"><span class="bg-green-600/30 text-green-300 px-2 py-1 rounded text-xs font-medium">100%</span></td>
+                                    <td class="text-center py-3 px-4"><span class="bg-blue-600/30 text-blue-300 px-2 py-1 rounded text-xs font-medium">85%</span></td>
+                                    <td class="text-center py-3 px-4">-</td>
+                                    <td class="text-center py-3 px-4">-</td>
+                                    <td class="text-center py-3 px-4">-</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Conversion Funnel -->
+                <div class="bg-slate-800 rounded-xl p-6 border border-slate-700">
+                    <h3 class="text-sm font-bold text-white mb-4 flex items-center gap-2">
+                        <span>🔄</span> 전환율 펀넬
+                    </h3>
+                    <div class="space-y-3" id="funnelChart"></div>
+                </div>
+
+                <!-- LTV vs CAC Comparison -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-gradient-to-br from-indigo-900/30 to-indigo-900/10 rounded-xl p-6 border border-indigo-800 metric-card">
+                        <p class="text-xs font-medium text-indigo-400 mb-2">💰 평균 LTV</p>
+                        <h4 class="text-3xl font-bold text-white mb-2" id="ltv">₩2,450,000</h4>
+                        <p class="text-xs text-slate-400">고객 생명주기가치</p>
+                        <div class="mt-4 text-xs text-indigo-300 flex items-center gap-1">
+                            <span>📈</span> 전월 대비 +12.3%
+                        </div>
+                    </div>
+
+                    <div class="bg-gradient-to-br from-pink-900/30 to-pink-900/10 rounded-xl p-6 border border-pink-800 metric-card">
+                        <p class="text-xs font-medium text-pink-400 mb-2">💸 평균 CAC</p>
+                        <h4 class="text-3xl font-bold text-white mb-2" id="cac">₩285,000</h4>
+                        <p class="text-xs text-slate-400">고객 획득 비용</p>
+                        <div class="mt-4 text-xs text-pink-300 flex items-center gap-1">
+                            <span>📉</span> 전월 대비 -5.6%
+                        </div>
+                    </div>
+
+                    <div class="bg-gradient-to-br from-purple-900/30 to-purple-900/10 rounded-xl p-6 border border-purple-800 metric-card">
+                        <p class="text-xs font-medium text-purple-400 mb-2">🎯 LTV/CAC 비율</p>
+                        <h4 class="text-3xl font-bold text-white mb-2" id="ltvcacRatio">8.6x</h4>
+                        <p class="text-xs text-slate-400">목표: 3:1 이상</p>
+                        <div class="mt-4 text-xs text-purple-300 flex items-center gap-1">
+                            <span>✅</span> 건강한 상태
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Schedule Report Settings (Hidden by default) -->
+                <div id="scheduleSettings" class="hidden bg-slate-800 rounded-xl p-6 border border-slate-700">
+                    <h3 class="text-sm font-bold text-white mb-4 flex items-center gap-2">
+                        <span>⏰</span> 스케줄 리포트 설정
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <label class="text-xs font-medium text-slate-400 block mb-2">리포트 빈도</label>
+                            <select class="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-slate-100 text-sm">
+                                <option>주 1회 (월요일)</option>
+                                <option>월 1회 (1일)</option>
+                                <option>분기 1회</option>
+                                <option>비활성</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="text-xs font-medium text-slate-400 block mb-2">수신 시간</label>
+                            <input type="time" value="09:00" class="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-slate-100 text-sm">
+                        </div>
+                        <div>
+                            <label class="text-xs font-medium text-slate-400 block mb-2">수신 메일</label>
+                            <input type="email" placeholder="your@email.com" id="reportEmail" class="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-slate-100 text-sm">
+                        </div>
+                    </div>
+                    <button onclick="saveScheduleSettings()" class="mt-4 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition text-sm">
+                        💾 저장
+                    </button>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        requireAuth();
+
+        // Chart instances
+        let timeSeriesChart, serviceDistChart, heatmapChart, scatterChart;
+
+        async function init() {
+            try {
+                const user = getUser();
+                if (user) {
+                    document.getElementById('userName').textContent = user.name || 'Demo User';
+                    document.getElementById('userEmail').textContent = user.email;
+                }
+
+                // Load analytics data
+                await loadAnalyticsData();
+            } catch (error) {
+                console.error('Error loading analytics:', error);
+                showError('분석 데이터 로드 중 오류 발생');
+            }
+        }
+
+        async function loadAnalyticsData() {
+            try {
+                // Mock data for analytics
+                renderTimeSeriesChart();
+                renderServiceDistributionChart();
+                renderHeatmapChart();
+                renderScatterChart();
+                renderFunnelChart();
+            } catch (error) {
+                console.error('Error loading analytics data:', error);
+            }
+        }
+
+        function renderTimeSeriesChart() {
+            const options = {
+                chart: {
+                    type: 'area',
+                    height: 300,
+                    toolbar: { show: true },
+                    background: 'transparent',
+                    fontFamily: 'Inter, sans-serif'
+                },
+                colors: ['#4f46e5', '#ec4899'],
+                series: [
+                    {
+                        name: '실제 데이터',
+                        data: [2800, 3200, 3500, 3200, 3800, 4100, 4500, 4300, 4800, 5200, 5100, 5500, 5800, 6200]
+                    },
+                    {
+                        name: '예측 데이터',
+                        data: [null, null, null, null, null, null, null, null, null, null, null, 5900, 6300, 6700]
+                    }
+                ],
+                xaxis: {
+                    categories: ['Feb 1', 'Feb 2', 'Feb 3', 'Feb 4', 'Feb 5', 'Feb 6', 'Feb 7', 'Feb 8', 'Feb 9', 'Feb 10', 'Feb 11', 'Feb 12', 'Feb 13', 'Feb 14'],
+                    labels: { style: { colors: '#94a3b8', fontSize: '12px' } }
+                },
+                yaxis: {
+                    labels: {
+                        style: { colors: '#94a3b8' },
+                        formatter: (value) => '₩' + value.toLocaleString()
+                    }
+                },
+                grid: { borderColor: '#334155' },
+                tooltip: {
+                    theme: 'dark',
+                    style: { fontSize: '12px' }
+                },
+                stroke: { curve: 'smooth', width: 2 }
+            };
+
+            if (timeSeriesChart) timeSeriesChart.destroy();
+            timeSeriesChart = new ApexCharts(document.getElementById('timeSeriesChart'), options);
+            timeSeriesChart.render();
+        }
+
+        function renderServiceDistributionChart() {
+            const options = {
+                chart: {
+                    type: 'pie',
+                    height: 300,
+                    toolbar: { show: false },
+                    fontFamily: 'Inter, sans-serif'
+                },
+                series: [28, 22, 35, 10, 5],
+                labels: ['SNS Auto', 'Review', 'CooCook', 'WebApp', 'AI Auto'],
+                colors: ['#ec4899', '#f59e0b', '#f97316', '#06b6d4', '#a855f7'],
+                legend: {
+                    position: 'bottom',
+                    labels: { colors: '#94a3b8' }
+                },
+                tooltip: { theme: 'dark' },
+                plotOptions: {
+                    pie: {
+                        donut: {
+                            size: '65%'
+                        }
+                    }
+                }
+            };
+
+            if (serviceDistChart) serviceDistChart.destroy();
+            serviceDistChart = new ApexCharts(document.getElementById('serviceDistributionChart'), options);
+            serviceDistChart.render();
+        }
+
+        function renderHeatmapChart() {
+            const options = {
+                chart: {
+                    type: 'heatmap',
+                    height: 320,
+                    toolbar: { show: false },
+                    fontFamily: 'Inter, sans-serif'
+                },
+                series: [
+                    { name: '월', data: generateHeatmapData(0) },
+                    { name: '화', data: generateHeatmapData(1) },
+                    { name: '수', data: generateHeatmapData(2) },
+                    { name: '목', data: generateHeatmapData(3) },
+                    { name: '금', data: generateHeatmapData(4) },
+                    { name: '토', data: generateHeatmapData(5) },
+                    { name: '일', data: generateHeatmapData(6) }
+                ],
+                xaxis: {
+                    categories: Array.from({length: 24}, (_, i) => i + '시'),
+                    labels: { style: { colors: '#94a3b8', fontSize: '11px' } }
+                },
+                yaxis: { labels: { style: { colors: '#94a3b8' } } },
+                colors: ['#334155', '#1e40af', '#3b82f6', '#60a5fa', '#93c5fd'],
+                tooltip: { theme: 'dark' }
+            };
+
+            if (heatmapChart) heatmapChart.destroy();
+            heatmapChart = new ApexCharts(document.getElementById('heatmapChart'), options);
+            heatmapChart.render();
+        }
+
+        function generateHeatmapData(day) {
+            return Array.from({length: 24}, (_, i) => ({
+                x: i + '시',
+                y: Math.floor(Math.random() * 100) + 20
+            }));
+        }
+
+        function renderScatterChart() {
+            const options = {
+                chart: {
+                    type: 'scatter',
+                    height: 320,
+                    toolbar: { show: true },
+                    fontFamily: 'Inter, sans-serif'
+                },
+                series: [
+                    {
+                        name: '고객 군집',
+                        data: [
+                            {x: 150000, y: 1800000}, {x: 180000, y: 2200000}, {x: 200000, y: 2500000},
+                            {x: 220000, y: 2800000}, {x: 250000, y: 3100000}, {x: 280000, y: 3400000},
+                            {x: 300000, y: 3500000}, {x: 320000, y: 3800000}, {x: 350000, y: 4200000},
+                            {x: 380000, y: 4500000}, {x: 400000, y: 4800000}
+                        ]
+                    }
+                ],
+                xaxis: {
+                    type: 'numeric',
+                    title: { text: 'CAC (₩)', style: { color: '#94a3b8' } },
+                    labels: { style: { colors: '#94a3b8' }, formatter: (v) => '₩' + v.toLocaleString() }
+                },
+                yaxis: {
+                    title: { text: 'LTV (₩)', style: { color: '#94a3b8' } },
+                    labels: { style: { colors: '#94a3b8' }, formatter: (v) => '₩' + v.toLocaleString() }
+                },
+                colors: ['#4f46e5'],
+                tooltip: {
+                    theme: 'dark',
+                    shared: false,
+                    custom: ({ series, seriesIndex, dataPointIndex, w }) => {
+                        const x = w.config.series[seriesIndex].data[dataPointIndex].x;
+                        const y = w.config.series[seriesIndex].data[dataPointIndex].y;
+                        return `<div class="px-3 py-2 bg-slate-900 border border-slate-700 rounded"><span class="text-xs text-slate-300">CAC: ₩${x.toLocaleString()}<br/>LTV: ₩${y.toLocaleString()}</span></div>`;
+                    }
+                },
+                grid: { borderColor: '#334155' }
+            };
+
+            if (scatterChart) scatterChart.destroy();
+            scatterChart = new ApexCharts(document.getElementById('scatterChart'), options);
+            scatterChart.render();
+        }
+
+        function renderFunnelChart() {
+            const funnel = [
+                { stage: 'Website Visit', count: 12000, pct: 100 },
+                { stage: 'Sign Up', count: 8400, pct: 70 },
+                { stage: 'Service Activation', count: 5100, pct: 60 },
+                { stage: 'Payment', count: 3200, pct: 62 },
+                { stage: 'Active User (DAU)', count: 2560, pct: 80 }
+            ];
+
+            const container = document.getElementById('funnelChart');
+            container.innerHTML = funnel.map((item, idx) => `
+                <div class="space-y-2">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-sm font-medium text-slate-300">${idx + 1}. ${item.stage}</span>
+                        <span class="text-sm text-slate-400">${item.count.toLocaleString()} (${item.pct}%)</span>
+                    </div>
+                    <div class="w-full h-6 bg-slate-700 rounded-lg overflow-hidden">
+                        <div class="h-full bg-gradient-to-r from-indigo-500 to-indigo-400 transition" style="width: ${item.pct}%;"></div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function applyFilters() {
+            const dateRange = document.getElementById('dateRange').value;
+            const services = Array.from(document.getElementById('serviceFilter').selectedOptions).map(opt => opt.value);
+            const region = document.getElementById('regionFilter').value;
+            const segment = document.getElementById('segmentFilter').value;
+
+            console.log('Filters applied:', { dateRange, services, region, segment });
+
+            // Reload charts with new filters
+            loadAnalyticsData();
+        }
+
+        function toggleSettings() {
+            const settings = document.getElementById('scheduleSettings');
+            settings.classList.toggle('hidden');
+        }
+
+        function saveScheduleSettings() {
+            const email = document.getElementById('reportEmail').value;
+            if (email) {
+                showSuccess('리포트 일정이 설정되었습니다: ' + email);
+            }
+        }
+
+        async function exportPDF() {
+            try {
+                const element = document.querySelector('main');
+                const canvas = await html2canvas(element, {
+                    backgroundColor: '#0f172a',
+                    scale: 2
+                });
+                const img = canvas.toDataURL('image/png');
+                const pdf = new jsPDF({
+                    orientation: 'landscape',
+                    unit: 'mm',
+                    format: 'a4'
+                });
+
+                const pdfWidth = pdf.internal.pageSize.getWidth();
+                const pdfHeight = pdf.internal.pageSize.getHeight();
+                const imgWidth = pdfWidth - 20;
+                const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+                pdf.addImage(img, 'PNG', 10, 10, imgWidth, imgHeight);
+                pdf.save(`analytics-report-${new Date().toISOString().split('T')[0]}.pdf`);
+                showSuccess('PDF 리포트가 다운로드되었습니다');
+            } catch (error) {
+                showError('PDF 생성 중 오류 발생');
+            }
+        }
+
+        async function exportCSV() {
+            try {
+                const data = [
+                    ['분석 리포트', new Date().toLocaleString()],
+                    [],
+                    ['서비스', '사용자', '수익', '전환율', 'LTV'],
+                    ['SNS Auto', '3,200', '₩156,800', '4.2%', '₩2,450,000'],
+                    ['Review', '2,100', '₩209,000', '3.8%', '₩2,100,000'],
+                    ['CooCook', '1,800', '₩70,200', '2.5%', '₩1,800,000'],
+                    ['WebApp Builder', '950', '₩5,605,000', '5.1%', '₩3,200,000'],
+                    ['AI Automation', '850', '₩75,650', '3.2%', '₩2,300,000']
+                ];
+
+                const csv = data.map(row => row.join(',')).join('\n');
+                const blob = new Blob([csv], { type: 'text/csv' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `analytics-export-${new Date().toISOString().split('T')[0]}.csv`;
+                a.click();
+
+                showSuccess('CSV 파일이 다운로드되었습니다');
+            } catch (error) {
+                showError('CSV 생성 중 오류 발생');
+            }
+        }
+
+        function showSuccess(message) {
+            alert('✅ ' + message);
+        }
+
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+    <script src="../mobile-optimization.js" defer></script>
+</body>
+</html>
+

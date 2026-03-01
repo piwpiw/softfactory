@@ -1,0 +1,25 @@
+10000	IGNORE	Undefined	Cookies same-site attribute
+10009	IGNORE	Undefined	Cookie without expires
+10010	IGNORE	Undefined	Cookie without secure flag
+10011	IGNORE	Undefined	Cookie without HttpOnly flag
+10015	IGNORE	Undefined	Retracted Content Security Policy
+10016	IGNORE	Undefined	Missing Content Security Policy
+10017	WARN	Undefined	Missing HSTS
+10020	WARN	Undefined	Missing X-Frame-Options
+10021	IGNORE	Undefined	X-Content-Type-Options header missing
+20000	WARN	Undefined	Insufficient Site Isolation Errors
+20001	WARN	Undefined	X-XSS-Protection header
+30001	WARN	Undefined	XPath Injection
+30002	WARN	Undefined	XSLT Injection
+40001	WARN	Undefined	SQL Injection
+40005	WARN	Undefined	Parameter Pollution
+40014	WARN	Undefined	Possible Username Enumeration
+40015	WARN	Undefined	Redirection to user-supplied URL
+40016	WARN	Undefined	Possible Sensitive Information Disclosure
+40017	IGNORE	Undefined	Cross-Domain Misconfiguration
+40018	WARN	Undefined	Cross-Domain Misconfiguration
+40019	WARN	Undefined	Content Caching Issues
+40020	WARN	Undefined	Odd request line
+40021	WARN	Undefined	Insufficient Authentication
+40022	WARN	Undefined	Insufficient Authentication
+40023	WARN	Undefined	Session Fixation

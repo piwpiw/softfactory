@@ -1,0 +1,205 @@
+version: '3.8'
+
+services:
+  # ========== Flask API Backend ==========
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: softfactory-api
+    ports:
+      - "8000:8000"
+    environment:
+      - FLASK_APP=backend.app
+      - FLASK_ENV=development
+      - DATABASE_URL=postgresql://softfactory:password123@postgres:5432/softfactory_dev
+      - REDIS_URL=redis://redis:6379/0
+      - ELASTICSEARCH_HOST=elasticsearch:9200
+      - JWT_SECRET=dev-secret-key-change-in-prod
+      - ENCRYPTION_KEY=dev-encryption-key-change-in-prod
+      - DEBUG=true
+      - TESTING=true
+    volumes:
+      - .:/app
+      - /app/__pycache__
+    depends_on:
+      - postgres
+      - redis
+      - elasticsearch
+    networks:
+      - softfactory-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    command: python run.py
+
+  # ========== PostgreSQL Database ==========
+  postgres:
+    image: postgres:15-alpine
+    container_name: softfactory-postgres
+    environment:
+      POSTGRES_USER: softfactory
+      POSTGRES_PASSWORD: password123
+      POSTGRES_DB: softfactory_dev
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - softfactory-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U softfactory"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ========== Redis Cache ==========
+  redis:
+    image: redis:7-alpine
+    container_name: softfactory-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - softfactory-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    command: redis-server --appendonly yes
+
+  # ========== Elasticsearch Search Engine ==========
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.10.2
+    container_name: softfactory-elasticsearch
+    environment:
+      - discovery.type=single-node
+      - ES_JAVA_OPTS=-Xms256m -Xmx256m
+      - xpack.security.enabled=false
+    ports:
+      - "9200:9200"
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+    networks:
+      - softfactory-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9200/_cluster/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+  # ========== pgAdmin (DB Management UI) ==========
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: softfactory-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@softfactory.local
+      PGADMIN_DEFAULT_PASSWORD: admin123
+    ports:
+      - "5050:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    networks:
+      - softfactory-network
+    depends_on:
+      - postgres
+
+  # ========== Redis Commander (Cache UI) ==========
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: softfactory-redis-commander
+    environment:
+      REDIS_HOSTS: local:redis:6379
+    ports:
+      - "8081:8081"
+    networks:
+      - softfactory-network
+    depends_on:
+      - redis
+
+  # ========== Prometheus Metrics Collection ==========
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: softfactory-prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    ports:
+      - "9090:9090"
+    networks:
+      - softfactory-network
+    depends_on:
+      - api
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:9090/-/healthy"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  # ========== Alertmanager Alert Routing ==========
+  alertmanager:
+    image: prom/alertmanager:latest
+    container_name: softfactory-alertmanager
+    volumes:
+      - ./monitoring/alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
+      - alertmanager_data:/alertmanager
+    ports:
+      - "9093:9093"
+    networks:
+      - softfactory-network
+    command:
+      - '--config.file=/etc/alertmanager/alertmanager.yml'
+      - '--storage.path=/alertmanager'
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:9093/-/healthy"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  # ========== Grafana Visualization Dashboard ==========
+  grafana:
+    image: grafana/grafana:latest
+    container_name: softfactory-grafana
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-simple-json-datasource
+      - GF_SERVER_ROOT_URL=http://localhost:3000
+    volumes:
+      - grafana_data:/var/lib/grafana
+    ports:
+      - "3000:3000"
+    networks:
+      - softfactory-network
+    depends_on:
+      - prometheus
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+volumes:
+  postgres_data:
+  redis_data:
+  elasticsearch_data:
+  pgadmin_data:
+  prometheus_data:
+  alertmanager_data:
+  grafana_data:
+
+networks:
+  softfactory-network:
+    driver: bridge

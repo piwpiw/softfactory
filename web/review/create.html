@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#020617">
+    <title>Campaign Forge — ReviewEverything Platinum</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <script src="../platform/api.js"></script>
+    <style>
+        :root {
+            --primary-amber: #f59e0b;
+            --primary-dark: #020617;
+            --glass-bg: rgba(15, 23, 42, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: #020617;
+            color: #f8fafc;
+        }
+
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+        }
+
+        .step-dot.active {
+            background: #f59e0b;
+            box-shadow: 0 0 15px rgba(245, 158, 11, 0.5);
+        }
+
+        .scroll-hide::-webkit-scrollbar {
+            display: none;
+        }
+    </style>
+</head>
+
+<body class="overflow-hidden bg-slate-950">
+    <div class="flex h-screen overflow-hidden">
+        <!-- Platinum Sidebar (Nav back only) -->
+        <aside class="w-72 glass-panel border-r border-slate-800/50 flex flex-col z-50">
+            <div class="p-8 border-b border-slate-800/50">
+                <a href="index.html" class="flex items-center gap-4 group">
+                    <div
+                        class="w-10 h-10 rounded-xl bg-slate-800 flex items-center justify-center group-hover:bg-amber-500 group-hover:text-black transition-all">
+                        ←</div>
+                    <span class="text-sm font-bold text-slate-400 group-hover:text-white">BACK TO HUB</span>
+                </a>
+            </div>
+            <div class="p-10 space-y-12">
+                <div class="space-y-6">
+                    <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Forge Status</p>
+                    <div class="space-y-4">
+                        <div class="flex items-center gap-4">
+                            <div class="w-2.5 h-2.5 rounded-full step-dot active"></div>
+                            <span class="text-xs font-black text-white">Foundation</span>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <div class="w-2.5 h-2.5 rounded-full bg-slate-800"></div>
+                            <span class="text-xs font-bold text-slate-500">Capital & Rewards</span>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <div class="w-2.5 h-2.5 rounded-full bg-slate-800"></div>
+                            <span class="text-xs font-bold text-slate-500">Logic & Constraints</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <div class="flex-1 flex flex-col overflow-hidden relative">
+            <header class="h-24 px-10 flex items-center justify-between shrink-0 z-40 bg-slate-950/50 backdrop-blur-md">
+                <div>
+                    <h2 class="text-3xl font-black text-white tracking-tight">Campaign Forge</h2>
+                    <p class="text-xs text-slate-400 mt-1 font-medium">Create and deploy high-conversion viral loops</p>
+                </div>
+            </header>
+
+            <main class="flex-1 overflow-y-auto p-12 scroll-hide">
+                <div class="max-w-3xl mx-auto space-y-10">
+                    <div class="glass-panel rounded-[2.5rem] p-12 border-slate-800/50 bg-slate-900/40">
+                        <h3 class="text-2xl font-black text-white mb-10">Primary Protocol</h3>
+                        <div class="space-y-8">
+                            <div>
+                                <label
+                                    class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3 block">Campaign
+                                    Title</label>
+                                <input type="text" placeholder="e.g. Platinum Facial Serum Launch"
+                                    class="w-full bg-slate-950 border border-slate-800 rounded-2xl px-6 py-5 text-white focus:border-amber-500 transition-all text-sm">
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-8">
+                                <div>
+                                    <label
+                                        class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3 block">Product
+                                        Category</label>
+                                    <select
+                                        class="w-full bg-slate-950 border border-slate-800 rounded-2xl px-6 py-5 text-white focus:border-amber-500 transition-all text-sm appearance-none cursor-pointer">
+                                        <option>💄 Beauty / Fashion</option>
+                                        <option>🍔 Food / Lifestyle</option>
+                                        <option>⌚ IT / Technology</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label
+                                        class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3 block">Media
+                                        Channel</label>
+                                    <select
+                                        class="w-full bg-slate-950 border border-slate-800 rounded-2xl px-6 py-5 text-white focus:border-amber-500 transition-all text-sm appearance-none cursor-pointer">
+                                        <option>Naver Blog Review</option>
+                                        <option>Instagram Sponsored</option>
+                                        <option>YouTube Intensive</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label
+                                    class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3 block">Mission
+                                    Statement (Description)</label>
+                                <textarea placeholder="Outline the requirements for this node..."
+                                    class="w-full h-40 bg-slate-950 border border-slate-800 rounded-[2rem] px-8 py-6 text-white focus:border-amber-500 transition-all text-sm resize-none"></textarea>
+                            </div>
+
+                            <div class="pt-6 flex gap-6">
+                                <button
+                                    class="flex-1 py-5 glass-panel text-slate-500 font-black rounded-2xl hover:text-white transition-all">SAVE
+                                    DRAFT</button>
+                                <button
+                                    class="flex-[2] py-5 bg-amber-500 text-black font-black rounded-2xl shadow-2xl shadow-amber-900/20 active:scale-95 transition-all">NEXT
+                                    PROTOCOL →</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- AI Suggestion Bubble -->
+                    <div
+                        class="flex items-start gap-6 p-10 glass-panel rounded-[2rem] border-amber-500/20 bg-amber-500/5">
+                        <div
+                            class="w-12 h-12 rounded-2xl bg-amber-500 flex items-center justify-center text-2xl text-black shadow-xl shrink-0">
+                            💡</div>
+                        <div>
+                            <h4 class="text-sm font-black text-amber-500 uppercase tracking-widest mb-2">Forge Insight
+                            </h4>
+                            <p class="text-xs text-slate-400 leading-relaxed font-medium">Beauty campaigns with a reward
+                                value over ₩45,000 see a 340% increase in application speed. Consider adjusting your
+                                threshold for faster results.</p>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+    <script>requireAuth();</script>
+</body>
+
+</html>

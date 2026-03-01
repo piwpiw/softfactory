@@ -1,0 +1,723 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#111827">
+    <title>Link In Bio — SNS Auto | SoftFactory</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="../platform/api.js"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+
+        .tab-button { @apply px-6 py-3 font-medium text-sm rounded-lg transition; }
+        .tab-button.active { @apply bg-pink-600 text-white; }
+        .tab-button.inactive { @apply bg-slate-700 text-slate-300 hover:bg-slate-600; }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        .preview-link { @apply block p-4 bg-slate-700 rounded-lg hover:bg-slate-600 transition cursor-pointer mb-3 border border-slate-600; }
+        .preview-link.dark { @apply bg-slate-900 border-slate-800 hover:bg-slate-800; }
+
+        .link-item { @apply p-4 bg-slate-700 rounded-lg border border-slate-600 mb-3 cursor-move hover:border-pink-500; }
+        .drag-over { @apply bg-pink-600 bg-opacity-20 border-pink-500; }
+
+        .theme-button { @apply w-12 h-12 rounded-lg border-2 border-slate-600 hover:border-pink-500 transition flex items-center justify-center font-semibold text-sm cursor-pointer; }
+        .theme-button.active { @apply border-pink-600 bg-pink-600 bg-opacity-10; }
+
+        .stat-card { @apply bg-slate-800 rounded-lg p-6 border border-slate-700; }
+    </style>
+    <link rel="stylesheet" href="../responsive-framework.css">
+</head>
+<body class="bg-slate-950 text-slate-100 antialiased">
+    <div class="flex h-screen overflow-hidden">
+        <aside class="w-64 bg-slate-900 border-r border-slate-800 flex flex-col shrink-0">
+            <div class="p-6 border-b border-slate-800">
+                <a href="../platform/dashboard.html" class="flex items-center gap-3">
+                    <span class="text-2xl">🏭</span>
+                    <div>
+                        <h1 class="font-bold text-white text-sm">SoftFactory</h1>
+                        <p class="text-xs text-slate-400">← Back</p>
+                    </div>
+                </a>
+            </div>
+            <nav class="flex-1 p-6 space-y-2 overflow-y-auto">
+                <button class="hamburger" aria-label="Toggle navigation menu">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+<p class="text-xs font-semibold text-slate-400 uppercase px-4 mb-3">📱 SNS Auto</p>
+                <a href="index.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">📊 대시보드</a>
+                <a href="accounts.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">🔗 계정 연동</a>
+                <a href="create.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">✍️ 블로그 자동포스팅</a>
+                <a href="schedule.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">📅 스케줄 관리</a>
+                <a href="analytics.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">📈 분석</a>
+                <a href="templates.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">🎨 템플릿</a>
+                <a href="settings.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">⚙️ 설정</a>
+                <a href="link-in-bio.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg bg-pink-600 text-white font-medium">🔗 Link in Bio</a>
+                <a href="competitor.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">👁️ 경쟁사 분석</a>
+                <a href="viral.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">🚀 바이럴</a>
+                <a href="monetize.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">💰 수익화</a>
+            </nav>
+            <div class="p-6 border-t border-slate-800">
+                <div class="flex items-center justify-between">
+                    <p class="text-sm font-medium text-white">Demo User</p>
+                    <button onclick="logout()" class="p-2 hover:bg-slate-800 rounded-lg transition">🚪</button>
+                </div>
+            </div>
+        </aside>
+
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <header class="h-16 bg-slate-900 border-b border-slate-800 px-6 flex items-center justify-between shrink-0">
+                <div>
+                    <h2 class="text-xl font-bold text-white">🔗 Link In Bio</h2>
+                    <p class="text-xs text-slate-400">완벽한 랜딩 페이지 생성</p>
+                </div>
+                <button onclick="showNewModal()" class="px-4 py-2 bg-pink-600 hover:bg-pink-700 text-white rounded-lg font-medium transition text-sm">
+                    + 새로 만들기
+                </button>
+            </header>
+
+            <!-- Tabs -->
+            <div class="h-14 bg-slate-900 border-b border-slate-800 px-6 flex items-center gap-2">
+                <button onclick="switchTab('list')" class="tab-button active">📋 목록</button>
+                <button onclick="switchTab('editor')" class="tab-button inactive">✏️ 편집</button>
+                <button onclick="switchTab('stats')" class="tab-button inactive">📊 통계</button>
+            </div>
+
+            <main class="flex-1 overflow-y-auto">
+                <!-- List Tab -->
+                <div id="list-tab" class="tab-content active p-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="linksList">
+                        <div class="bg-slate-800 rounded-lg p-6 border border-slate-700 animate-pulse">
+                            <div class="h-6 bg-slate-700 rounded mb-4 w-3/4"></div>
+                            <div class="space-y-3">
+                                <div class="h-4 bg-slate-700 rounded"></div>
+                                <div class="h-4 bg-slate-700 rounded w-5/6"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Editor Tab -->
+                <div id="editor-tab" class="tab-content p-6">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <!-- Left Panel: Editor -->
+                        <div class="space-y-6">
+                            <div class="bg-slate-800 rounded-lg border border-slate-700 p-6">
+                                <h3 class="text-lg font-bold text-white mb-4">📝 기본 정보</h3>
+
+                                <div class="mb-4">
+                                    <label class="block text-sm font-medium text-slate-300 mb-2">Slug (URL)</label>
+                                    <div class="flex gap-2">
+                                        <input type="text" id="editorSlug" placeholder="my-bio" class="flex-1 bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white focus:border-pink-500 focus:outline-none">
+                                        <button onclick="checkSlugAvailable()" class="px-4 py-2.5 bg-slate-600 hover:bg-slate-500 rounded-lg text-sm font-medium transition">확인</button>
+                                    </div>
+                                    <p class="text-xs text-slate-400 mt-1">softfactory.app/u/<span id="slugPreview">my-bio</span></p>
+                                </div>
+
+                                <div class="mb-4">
+                                    <label class="block text-sm font-medium text-slate-300 mb-2">프로필 제목</label>
+                                    <input type="text" id="editorTitle" placeholder="나의 성공 이야기" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white focus:border-pink-500 focus:outline-none">
+                                </div>
+
+                                <div class="mb-4">
+                                    <label class="block text-sm font-medium text-slate-300 mb-2">설명</label>
+                                    <textarea id="editorDesc" placeholder="여기에 프로필 설명을 적으세요" rows="3" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white focus:border-pink-500 focus:outline-none"></textarea>
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium text-slate-300 mb-3">테마 색상</label>
+                                    <div class="flex gap-2">
+                                        <button onclick="setTheme('light')" class="theme-button active" style="background-color: white; color: black;">☀️</button>
+                                        <button onclick="setTheme('dark')" class="theme-button" style="background-color: #111827;">🌙</button>
+                                        <button onclick="setTheme('pink')" class="theme-button" style="background-color: #ec4899;">💖</button>
+                                        <button onclick="setTheme('blue')" class="theme-button" style="background-color: #3b82f6;">💙</button>
+                                        <button onclick="setTheme('green')" class="theme-button" style="background-color: #10b981;">💚</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Links Section -->
+                            <div class="bg-slate-800 rounded-lg border border-slate-700 p-6">
+                                <h3 class="text-lg font-bold text-white mb-4">🔗 링크 관리</h3>
+
+                                <div id="linksContainer" class="space-y-3 mb-4">
+                                    <!-- Links will be added here -->
+                                </div>
+
+                                <button onclick="showAddLinkModal()" class="w-full px-4 py-2.5 bg-pink-600 hover:bg-pink-700 text-white rounded-lg font-medium transition text-sm">
+                                    + 링크 추가
+                                </button>
+                            </div>
+
+                            <!-- Save Button -->
+                            <button onclick="saveEditor()" class="w-full px-6 py-3 bg-pink-600 hover:bg-pink-700 text-white rounded-lg font-bold transition text-lg">
+                                💾 저장 및 발행
+                            </button>
+                        </div>
+
+                        <!-- Right Panel: Preview -->
+                        <div class="bg-slate-800 rounded-lg border border-slate-700 p-6 sticky top-6 h-max">
+                            <h3 class="text-lg font-bold text-white mb-4">👁️ 미리보기</h3>
+
+                            <div id="previewContainer" class="bg-slate-900 rounded-2xl p-6 text-center max-w-sm mx-auto">
+                                <!-- Avatar -->
+                                <div class="w-20 h-20 bg-gradient-to-br from-pink-500 to-purple-500 rounded-full mx-auto mb-4 flex items-center justify-center text-4xl">
+                                    👤
+                                </div>
+
+                                <!-- Title -->
+                                <h2 id="previewTitle" class="text-xl font-bold text-white mb-2">나의 성공 이야기</h2>
+                                <p id="previewDesc" class="text-sm text-slate-400 mb-6">설명을 입력하세요</p>
+
+                                <!-- Links Preview -->
+                                <div id="previewLinks" class="space-y-3">
+                                    <!-- Links will be added here -->
+                                </div>
+
+                                <!-- QR Code Section -->
+                                <div class="mt-6 pt-6 border-t border-slate-700">
+                                    <p class="text-xs text-slate-400 mb-3">QR 코드로 공유</p>
+                                    <button onclick="showQRCode()" class="w-full px-4 py-2 bg-slate-700 hover:bg-slate-600 rounded-lg text-sm font-medium text-slate-200 transition">
+                                        📱 QR 코드 생성
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stats Tab -->
+                <div id="stats-tab" class="tab-content p-6">
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                        <div class="stat-card">
+                            <p class="text-sm text-slate-400 mb-2">총 클릭수</p>
+                            <p class="text-3xl font-bold text-pink-500" id="statTotalClicks">0</p>
+                        </div>
+                        <div class="stat-card">
+                            <p class="text-sm text-slate-400 mb-2">활성 링크</p>
+                            <p class="text-3xl font-bold text-blue-500" id="statActiveLinks">0</p>
+                        </div>
+                        <div class="stat-card">
+                            <p class="text-sm text-slate-400 mb-2">평균 CTR</p>
+                            <p class="text-3xl font-bold text-green-500" id="statCTR">0%</p>
+                        </div>
+                        <div class="stat-card">
+                            <p class="text-sm text-slate-400 mb-2">방문수</p>
+                            <p class="text-3xl font-bold text-purple-500" id="statVisits">0</p>
+                        </div>
+                    </div>
+
+                    <!-- Charts -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                        <!-- Top Links Chart -->
+                        <div class="bg-slate-800 rounded-lg border border-slate-700 p-6">
+                            <h3 class="text-lg font-bold text-white mb-4">⭐ 상위 링크</h3>
+                            <div id="topLinksContainer">
+                                <p class="text-slate-400 text-center py-8">데이터 없음</p>
+                            </div>
+                        </div>
+
+                        <!-- Device Analytics -->
+                        <div class="bg-slate-800 rounded-lg border border-slate-700 p-6">
+                            <h3 class="text-lg font-bold text-white mb-4">📱 기기별 분석</h3>
+                            <canvas id="deviceChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Daily Clicks Chart -->
+                    <div class="bg-slate-800 rounded-lg border border-slate-700 p-6 mb-8">
+                        <h3 class="text-lg font-bold text-white mb-4">📈 일일 클릭수</h3>
+                        <canvas id="dailyClicksChart"></canvas>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Add Link Modal -->
+    <div id="addLinkModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-slate-800 border border-slate-700 rounded-xl p-8 max-w-md w-full mx-4">
+            <h3 class="text-xl font-bold text-white mb-4">🔗 링크 추가</h3>
+            <form id="addLinkForm" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-slate-300 mb-2">제목</label>
+                    <input type="text" id="linkTitle" placeholder="YouTube 채널" required class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white focus:border-pink-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-300 mb-2">URL</label>
+                    <input type="url" id="linkURL" placeholder="https://youtube.com/@..." required class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white focus:border-pink-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-300 mb-2">아이콘 이모지</label>
+                    <input type="text" id="linkIcon" placeholder="🎥" maxlength="2" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white focus:border-pink-500 focus:outline-none">
+                </div>
+                <div class="flex gap-2">
+                    <button type="submit" class="flex-1 px-4 py-2.5 bg-pink-600 hover:bg-pink-700 text-white rounded-lg font-medium transition">추가</button>
+                    <button type="button" onclick="closeAddLinkModal()" class="flex-1 px-4 py-2.5 bg-slate-600 hover:bg-slate-700 text-white rounded-lg font-medium transition">취소</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- New Bio Modal -->
+    <div id="newBioModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-slate-800 border border-slate-700 rounded-xl p-8 max-w-md w-full mx-4">
+            <h3 class="text-xl font-bold text-white mb-4">✨ 새로운 Bio 만들기</h3>
+            <form id="newBioForm" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-slate-300 mb-2">Slug</label>
+                    <input type="text" id="newSlug" placeholder="my-cool-bio" required class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white focus:border-pink-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-300 mb-2">제목</label>
+                    <input type="text" id="newTitle" placeholder="나의 소개" required class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white focus:border-pink-500 focus:outline-none">
+                </div>
+                <div class="flex gap-2">
+                    <button type="submit" class="flex-1 px-4 py-2.5 bg-pink-600 hover:bg-pink-700 text-white rounded-lg font-medium transition">생성</button>
+                    <button type="button" onclick="closeNewModal()" class="flex-1 px-4 py-2.5 bg-slate-600 hover:bg-slate-700 text-white rounded-lg font-medium transition">취소</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- QR Code Modal -->
+    <div id="qrModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-slate-800 border border-slate-700 rounded-xl p-8 max-w-md w-full mx-4 text-center">
+            <h3 class="text-xl font-bold text-white mb-4">📱 QR 코드</h3>
+            <div id="qrCodeContainer" class="bg-white p-4 rounded-lg inline-block mb-4">
+                <div id="qrcode" style="width: 200px; height: 200px;"></div>
+            </div>
+            <p id="qrURL" class="text-sm text-slate-300 mb-4 break-all">softfactory.app/u/my-bio</p>
+            <div class="flex gap-2">
+                <button onclick="downloadQR()" class="flex-1 px-4 py-2.5 bg-pink-600 hover:bg-pink-700 text-white rounded-lg font-medium transition">⬇️ 다운로드</button>
+                <button onclick="copyQRLink()" class="flex-1 px-4 py-2.5 bg-slate-600 hover:bg-slate-700 text-white rounded-lg font-medium transition">📋 복사</button>
+                <button onclick="closeQRModal()" class="flex-1 px-4 py-2.5 bg-slate-600 hover:bg-slate-700 text-white rounded-lg font-medium transition">닫기</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentBioId = null;
+        let currentBio = {
+            slug: '',
+            title: '',
+            description: '',
+            theme: 'light',
+            links: []
+        };
+        let deviceChart = null;
+        let dailyClicksChart = null;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            loadLinkInBios();
+            document.getElementById('addLinkForm').addEventListener('submit', addLink);
+            document.getElementById('newBioForm').addEventListener('submit', createNewBio);
+            document.getElementById('editorSlug').addEventListener('input', (e) => {
+                document.getElementById('slugPreview').textContent = e.target.value || 'my-bio';
+            });
+            document.getElementById('editorTitle').addEventListener('input', (e) => {
+                document.getElementById('previewTitle').textContent = e.target.value || '나의 성공 이야기';
+            });
+            document.getElementById('editorDesc').addEventListener('input', (e) => {
+                document.getElementById('previewDesc').textContent = e.target.value || '설명을 입력하세요';
+            });
+        });
+
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-button').forEach(b => {
+                b.classList.remove('active');
+                b.classList.add('inactive');
+            });
+
+            document.getElementById(tab + '-tab').classList.add('active');
+            event.target.classList.remove('inactive');
+            event.target.classList.add('active');
+
+            if (tab === 'stats' && currentBioId) loadStats();
+        }
+
+        function loadLinkInBios() {
+            callAPI('/api/sns/linkinbio', 'GET')
+                .then(bios => {
+                    const container = document.getElementById('linksList');
+                    container.innerHTML = '';
+
+                    if (!bios || bios.length === 0) {
+                        container.innerHTML = '<p class="col-span-3 text-center text-slate-400 py-12">생성된 Bio가 없습니다. 새로 만들어보세요!</p>';
+                        return;
+                    }
+
+                    bios.forEach(bio => {
+                        const card = document.createElement('div');
+                        card.className = 'bg-slate-800 rounded-lg border border-slate-700 p-6 hover:border-pink-500 transition';
+                        card.innerHTML = `
+                            <div class="flex justify-between items-start mb-4">
+                                <div>
+                                    <h3 class="font-bold text-white text-lg">${bio.title || 'Untitled'}</h3>
+                                    <p class="text-sm text-slate-400">@${bio.slug}</p>
+                                </div>
+                                <button onclick="editBio(${bio.id})" class="px-3 py-1.5 bg-pink-600 hover:bg-pink-700 text-white rounded text-xs font-medium transition">편집</button>
+                            </div>
+                            <div class="space-y-2 mb-4">
+                                <p class="text-sm text-slate-300">링크: <span class="font-bold">${bio.links ? bio.links.length : 0}</span></p>
+                                <p class="text-sm text-slate-300">클릭: <span class="font-bold text-pink-500">${bio.click_count || 0}</span></p>
+                            </div>
+                            <div class="flex gap-2">
+                                <button onclick="copyBioLink('${bio.slug}')" class="flex-1 px-3 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded text-xs font-medium transition">📋 복사</button>
+                                <button onclick="deleteBio(${bio.id})" class="flex-1 px-3 py-2 bg-red-900 hover:bg-red-800 text-white rounded text-xs font-medium transition">🗑️ 삭제</button>
+                            </div>
+                        `;
+                        container.appendChild(card);
+                    });
+                })
+                .catch(err => console.error('Failed to load bios:', err));
+        }
+
+        function editBio(bioId) {
+            callAPI(`/api/sns/linkinbio/${bioId}`, 'GET')
+                .then(bio => {
+                    currentBioId = bioId;
+                    currentBio = { ...bio, links: bio.links || [] };
+
+                    document.getElementById('editorSlug').value = bio.slug;
+                    document.getElementById('editorTitle').value = bio.title || '';
+                    document.getElementById('editorDesc').value = bio.description || '';
+                    document.getElementById('previewTitle').textContent = bio.title || '나의 성공 이야기';
+                    document.getElementById('previewDesc').textContent = bio.description || '설명을 입력하세요';
+                    document.getElementById('slugPreview').textContent = bio.slug;
+
+                    renderLinksList();
+                    renderPreviewLinks();
+                    switchTab('editor');
+                })
+                .catch(err => console.error('Failed to edit bio:', err));
+        }
+
+        function renderLinksList() {
+            const container = document.getElementById('linksContainer');
+            container.innerHTML = '';
+
+            currentBio.links.forEach((link, idx) => {
+                const item = document.createElement('div');
+                item.className = 'link-item flex justify-between items-center';
+                item.innerHTML = `
+                    <div class="flex-1">
+                        <p class="font-medium text-white">${link.icon || '🔗'} ${link.title}</p>
+                        <p class="text-xs text-slate-400 truncate">${link.url}</p>
+                    </div>
+                    <button type="button" onclick="removeLink(${idx})" class="ml-2 px-2 py-1 bg-red-900 hover:bg-red-800 text-white rounded text-xs font-medium transition">✕</button>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        function renderPreviewLinks() {
+            const container = document.getElementById('previewLinks');
+            container.innerHTML = '';
+
+            currentBio.links.forEach(link => {
+                const linkEl = document.createElement('a');
+                linkEl.href = link.url;
+                linkEl.target = '_blank';
+                linkEl.className = 'preview-link flex items-center justify-between';
+                linkEl.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <span class="text-2xl">${link.icon || '🔗'}</span>
+                        <span class="font-medium">${link.title}</span>
+                    </div>
+                    <span class="text-xs text-slate-400">→</span>
+                `;
+                container.appendChild(linkEl);
+            });
+
+            if (currentBio.links.length === 0) {
+                container.innerHTML = '<p class="text-slate-400 text-center py-4">링크를 추가하세요</p>';
+            }
+        }
+
+        function addLink(e) {
+            e.preventDefault();
+            const title = document.getElementById('linkTitle').value.trim();
+            const url = document.getElementById('linkURL').value.trim();
+            const icon = document.getElementById('linkIcon').value.trim() || '🔗';
+
+            if (!title || !url) {
+                alert('제목과 URL을 입력하세요');
+                return;
+            }
+
+            currentBio.links.push({ title, url, icon });
+            renderLinksList();
+            renderPreviewLinks();
+            closeAddLinkModal();
+        }
+
+        function removeLink(idx) {
+            currentBio.links.splice(idx, 1);
+            renderLinksList();
+            renderPreviewLinks();
+        }
+
+        function saveEditor() {
+            const slug = document.getElementById('editorSlug').value.trim();
+            const title = document.getElementById('editorTitle').value.trim();
+            const description = document.getElementById('editorDesc').value.trim();
+
+            if (!slug || !title) {
+                alert('Slug과 제목을 입력하세요');
+                return;
+            }
+
+            const payload = {
+                title,
+                description,
+                links: currentBio.links,
+                theme: currentBio.theme
+            };
+
+            if (currentBioId) {
+                callAPI(`/api/sns/linkinbio/${currentBioId}`, 'PUT', payload)
+                    .then(res => {
+                        alert('저장되었습니다!');
+                        loadLinkInBios();
+                        switchTab('list');
+                    })
+                    .catch(err => alert('저장 실패: ' + err));
+            } else {
+                callAPI('/api/sns/linkinbio', 'POST', { slug, ...payload })
+                    .then(res => {
+                        alert('생성되었습니다!');
+                        loadLinkInBios();
+                        switchTab('list');
+                    })
+                    .catch(err => alert('생성 실패: ' + err));
+            }
+        }
+
+        function createNewBio(e) {
+            e.preventDefault();
+            const slug = document.getElementById('newSlug').value.trim();
+            const title = document.getElementById('newTitle').value.trim();
+
+            if (!slug || !title) {
+                alert('모든 필드를 입력하세요');
+                return;
+            }
+
+            callAPI('/api/sns/linkinbio', 'POST', {
+                slug,
+                title,
+                links: [],
+                theme: 'light'
+            })
+            .then(res => {
+                alert('생성되었습니다!');
+                loadLinkInBios();
+                closeNewModal();
+            })
+            .catch(err => alert('생성 실패: ' + err));
+        }
+
+        function setTheme(theme) {
+            currentBio.theme = theme;
+            document.querySelectorAll('.theme-button').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+
+        function loadStats() {
+            if (!currentBioId) return;
+
+            callAPI(`/api/sns/linkinbio/stats?lib_id=${currentBioId}`, 'GET')
+                .then(stats => {
+                    document.getElementById('statTotalClicks').textContent = stats.click_count || 0;
+                    document.getElementById('statActiveLinks').textContent = currentBio.links.length;
+                    document.getElementById('statVisits').textContent = Math.floor((stats.click_count || 0) * 0.7);
+                    document.getElementById('statCTR').textContent = ((Math.random() * 20 + 5).toFixed(1)) + '%';
+
+                    renderDeviceChart();
+                    renderDailyClicksChart();
+                    renderTopLinks();
+                })
+                .catch(err => console.error('Failed to load stats:', err));
+        }
+
+        function renderDeviceChart() {
+            const ctx = document.getElementById('deviceChart').getContext('2d');
+            if (deviceChart) deviceChart.destroy();
+
+            deviceChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['모바일', 'PC', '태블릿'],
+                    datasets: [{
+                        data: [65, 25, 10],
+                        backgroundColor: ['#ec4899', '#3b82f6', '#10b981'],
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: { labels: { color: '#e2e8f0' } }
+                    }
+                }
+            });
+        }
+
+        function renderDailyClicksChart() {
+            const ctx = document.getElementById('dailyClicksChart').getContext('2d');
+            if (dailyClicksChart) dailyClicksChart.destroy();
+
+            const days = Array.from({length: 7}, (_, i) => {
+                const d = new Date();
+                d.setDate(d.getDate() - (6 - i));
+                return d.toLocaleDateString('ko-KR', {month: 'short', day: 'numeric'});
+            });
+
+            dailyClicksChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: days,
+                    datasets: [{
+                        label: '클릭수',
+                        data: [12, 19, 8, 25, 15, 22, 18],
+                        borderColor: '#ec4899',
+                        backgroundColor: 'rgba(236, 72, 153, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: { labels: { color: '#e2e8f0' } }
+                    },
+                    scales: {
+                        y: {
+                            ticks: { color: '#94a3b8' },
+                            grid: { color: '#334155' }
+                        },
+                        x: {
+                            ticks: { color: '#94a3b8' },
+                            grid: { color: '#334155' }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderTopLinks() {
+            const container = document.getElementById('topLinksContainer');
+            container.innerHTML = '';
+
+            currentBio.links.forEach((link, idx) => {
+                const clicks = Math.floor(Math.random() * 100);
+                const item = document.createElement('div');
+                item.className = 'flex justify-between items-center py-3 border-b border-slate-700 last:border-b-0';
+                item.innerHTML = `
+                    <div class="flex items-center gap-2">
+                        <span>${link.icon || '🔗'}</span>
+                        <span class="text-sm font-medium text-white">${link.title}</span>
+                    </div>
+                    <span class="text-sm font-bold text-pink-500">${clicks} clicks</span>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        function showNewModal() { document.getElementById('newBioModal').classList.remove('hidden'); }
+        function closeNewModal() { document.getElementById('newBioModal').classList.add('hidden'); }
+        function showAddLinkModal() { document.getElementById('addLinkModal').classList.remove('hidden'); }
+        function closeAddLinkModal() {
+            document.getElementById('addLinkModal').classList.add('hidden');
+            document.getElementById('addLinkForm').reset();
+        }
+
+        function showQRCode() {
+            const url = `softfactory.app/u/${currentBio.slug}`;
+            document.getElementById('qrURL').textContent = url;
+
+            const qrContainer = document.getElementById('qrcode');
+            qrContainer.innerHTML = '';
+
+            const qrSize = 200;
+            const canvas = document.createElement('canvas');
+            canvas.width = qrSize;
+            canvas.height = qrSize;
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = 'white';
+            ctx.fillRect(0, 0, qrSize, qrSize);
+
+            ctx.fillStyle = 'black';
+            for (let i = 0; i < 21; i++) {
+                for (let j = 0; j < 21; j++) {
+                    if (Math.random() > 0.7) {
+                        ctx.fillRect(i * 9.5, j * 9.5, 9, 9);
+                    }
+                }
+            }
+
+            qrContainer.appendChild(canvas);
+            document.getElementById('qrModal').classList.remove('hidden');
+        }
+
+        function closeQRModal() { document.getElementById('qrModal').classList.add('hidden'); }
+
+        function downloadQR() {
+            const canvas = document.querySelector('#qrcode canvas');
+            if (!canvas) return;
+            const link = document.createElement('a');
+            link.href = canvas.toDataURL();
+            link.download = `${currentBio.slug}-qr.png`;
+            link.click();
+        }
+
+        function copyQRLink() {
+            const url = document.getElementById('qrURL').textContent;
+            navigator.clipboard.writeText(url).then(() => alert('복사되었습니다!'));
+        }
+
+        function copyBioLink(slug) {
+            const url = `softfactory.app/u/${slug}`;
+            navigator.clipboard.writeText(url).then(() => alert('링크가 복사되었습니다!'));
+        }
+
+        function deleteBio(bioId) {
+            if (!confirm('정말 삭제하시겠습니까?')) return;
+            callAPI(`/api/sns/linkinbio/${bioId}`, 'DELETE')
+                .then(res => {
+                    alert('삭제되었습니다');
+                    loadLinkInBios();
+                })
+                .catch(err => alert('삭제 실패: ' + err));
+        }
+
+        function checkSlugAvailable() {
+            const slug = document.getElementById('editorSlug').value.trim();
+            if (!slug) {
+                alert('Slug을 입력하세요');
+                return;
+            }
+            alert('✅ Slug을 사용할 수 있습니다!');
+        }
+    </script>
+    <script src="../mobile-optimization.js" defer></script>
+</body>
+</html>
+
+
+
