@@ -4,6 +4,7 @@ import requests
 from bs4 import BeautifulSoup
 import time
 import logging
+import os
 from datetime import datetime
 from typing import List, Dict, Optional
 from abc import ABC, abstractmethod
@@ -14,18 +15,20 @@ logger = logging.getLogger('review.scrapers')
 class BaseScraper(ABC):
     """Abstract base class for all review platform scrapers"""
 
-    def __init__(self, platform_name: str, base_url: str = None):
+    def __init__(self, platform_name: str, base_url: str = None, use_proxy: bool = True, use_captcha_solver: bool = True):
         """
         Initialize the scraper.
 
         Args:
             platform_name: Identifier for the platform (e.g., 'revu', 'reviewplace')
             base_url: Base URL for the platform
+            use_proxy: Enable proxy rotation (default: True)
+            use_captcha_solver: Enable CAPTCHA solving (default: True)
         """
         self.platform = platform_name
         self.base_url = base_url
         self.delay = 2  # Delay between requests in seconds
-        self.max_retries = 3
+        self.max_retries = int(os.getenv('RETRY_MAX_ATTEMPTS', '3'))
         self.initial_retry_delay = 1
 
         # Setup session with proper headers
@@ -34,9 +37,49 @@ class BaseScraper(ABC):
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
         })
 
+        # Initialize proxy manager and CAPTCHA solver
+        self.use_proxy = use_proxy
+        self.use_captcha_solver = use_captcha_solver
+        self.proxy_manager = None
+        self.captcha_solver = None
+        self.captcha_cost_tracker = 0.0
+
+        if self.use_proxy:
+            self._init_proxy_manager()
+
+        if self.use_captcha_solver:
+            self._init_captcha_solver()
+
+    def _init_proxy_manager(self):
+        """Initialize proxy manager for request rotation"""
+        try:
+            from backend.services.proxy_manager import ProxyManager
+            proxy_strategy = os.getenv('PROXY_ROTATION_STRATEGY', 'round-robin')
+            self.proxy_manager = ProxyManager(
+                provider='scraperapi',
+                strategy=proxy_strategy
+            )
+            logger.debug(f"[{self.platform}] Proxy manager initialized with strategy: {proxy_strategy}")
+        except Exception as e:
+            logger.warning(f"[{self.platform}] Failed to initialize proxy manager: {e}")
+            self.proxy_manager = None
+
+    def _init_captcha_solver(self):
+        """Initialize CAPTCHA solver for anti-bot challenges"""
+        try:
+            from backend.services.captcha_solver import CaptchaSolver
+            self.captcha_solver = CaptchaSolver()
+            logger.debug(f"[{self.platform}] CAPTCHA solver initialized")
+        except Exception as e:
+            logger.warning(f"[{self.platform}] Failed to initialize CAPTCHA solver: {e}")
+            self.captcha_solver = None
+
     def fetch_page(self, url: str, params: Dict = None, timeout: int = 10) -> Optional[BeautifulSoup]:
         """
-        Fetch a page with error handling and retry logic.
+        Fetch a page with error handling, proxy rotation, and retry logic.
+
+        Implements exponential backoff for retries and automatic proxy rotation
+        to bypass IP blocking and rate limiting.
 
         Args:
             url: URL to fetch
@@ -47,22 +90,50 @@ class BaseScraper(ABC):
             BeautifulSoup object or None if failed
         """
         for attempt in range(self.max_retries):
+            proxy = None
+            if self.proxy_manager:
+                proxy = self.proxy_manager.get_proxy()
+
             try:
-                resp = self.session.get(url, params=params, timeout=timeout)
+                proxies = None
+                if proxy:
+                    proxies = {'http': proxy, 'https': proxy}
+                    logger.debug(f"[{self.platform}] Using proxy: {proxy[:40]}...")
+
+                resp = self.session.get(
+                    url,
+                    params=params,
+                    timeout=timeout,
+                    proxies=proxies
+                )
                 resp.raise_for_status()
+
+                # Mark proxy as healthy if request succeeded
+                if self.proxy_manager and proxy:
+                    self.proxy_manager.mark_proxy_healthy(proxy)
+
                 return BeautifulSoup(resp.content, 'html.parser')
+
             except requests.exceptions.Timeout:
                 logger.warning(f"[{self.platform}] Timeout fetching {url} (attempt {attempt + 1}/{self.max_retries})")
+                if self.proxy_manager and proxy:
+                    self.proxy_manager.mark_proxy_failed(proxy)
                 if attempt < self.max_retries - 1:
                     wait = self.initial_retry_delay * (2 ** attempt)
                     time.sleep(wait)
+
             except requests.exceptions.ConnectionError:
                 logger.warning(f"[{self.platform}] Connection error fetching {url} (attempt {attempt + 1}/{self.max_retries})")
+                if self.proxy_manager and proxy:
+                    self.proxy_manager.mark_proxy_failed(proxy)
                 if attempt < self.max_retries - 1:
                     wait = self.initial_retry_delay * (2 ** attempt)
                     time.sleep(wait)
+
             except requests.exceptions.RequestException as e:
                 logger.error(f"[{self.platform}] Error fetching {url}: {e}")
+                if self.proxy_manager and proxy:
+                    self.proxy_manager.mark_proxy_failed(proxy)
                 if attempt < self.max_retries - 1:
                     wait = self.initial_retry_delay * (2 ** attempt)
                     time.sleep(wait)

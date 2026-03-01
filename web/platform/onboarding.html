@@ -2,192 +2,622 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#111827">
     <title>시작하기 — SoftFactory</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="api.js"></script>
     <style>
         body { font-family: 'Inter', sans-serif; }
+
+        /* Step transition */
+        .step { display: none; animation: stepIn .35s ease-out; }
+        .step.active { display: block; }
+        @keyframes stepIn {
+            from { opacity: 0; transform: translateX(24px); }
+            to   { opacity: 1; transform: translateX(0); }
+        }
+
+        /* Progress bar */
+        #progress-bar {
+            transition: width .4s cubic-bezier(.4,0,.2,1);
+        }
+
+        /* Service card */
+        .service-card {
+            cursor: pointer;
+            border: 2px solid #334155;
+            transition: border-color .2s, background .2s, transform .15s;
+        }
+        .service-card:hover {
+            border-color: #7c3aed;
+            background: rgba(124,58,237,.08);
+            transform: translateY(-2px);
+        }
+        .service-card.selected {
+            border-color: #7c3aed;
+            background: rgba(124,58,237,.15);
+        }
+        .service-card .check-icon {
+            display: none;
+        }
+        .service-card.selected .check-icon {
+            display: flex;
+        }
+
+        /* Confetti animation */
+        @keyframes confettiFall {
+            0%   { transform: translateY(-20px) rotate(0deg);   opacity: 1; }
+            100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+        }
+        .confetti-piece {
+            position: fixed;
+            width: 8px;
+            height: 8px;
+            border-radius: 2px;
+            pointer-events: none;
+            animation: confettiFall linear forwards;
+            z-index: 9000;
+        }
+
+        /* Completion checkmark */
+        @keyframes checkDraw {
+            from { stroke-dashoffset: 100; }
+            to   { stroke-dashoffset: 0; }
+        }
+        .check-circle { animation: checkDraw .6s ease-out .2s forwards; stroke-dasharray: 100; stroke-dashoffset: 100; }
+
+        /* Profile image hover */
+        #avatar-preview:hover { opacity: .85; cursor: pointer; }
+
+        /* Scrollbar */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #0f172a; }
         ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+
+        @media (max-width: 640px) {
+            .wizard-card { padding: 1.5rem !important; }
+        }
     </style>
 </head>
-<body class="bg-slate-950 text-slate-100 antialiased">
-    <div class="max-w-4xl mx-auto px-6 py-12">
-        <div class="mb-12">
-            <a href="dashboard.html" class="text-indigo-400 hover:text-indigo-300 transition">← 대시보드로 돌아가기</a>
-            <h1 class="text-4xl font-bold text-white mt-4">🚀 SoftFactory 시작하기</h1>
-            <p class="text-slate-400 mt-2">단계별 가이드로 SoftFactory를 최대한 활용하세요</p>
+<body class="bg-slate-950 text-slate-100 antialiased min-h-screen flex items-center justify-center p-4">
+
+    <div class="w-full max-w-lg">
+
+        <!-- Skip button -->
+        <div class="flex justify-end mb-4">
+            <button id="skip-btn" class="text-sm text-slate-500 hover:text-slate-300 transition px-3 py-1.5 rounded-lg hover:bg-slate-800">
+                건너뛰기 &rarr;
+            </button>
         </div>
 
-        <!-- Progress Bar -->
-        <div class="mb-8">
-            <div class="flex gap-2 mb-4">
-                <span class="px-3 py-1 bg-indigo-600 text-white text-xs rounded-full">3/8 완료</span>
+        <!-- Progress bar -->
+        <div class="mb-6">
+            <div class="flex items-center justify-between text-xs text-slate-500 mb-2">
+                <span id="step-label">단계 1 / 5</span>
+                <span id="step-pct">20%</span>
             </div>
-            <div class="bg-slate-700 rounded-full h-2 overflow-hidden">
-                <div class="bg-indigo-600 h-2 rounded-full" style="width: 37.5%;"></div>
+            <div class="bg-slate-800 rounded-full h-1.5 overflow-hidden">
+                <div id="progress-bar" class="bg-violet-600 h-1.5 rounded-full" style="width:20%"></div>
             </div>
         </div>
 
-        <!-- Completed Steps -->
-        <div class="mb-12">
-            <h2 class="text-2xl font-bold text-white mb-6">✅ 완료된 단계</h2>
-            <div class="space-y-3">
-                <div class="flex items-start gap-4 p-4 bg-green-900/20 rounded-lg border border-green-600/30">
-                    <span class="text-2xl">✓</span>
+        <!-- Wizard card -->
+        <div class="bg-slate-900 rounded-2xl border border-slate-800 wizard-card p-8 shadow-xl shadow-black/40">
+
+            <!-- ========================
+                 STEP 1: 환영합니다
+                 ======================== -->
+            <div id="step-1" class="step active">
+                <div class="text-center">
+                    <div class="text-6xl mb-5">SoftFactory</div>
+                    <h1 class="text-2xl font-bold text-white mb-2">환영합니다!</h1>
+                    <p id="welcome-name" class="text-slate-400 mb-6">SoftFactory에 오신 것을 환영합니다.<br>몇 가지 빠른 설정으로 최적의 경험을 시작하세요.</p>
+
+                    <div class="grid grid-cols-3 gap-3 mb-8 text-sm">
+                        <div class="bg-slate-800 rounded-xl p-3 text-center">
+                            <div class="text-2xl mb-1">📱</div>
+                            <p class="text-slate-300 font-medium">SNS 자동화</p>
+                        </div>
+                        <div class="bg-slate-800 rounded-xl p-3 text-center">
+                            <div class="text-2xl mb-1">⭐</div>
+                            <p class="text-slate-300 font-medium">체험단 관리</p>
+                        </div>
+                        <div class="bg-slate-800 rounded-xl p-3 text-center">
+                            <div class="text-2xl mb-1">🤖</div>
+                            <p class="text-slate-300 font-medium">AI 자동화</p>
+                        </div>
+                    </div>
+
+                    <button id="start-btn" class="w-full py-3 bg-violet-600 hover:bg-violet-700 text-white font-semibold rounded-xl transition text-base">
+                        시작하기 &rarr;
+                    </button>
+                </div>
+            </div>
+
+            <!-- ========================
+                 STEP 2: 관심 서비스 선택
+                 ======================== -->
+            <div id="step-2" class="step">
+                <h2 class="text-xl font-bold text-white mb-1">관심 서비스를 선택하세요</h2>
+                <p class="text-slate-400 text-sm mb-6">여러 개를 선택할 수 있습니다. 언제든 변경 가능해요.</p>
+
+                <div class="space-y-3 mb-8" id="service-list">
+                    <label class="service-card flex items-center gap-4 p-4 rounded-xl bg-slate-800 select-none">
+                        <input type="checkbox" value="sns" class="sr-only service-checkbox">
+                        <span class="text-3xl">📱</span>
+                        <div class="flex-1">
+                            <p class="font-semibold text-white">SNS 자동화</p>
+                            <p class="text-xs text-slate-400">게시물 예약, AI 콘텐츠 생성, 분석 리포트</p>
+                        </div>
+                        <span class="check-icon w-6 h-6 bg-violet-600 rounded-full items-center justify-center flex-shrink-0">
+                            <svg class="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                        </span>
+                    </label>
+
+                    <label class="service-card flex items-center gap-4 p-4 rounded-xl bg-slate-800 select-none">
+                        <input type="checkbox" value="review" class="sr-only service-checkbox">
+                        <span class="text-3xl">⭐</span>
+                        <div class="flex-1">
+                            <p class="font-semibold text-white">체험단 관리</p>
+                            <p class="text-xs text-slate-400">자동 신청, 추적, 리뷰어 관리</p>
+                        </div>
+                        <span class="check-icon w-6 h-6 bg-violet-600 rounded-full items-center justify-center flex-shrink-0">
+                            <svg class="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                        </span>
+                    </label>
+
+                    <label class="service-card flex items-center gap-4 p-4 rounded-xl bg-slate-800 select-none">
+                        <input type="checkbox" value="coocook" class="sr-only service-checkbox">
+                        <span class="text-3xl">🍳</span>
+                        <div class="flex-1">
+                            <p class="font-semibold text-white">CooCook</p>
+                            <p class="text-xs text-slate-400">셰프 예약, 요리 체험 서비스</p>
+                        </div>
+                        <span class="check-icon w-6 h-6 bg-violet-600 rounded-full items-center justify-center flex-shrink-0">
+                            <svg class="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                        </span>
+                    </label>
+
+                    <label class="service-card flex items-center gap-4 p-4 rounded-xl bg-slate-800 select-none">
+                        <input type="checkbox" value="ai" class="sr-only service-checkbox">
+                        <span class="text-3xl">🤖</span>
+                        <div class="flex-1">
+                            <p class="font-semibold text-white">AI 자동화</p>
+                            <p class="text-xs text-slate-400">업무 자동화, AI 직원 설정</p>
+                        </div>
+                        <span class="check-icon w-6 h-6 bg-violet-600 rounded-full items-center justify-center flex-shrink-0">
+                            <svg class="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                        </span>
+                    </label>
+                </div>
+
+                <div class="flex gap-3">
+                    <button class="prev-btn flex-1 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium rounded-xl transition text-sm">
+                        &larr; 이전
+                    </button>
+                    <button id="step2-next" class="flex-1 py-2.5 bg-violet-600 hover:bg-violet-700 text-white font-semibold rounded-xl transition">
+                        다음 &rarr;
+                    </button>
+                </div>
+            </div>
+
+            <!-- ========================
+                 STEP 3: 프로필 설정
+                 ======================== -->
+            <div id="step-3" class="step">
+                <h2 class="text-xl font-bold text-white mb-1">프로필을 설정하세요</h2>
+                <p class="text-slate-400 text-sm mb-6">나중에 설정에서 언제든 변경할 수 있습니다.</p>
+
+                <!-- Avatar upload -->
+                <div class="flex flex-col items-center mb-6">
+                    <div class="relative cursor-pointer" id="avatar-container" onclick="document.getElementById('avatar-input').click()">
+                        <div id="avatar-preview" class="w-20 h-20 rounded-full bg-violet-700 flex items-center justify-center text-3xl font-bold text-white overflow-hidden">
+                            <span id="avatar-initials">?</span>
+                        </div>
+                        <div class="absolute bottom-0 right-0 w-7 h-7 bg-slate-700 border-2 border-slate-900 rounded-full flex items-center justify-center">
+                            <svg class="w-3.5 h-3.5 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                        </div>
+                    </div>
+                    <input type="file" id="avatar-input" accept="image/*" class="sr-only" onchange="handleAvatarChange(event)">
+                    <p class="text-xs text-slate-500 mt-2">사진 클릭하여 변경 (선택)</p>
+                </div>
+
+                <div class="space-y-4 mb-8">
                     <div>
-                        <p class="font-bold text-white">계정 생성</p>
-                        <p class="text-sm text-slate-400">2026-02-20에 가입함</p>
+                        <label class="block text-sm font-medium text-slate-300 mb-1.5">이름</label>
+                        <input id="profile-name" type="text" placeholder="홍길동"
+                            class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-white placeholder-slate-500 focus:border-violet-500 focus:outline-none transition">
                     </div>
-                </div>
-                <div class="flex items-start gap-4 p-4 bg-green-900/20 rounded-lg border border-green-600/30">
-                    <span class="text-2xl">✓</span>
+
                     <div>
-                        <p class="font-bold text-white">이메일 인증</p>
-                        <p class="text-sm text-slate-400">2026-02-20에 완료함</p>
+                        <label class="block text-sm font-medium text-slate-300 mb-1.5">업종 / 직업</label>
+                        <select id="profile-industry"
+                            class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-white focus:border-violet-500 focus:outline-none transition appearance-none">
+                            <option value="" disabled selected>업종을 선택하세요</option>
+                            <option value="ecommerce">이커머스 / 쇼핑몰</option>
+                            <option value="food">외식 / 식품</option>
+                            <option value="beauty">뷰티 / 화장품</option>
+                            <option value="fashion">패션 / 의류</option>
+                            <option value="it">IT / 소프트웨어</option>
+                            <option value="marketing">마케팅 / 광고</option>
+                            <option value="media">미디어 / 크리에이터</option>
+                            <option value="education">교육</option>
+                            <option value="health">건강 / 피트니스</option>
+                            <option value="other">기타</option>
+                        </select>
                     </div>
                 </div>
-                <div class="flex items-start gap-4 p-4 bg-green-900/20 rounded-lg border border-green-600/30">
-                    <span class="text-2xl">✓</span>
-                    <div>
-                        <p class="font-bold text-white">프로필 완성</p>
-                        <p class="text-sm text-slate-400">2026-02-21에 완료함</p>
+
+                <div class="flex gap-3">
+                    <button class="prev-btn flex-1 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium rounded-xl transition text-sm">
+                        &larr; 이전
+                    </button>
+                    <button id="step3-next" class="flex-1 py-2.5 bg-violet-600 hover:bg-violet-700 text-white font-semibold rounded-xl transition">
+                        다음 &rarr;
+                    </button>
+                </div>
+            </div>
+
+            <!-- ========================
+                 STEP 4: 첫 번째 액션
+                 ======================== -->
+            <div id="step-4" class="step">
+                <h2 class="text-xl font-bold text-white mb-1">첫 번째 액션을 시작하세요!</h2>
+                <p class="text-slate-400 text-sm mb-6">선택하신 서비스로 바로 시작할 수 있습니다.</p>
+
+                <div id="action-cards" class="space-y-3 mb-8">
+                    <!-- Dynamically populated by JS -->
+                </div>
+
+                <div class="flex gap-3">
+                    <button class="prev-btn flex-1 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium rounded-xl transition text-sm">
+                        &larr; 이전
+                    </button>
+                    <button id="step4-next" class="flex-1 py-2.5 bg-violet-600 hover:bg-violet-700 text-white font-semibold rounded-xl transition">
+                        다음 &rarr;
+                    </button>
+                </div>
+            </div>
+
+            <!-- ========================
+                 STEP 5: 준비 완료
+                 ======================== -->
+            <div id="step-5" class="step">
+                <div class="text-center py-4">
+                    <!-- Animated checkmark -->
+                    <div class="flex justify-center mb-6">
+                        <svg class="w-24 h-24" viewBox="0 0 100 100">
+                            <circle cx="50" cy="50" r="45" fill="none" stroke="#1e293b" stroke-width="4"/>
+                            <circle cx="50" cy="50" r="45" fill="none" stroke="#7c3aed" stroke-width="4"
+                                stroke-linecap="round"
+                                style="stroke-dasharray:283;stroke-dashoffset:283;animation:checkDraw .8s ease-out .1s forwards;"/>
+                            <path d="M30 52 L44 66 L70 38"
+                                fill="none" stroke="#7c3aed" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"
+                                style="stroke-dasharray:60;stroke-dashoffset:60;animation:checkDraw .5s ease-out .7s forwards;"/>
+                        </svg>
+                    </div>
+
+                    <h2 class="text-2xl font-bold text-white mb-2">모든 준비가 완료되었습니다!</h2>
+                    <p class="text-slate-400 mb-8 text-sm leading-relaxed">
+                        SoftFactory를 시작할 준비가 됐어요.<br>
+                        대시보드에서 모든 서비스를 확인하세요.
+                    </p>
+
+                    <div id="finish-summary" class="bg-slate-800 rounded-xl p-4 mb-8 text-left text-sm space-y-2">
+                        <!-- Populated by JS -->
+                    </div>
+
+                    <div class="flex flex-col gap-3">
+                        <button id="go-dashboard" class="w-full py-3 bg-violet-600 hover:bg-violet-700 text-white font-semibold rounded-xl transition text-base">
+                            대시보드로 이동
+                        </button>
+                        <a href="help.html" class="w-full py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium rounded-xl transition text-sm text-center">
+                            도움이 필요하면 여기를 클릭하세요
+                        </a>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Current Step -->
-        <div class="mb-12">
-            <h2 class="text-2xl font-bold text-white mb-6">🔄 진행 중인 단계</h2>
-            <div class="bg-slate-800 rounded-xl p-8 border border-indigo-600/50">
-                <div class="flex items-start gap-4 mb-6">
-                    <div class="w-10 h-10 rounded-full bg-indigo-600 flex items-center justify-center font-bold text-white flex-shrink-0">4</div>
-                    <div class="flex-1">
-                        <h3 class="text-xl font-bold text-white">첫 번째 서비스 연동</h3>
-                        <p class="text-sm text-slate-400 mt-1">SNS 계정을 연동하고 첫 포스트를 작성하세요</p>
-                    </div>
-                </div>
+        </div><!-- /.wizard-card -->
 
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-                    <div class="bg-slate-700 rounded-lg p-4 border border-slate-600 text-center">
-                        <p class="text-2xl mb-2">1️⃣</p>
-                        <p class="text-sm font-medium text-white">계정 선택</p>
-                        <p class="text-xs text-slate-500 mt-1">Instagram, Twitter 등</p>
-                    </div>
-                    <div class="bg-slate-700 rounded-lg p-4 border border-slate-600 text-center">
-                        <p class="text-2xl mb-2">2️⃣</p>
-                        <p class="text-sm font-medium text-white">연동하기</p>
-                        <p class="text-xs text-slate-500 mt-1">OAuth 인증</p>
-                    </div>
-                    <div class="bg-slate-700 rounded-lg p-4 border border-slate-600 text-center">
-                        <p class="text-2xl mb-2">3️⃣</p>
-                        <p class="text-sm font-medium text-white">포스트 작성</p>
-                        <p class="text-xs text-slate-500 mt-1">첫 포스트 생성</p>
-                    </div>
-                    <div class="bg-slate-700 rounded-lg p-4 border border-slate-600 text-center">
-                        <p class="text-2xl mb-2">4️⃣</p>
-                        <p class="text-sm font-medium text-white">발행하기</p>
-                        <p class="text-xs text-slate-500 mt-1">즉시 또는 예약</p>
-                    </div>
-                </div>
-
-                <a href="../sns-auto/accounts.html" class="inline-block px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition">계정 연동하러 가기</a>
-            </div>
-        </div>
-
-        <!-- Upcoming Steps -->
-        <div class="mb-12">
-            <h2 class="text-2xl font-bold text-white mb-6">📋 다음 단계</h2>
-            <div class="space-y-4">
-                <div class="flex items-start gap-4 p-4 bg-slate-700 rounded-lg border border-slate-600 hover:border-slate-500 transition cursor-pointer">
-                    <div class="w-10 h-10 rounded-full bg-slate-600 flex items-center justify-center font-bold text-white flex-shrink-0">5</div>
-                    <div class="flex-1">
-                        <p class="font-bold text-white">리뷰 캠페인 만들기</p>
-                        <p class="text-sm text-slate-400 mt-1">브랜드 리뷰 캠페인을 시작하세요</p>
-                    </div>
-                    <span class="text-sm text-slate-400">약 10분</span>
-                </div>
-
-                <div class="flex items-start gap-4 p-4 bg-slate-700 rounded-lg border border-slate-600 hover:border-slate-500 transition cursor-pointer">
-                    <div class="w-10 h-10 rounded-full bg-slate-600 flex items-center justify-center font-bold text-white flex-shrink-0">6</div>
-                    <div class="flex-1">
-                        <p class="font-bold text-white">결제 수단 등록</p>
-                        <p class="text-sm text-slate-400 mt-1">유료 플랜으로 업그레이드하세요</p>
-                    </div>
-                    <span class="text-sm text-slate-400">약 5분</span>
-                </div>
-
-                <div class="flex items-start gap-4 p-4 bg-slate-700 rounded-lg border border-slate-600 hover:border-slate-500 transition cursor-pointer">
-                    <div class="w-10 h-10 rounded-full bg-slate-600 flex items-center justify-center font-bold text-white flex-shrink-0">7</div>
-                    <div class="flex-1">
-                        <p class="font-bold text-white">팀원 초대</p>
-                        <p class="text-sm text-slate-400 mt-1">협력자를 추가하고 권한 설정</p>
-                    </div>
-                    <span class="text-sm text-slate-400">약 5분</span>
-                </div>
-
-                <div class="flex items-start gap-4 p-4 bg-slate-700 rounded-lg border border-slate-600 hover:border-slate-500 transition cursor-pointer">
-                    <div class="w-10 h-10 rounded-full bg-slate-600 flex items-center justify-center font-bold text-white flex-shrink-0">8</div>
-                    <div class="flex-1">
-                        <p class="font-bold text-white">고급 기능 학습</p>
-                        <p class="text-sm text-slate-400 mt-1">AI 자동화, 분석 등 고급 기능 활용</p>
-                    </div>
-                    <span class="text-sm text-slate-400">약 20분</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Resources -->
-        <div class="mb-12">
-            <h2 class="text-2xl font-bold text-white mb-6">📚 추천 자료</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <a href="help.html" class="bg-slate-800 rounded-lg p-6 border border-slate-700 hover:border-indigo-500 transition">
-                    <p class="text-2xl mb-2">❓</p>
-                    <p class="font-bold text-white mb-1">자주 묻는 질문</p>
-                    <p class="text-sm text-slate-400">일반적인 질문 및 답변</p>
-                </a>
-
-                <a href="changelog.html" class="bg-slate-800 rounded-lg p-6 border border-slate-700 hover:border-indigo-500 transition">
-                    <p class="text-2xl mb-2">📝</p>
-                    <p class="font-bold text-white mb-1">변경 사항</p>
-                    <p class="text-sm text-slate-400">최신 기능 및 업데이트</p>
-                </a>
-
-                <a href="keyboard-shortcuts.html" class="bg-slate-800 rounded-lg p-6 border border-slate-700 hover:border-indigo-500 transition">
-                    <p class="text-2xl mb-2">⌨️</p>
-                    <p class="font-bold text-white mb-1">키보드 단축키</p>
-                    <p class="text-sm text-slate-400">생산성을 높이는 단축키</p>
-                </a>
-
-                <a href="api-reference.html" class="bg-slate-800 rounded-lg p-6 border border-slate-700 hover:border-indigo-500 transition">
-                    <p class="text-2xl mb-2">📖</p>
-                    <p class="font-bold text-white mb-1">API 문서</p>
-                    <p class="text-sm text-slate-400">개발자를 위한 API 가이드</p>
-                </a>
-            </div>
-        </div>
-
-        <!-- Support -->
-        <div class="bg-indigo-900/30 rounded-xl p-8 border border-indigo-600/30 text-center">
-            <h3 class="text-xl font-bold text-white mb-4">💬 도움이 필요하신가요?</h3>
-            <p class="text-slate-300 mb-6">더 알아보고 싶으신 점이 있으신가요? 언제든지 저희 팀에 문의하세요.</p>
-            <div class="flex gap-4 justify-center flex-wrap">
-                <a href="help.html" class="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition">도움말 보기</a>
-                <a href="contact.html" class="px-6 py-3 bg-slate-700 hover:bg-slate-600 text-white rounded-lg font-medium transition">문의하기</a>
-            </div>
-        </div>
-    </div>
+    </div><!-- /.max-w-lg -->
 
     <script>
-        requireAuth();
+    (function () {
+        'use strict';
 
-        function completeStep() {
-            showToast('단계가 완료되었습니다!', 'success');
+        // ---- State ----
+        var state = {
+            currentStep: 1,
+            totalSteps: 5,
+            selectedServices: [],
+            name: '',
+            industry: '',
+            avatarDataUrl: null,
+        };
+
+        var SERVICE_ACTION_MAP = {
+            sns:      { icon: '📱', label: 'SNS 계정 연동', desc: 'Instagram, Twitter 등 SNS 계정을 연결하세요.', href: '../sns-auto/accounts.html' },
+            review:   { icon: '⭐', label: '첫 체험단 찾기',  desc: '브랜드 체험단을 검색하고 신청하세요.',         href: '../review/campaigns.html' },
+            coocook:  { icon: '🍳', label: '셰프 둘러보기',  desc: '원하는 셰프를 탐색하고 예약하세요.',           href: '../coocook/explore.html' },
+            ai:       { icon: '🤖', label: 'AI 직원 설정',   desc: '첫 번째 AI 자동화를 구성하세요.',             href: '../ai-automation/employees.html' },
+        };
+
+        // ---- Load saved state from localStorage ----
+        function loadState() {
+            try {
+                var saved = localStorage.getItem('sf_onboarding_state');
+                if (saved) {
+                    var parsed = JSON.parse(saved);
+                    Object.assign(state, parsed);
+                }
+            } catch (e) {}
         }
+
+        function saveState() {
+            try {
+                localStorage.setItem('sf_onboarding_state', JSON.stringify({
+                    currentStep: state.currentStep,
+                    selectedServices: state.selectedServices,
+                    name: state.name,
+                    industry: state.industry,
+                }));
+            } catch (e) {}
+        }
+
+        // ---- Navigation ----
+        function goToStep(n) {
+            if (n < 1 || n > state.totalSteps) return;
+
+            // Collect data from current step before leaving
+            collectCurrentStepData();
+
+            var prev = document.getElementById('step-' + state.currentStep);
+            if (prev) prev.classList.remove('active');
+
+            state.currentStep = n;
+            saveState();
+
+            var next = document.getElementById('step-' + n);
+            if (next) next.classList.add('active');
+
+            updateProgress();
+            renderStepContent(n);
+        }
+
+        function updateProgress() {
+            var pct = Math.round((state.currentStep / state.totalSteps) * 100);
+            document.getElementById('progress-bar').style.width = pct + '%';
+            document.getElementById('step-label').textContent = '단계 ' + state.currentStep + ' / ' + state.totalSteps;
+            document.getElementById('step-pct').textContent = pct + '%';
+        }
+
+        function collectCurrentStepData() {
+            if (state.currentStep === 2) {
+                state.selectedServices = Array.from(
+                    document.querySelectorAll('.service-checkbox:checked')
+                ).map(function (cb) { return cb.value; });
+            }
+            if (state.currentStep === 3) {
+                var nameInput = document.getElementById('profile-name');
+                var industryInput = document.getElementById('profile-industry');
+                if (nameInput) state.name = nameInput.value.trim();
+                if (industryInput) state.industry = industryInput.value;
+            }
+        }
+
+        // ---- Render step-specific content ----
+        function renderStepContent(n) {
+            if (n === 1) renderStep1();
+            if (n === 3) renderStep3();
+            if (n === 4) renderStep4();
+            if (n === 5) renderStep5();
+        }
+
+        function renderStep1() {
+            try {
+                var user = JSON.parse(localStorage.getItem('user') || '{}');
+                var name = user.name || '사용자';
+                var el = document.getElementById('welcome-name');
+                if (el) el.innerHTML = '<strong class="text-white">' + name + '</strong> 님, SoftFactory에 오신 것을 환영합니다!<br><span class="text-sm">몇 가지 빠른 설정으로 최적의 경험을 시작하세요.</span>';
+                state.name = state.name || name;
+            } catch (e) {}
+        }
+
+        function renderStep3() {
+            var nameInput = document.getElementById('profile-name');
+            var industryInput = document.getElementById('profile-industry');
+            if (nameInput && state.name) nameInput.value = state.name;
+            if (industryInput && state.industry) industryInput.value = state.industry;
+            updateAvatarInitials(state.name);
+        }
+
+        function renderStep4() {
+            var container = document.getElementById('action-cards');
+            if (!container) return;
+
+            var services = state.selectedServices.length > 0
+                ? state.selectedServices
+                : ['sns', 'review'];  // 기본 추천
+
+            container.innerHTML = '';
+
+            services.slice(0, 3).forEach(function (svc) {
+                var info = SERVICE_ACTION_MAP[svc];
+                if (!info) return;
+                var card = document.createElement('a');
+                card.href = info.href;
+                card.className = 'flex items-center gap-4 p-4 bg-slate-800 border border-slate-700 hover:border-violet-500 rounded-xl transition group';
+                card.innerHTML = [
+                    '<span class="text-3xl">' + info.icon + '</span>',
+                    '<div class="flex-1">',
+                    '  <p class="font-semibold text-white group-hover:text-violet-300 transition">' + info.label + '</p>',
+                    '  <p class="text-xs text-slate-400">' + info.desc + '</p>',
+                    '</div>',
+                    '<svg class="w-5 h-5 text-slate-500 group-hover:text-violet-400 transition flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>'
+                ].join('');
+                container.appendChild(card);
+            });
+
+            // 선택 없는 경우 메시지
+            if (services.length === 0) {
+                container.innerHTML = '<p class="text-slate-400 text-sm text-center py-4">대시보드에서 원하는 서비스를 탐색하세요.</p>';
+            }
+        }
+
+        function renderStep5() {
+            launchConfetti();
+            var summary = document.getElementById('finish-summary');
+            if (!summary) return;
+
+            var svcNames = {
+                sns: 'SNS 자동화', review: '체험단 관리', coocook: 'CooCook', ai: 'AI 자동화'
+            };
+
+            var lines = [];
+            if (state.name) {
+                lines.push('<div class="flex items-center gap-2 text-slate-300"><span class="text-violet-400">&#x2713;</span> 이름: <span class="text-white font-medium">' + state.name + '</span></div>');
+            }
+            if (state.selectedServices.length > 0) {
+                var svcList = state.selectedServices.map(function (s) { return svcNames[s] || s; }).join(', ');
+                lines.push('<div class="flex items-start gap-2 text-slate-300"><span class="text-violet-400 mt-0.5">&#x2713;</span><span>관심 서비스: <span class="text-white font-medium">' + svcList + '</span></span></div>');
+            }
+            lines.push('<div class="flex items-center gap-2 text-slate-300"><span class="text-violet-400">&#x2713;</span> 온보딩 완료!</div>');
+            summary.innerHTML = lines.join('');
+        }
+
+        // ---- Service card selection ----
+        document.getElementById('service-list').addEventListener('change', function (e) {
+            if (e.target.classList.contains('service-checkbox')) {
+                var card = e.target.closest('.service-card');
+                if (card) card.classList.toggle('selected', e.target.checked);
+            }
+        });
+
+        // ---- Avatar ----
+        window.handleAvatarChange = function (evt) {
+            var file = evt.target.files && evt.target.files[0];
+            if (!file) return;
+            if (!file.type.startsWith('image/')) return;
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                state.avatarDataUrl = e.target.result;
+                var preview = document.getElementById('avatar-preview');
+                preview.innerHTML = '<img src="' + e.target.result + '" alt="프로필 사진" class="w-full h-full object-cover">';
+            };
+            reader.readAsDataURL(file);
+        };
+
+        function updateAvatarInitials(name) {
+            var el = document.getElementById('avatar-initials');
+            if (!el) return;
+            if (!state.avatarDataUrl && name) {
+                el.textContent = name.charAt(0).toUpperCase();
+            }
+        }
+
+        document.getElementById('profile-name').addEventListener('input', function (e) {
+            if (!state.avatarDataUrl) updateAvatarInitials(e.target.value);
+        });
+
+        // ---- Confetti ----
+        function launchConfetti() {
+            var colors = ['#7c3aed','#a78bfa','#c4b5fd','#4f46e5','#818cf8','#f59e0b','#10b981'];
+            for (var i = 0; i < 60; i++) {
+                (function (delay) {
+                    setTimeout(function () {
+                        var p = document.createElement('div');
+                        p.className = 'confetti-piece';
+                        p.style.cssText = [
+                            'left:' + (Math.random() * 100) + 'vw',
+                            'top:-10px',
+                            'background:' + colors[Math.floor(Math.random() * colors.length)],
+                            'animation-duration:' + (1.5 + Math.random() * 2) + 's',
+                            'animation-delay:0s',
+                            'border-radius:' + (Math.random() > 0.5 ? '50%' : '2px'),
+                        ].join(';');
+                        document.body.appendChild(p);
+                        setTimeout(function () { p.remove(); }, 4000);
+                    }, delay);
+                })(i * 40);
+            }
+        }
+
+        // ---- Button event wiring ----
+        document.getElementById('start-btn').addEventListener('click', function () {
+            goToStep(2);
+        });
+
+        document.getElementById('step2-next').addEventListener('click', function () {
+            goToStep(3);
+        });
+
+        document.getElementById('step3-next').addEventListener('click', function () {
+            var name = document.getElementById('profile-name').value.trim();
+            if (!name) {
+                document.getElementById('profile-name').focus();
+                document.getElementById('profile-name').style.borderColor = '#ef4444';
+                return;
+            }
+            document.getElementById('profile-name').style.borderColor = '';
+            goToStep(4);
+        });
+
+        document.getElementById('step4-next').addEventListener('click', function () {
+            goToStep(5);
+        });
+
+        document.getElementById('go-dashboard').addEventListener('click', function () {
+            completeOnboarding();
+            window.location.href = 'dashboard.html';
+        });
+
+        // Prev buttons
+        document.querySelectorAll('.prev-btn').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                goToStep(state.currentStep - 1);
+            });
+        });
+
+        // Skip button
+        document.getElementById('skip-btn').addEventListener('click', function () {
+            completeOnboarding();
+            window.location.href = 'dashboard.html';
+        });
+
+        // ---- Mark onboarding complete ----
+        function completeOnboarding() {
+            try {
+                localStorage.setItem('onboarding_complete', '1');
+                localStorage.setItem('onboarding_completed_at', new Date().toISOString());
+                localStorage.removeItem('sf_onboarding_state');
+            } catch (e) {}
+        }
+
+        // ---- Init ----
+        loadState();
+        updateProgress();
+        renderStep1();
+
+        // Restore selections if resuming
+        if (state.selectedServices.length > 0) {
+            state.selectedServices.forEach(function (svc) {
+                var cb = document.querySelector('.service-checkbox[value="' + svc + '"]');
+                if (cb) {
+                    cb.checked = true;
+                    cb.closest('.service-card').classList.add('selected');
+                }
+            });
+        }
+
+    })();
     </script>
+
+    <script src="/web/platform/cookie-consent.js" defer></script>
+    <script src="../mobile-optimization.js" defer></script>
 </body>
 </html>

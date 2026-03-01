@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#111827">
+<title>경쟁사 분석 — SNS Auto | SoftFactory</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="../platform/api.js"></script>
+    <link rel="stylesheet" href="../responsive-framework.css">
+  </head>
+<body class="bg-slate-950 text-slate-100">
+    <div class="flex h-screen overflow-hidden">
+        <aside class="w-64 bg-slate-900 border-r border-slate-800 flex flex-col">
+            <div class="p-6 border-b border-slate-800">
+                <a href="../platform/dashboard.html" class="flex items-center gap-3">
+                    <span class="text-2xl">🏭</span>
+                    <div><h1 class="font-bold text-white text-sm">SoftFactory</h1></div>
+                </a>
+            </div>
+            <nav class="flex-1 p-6 space-y-2">
+    <button class="hamburger" aria-label="Toggle navigation menu">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+                <a href="index.html" class="flex items-center gap-3 px-4 py-2.5 text-slate-300 hover:bg-slate-800 rounded-lg">📊 대시보드</a>
+                <a href="competitor.html" class="flex items-center gap-3 px-4 py-2.5 bg-purple-600 text-white rounded-lg font-medium">👁️ 경쟁사</a>
+                <a href="viral.html" class="flex items-center gap-3 px-4 py-2.5 text-slate-300 hover:bg-slate-800 rounded-lg">🚀 바이럴</a>
+                <a href="monetize.html" class="flex items-center gap-3 px-4 py-2.5 text-slate-300 hover:bg-slate-800 rounded-lg">💰 수익화</a>
+                <a href="link-in-bio.html" class="flex items-center gap-3 px-4 py-2.5 text-slate-300 hover:bg-slate-800 rounded-lg">🔗 Link in Bio</a>
+            </nav>
+        </aside>
+
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <header class="h-16 bg-slate-900 border-b border-slate-800 px-6 flex items-center justify-between">
+                <div>
+                    <h2 class="text-xl font-bold text-white">👁️ 경쟁사 분석</h2>
+                    <p class="text-xs text-slate-400">계정 추적 및 성과 비교</p>
+                </div>
+                <button onclick="addCompetitor()" class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-sm font-medium">
+                    ➕ 경쟁사 추가
+                </button>
+            </header>
+
+            <main class="flex-1 overflow-hidden grid grid-cols-3 gap-0">
+                <div class="col-span-2 overflow-y-auto p-6 border-r border-slate-800">
+                    <div class="space-y-4">
+                        <div class="bg-slate-800 p-6 rounded-lg border border-slate-700">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-12 h-12 bg-gradient-to-br from-pink-500 to-pink-600 rounded-full flex items-center justify-center text-white font-bold text-lg">@</div>
+                                    <div>
+                                        <p class="font-bold text-white">fashion_guru</p>
+                                        <p class="text-xs text-slate-400">Instagram</p>
+                                    </div>
+                                </div>
+                                <button onclick="updateTracking('fashion_guru')" class="px-3 py-1 text-xs bg-slate-700 hover:bg-slate-600 text-slate-100 rounded">📊 분석</button>
+                            </div>
+                            <div class="grid grid-cols-4 gap-3">
+                                <div class="text-center">
+                                    <p class="text-sm text-slate-400">팔로워</p>
+                                    <p class="text-xl font-bold text-white">245K</p>
+                                    <p class="text-xs text-green-400">↑ +2.3%</p>
+                                </div>
+                                <div class="text-center">
+                                    <p class="text-sm text-slate-400">평균 참여율</p>
+                                    <p class="text-xl font-bold text-white">8.5%</p>
+                                    <p class="text-xs text-red-400">↓ -0.2%</p>
+                                </div>
+                                <div class="text-center">
+                                    <p class="text-sm text-slate-400">주간 게시물</p>
+                                    <p class="text-xl font-bold text-white">12</p>
+                                    <p class="text-xs text-slate-400">→ 동일</p>
+                                </div>
+                                <div class="text-center">
+                                    <p class="text-sm text-slate-400">최상위 콘텐츠</p>
+                                    <p class="text-xl font-bold text-white">42K</p>
+                                    <p class="text-xs text-slate-400">좋아요</p>
+                                </div>
+                            </div>
+                            <div class="mt-4 p-3 bg-slate-700/50 rounded-lg">
+                                <p class="text-xs text-slate-400 mb-2">📌 주요 콘텐츠 유형</p>
+                                <div class="flex gap-2 flex-wrap">
+                                    <span class="text-xs px-2 py-1 bg-pink-900/30 text-pink-300 rounded">코디</span>
+                                    <span class="text-xs px-2 py-1 bg-purple-900/30 text-purple-300 rounded">뷰티</span>
+                                    <span class="text-xs px-2 py-1 bg-orange-900/30 text-orange-300 rounded">라이프스타일</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-slate-800 p-6 rounded-lg border border-slate-700">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center text-white font-bold text-lg">@</div>
+                                    <div>
+                                        <p class="font-bold text-white">tech_reviewer</p>
+                                        <p class="text-xs text-slate-400">YouTube</p>
+                                    </div>
+                                </div>
+                                <button onclick="updateTracking('tech_reviewer')" class="px-3 py-1 text-xs bg-slate-700 hover:bg-slate-600 text-slate-100 rounded">📊 분석</button>
+                            </div>
+                            <div class="grid grid-cols-4 gap-3">
+                                <div class="text-center">
+                                    <p class="text-sm text-slate-400">구독자</p>
+                                    <p class="text-xl font-bold text-white">520K</p>
+                                    <p class="text-xs text-green-400">↑ +5.1%</p>
+                                </div>
+                                <div class="text-center">
+                                    <p class="text-sm text-slate-400">조회수/영상</p>
+                                    <p class="text-xl font-bold text-white">45K</p>
+                                    <p class="text-xs text-green-400">↑ +1.8%</p>
+                                </div>
+                                <div class="text-center">
+                                    <p class="text-sm text-slate-400">주간 영상</p>
+                                    <p class="text-xl font-bold text-white">3</p>
+                                    <p class="text-xs text-slate-400">→ 일정</p>
+                                </div>
+                                <div class="text-center">
+                                    <p class="text-sm text-slate-400">관련 채널</p>
+                                    <p class="text-xl font-bold text-white">8</p>
+                                    <p class="text-xs text-slate-400">콜라보</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-slate-900 overflow-y-auto p-6">
+                    <h3 class="text-lg font-bold text-white mb-4">📊 비교 분석</h3>
+
+                    <div class="space-y-4">
+                        <div>
+                            <p class="text-sm font-medium text-white mb-2">성장률 비교</p>
+                            <div class="space-y-2">
+                                <div>
+                                    <div class="flex justify-between text-xs mb-1">
+                                        <span class="text-slate-400">나</span>
+                                        <span class="text-blue-400">12%</span>
+                                    </div>
+                                    <div class="w-full bg-slate-700 rounded-full h-2">
+                                        <div class="bg-blue-600 h-2 rounded-full" style="width: 12%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-xs mb-1">
+                                        <span class="text-slate-400">fashion_guru</span>
+                                        <span class="text-green-400">18%</span>
+                                    </div>
+                                    <div class="w-full bg-slate-700 rounded-full h-2">
+                                        <div class="bg-green-600 h-2 rounded-full" style="width: 18%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-xs mb-1">
+                                        <span class="text-slate-400">tech_reviewer</span>
+                                        <span class="text-purple-400">25%</span>
+                                    </div>
+                                    <div class="w-full bg-slate-700 rounded-full h-2">
+                                        <div class="bg-purple-600 h-2 rounded-full" style="width: 25%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <p class="text-sm font-medium text-white mb-2">참여율</p>
+                            <div class="space-y-2 text-xs">
+                                <div class="flex justify-between">
+                                    <span class="text-slate-400">나</span>
+                                    <span class="text-white font-medium">6.2%</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-slate-400">fashion_guru</span>
+                                    <span class="text-white font-medium">8.5%</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-slate-400">tech_reviewer</span>
+                                    <span class="text-white font-medium">5.8%</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="p-3 bg-purple-900/20 border border-purple-900 rounded-lg">
+                            <p class="text-xs font-bold text-purple-300 mb-2">💡 인사이트</p>
+                            <p class="text-xs text-slate-300">fashion_guru는 당신보다 참여율이 37% 높습니다. 콘텐츠 스타일과 게시 시간을 분석해 보세요.</p>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        requireAuth();
+
+        const competitors = [
+            {
+                username: 'fashion_guru',
+                platform: 'Instagram',
+                followers: 245000,
+                followerGrowth: 2.3,
+                engagement: 8.5,
+                engagementTrend: -0.2,
+                weeklyPosts: 12,
+                topPostLikes: 42000,
+                contentTypes: ['코디', '뷰티', '라이프스타일'],
+                color: 'from-pink-500 to-pink-600',
+                icon: '👗'
+            },
+            {
+                username: 'tech_reviewer',
+                platform: 'YouTube',
+                followers: 520000,
+                followerGrowth: 5.1,
+                engagement: 5.8,
+                engagementTrend: 0.3,
+                weeklyPosts: 3,
+                topPostLikes: 45000,
+                contentTypes: ['기술', '리뷰', '튜토리얼'],
+                color: 'from-blue-500 to-blue-600',
+                icon: '📱'
+            },
+            {
+                username: 'lifestyle_blogger',
+                platform: 'TikTok',
+                followers: 180000,
+                followerGrowth: 8.2,
+                engagement: 12.5,
+                engagementTrend: 1.5,
+                weeklyPosts: 20,
+                topPostLikes: 35000,
+                contentTypes: ['일상', '팁', '엔터테인먼트'],
+                color: 'from-black to-slate-800',
+                icon: '🎵'
+            }
+        ];
+
+        let myMetrics = {
+            followers: 125000,
+            engagement: 6.2,
+            growth: 12
+        };
+
+        function renderCompetitors() {
+            const container = document.querySelector('.space-y-4');
+            container.innerHTML = competitors.map((comp, i) => `
+                <div class="bg-slate-800 p-6 rounded-lg border border-slate-700">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-12 bg-gradient-to-br ${comp.color} rounded-full flex items-center justify-center text-white font-bold text-lg">${comp.icon}</div>
+                            <div>
+                                <p class="font-bold text-white">@${comp.username}</p>
+                                <p class="text-xs text-slate-400">${comp.platform}</p>
+                            </div>
+                        </div>
+                        <button onclick="updateTracking('${comp.username}')" class="px-3 py-1 text-xs bg-slate-700 hover:bg-slate-600 text-slate-100 rounded transition">📊 분석</button>
+                    </div>
+                    <div class="grid grid-cols-4 gap-3">
+                        <div class="text-center">
+                            <p class="text-sm text-slate-400">팔로워</p>
+                            <p class="text-xl font-bold text-white">${(comp.followers / 1000).toFixed(0)}K</p>
+                            <p class="text-xs ${comp.followerGrowth > 0 ? 'text-green-400' : 'text-red-400'}">
+                                ${comp.followerGrowth > 0 ? '↑' : '↓'} ${Math.abs(comp.followerGrowth)}%
+                            </p>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-sm text-slate-400">참여율</p>
+                            <p class="text-xl font-bold text-white">${comp.engagement}%</p>
+                            <p class="text-xs ${comp.engagementTrend >= 0 ? 'text-green-400' : 'text-red-400'}">
+                                ${comp.engagementTrend >= 0 ? '↑' : '↓'} ${Math.abs(comp.engagementTrend)}%
+                            </p>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-sm text-slate-400">주간 게시물</p>
+                            <p class="text-xl font-bold text-white">${comp.weeklyPosts}</p>
+                            <p class="text-xs text-slate-400">활성적</p>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-sm text-slate-400">최상위 콘텐츠</p>
+                            <p class="text-xl font-bold text-white">${(comp.topPostLikes / 1000).toFixed(0)}K</p>
+                            <p class="text-xs text-slate-400">좋아요</p>
+                        </div>
+                    </div>
+                    <div class="mt-4 p-3 bg-slate-700/50 rounded-lg">
+                        <p class="text-xs text-slate-400 mb-2">📌 주요 콘텐츠 유형</p>
+                        <div class="flex gap-2 flex-wrap">
+                            ${comp.contentTypes.map(ct => `<span class="text-xs px-2 py-1 bg-blue-900/30 text-blue-300 rounded">${ct}</span>`).join('')}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderComparison() {
+            const container = document.querySelector('.space-y-4');
+
+            // 성장률 비교
+            container.innerHTML = `
+                <div>
+                    <p class="text-sm font-medium text-white mb-2">성장률 비교</p>
+                    <div class="space-y-2">
+                        <div>
+                            <div class="flex justify-between text-xs mb-1">
+                                <span class="text-slate-400">나</span>
+                                <span class="text-blue-400">${myMetrics.growth}%</span>
+                            </div>
+                            <div class="w-full bg-slate-700 rounded-full h-2">
+                                <div class="bg-blue-600 h-2 rounded-full" style="width: ${myMetrics.growth}%"></div>
+                            </div>
+                        </div>
+                        ${competitors.map(comp => `
+                            <div>
+                                <div class="flex justify-between text-xs mb-1">
+                                    <span class="text-slate-400">@${comp.username}</span>
+                                    <span class="text-green-400">${comp.followerGrowth * 5}%</span>
+                                </div>
+                                <div class="w-full bg-slate-700 rounded-full h-2">
+                                    <div class="bg-green-600 h-2 rounded-full" style="width: ${Math.min(100, comp.followerGrowth * 5)}%"></div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+
+                <div>
+                    <p class="text-sm font-medium text-white mb-2">참여율 비교</p>
+                    <div class="space-y-2 text-xs">
+                        <div class="flex justify-between">
+                            <span class="text-slate-400">나</span>
+                            <span class="text-white font-medium">${myMetrics.engagement}%</span>
+                        </div>
+                        ${competitors.map(comp => `
+                            <div class="flex justify-between">
+                                <span class="text-slate-400">@${comp.username}</span>
+                                <span class="text-white font-medium">${comp.engagement}%</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+
+                <div class="p-3 bg-purple-900/20 border border-purple-900 rounded-lg">
+                    <p class="text-xs font-bold text-purple-300 mb-2">💡 인사이트</p>
+                    <p class="text-xs text-slate-300">
+                        ${competitors[0].username}은 당신보다 참여율이 ${Math.round((competitors[0].engagement / myMetrics.engagement - 1) * 100)}% 높습니다. 콘텐츠 스타일과 게시 시간을 분석해 보세요.
+                    </p>
+                </div>
+            `;
+        }
+
+        async function addCompetitor() {
+            const username = prompt('경쟁사의 사용자명 입력 (예: @username):');
+            if (username) {
+                try {
+                    showInfo(`@${username} 추적 시작 중...`);
+
+                    // 시뮬레이션: API 호출
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+
+                    // 새로운 경쟁사 추가
+                    const newCompetitor = {
+                        username: username.replace('@', ''),
+                        platform: ['Instagram', 'YouTube', 'TikTok', 'LinkedIn'][Math.floor(Math.random() * 4)],
+                        followers: Math.floor(Math.random() * 500000) + 50000,
+                        followerGrowth: (Math.random() * 10 - 2).toFixed(1),
+                        engagement: (Math.random() * 15 + 2).toFixed(1),
+                        engagementTrend: (Math.random() * 2 - 1).toFixed(1),
+                        weeklyPosts: Math.floor(Math.random() * 20) + 2,
+                        topPostLikes: Math.floor(Math.random() * 50000) + 5000,
+                        contentTypes: ['콘텐츠 A', '콘텐츠 B', '콘텐츠 C'],
+                        color: 'from-purple-500 to-purple-600',
+                        icon: '📊'
+                    };
+
+                    competitors.push(newCompetitor);
+                    renderCompetitors();
+                    renderComparison();
+                    showSuccess(`@${username}이 추가되었습니다!`);
+                } catch (error) {
+                    showError('경쟁사 추가 실패');
+                }
+            }
+        }
+
+        async function updateTracking(username) {
+            try {
+                const button = event.target;
+                const originalText = button.textContent;
+                button.disabled = true;
+                button.textContent = '⏳ 분석 중...';
+
+                showInfo('최신 데이터를 가져오는 중...');
+
+                // 시뮬레이션: API 호출
+                await new Promise(resolve => setTimeout(resolve, 1500));
+
+                // 메트릭 업데이트
+                const competitor = competitors.find(c => c.username === username);
+                if (competitor) {
+                    competitor.followers += Math.floor(Math.random() * 1000);
+                    competitor.engagement = (Math.random() * 15 + 2).toFixed(1);
+                    renderCompetitors();
+                    renderComparison();
+                }
+
+                button.disabled = false;
+                button.textContent = originalText;
+                showSuccess('분석이 완료되었습니다!');
+            } catch (error) {
+                showError('분석 실패');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderCompetitors();
+            renderComparison();
+        });
+    </script>
+    <script src="../mobile-optimization.js" defer></script>
+</body>
+</html>

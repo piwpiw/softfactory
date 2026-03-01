@@ -2,8 +2,11 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🎁 체험단 통합 플랫폼 - Experience Platform</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#111827">
+<title>🎁 체험단 통합 플랫폼 - Experience Platform</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         .listing-card {
@@ -38,7 +41,8 @@
             100% { background-position: -200% 0; }
         }
     </style>
-</head>
+    <link rel="stylesheet" href="../responsive-framework.css">
+  </head>
 <body class="bg-gray-900 text-gray-100">
     <!-- Header -->
     <header class="bg-gradient-to-r from-purple-900 to-indigo-900 py-6 px-4 shadow-lg">
@@ -328,5 +332,6 @@
             loadListings();
         }, 5 * 60 * 1000);
     </script>
+    <script src="../mobile-optimization.js" defer></script>
 </body>
 </html>

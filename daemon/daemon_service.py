@@ -19,8 +19,6 @@ import subprocess
 import sys
 import time
 import uuid
-import csv
-import io
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -35,13 +33,6 @@ try:
     import msvcrt  # type: ignore
 except Exception:
     msvcrt = None  # type: ignore
-
-try:
-    from apscheduler.schedulers.background import BackgroundScheduler
-    from apscheduler.triggers.cron import CronTrigger
-    HAS_APSCHEDULER = True
-except ImportError:
-    HAS_APSCHEDULER = False
 
 # Add project root (D:\Project) to path so scripts/ package is importable
 _PROJECT_ROOT = Path(__file__).resolve().parent.parent
@@ -84,10 +75,6 @@ CMD_TASK_ACTIVATE = "/task-activate"
 CMD_TASK_NEW = "/task-new"
 CMD_STATUS = "/s"
 CMD_HELP = "/h"
-CMD_REMIND = "/remind"
-CMD_SUMMARY = "/summary"
-CMD_EXPORT = "/export"
-CMD_LOGS = "/logs"
 TXT_TASK_LIST = "TASK 목록 보기"
 TXT_TASK_RESUME = "기존 TASK 이어하기"
 TXT_TASK_NEW = "새 TASK 시작하기"
@@ -380,18 +367,11 @@ class ClaudeDaemonService:
         _secure_dir(self.state_dir)
         _secure_dir(self.claude_activity_file.parent)
 
-        # Scheduler and reminders
-        self.scheduler: BackgroundScheduler | None = None
-        self.reminders_file = self.state_dir / "reminders.json"
-        self.command_log_file = self.logs_dir / "command_history.log"
-        self.reminders: dict[str, list[dict[str, Any]]] = self._load_reminders()
-
     # ---------- lifecycle ----------
 
     def run(self) -> int:
         self._install_signal_handlers()
         self._acquire_lock()
-        self._init_scheduler()
         self._log("Daemon started")
         self._log(
             "config "
@@ -420,8 +400,6 @@ class ClaudeDaemonService:
                 self._tick_runner()
                 time.sleep(self.poll_interval_sec)
         finally:
-            if self.scheduler and self.scheduler.running:
-                self.scheduler.shutdown()
             self._terminate_current_proc("daemon_shutdown")
             self._release_lock()
             self._log("Daemon stopped")
@@ -575,11 +553,6 @@ class ClaudeDaemonService:
         if not text:
             return False
 
-        # Log all commands for auditing
-        lowered_for_log = text.lower()
-        if any(lowered_for_log.startswith(cmd) for cmd in [CMD_TASK_LIST, CMD_TASK_NEW, CMD_TASK_ACTIVATE, CMD_STATUS, CMD_HELP, CMD_LOGS, CMD_SUMMARY, CMD_EXPORT, CMD_REMIND]):
-            self._log_command(chat_id, text.split()[0] if text.split() else "unknown", text)
-
         if text.startswith(CALLBACK_TASK_SELECT_PREFIX):
             selector = text[len(CALLBACK_TASK_SELECT_PREFIX) :].strip()
             return self._activate_task_by_selector(chat_id, selector, message_id)
@@ -635,35 +608,6 @@ class ClaudeDaemonService:
             self._send_help(chat_id)
             return True
 
-        if lowered.startswith(CMD_LOGS):
-            args = lowered.replace(CMD_LOGS, "", 1).strip()
-            line_count = 20
-            try:
-                if args:
-                    line_count = max(5, min(100, int(args)))
-            except ValueError:
-                pass
-            self._send_command_logs(chat_id, line_count)
-            return True
-
-        if lowered.startswith(CMD_SUMMARY):
-            self._send_daily_summary(chat_id)
-            return True
-
-        if lowered.startswith(CMD_EXPORT):
-            fmt = lowered.replace(CMD_EXPORT, "", 1).strip().lower()
-            if fmt not in ("json", "csv", ""):
-                fmt = "json"
-            if not fmt:
-                fmt = "json"
-            self._export_data(chat_id, fmt)
-            return True
-
-        if lowered.startswith(CMD_REMIND):
-            reminder_text = text.replace(CMD_REMIND, "", 1).strip()
-            self._handle_reminder_command(chat_id, reminder_text)
-            return True
-
         return False
 
     def _send_project_status(self, chat_id: int) -> None:
@@ -709,12 +653,6 @@ class ClaudeDaemonService:
             "<b>⚡ 빠른 커맨드</b>",
             "  /s — 프로젝트 현황",
             "  /h — 이 도움말",
-            "",
-            "<b>📅 일정 & 리포트</b>",
-            "  /remind [날짜] [메시지] — 일정 알림 설정 (예: /remind 2026-02-28 배포 검토)",
-            "  /summary — 일간 요약 리포트",
-            "  /export [json|csv] — 데이터 내보내기",
-            "  /logs [라인수] — 최근 로그 조회 (기본값: 20)",
             "",
             "<b>💡 예시</b>",
             "  「SoftFactory 로그인 페이지 버그 고쳐줘」",
@@ -808,306 +746,6 @@ class ClaudeDaemonService:
             lines.append("새로 시작: /task-new <요약>")
 
         self._send_text(chat_id, "\n".join(lines))
-
-    def _send_command_logs(self, chat_id: int, line_count: int = 20) -> None:
-        """Send recent command logs."""
-        try:
-            if not self.command_log_file.exists():
-                self._send_text(chat_id, "📝 로그가 아직 없습니다.")
-                return
-
-            with open(self.command_log_file, "r", encoding="utf-8") as f:
-                lines = f.readlines()
-
-            if not lines:
-                self._send_text(chat_id, "📝 로그가 아직 없습니다.")
-                return
-
-            recent_lines = lines[-line_count:]
-            msg = f"📝 <b>최근 {len(recent_lines)}개 명령어</b>\n"
-            msg += "\n".join(line.rstrip() for line in recent_lines)
-            self._send_text(chat_id, msg)
-        except Exception as exc:
-            self._log(f"WARN _send_command_logs failed: {exc}")
-            self._send_text(chat_id, f"로그 조회 실패: {exc}")
-
-    def _send_daily_summary(self, chat_id: int) -> None:
-        """Send daily summary report."""
-        try:
-            now = datetime.now()
-            summary_lines = [
-                "📊 <b>일간 요약 리포트</b>",
-                f"📅 {now.strftime('%Y-%m-%d %H:%M')}",
-                "",
-                "<b>📈 활성 TASK</b>",
-                f"• 총 {len(self.active_tasks)}개 TASK 활성 중",
-            ]
-
-            # Task breakdown
-            chat_tasks = self._load_task_index(chat_id)
-            if chat_tasks:
-                summary_lines.append(f"• 현재 채팅: {len(chat_tasks)}개 TASK")
-
-            # Queue status
-            summary_lines.append("")
-            summary_lines.append("<b>⏳ 대기 중인 요청</b>")
-            summary_lines.append(f"• {len(self.queue)}개 메시지 대기 중")
-
-            # Command stats
-            summary_lines.append("")
-            summary_lines.append("<b>⚡ 최근 활동</b>")
-            summary_lines.append("• Sonolbot 데몬 ✅ RUNNING")
-            summary_lines.append(f"• 로그 파일: {self.command_log_file.name}")
-
-            summary_lines.append("")
-            summary_lines.append("<i>더 자세한 내용은 /logs를 입력해주세요.</i>")
-
-            self._send_text(chat_id, "\n".join(summary_lines))
-        except Exception as exc:
-            self._log(f"WARN _send_daily_summary failed: {exc}")
-            self._send_text(chat_id, f"요약 생성 실패: {exc}")
-
-    def _export_data(self, chat_id: int, fmt: str = "json") -> None:
-        """Export task and command data."""
-        try:
-            tasks = self._load_task_index(chat_id)
-            data = {
-                "export_time": datetime.now().isoformat(),
-                "chat_id": chat_id,
-                "task_count": len(tasks),
-                "tasks": tasks[:50],  # Limit to 50 tasks
-                "queue_count": len(self.queue),
-                "active_tasks": len(self.active_tasks),
-            }
-
-            if fmt == "csv":
-                # Convert to CSV format
-                output = io.StringIO()
-                if tasks:
-                    fieldnames = ["task_id", "instruction", "timestamp", "task_dir"]
-                    writer = csv.DictWriter(output, fieldnames=fieldnames)
-                    writer.writeheader()
-                    for task in tasks:
-                        writer.writerow({
-                            "task_id": task.get("task_id", ""),
-                            "instruction": str(task.get("instruction", ""))[:100],
-                            "timestamp": task.get("timestamp", ""),
-                            "task_dir": task.get("task_dir", ""),
-                        })
-                content = output.getvalue()
-                filename = f"sonolbot_export_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
-            else:
-                # JSON format
-                content = json.dumps(data, indent=2, ensure_ascii=False)
-                filename = f"sonolbot_export_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
-
-            # Save to file
-            export_file = self.logs_dir / filename
-            with open(export_file, "w", encoding="utf-8") as f:
-                f.write(content)
-
-            msg = f"✅ 데이터를 {fmt.upper()} 형식으로 내보냈습니다.\n"
-            msg += f"<code>{filename}</code>\n"
-            msg += f"위치: <code>{export_file}</code>"
-            self._send_text(chat_id, msg)
-        except Exception as exc:
-            self._log(f"WARN _export_data failed: {exc}")
-            self._send_text(chat_id, f"내보내기 실패: {exc}")
-
-    def _handle_reminder_command(self, chat_id: int, reminder_text: str) -> None:
-        """Handle reminder setting command."""
-        try:
-            parts = reminder_text.split(None, 1)
-            if len(parts) < 2:
-                self._send_text(
-                    chat_id,
-                    "❌ 사용법: /remind [YYYY-MM-DD] [메시지]\n"
-                    "예: /remind 2026-02-28 배포 검토"
-                )
-                return
-
-            date_str = parts[0]
-            message = parts[1]
-
-            # Parse date
-            try:
-                reminder_date = datetime.strptime(date_str, "%Y-%m-%d")
-            except ValueError:
-                self._send_text(chat_id, f"❌ 날짜 형식이 잘못되었습니다: {date_str}\n올바른 형식: YYYY-MM-DD")
-                return
-
-            if reminder_date < datetime.now():
-                self._send_text(chat_id, "❌ 과거 날짜로는 알림을 설정할 수 없습니다.")
-                return
-
-            # Save reminder
-            chat_key = str(chat_id)
-            if chat_key not in self.reminders:
-                self.reminders[chat_key] = []
-
-            reminder = {
-                "id": str(uuid.uuid4())[:8],
-                "date": date_str,
-                "message": message,
-                "created_at": datetime.now().isoformat(),
-                "notified": False,
-            }
-            self.reminders[chat_key].append(reminder)
-            self._save_reminders()
-
-            msg = f"✅ 알림을 설정했습니다.\n"
-            msg += f"📅 <code>{date_str}</code>\n"
-            msg += f"💬 {_esc(message)}"
-            self._send_text(chat_id, msg)
-
-            # Schedule the reminder if scheduler is running
-            if self.scheduler and self.scheduler.running:
-                self._schedule_reminder(reminder, chat_id)
-
-        except Exception as exc:
-            self._log(f"WARN _handle_reminder_command failed: {exc}")
-            self._send_text(chat_id, f"알림 설정 실패: {exc}")
-
-    def _log_command(self, chat_id: int, command: str, text: str) -> None:
-        """Log user command to history."""
-        try:
-            self.command_log_file.parent.mkdir(parents=True, exist_ok=True)
-            timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            log_entry = f"[{timestamp}] chat_id={chat_id} cmd={command} text={text[:100]}\n"
-            with open(self.command_log_file, "a", encoding="utf-8") as f:
-                f.write(log_entry)
-        except Exception as exc:
-            self._log(f"WARN _log_command failed: {exc}")
-
-    def _load_reminders(self) -> dict[str, list[dict[str, Any]]]:
-        """Load reminders from file."""
-        try:
-            if self.reminders_file.exists():
-                with open(self.reminders_file, "r", encoding="utf-8") as f:
-                    return json.load(f) or {}
-        except Exception as exc:
-            self._log(f"WARN _load_reminders failed: {exc}")
-        return {}
-
-    def _save_reminders(self) -> None:
-        """Save reminders to file."""
-        try:
-            self.reminders_file.parent.mkdir(parents=True, exist_ok=True)
-            with open(self.reminders_file, "w", encoding="utf-8") as f:
-                json.dump(self.reminders, f, ensure_ascii=False, indent=2)
-        except Exception as exc:
-            self._log(f"WARN _save_reminders failed: {exc}")
-
-    def _schedule_reminder(self, reminder: dict[str, Any], chat_id: int) -> None:
-        """Schedule a reminder job."""
-        if not self.scheduler or not HAS_APSCHEDULER:
-            return
-        try:
-            date_str = reminder["date"]
-            reminder_date = datetime.strptime(date_str, "%Y-%m-%d")
-            job_id = f"reminder_{chat_id}_{reminder['id']}"
-
-            self.scheduler.add_job(
-                self._send_reminder_notification,
-                trigger="date",
-                run_date=reminder_date.replace(hour=9, minute=0),
-                args=[chat_id, reminder["message"]],
-                id=job_id,
-                replace_existing=True,
-            )
-            self._log(f"Scheduled reminder: {job_id}")
-        except Exception as exc:
-            self._log(f"WARN _schedule_reminder failed: {exc}")
-
-    def _send_reminder_notification(self, chat_id: int, message: str) -> None:
-        """Send reminder notification."""
-        try:
-            msg = f"🔔 <b>일정 알림</b>\n\n{_esc(message)}"
-            self._send_text(chat_id, msg)
-        except Exception as exc:
-            self._log(f"WARN _send_reminder_notification failed: {exc}")
-
-    def _init_scheduler(self) -> None:
-        """Initialize and start the background scheduler."""
-        if not HAS_APSCHEDULER:
-            self._log("APScheduler not available, scheduling disabled")
-            return
-
-        try:
-            self.scheduler = BackgroundScheduler()
-
-            # Schedule daily standup at 9 AM
-            self.scheduler.add_job(
-                self._send_daily_standup,
-                trigger=CronTrigger(hour=9, minute=0),
-                id="daily_standup",
-                replace_existing=True,
-            )
-
-            # Schedule weekly summary on Friday at 6 PM
-            self.scheduler.add_job(
-                self._send_weekly_summary,
-                trigger=CronTrigger(day_of_week=4, hour=18, minute=0),
-                id="weekly_summary",
-                replace_existing=True,
-            )
-
-            # Schedule log cleanup daily at 3 AM
-            self.scheduler.add_job(
-                self._cleanup_old_logs,
-                trigger=CronTrigger(hour=3, minute=0),
-                id="log_cleanup",
-                replace_existing=True,
-            )
-
-            self.scheduler.start()
-            self._log("Scheduler initialized and started")
-        except Exception as exc:
-            self._log(f"WARN _init_scheduler failed: {exc}")
-
-    def _send_daily_standup(self) -> None:
-        """Send daily standup notification (called by scheduler)."""
-        try:
-            # Get all active chat IDs and send standup
-            for chat_id in list(self.active_tasks.keys()):
-                try:
-                    msg = "🌅 <b>오늘의 일정</b>\n\n"
-                    msg += "• SoftFactory 운영 중 ✅\n"
-                    msg += "• Sonolbot 데몬 ACTIVE ✅\n"
-                    msg += "\n오늘도 화이팅! 🚀"
-                    self._send_text(int(chat_id), msg)
-                except Exception:
-                    pass
-        except Exception as exc:
-            self._log(f"WARN _send_daily_standup failed: {exc}")
-
-    def _send_weekly_summary(self) -> None:
-        """Send weekly summary (called by scheduler)."""
-        try:
-            for chat_id in list(self.active_tasks.keys()):
-                try:
-                    self._send_daily_summary(int(chat_id))
-                except Exception:
-                    pass
-        except Exception as exc:
-            self._log(f"WARN _send_weekly_summary failed: {exc}")
-
-    def _cleanup_old_logs(self) -> None:
-        """Clean up logs older than retention period."""
-        try:
-            import glob as glob_module
-            cutoff = time.time() - (self.log_retention_days * 86400)
-
-            log_files = glob_module.glob(str(self.logs_dir / "*.log"))
-            for log_file in log_files:
-                try:
-                    if os.path.getmtime(log_file) < cutoff:
-                        os.remove(log_file)
-                        self._log(f"Cleaned up old log: {log_file}")
-                except Exception:
-                    pass
-        except Exception as exc:
-            self._log(f"WARN _cleanup_old_logs failed: {exc}")
 
     # ---------- task/session ----------
 

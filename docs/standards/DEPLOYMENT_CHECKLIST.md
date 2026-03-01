@@ -1,8 +1,8 @@
-# Deployment Checklist v1.0
+# Deployment Checklist v2.0
 
 > **Purpose:** Step-by-step deployment procedure for SoftFactory Platform
 > **Owner:** DevOps Team (Team E)
-> **Updated:** 2026-02-25
+> **Updated:** 2026-02-26
 > **Status:** Production Ready
 
 ---
@@ -542,6 +542,227 @@ Deployment is considered successful when:
 
 ---
 
-**Last Updated:** 2026-02-25
+---
+
+## Environment Variable Reference
+
+All variables that must be set before deployment. Copy `.env.example` and fill in values.
+
+### Required Variables
+
+| Variable | Description | Example | Required In |
+|----------|-------------|---------|-------------|
+| `PLATFORM_SECRET_KEY` | JWT signing secret | `your-256-bit-secret` | All |
+| `SQLALCHEMY_DATABASE_URI` | Database connection string | `sqlite:///platform.db` | All |
+| `ENVIRONMENT` | Deployment environment | `development` / `production` | All |
+
+### Database Variables
+
+| Variable | Description | Example |
+|----------|-------------|---------|
+| `DATABASE_URL` | PostgreSQL connection (production) | `postgresql://user:pass@host:5432/softfactory` |
+| `REDIS_URL` | Redis connection for caching | `redis://localhost:6379` |
+
+### Payment (Stripe)
+
+| Variable | Description |
+|----------|-------------|
+| `STRIPE_SECRET_KEY` | Stripe secret API key |
+| `STRIPE_PUBLISHABLE_KEY` | Stripe publishable key |
+| `STRIPE_WEBHOOK_SECRET` | Stripe webhook signing secret |
+
+### OAuth Providers
+
+| Variable | Description |
+|----------|-------------|
+| `GOOGLE_CLIENT_ID` | Google OAuth client ID |
+| `GOOGLE_CLIENT_SECRET` | Google OAuth client secret |
+| `GOOGLE_REDIRECT_URI` | Google OAuth redirect URI |
+| `FACEBOOK_APP_ID` | Facebook app ID |
+| `FACEBOOK_APP_SECRET` | Facebook app secret |
+| `FACEBOOK_REDIRECT_URI` | Facebook OAuth redirect URI |
+| `KAKAO_REST_API_KEY` | Kakao REST API key |
+| `KAKAO_CLIENT_SECRET` | Kakao client secret |
+| `KAKAO_REDIRECT_URI` | Kakao OAuth redirect URI |
+
+### CORS & Security
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `CORS_ALLOWED_ORIGIN` | Production frontend origin | (none) |
+| `PLATFORM_URL` | Platform base URL | `http://localhost:8000` |
+
+### Telegram Bot (Sonolbot)
+
+| Variable | Description |
+|----------|-------------|
+| `TELEGRAM_BOT_TOKEN` | Telegram bot API token |
+| `TELEGRAM_ALLOWED_USERS` | Comma-separated allowed user IDs |
+
+---
+
+## Database Migration Steps
+
+### Development (SQLite)
+
+```bash
+# Database is auto-initialized on first run via init_db()
+python -c "from backend.app import create_app; app = create_app()"
+```
+
+### Production (PostgreSQL Migration)
+
+```bash
+# 1. Export existing SQLite data
+python scripts/migrate_to_postgres.py --export-sqlite
+
+# 2. Create PostgreSQL database
+createdb softfactory
+psql softfactory < schema.sql
+
+# 3. Import data
+python scripts/migrate_to_postgres.py --import-postgres
+
+# 4. Update environment variable
+export DATABASE_URL="postgresql://user:pass@host:5432/softfactory"
+
+# 5. Verify migration
+python -c "
+from backend.app import create_app
+app = create_app()
+with app.app_context():
+    from backend.models import db, User
+    print(f'Users: {User.query.count()}')
+"
+```
+
+### Schema Changes
+
+When models change, manually apply schema updates:
+
+```bash
+# Compare current DB schema with models
+python -c "
+from backend.app import create_app
+from backend.models import db
+app = create_app()
+with app.app_context():
+    db.create_all()  # Creates missing tables only
+    print('Schema sync complete')
+"
+```
+
+---
+
+## Enhanced Rollback Procedure
+
+### Pre-Rollback Checklist
+
+- [ ] Confirm the issue is deployment-related (not external)
+- [ ] Capture current logs before rollback
+- [ ] Notify stakeholders of rollback decision
+- [ ] Identify the exact commit/tag to roll back to
+
+### Rollback Steps
+
+1. **Stop current production**
+   ```bash
+   docker stop softfactory-production
+   ```
+
+2. **Restore database backup (if schema changed)**
+   ```bash
+   # SQLite
+   cp platform.db.backup platform.db
+
+   # PostgreSQL
+   pg_restore -d softfactory backup_file.dump
+   ```
+
+3. **Deploy previous version**
+   ```bash
+   docker run -d --name softfactory-production \
+     -p 8000:8000 \
+     softfactory:production-backup-TIMESTAMP
+   ```
+
+4. **Verify rollback**
+   ```bash
+   curl -f http://localhost:8000/health
+   python scripts/verify_integration.py --no-start --port 8000
+   ```
+
+5. **Post-rollback**
+   - Document root cause in `shared-intelligence/pitfalls.md`
+   - Create ADR for the incident
+   - Schedule team post-mortem
+
+---
+
+## Monitoring Setup
+
+### Health Check Monitoring
+
+The `/health` endpoint returns detailed status including:
+- Database connectivity
+- All 5 service blueprint registrations
+- Application version
+- Server uptime
+
+```bash
+# Continuous monitoring (every 30s)
+while true; do
+  curl -s http://localhost:8000/health | python -m json.tool
+  sleep 30
+done
+```
+
+### Prometheus Metrics
+
+Verify metrics are being scraped:
+
+```bash
+curl -s http://localhost:8000/api/metrics/prometheus | head -20
+```
+
+### Log Monitoring
+
+```bash
+# Watch for errors
+docker logs -f softfactory-production 2>&1 | grep -i "error\|critical\|warning"
+
+# Check error rate
+curl -s http://localhost:8000/api/errors/stats | python -m json.tool
+```
+
+### Alert Configuration
+
+| Metric | Threshold | Action |
+|--------|-----------|--------|
+| Error rate | > 1% | Page on-call engineer |
+| Response time (p99) | > 500ms | Alert DevOps channel |
+| Database disconnected | health.database != "connected" | Page DBA |
+| Memory usage | > 80% | Scale or investigate |
+| Disk usage | > 90% | Clean logs, expand disk |
+
+---
+
+## Integration Verification
+
+Before signing off on any deployment, run the integration verification script:
+
+```bash
+# Against running server
+python scripts/verify_integration.py --no-start --port 8000
+
+# Start fresh server and test
+python scripts/verify_integration.py --port 8001 --report-file test_report.json
+```
+
+Expected result: All endpoints return expected status codes with demo token authentication.
+
+---
+
+**Last Updated:** 2026-02-26
 **Next Review:** 2026-03-10
-**Version:** 1.0
+**Version:** 2.0

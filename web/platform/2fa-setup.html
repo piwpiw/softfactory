@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Setup 2FA - SoftFactory</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 500px;
+            width: 100%;
+            padding: 40px;
+        }
+
+        h1 {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: #1f2937;
+        }
+
+        .subtitle {
+            color: #6b7280;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .step {
+            display: none;
+        }
+
+        .step.active {
+            display: block;
+        }
+
+        .step-indicator {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            gap: 10px;
+        }
+
+        .step-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #e5e7eb;
+            flex: 1;
+            max-width: 40px;
+        }
+
+        .step-dot.active {
+            background: #667eea;
+        }
+
+        .step-dot.completed {
+            background: #10b981;
+        }
+
+        /* Step 1: QR Code */
+        .qr-container {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .qr-code-image {
+            width: 250px;
+            height: 250px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 10px;
+            margin: 0 auto 20px;
+            background: white;
+        }
+
+        .secret-box {
+            background: #f3f4f6;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 20px;
+            font-family: 'Courier New', monospace;
+            word-break: break-all;
+            font-size: 12px;
+            color: #374151;
+        }
+
+        .secret-label {
+            font-size: 12px;
+            color: #6b7280;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .info-box {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 20px 0;
+            font-size: 13px;
+            color: #1e40af;
+            line-height: 1.6;
+        }
+
+        /* Step 2: Verify Code */
+        .verify-section {
+            margin-bottom: 30px;
+        }
+
+        .totp-input {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            margin: 30px 0;
+        }
+
+        .totp-digit {
+            width: 45px;
+            height: 55px;
+            font-size: 24px;
+            font-weight: 600;
+            text-align: center;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+
+        .totp-digit:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .manual-entry {
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        .manual-entry input {
+            width: 150px;
+            padding: 10px;
+            border: 2px solid #e5e7eb;
+            border-radius: 6px;
+            font-size: 16px;
+            text-align: center;
+            letter-spacing: 2px;
+        }
+
+        /* Step 3: Backup Codes */
+        .backup-codes-list {
+            background: #f3f4f6;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .backup-code {
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            padding: 10px;
+            margin: 5px 0;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 4px;
+            word-break: break-all;
+            color: #374151;
+        }
+
+        .copy-btn {
+            background: none;
+            border: none;
+            color: #667eea;
+            cursor: pointer;
+            font-size: 12px;
+            padding: 5px 10px;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+
+        .copy-btn:hover {
+            background: #f0f0f0;
+        }
+
+        .warning-box {
+            background: #fef3c7;
+            border: 1px solid #fcd34d;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 20px 0;
+            font-size: 13px;
+            color: #92400e;
+            line-height: 1.6;
+        }
+
+        /* Form elements */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #1f2937;
+            font-size: 14px;
+        }
+
+        input[type="text"],
+        input[type="password"],
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e5e7eb;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.2s;
+            font-family: inherit;
+        }
+
+        input[type="text"]:focus,
+        input[type="password"]:focus,
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        /* Buttons */
+        .button-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 30px;
+        }
+
+        button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: #e5e7eb;
+            color: #1f2937;
+        }
+
+        .btn-secondary:hover {
+            background: #d1d5db;
+        }
+
+        .btn-text {
+            background: none;
+            color: #667eea;
+            text-decoration: underline;
+        }
+
+        /* Messages */
+        .error {
+            background: #fee2e2;
+            border: 1px solid #fecaca;
+            color: #991b1b;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-size: 13px;
+        }
+
+        .success {
+            background: #dcfce7;
+            border: 1px solid #bbf7d0;
+            color: #166534;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-size: 13px;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 3px solid #f0f0f0;
+            border-radius: 50%;
+            border-top-color: #667eea;
+            animation: spin 1s linear infinite;
+            margin-right: 8px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .success-check {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 20px;
+            background: #10b981;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 32px;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .text-muted {
+            color: #6b7280;
+            font-size: 13px;
+            margin-top: 10px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .checkbox-group label {
+            margin: 0;
+            cursor: pointer;
+            flex: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 Two-Factor Authentication</h1>
+        <p class="subtitle">Enhance your account security with 2FA</p>
+
+        <div class="step-indicator">
+            <div class="step-dot active" id="dot1"></div>
+            <div class="step-dot" id="dot2"></div>
+            <div class="step-dot" id="dot3"></div>
+        </div>
+
+        <!-- Step 1: QR Code Setup -->
+        <div class="step active" id="step1">
+            <h2 style="font-size: 18px; margin-bottom: 20px;">Step 1: Scan QR Code</h2>
+
+            <div class="info-box">
+                📱 Use an authenticator app like Google Authenticator, Microsoft Authenticator, or Authy to scan this QR code.
+            </div>
+
+            <div class="qr-container">
+                <img id="qrCode" class="qr-code-image" alt="QR Code" />
+            </div>
+
+            <div style="text-align: center; margin-bottom: 20px;">
+                <p style="font-size: 13px; color: #6b7280; margin-bottom: 10px;">Can't scan? Enter manually:</p>
+                <div class="secret-box">
+                    <span class="secret-label">Secret Key:</span>
+                    <span id="secretKey" style="font-weight: 600;"></span>
+                    <button class="copy-btn" onclick="copyToClipboard('secretKey')">Copy</button>
+                </div>
+            </div>
+
+            <button class="btn-primary" onclick="nextStep(2)" style="width: 100%;">Next: Verify Code</button>
+        </div>
+
+        <!-- Step 2: Verify Code -->
+        <div class="step" id="step2">
+            <h2 style="font-size: 18px; margin-bottom: 20px;">Step 2: Verify Code</h2>
+
+            <div class="info-box">
+                ✓ Enter the 6-digit code from your authenticator app to confirm 2FA setup.
+            </div>
+
+            <div id="error2" class="error" style="display: none;"></div>
+
+            <div class="verify-section">
+                <label>Authenticator Code</label>
+                <div class="manual-entry">
+                    <input type="text" id="totpCode" placeholder="000000" maxlength="6" inputmode="numeric" />
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button class="btn-secondary" onclick="prevStep(1)">Back</button>
+                <button class="btn-primary" onclick="verifyCode()" id="verifyBtn">Verify & Continue</button>
+            </div>
+        </div>
+
+        <!-- Step 3: Backup Codes -->
+        <div class="step" id="step3">
+            <h2 style="font-size: 18px; margin-bottom: 20px;">Step 3: Save Backup Codes</h2>
+
+            <div class="warning-box">
+                ⚠️ <strong>Important:</strong> Save these backup codes in a safe place. Use them to regain access if you lose your authenticator app.
+            </div>
+
+            <div class="backup-codes-list" id="backupCodesList"></div>
+
+            <div class="button-group" style="margin-top: 20px;">
+                <button class="btn-secondary" onclick="downloadBackupCodes()">📥 Download</button>
+                <button class="btn-secondary" onclick="copyAllBackupCodes()">📋 Copy All</button>
+            </div>
+
+            <div class="checkbox-group">
+                <input type="checkbox" id="savedCheckbox" />
+                <label for="savedCheckbox">I have saved my backup codes in a safe place</label>
+            </div>
+
+            <button class="btn-primary" onclick="completSetup()" id="completeBtn" style="width: 100%; margin-top: 20px;" disabled>
+                Complete Setup
+            </button>
+        </div>
+
+        <!-- Step 4: Success -->
+        <div class="step" id="step4">
+            <div class="text-center">
+                <div class="success-check">✓</div>
+                <h2 style="font-size: 20px; margin-bottom: 10px;">2FA Enabled!</h2>
+                <p class="text-muted">Your account is now protected with two-factor authentication.</p>
+
+                <button class="btn-primary" onclick="window.location.href='/platform/settings.html'" style="width: 100%; margin-top: 30px;">
+                    Go to Settings
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="api.js"></script>
+    <script>
+        let currentStep = 1;
+        let setupData = {
+            secret: null,
+            qrCode: null,
+            backupCodes: [],
+            encryptedBackupCodes: null
+        };
+
+        document.getElementById('totpCode').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') verifyCode();
+        });
+
+        document.getElementById('savedCheckbox').addEventListener('change', (e) => {
+            document.getElementById('completeBtn').disabled = !e.target.checked;
+        });
+
+        async function initSetup() {
+            try {
+                const response = await apiFetch('/api/auth/2fa/setup', {
+                    method: 'GET'
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    alert(error.error || 'Failed to initialize 2FA setup');
+                    window.location.href = '/platform/settings.html';
+                    return;
+                }
+
+                const data = await response.json();
+                setupData.secret = data.secret;
+                setupData.qrCode = data.qr_code;
+                setupData.backupCodes = data.backup_codes;
+                setupData.encryptedBackupCodes = data.encrypted_backup_codes;
+
+                // Display QR code
+                document.getElementById('qrCode').src = setupData.qrCode;
+                document.getElementById('secretKey').textContent = setupData.secret;
+
+                // Display backup codes
+                displayBackupCodes();
+            } catch (error) {
+                console.error('Setup initialization failed:', error);
+                alert('Failed to initialize 2FA setup');
+                window.location.href = '/platform/settings.html';
+            }
+        }
+
+        function displayBackupCodes() {
+            const container = document.getElementById('backupCodesList');
+            container.innerHTML = setupData.backupCodes
+                .map((code, idx) => `
+                    <div class="backup-code">
+                        ${String(idx + 1).padStart(2, '0')}. ${code}
+                    </div>
+                `)
+                .join('');
+        }
+
+        function nextStep(step) {
+            document.getElementById(`step${currentStep}`).classList.remove('active');
+            document.getElementById(`step${step}`).classList.add('active');
+            document.getElementById(`dot${currentStep}`).classList.remove('active');
+            document.getElementById(`dot${step}`).classList.add('active');
+            currentStep = step;
+            window.scrollTo(0, 0);
+        }
+
+        function prevStep(step) {
+            document.getElementById(`step${currentStep}`).classList.remove('active');
+            document.getElementById(`step${step}`).classList.add('active');
+            document.getElementById(`dot${currentStep}`).classList.remove('active');
+            document.getElementById(`dot${step}`).classList.add('active');
+            currentStep = step;
+            window.scrollTo(0, 0);
+        }
+
+        async function verifyCode() {
+            const totpCode = document.getElementById('totpCode').value.trim();
+
+            if (!totpCode || totpCode.length !== 6) {
+                showError2('Please enter a valid 6-digit code');
+                return;
+            }
+
+            const verifyBtn = document.getElementById('verifyBtn');
+            verifyBtn.disabled = true;
+            verifyBtn.innerHTML = '<span class="loading"></span>Verifying...';
+
+            try {
+                const response = await apiFetch('/api/auth/2fa/verify-setup', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        secret: setupData.secret,
+                        totp_code: totpCode,
+                        encrypted_backup_codes: setupData.encryptedBackupCodes
+                    })
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    showError2(error.error || 'Invalid TOTP code');
+                    verifyBtn.disabled = false;
+                    verifyBtn.innerHTML = 'Verify & Continue';
+                    return;
+                }
+
+                nextStep(3);
+            } catch (error) {
+                console.error('Verification failed:', error);
+                showError2('Failed to verify code');
+                verifyBtn.disabled = false;
+                verifyBtn.innerHTML = 'Verify & Continue';
+            }
+        }
+
+        function showError2(message) {
+            const errorDiv = document.getElementById('error2');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+        }
+
+        async function completSetup() {
+            // Already verified in previous step, just move to success
+            document.getElementById('step3').classList.remove('active');
+            document.getElementById('step4').classList.add('active');
+            document.getElementById('dot3').classList.add('completed');
+            document.getElementById('dot3').classList.remove('active');
+        }
+
+        function copyToClipboard(elementId) {
+            const text = document.getElementById(elementId).textContent;
+            navigator.clipboard.writeText(text).then(() => {
+                alert('Copied to clipboard!');
+            });
+        }
+
+        function copyAllBackupCodes() {
+            const codes = setupData.backupCodes.join('\n');
+            navigator.clipboard.writeText(codes).then(() => {
+                alert('All backup codes copied to clipboard!');
+            });
+        }
+
+        function downloadBackupCodes() {
+            const text = setupData.backupCodes.join('\n');
+            const element = document.createElement('a');
+            element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+            element.setAttribute('download', 'softfactory-backup-codes.txt');
+            element.style.display = 'none';
+            document.body.appendChild(element);
+            element.click();
+            document.body.removeChild(element);
+        }
+
+        // Initialize on page load
+        window.addEventListener('load', initSetup);
+    </script>
+</body>
+</html>

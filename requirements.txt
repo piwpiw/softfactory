@@ -1,28 +1,29 @@
 flask==3.0.0
 flask-cors==4.0.0
 flask-sqlalchemy==3.1.1
+flask-migrate>=4.0.0
 flask-socketio==5.3.5
 python-telegram-bot==20.5
 gunicorn==21.2.0
 python-dotenv==1.0.0
 requests==2.32.3
-anthropic==0.7.1
-psycopg2-binary==2.9.9
+anthropic>=0.42.0
+psycopg2-binary>=2.9.0
 sqlalchemy==2.0.23
 python-socketio==5.9.0
 python-engineio==4.7.1
-pyjwt==2.8.1
+pyjwt==2.9.0
 stripe==5.4.0
+apscheduler==3.10.4
+sentry-sdk[flask]>=1.40.0
+psutil>=5.9.0
+Jinja2>=3.1.0
+boto3>=1.34.0
+reportlab>=4.0.0
+pyotp>=2.9.0
+qrcode>=7.4.2
+cryptography>=41.0.0
 
-# Background Scheduling (SNS Auto v2.0)
-APScheduler==3.10.4
-
-# Media Processing (SNS Auto v2.0)
-Pillow==10.0.0
-
-# Web Scraping (Review Scrapers)
-beautifulsoup4==4.12.2
-
-# Monitoring & Logging
-python-json-logger==2.0.7
-psutil==5.9.6
+# Search & Caching
+elasticsearch==8.10.0
+redis>=4.0.0

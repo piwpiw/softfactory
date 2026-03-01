@@ -2,14 +2,18 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>분석 — AI Auto | SoftFactory</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#111827">
+<title>분석 — AI Auto | SoftFactory</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="../platform/api.js"></script>
     <style>body { font-family: 'Inter', sans-serif; }</style>
-</head>
+    <link rel="stylesheet" href="../responsive-framework.css">
+  </head>
 <body class="bg-slate-950 text-slate-100">
     <div class="flex h-screen overflow-hidden">
         <aside class="w-64 bg-slate-900 border-r border-slate-800 flex flex-col shrink-0">
@@ -20,6 +24,11 @@
                 </a>
             </div>
             <nav class="flex-1 p-6 space-y-2 overflow-y-auto">
+    <button class="hamburger" aria-label="Toggle navigation menu">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
                 <a href="index.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">📊 대시보드</a>
                 <a href="analytics.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg bg-cyan-600 text-white font-medium">📈 분석</a>
             </nav>
@@ -104,5 +113,6 @@
 
         document.addEventListener('DOMContentLoaded', init);
     </script>
+    <script src="../mobile-optimization.js" defer></script>
 </body>
 </html>

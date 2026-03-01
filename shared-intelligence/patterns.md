@@ -1371,7 +1371,7 @@ bash scripts/validate_project_structure.sh
 bash scripts/validate_project_structure.sh
 
 # Run linting
-flake8 backend/ mypy backend/ || true
+flake8 backend/ mypy backend_ || true
 
 # Check for secrets
 grep -r "secret\|password" . && exit 1 || exit 0
@@ -1380,5 +1380,244 @@ grep -r "secret\|password" . && exit 1 || exit 0
 **Install:** `chmod +x .git/hooks/pre-commit`
 **Note:** Does NOT replace CI checks — it's a developer convenience.
 
+### PAT-019: OAuth 2.0 Social Login Pattern
+```python
+# Pattern: Multi-provider OAuth with mock mode support
+# Location: backend/oauth.py, backend/auth.py
+
+# 1. Configuration
+OAUTH_PROVIDERS = {
+    'google': {
+        'auth_url': 'https://accounts.google.com/o/oauth2/v2/auth',
+        'token_url': 'https://oauth2.googleapis.com/token',
+        'userinfo_url': 'https://www.googleapis.com/oauth2/v2/userinfo',
+        'client_id_env': 'GOOGLE_CLIENT_ID',
+        'client_secret_env': 'GOOGLE_CLIENT_SECRET',
+        'scope': 'openid profile email',
+    },
+    # ... facebook, kakao similar
+}
+
+# 2. OAuth Flow Endpoints
+@auth_bp.route('/oauth/<provider>/url', methods=['GET'])
+def oauth_auth_url(provider):
+    """Get OAuth authorization URL (mock mode if no creds)"""
+    state = OAuthProvider.generate_state_token()
+    result = OAuthProvider.get_auth_url(provider, state, redirect_uri)
+    return jsonify(result)
+
+@auth_bp.route('/oauth/<provider>/callback', methods=['POST'])
+def oauth_callback(provider):
+    """Handle OAuth callback with user creation/update"""
+    code = request.json.get('code')
+    token_result = OAuthProvider.exchange_code_for_token(provider, code, redirect_uri)
+    userinfo = OAuthProvider.get_user_info(provider, token_result['access_token'])
+
+    # Find or create user
+    user = User.query.filter_by(email=userinfo['email']).first()
+    if not user:
+        user = User(
+            email=userinfo['email'],
+            name=userinfo['name'],
+            oauth_provider=provider,
+            oauth_id=userinfo['id'],
+            avatar_url=userinfo.get('picture')
+        )
+    user.oauth_provider = provider
+    db.session.add(user)
+    db.session.commit()
+
+    # Return JWT tokens
+    access_token, refresh_token = create_tokens(user.id, user.role)
+    return jsonify({
+        'access_token': access_token,
+        'refresh_token': refresh_token,
+        'user': user.to_dict()
+    })
+
+# 3. Mock Mode (no credentials needed)
+# Returns mock_token when env vars not set
+# Mock user data generated on-the-fly
+```
+**When to use:** Adding social login to auth system.
+**Mock mode:** Works without GOOGLE_CLIENT_ID, FACEBOOK_APP_ID, KAKAO_REST_API_KEY.
+**Files:** `backend/oauth.py`, `backend/auth.py`, `backend/models.py` (User model with oauth_provider, oauth_id, avatar_url).
+
 ---
 
+
+## SNS Content Creation Patterns
+
+### PAT-024: Platform Specs Constants (Multi-Mode Content Creation)
+```javascript
+// Pattern: Centralized platform configuration for all SNS modes (direct, AI, automation)
+const PLATFORM_SPECS = {
+    instagram: {
+        name: 'Instagram',
+        icon: '📸',
+        charLimit: 2200,
+        hashtagLimit: 30,
+        types: ['feed', 'reel', 'story', 'carousel'],
+        videoOnly: false
+    },
+    twitter: {
+        name: 'Twitter',
+        icon: '𝕏',
+        charLimit: 280,
+        hashtagLimit: 10,
+        types: ['tweet', 'thread', 'poll'],
+        videoOnly: false
+    },
+    // ... other platforms
+};
+
+// Usage: Validate content against platform specs before submission
+const platform = 'instagram';
+const content = userContent;
+const specs = PLATFORM_SPECS[platform];
+if (content.length > specs.charLimit) {
+    alert(`Exceeds ${specs.name} limit: ${specs.charLimit} chars`);
+}
+```
+**When to use:** Any multi-platform content creation interface.
+**Files:** `web/sns-auto/create.html`, API handlers.
+
+### PAT-025: Real-Time Character Counter with Platform Warnings
+```javascript
+// Pattern: Dynamic character counter with tiered warnings (70%, 90%, 100%)
+function updateCharCount() {
+    const content = document.getElementById('content').value;
+    const limit = PLATFORM_SPECS[selectedPlatform]?.charLimit || 280;
+    const counter = document.getElementById('charCount');
+
+    counter.textContent = `${content.length}/${limit}`;
+
+    if (content.length > limit * 0.9) {
+        counter.classList.add('danger');    // Red: over 90%
+    } else if (content.length > limit * 0.7) {
+        counter.classList.add('warning');   // Orange: 70-90%
+    } else {
+        counter.classList.remove('warning', 'danger');  // Green: under 70%
+    }
+}
+```
+**When to use:** Every text input for SNS content.
+**Benefits:** UX feedback before submission; prevents truncation errors.
+
+### PAT-026: Three-Mode Content Creation (Direct/AI/Automate)
+```javascript
+// Pattern: Tab-based mode switching with independent state management
+function switchMode(mode) {
+    currentMode = mode;
+    
+    // Hide all forms, show selected
+    document.querySelectorAll('.mode-form').forEach(f => f.classList.remove('active'));
+    document.getElementById(mode + 'Form').classList.add('active');
+    
+    // Update tab styling
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.toggle('active', btn === event.target);
+    });
+}
+
+// Mode 1: Direct Writing
+// - User types content directly
+// - Platform-specific settings panel
+// - Real-time preview + char counter
+
+// Mode 2: AI Generation
+// - Input: topic, tone, language
+// - Output: Generated content + hashtags
+// - Copy to direct mode
+
+// Mode 3: Automation
+// - Input: topic, purpose, frequency, platforms
+// - Output: Scheduled automation job
+// - Redirect to schedule.html
+```
+**When to use:** SNS creation, blog writing, email campaigns.
+**Key:** Each mode has independent forms, shared preview, unified platform specs.
+
+### PAT-027: Token Storage Fix (localStorage Key Names)
+```javascript
+// Pattern: Consistent token storage across all pages
+// CORRECT: Use 'access_token' (not 'token')
+localStorage.setItem('access_token', token);
+localStorage.setItem('refresh_token', refreshToken);
+
+// Retrieval (for media upload, API calls)
+const token = localStorage.getItem('access_token');
+headers['Authorization'] = `Bearer ${token}`;
+```
+**When to use:** Any authentication flow.
+**Bug fixed:** Previous code used `localStorage.getItem('token')` → 404 on media upload.
+**Files:** `web/platform/api.js`, all service HTML files.
+
+### PAT-028: Platform-Specific Settings Panel
+```javascript
+// Pattern: Render platform-specific options based on selected platform
+function renderPlatformSettings(platform, specs) {
+    let html = '';
+    
+    if (platform === 'instagram') {
+        html = `<select id="contentType"><option>📸 Feed</option><option>🎬 Reel</option>...</select>`;
+    } else if (platform === 'twitter') {
+        html = `<label><input type="checkbox" id="threadMode"> Thread Mode</label>`;
+    } else if (platform === 'linkedin') {
+        html = `<select id="linkedinTone"><option>Professional</option>...</select>`;
+    }
+    // Append to DOM
+    document.getElementById('platformSettings').innerHTML = html;
+}
+```
+**Platforms covered:** Instagram (content type, slides), Twitter (thread/poll), LinkedIn (tone), TikTok (video only), YouTube (title/desc), Pinterest (title), Threads (basic).
+**When to use:** Multi-platform UIs.
+
+### PAT-029: AI Content Generation API Flow
+```python
+# Backend: /api/sns/ai/generate endpoint
+@sns_bp.route('/ai/generate', methods=['POST'])
+@require_auth
+def generate_with_ai():
+    data = request.get_json()
+    # Input: topic, tone, language, platform, charLimit
+    # Processing: Format prompt, call Claude API (or mock)
+    # Output: { content, hashtags, tone, language, platform, generated_at }
+    return jsonify({
+        'content': generated_text,
+        'hashtags': generated_hashtags,
+        'generated_at': datetime.utcnow().isoformat()
+    })
+
+# Frontend: Call and display
+const result = await apiFetch('/api/sns/ai/generate', {
+    method: 'POST',
+    body: JSON.stringify({ topic, tone, language, platform, charLimit })
+});
+const data = await result.json();
+document.getElementById('content').value = data.content;
+document.getElementById('hashtags').value = data.hashtags;
+switchMode('direct');
+```
+**When to use:** AI-powered content generation in any platform.
+**Integration:** Claude API, ChatGPT API, or other LLM.
+
+### PAT-030: Automation Setup & Scheduling
+```python
+# Backend: /api/sns/automate endpoint
+@sns_bp.route('/automate', methods=['POST'])
+def setup_automation():
+    data = request.get_json()
+    # Input: topic, purpose, frequency, platforms[]
+    # Processing: Validate, calculate next_post_time, create job
+    # Output: config, next_post_time, posts_per_month estimate
+    return jsonify({
+        'config': automation_config,
+        'next_post_time': calculated_next_time.isoformat(),
+        'posts_per_month': 30  # if daily
+    })
+```
+**Frequencies:** daily (30/mo), 3days (10/mo), weekly (4/mo), monthly (1/mo).
+**Integration:** APScheduler for background job scheduling.
+
+---

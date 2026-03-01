@@ -10,45 +10,10 @@ from backend.models import (
     db, User, SNSAccount, SNSPost, SNSCampaign, SNSTemplate,
     SNSAnalytics, SNSInboxMessage, SNSSettings
 )
-from backend.app import app
 
 
 @pytest.fixture
-def app_context():
-    """Application context for testing"""
-    app.config['TESTING'] = True
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
-    app.config['JWT_SECRET_KEY'] = 'test-secret-key'
-
-    with app.app_context():
-        db.create_all()
-        yield app
-        db.session.remove()
-        db.drop_all()
-
-
-@pytest.fixture
-def client(app_context):
-    """Test client"""
-    return app_context.test_client()
-
-
-@pytest.fixture
-def demo_user():
-    """Create demo user"""
-    with app.app_context():
-        user = User(
-            email='sns_test@example.com',
-            password='hashed_password',
-            name='SNS Test User'
-        )
-        db.session.add(user)
-        db.session.commit()
-        return user
-
-
-@pytest.fixture
-def auth_headers(demo_user):
+def auth_headers():
     """Authentication headers"""
     return {
         'Authorization': 'Bearer demo_token',
@@ -57,7 +22,21 @@ def auth_headers(demo_user):
 
 
 @pytest.fixture
-def demo_account(demo_user):
+def demo_user(app):
+    """Create demo user"""
+    with app.app_context():
+        user = User(
+            email='sns_test@example.com',
+            name='SNS Test User'
+        )
+        user.set_password('testpass123')
+        db.session.add(user)
+        db.session.commit()
+        return user
+
+
+@pytest.fixture
+def demo_account(app, demo_user):
     """Create demo SNS account"""
     with app.app_context():
         account = SNSAccount(
@@ -78,7 +57,7 @@ def demo_account(demo_user):
 
 
 @pytest.fixture
-def demo_post(demo_user, demo_account):
+def demo_post(app, demo_user, demo_account):
     """Create demo SNS post"""
     with app.app_context():
         post = SNSPost(

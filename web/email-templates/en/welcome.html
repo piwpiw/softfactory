@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background: #111827; color: #fff; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
+        .header h1 { margin: 0; color: #F97316; }
+        .content { background: #f9fafb; padding: 30px; border-radius: 0 0 8px 8px; }
+        .button { display: inline-block; background: #F97316; color: #fff; padding: 10px 20px; text-decoration: none; border-radius: 4px; margin: 20px 0; }
+        .footer { text-align: center; color: #666; font-size: 12px; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 JARVIS</h1>
+            <p>Welcome to Team Operations System</p>
+        </div>
+        <div class="content">
+            <p>Hello {{name}},</p>
+
+            <p>Welcome to JARVIS! Your account has been successfully created.</p>
+
+            <p>You now have access to:</p>
+            <ul>
+                <li>Team operations and management</li>
+                <li>Performance analytics and reporting</li>
+                <li>Collaboration tools and communication</li>
+                <li>Automated workflows</li>
+            </ul>
+
+            <p>To get started, click the button below:</p>
+            <a href="{{login_url}}" class="button">Verify Your Account</a>
+
+            <p><strong>Login Credentials:</strong></p>
+            <ul>
+                <li>Email: {{email}}</li>
+                <li>Temporary Password: {{temporary_password}}</li>
+            </ul>
+
+            <p>For security, please change your password on first login.</p>
+
+            <p>If you have any questions, please contact us at <a href="mailto:support@jarvis.com">support@jarvis.com</a>.</p>
+
+            <p>Thank you,<br>JARVIS Team</p>
+        </div>
+        <div class="footer">
+            <p>&copy; 2026 JARVIS. All rights reserved.</p>
+            <p><a href="{{unsubscribe_url}}">Unsubscribe</a></p>
+        </div>
+    </div>
+</body>
+</html>

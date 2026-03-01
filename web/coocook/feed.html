@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#111827">
+    <title>피드 — CooCook — SoftFactory</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="../platform/api.js"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .feed-card { transition: all 0.3s ease; }
+        .feed-card:hover { box-shadow: 0 8px 16px rgba(0,0,0,0.3); }
+        .modal-overlay { backdrop-filter: blur(4px); }
+        .profile-card { position: sticky; top: 0; }
+    </style>
+    <link rel="stylesheet" href="../responsive-framework.css">
+</head>
+<body class="bg-slate-950 text-slate-100">
+    <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar Navigation -->
+        <aside class="w-64 bg-slate-900 border-r border-slate-800 flex flex-col shrink-0 overflow-y-auto">
+            <div class="p-6 border-b border-slate-800">
+                <a href="index.html" class="flex items-center gap-3">
+                    <span class="text-2xl">🍳</span>
+                    <div><h1 class="font-bold text-white text-sm">CooCook</h1><p class="text-xs text-slate-400">피드</p></div>
+                </a>
+            </div>
+            <nav class="flex-1 p-6 space-y-2">
+                <a href="index.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">🏠 홈</a>
+                <a href="recipes.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">📖 레시피</a>
+                <a href="shopping-list.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">🛒 쇼핑리스트</a>
+                <a href="feed.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg bg-orange-600 text-white font-medium">📱 피드</a>
+            </nav>
+
+            <div class="p-6 border-t border-slate-800">
+                <button onclick="logout()" class="p-2 hover:bg-slate-800 rounded-lg w-full text-left">🚪 로그아웃</button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <!-- Header -->
+            <header class="h-16 bg-slate-900 border-b border-slate-800 px-6 flex items-center justify-between shrink-0">
+                <div>
+                    <h2 class="text-xl font-bold text-white">📱 피드</h2>
+                    <p class="text-xs text-slate-400">팔로우 중인 요리사와 활동</p>
+                </div>
+            </header>
+
+            <!-- Content Grid -->
+            <main class="flex-1 overflow-y-auto p-6">
+                <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                    <!-- Left Sidebar: Profile Card -->
+                    <div class="lg:col-span-1">
+                        <div class="profile-card bg-slate-800 rounded-lg border border-slate-700 p-6 space-y-4">
+                            <!-- User Profile -->
+                            <div class="text-center pb-4 border-b border-slate-700">
+                                <div class="text-4xl mb-2">👨‍🍳</div>
+                                <h3 class="text-lg font-semibold text-white">김정호</h3>
+                                <p class="text-sm text-orange-400">@kimjeonho</p>
+                                <p class="text-xs text-slate-400 mt-2">서울 · 30대 · 요리 애호가</p>
+                            </div>
+
+                            <!-- Stats -->
+                            <div class="grid grid-cols-3 gap-3 text-center">
+                                <div>
+                                    <p class="text-xl font-bold text-white">24</p>
+                                    <p class="text-xs text-slate-400">요리 횟수</p>
+                                </div>
+                                <div>
+                                    <p class="text-xl font-bold text-white">128</p>
+                                    <p class="text-xs text-slate-400">팔로워</p>
+                                </div>
+                                <div>
+                                    <p class="text-xl font-bold text-white">45</p>
+                                    <p class="text-xs text-slate-400">팔로우</p>
+                                </div>
+                            </div>
+
+                            <!-- Bio -->
+                            <div class="text-sm text-slate-300">
+                                <p>🍜 한식을 사랑합니다</p>
+                                <p>📸 식사 기록광</p>
+                                <p>🌟 코드요리 지출감 생활</p>
+                            </div>
+
+                            <!-- Action Buttons -->
+                            <div class="space-y-2 pt-4 border-t border-slate-700">
+                                <button onclick="editProfile()" class="w-full px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-lg font-medium text-sm">✏️ 프로필 수정</button>
+                                <button onclick="viewFollowers()" class="w-full px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg font-medium text-sm">👥 팔로워</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Center: Feed Stream -->
+                    <div class="lg:col-span-2">
+                        <div class="space-y-6" id="feedStream">
+                            <!-- Loading skeleton -->
+                            <div class="feed-card bg-slate-800 rounded-lg border border-slate-700 p-6 animate-pulse">
+                                <div class="h-4 bg-slate-700 rounded w-1/2 mb-4"></div>
+                                <div class="h-32 bg-slate-700 rounded mb-4"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Sidebar: Recommendations -->
+                    <div class="lg:col-span-1">
+                        <div class="bg-slate-800 rounded-lg border border-slate-700 p-6 space-y-4">
+                            <h3 class="text-lg font-semibold text-white">🔥 추천 요리사</h3>
+                            <div id="recommendedChefs" class="space-y-3">
+                                <!-- Will be populated -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Comment Modal -->
+    <div id="commentModal" class="fixed inset-0 bg-black/50 modal-overlay hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-slate-800 rounded-xl border border-slate-700 max-w-lg w-full">
+            <div class="flex items-center justify-between p-6 border-b border-slate-700">
+                <h3 class="text-xl font-bold text-white">댓글/리뷰 작성</h3>
+                <button onclick="closeCommentModal()" class="text-slate-400 hover:text-white text-xl">✕</button>
+            </div>
+            <div class="p-6 space-y-4">
+                <div id="commentRecipeName" class="p-3 bg-slate-700 rounded text-sm font-semibold text-white">레시피 이름</div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-white mb-2">⭐ 평점</label>
+                    <div class="flex gap-2">
+                        <button onclick="setRating(1)" class="px-3 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded">⭐</button>
+                        <button onclick="setRating(2)" class="px-3 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded">⭐⭐</button>
+                        <button onclick="setRating(3)" class="px-3 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded">⭐⭐⭐</button>
+                        <button onclick="setRating(4)" class="px-3 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded">⭐⭐⭐⭐</button>
+                        <button onclick="setRating(5)" class="px-3 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded">⭐⭐⭐⭐⭐</button>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-white mb-2">💬 댓글</label>
+                    <textarea id="commentText" placeholder="이 레시피에 대해 의견을 공유하세요..." class="w-full h-32 px-4 py-2 bg-slate-700 text-white rounded-lg border border-slate-600 placeholder-slate-500 resize-none"></textarea>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-white mb-2">📸 사진 추가</label>
+                    <button onclick="addPhoto()" class="w-full px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg font-medium text-sm">📷 사진 선택</button>
+                </div>
+            </div>
+
+            <div class="p-6 border-t border-slate-700 flex gap-3">
+                <button onclick="closeCommentModal()" class="flex-1 px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg font-medium">취소</button>
+                <button onclick="submitComment()" class="flex-1 px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-lg font-medium">📤 올리기</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Share Modal -->
+    <div id="shareModal" class="fixed inset-0 bg-black/50 modal-overlay hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-slate-800 rounded-xl border border-slate-700 max-w-lg w-full">
+            <div class="flex items-center justify-between p-6 border-b border-slate-700">
+                <h3 class="text-xl font-bold text-white">공유하기</h3>
+                <button onclick="closeShareModal()" class="text-slate-400 hover:text-white text-xl">✕</button>
+            </div>
+            <div class="p-6 space-y-3">
+                <button class="w-full px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium text-sm">📘 Facebook</button>
+                <button class="w-full px-4 py-2 bg-sky-400 hover:bg-sky-500 text-white rounded-lg font-medium text-sm">🐦 Twitter</button>
+                <button class="w-full px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium text-sm">📌 Pinterest</button>
+                <button onclick="copyShareLink()" class="w-full px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg font-medium text-sm">🔗 링크 복사</button>
+            </div>
+            <div class="p-6 border-t border-slate-700">
+                <button onclick="closeShareModal()" class="w-full px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg font-medium">닫기</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        requireAuth();
+
+        const feedPosts = [
+            {
+                id: 1,
+                author: '홍셀프',
+                avatar: '👨‍🍳',
+                time: '2시간 전',
+                type: 'recipe',
+                title: '새로운 레시피: 매콤한 김치찌개',
+                image: '🔥',
+                content: '집에서 만든 맛있는 김치찌개입니다. 정말 추천합니다!',
+                likes: 234,
+                comments: 42,
+                liked: false
+            },
+            {
+                id: 2,
+                author: '박민지',
+                avatar: '👩‍🍳',
+                time: '4시간 전',
+                type: 'activity',
+                title: '파스타 카르보나라 리뷰',
+                image: '🍝',
+                content: '마르코 셰프의 파스타가 정말 훌륭했습니다!',
+                rating: 5,
+                likes: 156,
+                comments: 28,
+                liked: false
+            },
+            {
+                id: 3,
+                author: '타로',
+                avatar: '👨‍🍳',
+                time: '6시간 전',
+                type: 'recipe',
+                title: '초밥 롤 튜토리얼',
+                image: '🍣',
+                content: '초급자도 쉽게 따라할 수 있는 초밥 롤 만드는 법입니다.',
+                likes: 389,
+                comments: 67,
+                liked: false
+            },
+            {
+                id: 4,
+                author: '카를로스',
+                avatar: '👨‍🍳',
+                time: '8시간 전',
+                type: 'activity',
+                title: '타코 타코 타코!',
+                image: '🌮',
+                content: '저희 식당에서 새로운 타코 메뉴를 출시했습니다.',
+                likes: 278,
+                comments: 51,
+                liked: false
+            }
+        ];
+
+        const recommendedChefs = [
+            { id: 1, name: '홍셀프', avatar: '👨‍🍳', followers: 1240, followed: false },
+            { id: 2, name: '마르코', avatar: '👨‍🍳', followers: 890, followed: false },
+            { id: 3, name: '피에르', avatar: '👨‍🍳', followers: 2100, followed: true },
+        ];
+
+        function init() {
+            renderFeed();
+            renderRecommendations();
+        }
+
+        function renderFeed() {
+            const feedStream = document.getElementById('feedStream');
+            feedStream.innerHTML = feedPosts.map(post => `
+                <div class="feed-card bg-slate-800 rounded-lg border border-slate-700 overflow-hidden">
+                    <div class="p-4 border-b border-slate-700 flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <span class="text-2xl">${post.avatar}</span>
+                            <div>
+                                <p class="font-semibold text-white">${post.author}</p>
+                                <p class="text-xs text-slate-400">${post.time}</p>
+                            </div>
+                        </div>
+                        <button onclick="toggleFollow('${post.author}')" class="px-3 py-1 bg-orange-600 hover:bg-orange-700 text-white text-sm rounded-lg">👥 팔로우</button>
+                    </div>
+
+                    <div class="p-4">
+                        <h4 class="font-semibold text-white mb-2">${post.title}</h4>
+                        <div class="text-4xl mb-3 text-center">${post.image}</div>
+                        <p class="text-slate-300 mb-3">${post.content}</p>
+                        ${post.rating ? `<div class="mb-3 text-yellow-400">⭐⭐⭐⭐⭐</div>` : ''}
+                    </div>
+
+                    <div class="px-4 py-2 bg-slate-900 border-t border-slate-700 flex items-center justify-around text-sm">
+                        <button onclick="toggleLike(${post.id})" class="flex items-center gap-2 text-slate-400 hover:text-orange-400 transition">
+                            <span id="like-${post.id}">${post.liked ? '❤️' : '🤍'}</span>
+                            <span id="like-count-${post.id}">${post.likes}</span>
+                        </button>
+                        <button onclick="openCommentModal(${post.id}, '${post.title}')" class="flex items-center gap-2 text-slate-400 hover:text-blue-400 transition">
+                            <span>💬</span>
+                            <span>${post.comments}</span>
+                        </button>
+                        <button onclick="openShareModal()" class="flex items-center gap-2 text-slate-400 hover:text-green-400 transition">
+                            <span>📤</span>
+                            <span>공유</span>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderRecommendations() {
+            const recommendedChefs_el = document.getElementById('recommendedChefs');
+            recommendedChefs_el.innerHTML = recommendedChefs.map(chef => `
+                <div class="bg-slate-700 rounded p-3 flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <span class="text-xl">${chef.avatar}</span>
+                        <div>
+                            <p class="font-semibold text-white text-sm">${chef.name}</p>
+                            <p class="text-xs text-slate-400">${chef.followers}명 팔로우</p>
+                        </div>
+                    </div>
+                    <button onclick="toggleFollowChef(${chef.id})" class="px-2 py-1 ${chef.followed ? 'bg-slate-600' : 'bg-orange-600'} hover:opacity-90 text-white text-xs rounded">
+                        ${chef.followed ? '팔로우중' : '팔로우'}
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function toggleLike(postId) {
+            const post = feedPosts.find(p => p.id === postId);
+            if (!post) return;
+            post.liked = !post.liked;
+            if (post.liked) {
+                post.likes += 1;
+                document.getElementById(`like-${postId}`).textContent = '❤️';
+            } else {
+                post.likes -= 1;
+                document.getElementById(`like-${postId}`).textContent = '🤍';
+            }
+            document.getElementById(`like-count-${postId}`).textContent = post.likes;
+        }
+
+        function toggleFollow(author) {
+            showSuccess(`${author}을(를) 팔로우했습니다.`);
+        }
+
+        function toggleFollowChef(chefId) {
+            const chef = recommendedChefs.find(c => c.id === chefId);
+            if (!chef) return;
+            chef.followed = !chef.followed;
+            renderRecommendations();
+            showSuccess(chef.followed ? `${chef.name}을(를) 팔로우했습니다.` : `${chef.name} 팔로우를 취소했습니다.`);
+        }
+
+        function openCommentModal(postId, recipeName) {
+            document.getElementById('commentModal').classList.remove('hidden');
+            document.getElementById('commentRecipeName').textContent = recipeName;
+            document.getElementById('commentModal').dataset.postId = postId;
+            document.getElementById('commentText').value = '';
+        }
+
+        function closeCommentModal() {
+            document.getElementById('commentModal').classList.add('hidden');
+        }
+
+        function setRating(stars) {
+            document.querySelectorAll('#commentModal button[onclick*="setRating"]').forEach(btn => {
+                btn.classList.remove('bg-orange-600', 'hover:bg-orange-700');
+                btn.classList.add('bg-slate-700', 'hover:bg-slate-600');
+            });
+            event.target.classList.add('bg-orange-600', 'hover:bg-orange-700');
+            event.target.classList.remove('bg-slate-700', 'hover:bg-slate-600');
+        }
+
+        function addPhoto() {
+            showSuccess('사진이 추가되었습니다.');
+        }
+
+        function submitComment() {
+            const text = document.getElementById('commentText').value;
+            if (!text.trim()) {
+                showError('댓글을 입력하세요.');
+                return;
+            }
+            showSuccess('댓글이 게시되었습니다!');
+            closeCommentModal();
+        }
+
+        function openShareModal() {
+            document.getElementById('shareModal').classList.remove('hidden');
+        }
+
+        function closeShareModal() {
+            document.getElementById('shareModal').classList.add('hidden');
+        }
+
+        function copyShareLink() {
+            navigator.clipboard.writeText('https://softfactory.com/feed/post-abc123').then(() => {
+                showSuccess('링크가 복사되었습니다!');
+            });
+        }
+
+        function editProfile() {
+            showSuccess('프로필 편집 페이지로 이동합니다.');
+        }
+
+        function viewFollowers() {
+            showSuccess('팔로워 목록을 표시합니다.');
+        }
+
+        // Close modals when clicking outside
+        document.getElementById('commentModal').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('commentModal')) closeCommentModal();
+        });
+        document.getElementById('shareModal').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('shareModal')) closeShareModal();
+        });
+
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+    <script src="../mobile-optimization.js" defer></script>
+</body>
+</html>

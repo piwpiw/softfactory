@@ -1,6 +1,6 @@
 # 📊 프로젝트 현황판 (실시간 대시보드)
 
-> **마지막 업데이트:** 2026-02-25 | **권한:** Chief Dispatcher | **상태:** ✅ LIVE
+> **마지막 업데이트:** 2026-02-23 | **권한:** Chief Dispatcher | **상태:** ✅ LIVE
 
 ---
 
@@ -9,10 +9,9 @@
 | 프로젝트 | 상태 | 진행률 | 팀 | 시작 | 목표 | 핵심 지표 |
 |---------|------|--------|-----|------|------|---------|
 | **M-001** | ✅ COMPLETE | 100% | 01-Dispatcher | 2026-02-22 | 2026-02-22 | 43 파일, 생태계 준비 |
-| **M-002** | 🔄 IN_PROGRESS | 35% | 02-PM | 2026-02-22 | 2026-04-15 | ADR-0001 ✅, OpenAPI ✅, 개발 진행 중 |
-| **M-003** | ✅ DEPLOYED | 100% | 05+06 | 2026-02-23 | 2026-02-24 | 5 서비스, 16/16 API 테스트 ✅ |
+| **M-002** | 🔄 IN_PROGRESS | 30% | 02-PM | 2026-02-22 | 2026-04-15 | ADR-0001 ✅, OpenAPI 60% |
+| **M-003** | ✅ DEPLOYED | 100% | 05+06 | 2026-02-23 | 2026-02-23 | 3 서비스 운영 중 |
 | **M-004** | ✅ ACTIVE | 100% | 10-Reporter | 2026-02-22 | Ongoing | 24/7 가동, 100% 가동률 |
-| **M-005** | ✅ ACTIVE | 100% | 01-Dispatcher | 2026-02-23 | Ongoing | Sonolbot daemon, 텔레그램 봇 |
 
 ---
 
@@ -85,18 +84,18 @@ skills/ (10 modules)
 |------|------|------|------|--------|
 | **1. 기획** | 시장 분석 (SWOT, PESTLE, Porter's) | 03-Analyst | ✅ DONE | 2026-02-22 |
 | **1. 기획** | 아키텍처 (ADR-0001) | 04-Architect | ✅ APPROVED | 2026-02-22 |
-| **1. 기획** | OpenAPI 스펙 | 04-Architect | ✅ DONE | 2026-02-24 |
-| **1. 기획** | C4 다이어그램 | 04-Architect | ✅ DONE | 2026-02-24 |
-| **2. 개발** | 백엔드 API | 05-Backend | 🔄 진행 중 | 2026-03-01 |
-| **2. 개발** | 프론트엔드 UI | 06-Frontend | 🔄 진행 중 | 2026-03-01 |
+| **1. 기획** | OpenAPI 스펙 | 04-Architect | 🔄 60% | 2026-02-24 |
+| **1. 기획** | C4 다이어그램 | 04-Architect | 🔄 90% | 2026-02-24 |
+| **2. 개발** | 백엔드 API | 05-Backend | 📋 대기 | 2026-02-27 |
+| **2. 개발** | 프론트엔드 UI | 06-Frontend | 📋 대기 | 2026-03-01 |
 | **3. QA** | 테스트 계획 | 07-QA | 📋 대기 | 2026-02-27 |
 | **3. QA** | 보안 감사 | 08-Security | 📋 대기 | 2026-02-27 |
 | **4. 배포** | Staging 배포 | 09-DevOps | 📋 대기 | 2026-03-01 |
 | **5. 출시** | Production 배포 | 09-DevOps | 📋 목표: 2026-04-15 | TBD |
 
 ### 🎯 다음 마일스톤
-- ~~**2026-02-24 10:00 KST** - OpenAPI + C4 완성~~ ✅ DONE
-- ~~**2026-02-24 14:00 KST** - 개발 시작~~ ✅ 시작됨
+- **2026-02-24 10:00 KST** - OpenAPI + C4 완성 (04-Architect)
+- **2026-02-24 14:00 KST** - 개발 시작 (05-Backend, 06-Frontend)
 - **2026-02-27** - QA 시작 (07-QA, 08-Security)
 - **2026-03-01** - Staging 배포 (09-DevOps)
 - **2026-04-15** - 정식 출시 🚀
@@ -248,7 +247,7 @@ start_platform.py (진입점)
 
 ### 🚀 배포 정보
 - **플랫폼:** Railway (production)
-- **토큰:** TELEGRAM_BOT_TOKEN_REDACTED
+- **토큰:** 8461725251:AAELKRbZkpa3u6WK24q4k-RGkzedHxjTLiM
 - **URL:** https://jarvis-production.up.railway.app/
 - **가동률:** 100% (2026-02-22부터)
 
@@ -263,43 +262,12 @@ start_platform.py (진입점)
 
 ---
 
-## M-005: Sonolbot Daemon ✅ ACTIVE
-
-**상태:** ✅ ACTIVE | **진행률:** 100% | **운영 중:** Ongoing | **팀:** 01-Chief Dispatcher
-
-### 📋 목표
-- Telegram → Claude Code 완전 자동화 파이프라인
-- 모바일에서 코드 작업 지시 → 자동 실행 → 결과 수신
-- Project Brain 컨텍스트 주입 (모든 Claude 세션에 프로젝트 전체 맥락 제공)
-
-### ✅ 기능
-- 텔레그램 메시지 수신 → Claude CLI 실행 → 결과 전송
-- `/task-new`, `/task-activate`, `/task-list` — 태스크 관리
-- `/s` — 프로젝트 현황 즉시 표시
-- `/h` — 도움말
-- 스마트 리라이터 (구현/오류/분석 형식별 처리)
-- Project Brain (`daemon/project_brain.md`) → 모든 Claude 세션에 자동 주입
-
-### 🚀 배포 정보
-- **위치:** `D:/Project/daemon/`
-- **venv:** `D:/Project/daemon/.venv/` (Python 3.11)
-- **봇 토큰:** `8461725251` (piwpiwtelegrambot)
-- **허용 유저:** `7910169750`
-- **시작:** Control Panel GUI → `pythonw.exe daemon_control_panel.py`
-
-### 📞 담당자
-- **Owner:** 01-Chief Dispatcher
-- **Backup:** 10-Telegram Reporter
-
----
-
 ## 📅 다음 주요 일정
 
 | 날짜 | 이벤트 | 담당 | 상태 |
 |------|--------|------|------|
-| **2026-02-24** | OpenAPI + C4 완성 | 04-Architect | ✅ DONE |
-| **2026-02-24** | 개발 킥오프 (M-002) | 05+06 | ✅ DONE |
-| **2026-02-25** | Governance v3.0 (15 principles) | Orchestrator | ✅ DONE |
+| **2026-02-24 10:00** | OpenAPI + C4 완성 | 04-Architect | 🔄 진행 중 |
+| **2026-02-24 14:00** | 개발 킥오프 (M-002) | 05+06 | 📋 예정 |
 | **2026-02-27** | QA 리뷰 시작 | 07-QA | 📋 예정 |
 | **2026-02-27** | 보안 감사 시작 | 08-Security | 📋 예정 |
 | **2026-03-01** | Staging 배포 | 09-DevOps | 📋 예정 |
@@ -328,8 +296,6 @@ start_platform.py (진입점)
 - [TEAM.md](TEAM.md) - 팀 디렉토리
 - [RULES.md](RULES.md) - 10개 규칙
 - [DECISIONS.md](DECISIONS.md) - 의사결정 트리
-- [../shared-intelligence/decisions.md](../shared-intelligence/decisions.md) - ADR 로그 (크로스-세션)
-- [../orchestrator/mcp-registry.md](../orchestrator/mcp-registry.md) - MCP 서버 레지스트리
 
 ---
 

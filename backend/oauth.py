@@ -6,31 +6,26 @@ import json
 import random
 from datetime import datetime, timedelta
 from urllib.parse import urlencode
+from .config import Config
 
-# OAuth Provider Configuration
+# OAuth Provider Configuration (URLs only - credentials from Config class)
 OAUTH_PROVIDERS = {
     'google': {
         'auth_url': 'https://accounts.google.com/o/oauth2/v2/auth',
         'token_url': 'https://oauth2.googleapis.com/token',
         'userinfo_url': 'https://www.googleapis.com/oauth2/v2/userinfo',
-        'client_id_env': 'GOOGLE_CLIENT_ID',
-        'client_secret_env': 'GOOGLE_CLIENT_SECRET',
         'scope': 'openid profile email',
     },
     'facebook': {
         'auth_url': 'https://www.facebook.com/v18.0/dialog/oauth',
         'token_url': 'https://graph.facebook.com/v18.0/oauth/access_token',
         'userinfo_url': 'https://graph.facebook.com/me?fields=id,name,email,picture',
-        'client_id_env': 'FACEBOOK_APP_ID',
-        'client_secret_env': 'FACEBOOK_APP_SECRET',
         'scope': 'public_profile email',
     },
     'kakao': {
         'auth_url': 'https://kauth.kakao.com/oauth/authorize',
         'token_url': 'https://kauth.kakao.com/oauth/token',
         'userinfo_url': 'https://kapi.kakao.com/v2/user/me',
-        'client_id_env': 'KAKAO_REST_API_KEY',
-        'client_secret_env': 'KAKAO_CLIENT_SECRET',
         'scope': 'openid profile account_email',
     }
 }
@@ -50,8 +45,17 @@ class OAuthProvider:
         if provider not in OAUTH_PROVIDERS:
             return {'error': f'Unknown provider: {provider}'}
 
+        # Get config from OAUTH_PROVIDERS
         config = OAUTH_PROVIDERS[provider]
-        client_id = os.getenv(config['client_id_env'])
+
+        # Get OAuth credentials from Config at runtime
+        oauth_config = Config.get_oauth_config()
+        provider_config = oauth_config.get(provider)
+
+        if not provider_config:
+            return {'error': f'Unknown provider: {provider}'}
+
+        client_id = provider_config['client_id']
 
         # Mock mode: return dummy URL if credentials not configured
         if not client_id:
@@ -88,8 +92,16 @@ class OAuthProvider:
             return {'error': f'Unknown provider: {provider}'}
 
         config = OAUTH_PROVIDERS[provider]
-        client_id = os.getenv(config['client_id_env'])
-        client_secret = os.getenv(config['client_secret_env'])
+
+        # Get OAuth credentials from Config at runtime
+        oauth_config = Config.get_oauth_config()
+        provider_config = oauth_config.get(provider)
+
+        if not provider_config:
+            return {'error': f'Unknown provider: {provider}'}
+
+        client_id = provider_config['client_id']
+        client_secret = provider_config['client_secret']
 
         # Mock mode
         if not client_id or not client_secret:
@@ -178,16 +190,27 @@ class OAuthProvider:
                 'provider': 'facebook'
             }
         elif provider == 'kakao':
-            kakao_account = data.get('kakao_account', {})
-            profile = kakao_account.get('profile', {})
-
-            return {
-                'id': str(data.get('id')),
-                'email': kakao_account.get('email'),
-                'name': profile.get('nickname'),
-                'picture': profile.get('profile_image_url'),
-                'provider': 'kakao'
-            }
+            # Check if this is normalized mock data or real API response
+            if 'kakao_account' in data:
+                # Real API response
+                kakao_account = data.get('kakao_account', {})
+                profile = kakao_account.get('profile', {})
+                return {
+                    'id': str(data.get('id')),
+                    'email': kakao_account.get('email'),
+                    'name': profile.get('nickname'),
+                    'picture': profile.get('profile_image_url'),
+                    'provider': 'kakao'
+                }
+            else:
+                # Mock or already-normalized data
+                return {
+                    'id': str(data.get('id')),
+                    'email': data.get('email'),
+                    'name': data.get('name'),
+                    'picture': data.get('picture'),
+                    'provider': 'kakao'
+                }
         else:
             return data
 

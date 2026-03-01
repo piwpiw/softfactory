@@ -542,7 +542,7 @@ Real-time notification system for all projects via Telegram. Broadcasts status u
 
 ### Current Status
 ✅ **OPERATIONAL 24/7**
-- Token: `TELEGRAM_BOT_TOKEN_REDACTED`
+- Token: `8461725251:AAELKRbZkpa3u6WK24q4k-RGkzedHxjTLiM`
 - Deployment: Railway (https://jarvis-production.up.railway.app/)
 - Uptime: 100% (since 2026-02-22)
 - Chat ID: 7910169750

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>환영합니다 — SoftFactory</title>
+  <style>
+    body { margin: 0; padding: 0; background-color: #f3f4f6; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; }
+    .wrapper { max-width: 600px; margin: 40px auto; padding: 0 16px; }
+    .card { background: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 24px rgba(0,0,0,0.08); }
+    .header { background: linear-gradient(135deg, #7C3AED 0%, #4F46E5 100%); padding: 48px 48px 40px; text-align: center; }
+    .header-emoji { font-size: 48px; margin-bottom: 16px; display: block; }
+    .header h1 { margin: 0; color: #ffffff; font-size: 28px; font-weight: 800; }
+    .header p { margin: 10px 0 0; color: rgba(255,255,255,0.9); font-size: 16px; }
+    .body { padding: 48px; }
+    .intro { font-size: 16px; color: #374151; line-height: 1.7; margin: 0 0 40px; }
+    .features-title { font-size: 18px; font-weight: 700; color: #111827; margin: 0 0 20px; }
+    .feature-card { display: flex; align-items: flex-start; gap: 16px; padding: 20px; background: #F9FAFB; border-radius: 12px; margin-bottom: 12px; }
+    .feature-icon { width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
+    .feature-icon.purple { background: #F5F3FF; }
+    .feature-icon.blue   { background: #EFF6FF; }
+    .feature-icon.green  { background: #ECFDF5; }
+    .feature-text h3 { margin: 0 0 4px; font-size: 15px; font-weight: 600; color: #111827; }
+    .feature-text p { margin: 0; font-size: 14px; color: #6B7280; line-height: 1.5; }
+    .cta-wrap { text-align: center; margin: 40px 0 0; }
+    .cta-btn { display: inline-block; background: linear-gradient(135deg, #7C3AED 0%, #5B21B6 100%); color: #ffffff !important; text-decoration: none; padding: 16px 56px; border-radius: 10px; font-size: 16px; font-weight: 700; }
+    .footer { padding: 32px 48px 40px; text-align: center; border-top: 1px solid #E5E7EB; }
+    .footer p { font-size: 12px; color: #9CA3AF; margin: 4px 0; }
+    .footer a { color: #7C3AED; text-decoration: none; }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <div class="card">
+      <!-- Header -->
+      <div class="header">
+        <span class="header-emoji">🎉</span>
+        <h1>환영합니다, {{ user_name }}님!</h1>
+        <p>SoftFactory 가입을 진심으로 축하드립니다</p>
+      </div>
+
+      <!-- Body -->
+      <div class="body">
+        <p class="intro">
+          SoftFactory와 함께 비즈니스 성장의 새로운 여정을 시작하세요.
+          SNS 자동화, 리뷰 관리, AI 직원 등 강력한 도구로 업무 효율을 높이세요.
+        </p>
+
+        <p class="features-title">주요 기능 소개</p>
+
+        <!-- Feature 1 -->
+        <div class="feature-card">
+          <div class="feature-icon purple">🤖</div>
+          <div class="feature-text">
+            <h3>SNS 자동화</h3>
+            <p>Instagram, Facebook, Twitter 등 멀티채널 게시물을 한 곳에서 예약·자동 발행하세요.</p>
+          </div>
+        </div>
+
+        <!-- Feature 2 -->
+        <div class="feature-card">
+          <div class="feature-icon blue">⭐</div>
+          <div class="feature-text">
+            <h3>리뷰 관리</h3>
+            <p>AI가 고객 리뷰에 자동으로 답글을 달고, 부정적 리뷰를 실시간으로 모니터링합니다.</p>
+          </div>
+        </div>
+
+        <!-- Feature 3 -->
+        <div class="feature-card">
+          <div class="feature-icon green">✨</div>
+          <div class="feature-text">
+            <h3>AI 직원</h3>
+            <p>24시간 고객 응대, 콘텐츠 생성, 데이터 분석을 처리하는 나만의 AI 팀을 구성하세요.</p>
+          </div>
+        </div>
+
+        <!-- CTA -->
+        <div class="cta-wrap">
+          <a href="{{ dashboard_url }}" class="cta-btn">지금 시작하기</a>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="footer">
+        <p>&copy; {{ year }} SoftFactory. All rights reserved.</p>
+        <p>
+          <a href="https://softfactory.kr">softfactory.kr</a> &nbsp;|&nbsp;
+          <a href="https://softfactory.kr/support">고객 지원</a> &nbsp;|&nbsp;
+          <a href="https://softfactory.kr/privacy">개인정보처리방침</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

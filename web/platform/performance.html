@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#111827">
+<title>성과 및 ROI 대시보드 — SoftFactory</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts@3.48.0/dist/apexcharts.min.js"></script>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="api.js"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+
+        .metric-card { transition: transform 0.2s, box-shadow 0.2s; }
+        .metric-card:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
+
+        .gauge-container { min-height: 300px; display: flex; align-items: center; justify-content: center; }
+        .chart-container { min-height: 350px; }
+
+        .status-badge { padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; }
+        .status-success { background: rgba(34, 197, 94, 0.1); color: #22c55e; }
+        .status-warning { background: rgba(234, 179, 8, 0.1); color: #eab308; }
+        .status-danger { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
+        .status-info { background: rgba(59, 130, 246, 0.1); color: #3b82f6; }
+
+        .metric-trend { display: inline-flex; align-items: center; gap: 4px; padding: 4px 8px; border-radius: 4px; font-size: 12px; }
+        .trend-up { background: rgba(34, 197, 94, 0.1); color: #22c55e; }
+        .trend-down { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
+
+        .progress-bar { background: linear-gradient(90deg, #0f172a, #1e293b); border-radius: 8px; height: 8px; overflow: hidden; }
+        .progress-fill { height: 100%; border-radius: 8px; transition: width 0.3s ease; }
+        .progress-excellent { background: linear-gradient(90deg, #10b981, #34d399); }
+        .progress-good { background: linear-gradient(90deg, #3b82f6, #60a5fa); }
+        .progress-warning { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+        .progress-danger { background: linear-gradient(90deg, #ef4444, #f87171); }
+
+        .treemap-item {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            border-radius: 8px;
+            padding: 16px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        .treemap-item:hover { opacity: 0.8; }
+
+        .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
+
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        .loading { animation: pulse 2s infinite; }
+
+        .alert-item {
+            padding: 12px;
+            border-radius: 6px;
+            border-left: 4px solid;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .alert-critical { background: rgba(239, 68, 68, 0.1); border-color: #ef4444; color: #fca5a5; }
+        .alert-warning { background: rgba(234, 179, 8, 0.1); border-color: #eab308; color: #fef08a; }
+        .alert-opportunity { background: rgba(34, 197, 94, 0.1); border-color: #22c55e; color: #86efac; }
+    </style>
+    <link rel="stylesheet" href="../responsive-framework.css">
+  </head>
+<body class="bg-slate-950 text-slate-100 antialiased">
+    <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-slate-900 border-r border-slate-800 flex flex-col shrink-0">
+            <!-- Logo -->
+            <div class="p-6 border-b border-slate-800">
+                <div class="flex items-center gap-3">
+                    <span class="text-2xl">🏭</span>
+                    <div>
+                        <h1 class="font-bold text-white">SoftFactory</h1>
+                        <p class="text-xs text-slate-400">Premium SaaS</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation -->
+            <nav class="flex-1 p-6 space-y-2 overflow-y-auto">
+    <button class="hamburger" aria-label="Toggle navigation menu">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+                <a href="dashboard.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 transition">
+                    <span>📊</span> 대시보드
+                </a>
+                <a href="performance.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg bg-indigo-600 text-white font-medium">
+                    <span>📈</span> 성과 & ROI
+                </a>
+                <a href="billing.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 transition">
+                    <span>💳</span> 결제 및 청구
+                </a>
+                <a href="profile.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 transition">
+                    <span>👤</span> 프로필
+                </a>
+
+                <div class="my-6 border-t border-slate-800"></div>
+
+                <!-- Services Quick Links -->
+                <p class="text-xs font-semibold text-slate-400 uppercase px-4 mb-3">서비스</p>
+                <a href="../sns-auto/index.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 transition">
+                    <span>📱</span> SNS Auto
+                </a>
+                <a href="../review/index.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 transition">
+                    <span>⭐</span> Review
+                </a>
+                <a href="../coocook/index.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 transition">
+                    <span>🍳</span> CooCook
+                </a>
+                <a href="../ai-automation/index.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 transition">
+                    <span>🤖</span> AI Automation
+                </a>
+                <a href="../webapp-builder/index.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 transition">
+                    <span>💻</span> WebApp Builder
+                </a>
+            </nav>
+
+            <!-- User Info -->
+            <div class="p-6 border-t border-slate-800">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-white" id="userName">Demo User</p>
+                        <p class="text-xs text-slate-400" id="userEmail">demo@softfactory.com</p>
+                    </div>
+                    <button onclick="logout()" class="p-2 hover:bg-slate-800 rounded-lg transition" title="Logout">
+                        <span>🚪</span>
+                    </button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <!-- Header -->
+            <header class="h-16 bg-slate-900 border-b border-slate-800 px-6 flex items-center justify-between shrink-0">
+                <div>
+                    <h2 class="text-xl font-bold text-white">성과 및 ROI 대시보드</h2>
+                    <p class="text-xs text-slate-400">실시간 비즈니스 메트릭 & 분석</p>
+                </div>
+                <div class="flex items-center gap-4">
+                    <select id="timePeriod" onchange="updateAllCharts()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg transition text-sm border border-slate-700">
+                        <option value="1m">지난 1개월</option>
+                        <option value="3m">지난 3개월</option>
+                        <option value="6m">지난 6개월</option>
+                        <option value="1y">지난 1년</option>
+                    </select>
+                    <button onclick="location.reload()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg transition text-sm">
+                        🔄 새로고침
+                    </button>
+                </div>
+            </header>
+
+            <!-- Content -->
+            <main class="flex-1 overflow-y-auto p-6 space-y-6">
+                <!-- Section 1: Core Performance Metrics -->
+                <section class="space-y-4">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-lg font-bold text-white">📊 핵심 성과 지표</h3>
+                        <p class="text-xs text-slate-400">실시간 업데이트</p>
+                    </div>
+
+                    <div class="grid grid-cols-2 lg:grid-cols-5 gap-4">
+                        <!-- ROI -->
+                        <div class="metric-card bg-slate-900 border border-slate-800 rounded-lg p-4">
+                            <div class="flex items-center justify-between mb-2">
+                                <p class="text-sm text-slate-400">ROI</p>
+                                <span class="metric-trend trend-up">
+                                    <span>↑</span> <span id="roiChange">+18%</span>
+                                </span>
+                            </div>
+                            <p class="text-3xl font-bold text-green-400" id="roiValue">245%</p>
+                            <p class="text-xs text-slate-500 mt-1">투자 대비 수익률</p>
+                        </div>
+
+                        <!-- ROAS -->
+                        <div class="metric-card bg-slate-900 border border-slate-800 rounded-lg p-4">
+                            <div class="flex items-center justify-between mb-2">
+                                <p class="text-sm text-slate-400">ROAS</p>
+                                <span class="metric-trend trend-up">
+                                    <span>↑</span> <span id="roasChange">+12%</span>
+                                </span>
+                            </div>
+                            <p class="text-3xl font-bold text-blue-400" id="roasValue">4.2x</p>
+                            <p class="text-xs text-slate-500 mt-1">광고 지출 대비 수익</p>
+                        </div>
+
+                        <!-- LTV -->
+                        <div class="metric-card bg-slate-900 border border-slate-800 rounded-lg p-4">
+                            <div class="flex items-center justify-between mb-2">
+                                <p class="text-sm text-slate-400">LTV</p>
+                                <span class="metric-trend trend-up">
+                                    <span>↑</span> <span id="ltvChange">+8%</span>
+                                </span>
+                            </div>
+                            <p class="text-3xl font-bold text-purple-400" id="ltvValue">₩4,850K</p>
+                            <p class="text-xs text-slate-500 mt-1">고객 평생 가치</p>
+                        </div>
+
+                        <!-- CAC -->
+                        <div class="metric-card bg-slate-900 border border-slate-800 rounded-lg p-4">
+                            <div class="flex items-center justify-between mb-2">
+                                <p class="text-sm text-slate-400">CAC</p>
+                                <span class="metric-trend trend-down">
+                                    <span>↓</span> <span id="cacChange">-5%</span>
+                                </span>
+                            </div>
+                            <p class="text-3xl font-bold text-yellow-400" id="cacValue">₩250K</p>
+                            <p class="text-xs text-slate-500 mt-1">고객 획득 비용</p>
+                        </div>
+
+                        <!-- Payback -->
+                        <div class="metric-card bg-slate-900 border border-slate-800 rounded-lg p-4">
+                            <div class="flex items-center justify-between mb-2">
+                                <p class="text-sm text-slate-400">회수 기간</p>
+                                <span class="metric-trend trend-down">
+                                    <span>↓</span> <span id="paybackChange">-2주</span>
+                                </span>
+                            </div>
+                            <p class="text-3xl font-bold text-indigo-400" id="paybackValue">1.2개월</p>
+                            <p class="text-xs text-slate-500 mt-1">평균 회수 기간</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Section 2: Goals vs Actuals -->
+                <section class="space-y-4">
+                    <h3 class="text-lg font-bold text-white">🎯 목표 vs 실제</h3>
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                        <!-- Monthly Revenue Target -->
+                        <div class="bg-slate-900 border border-slate-800 rounded-lg p-6">
+                            <div class="flex items-center justify-between mb-4">
+                                <h4 class="font-semibold text-white">월별 매출 목표</h4>
+                                <span class="status-badge status-success">92% 달성</span>
+                            </div>
+                            <div class="space-y-3">
+                                <div>
+                                    <div class="flex justify-between mb-2">
+                                        <span class="text-sm text-slate-400">2월</span>
+                                        <span class="text-sm font-semibold text-white">₩28.5M / ₩30M</span>
+                                    </div>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill progress-excellent" style="width: 92%;"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between mb-2">
+                                        <span class="text-sm text-slate-400">1월</span>
+                                        <span class="text-sm font-semibold text-white">₩25.2M / ₩28M</span>
+                                    </div>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill progress-good" style="width: 90%;"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between mb-2">
+                                        <span class="text-sm text-slate-400">12월</span>
+                                        <span class="text-sm font-semibold text-white">₩32.1M / ₩32M</span>
+                                    </div>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill progress-excellent" style="width: 100%;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Service KPI Achievement -->
+                        <div class="bg-slate-900 border border-slate-800 rounded-lg p-6">
+                            <div class="flex items-center justify-between mb-4">
+                                <h4 class="font-semibold text-white">서비스별 KPI 달성률</h4>
+                                <span class="status-badge status-info">평균 87%</span>
+                            </div>
+                            <div class="space-y-3">
+                                <div>
+                                    <div class="flex justify-between mb-2">
+                                        <span class="text-sm text-slate-400">SNS Auto</span>
+                                        <span class="text-sm font-semibold text-white">95%</span>
+                                    </div>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill progress-excellent" style="width: 95%;"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between mb-2">
+                                        <span class="text-sm text-slate-400">CooCook</span>
+                                        <span class="text-sm font-semibold text-white">78%</span>
+                                    </div>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill progress-warning" style="width: 78%;"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between mb-2">
+                                        <span class="text-sm text-slate-400">Review</span>
+                                        <span class="text-sm font-semibold text-white">89%</span>
+                                    </div>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill progress-good" style="width: 89%;"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between mb-2">
+                                        <span class="text-sm text-slate-400">AI Automation</span>
+                                        <span class="text-sm font-semibold text-white">82%</span>
+                                    </div>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill progress-good" style="width: 82%;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Section 3: Comparative Analysis -->
+                <section class="space-y-4">
+                    <h3 class="text-lg font-bold text-white">📉 비교 분석</h3>
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                        <!-- Monthly Growth Chart -->
+                        <div class="bg-slate-900 border border-slate-800 rounded-lg p-6">
+                            <h4 class="font-semibold text-white mb-4">월별 성장 추이</h4>
+                            <div class="chart-container" id="monthlyGrowthChart"></div>
+                        </div>
+
+                        <!-- Service ROI Benchmark -->
+                        <div class="bg-slate-900 border border-slate-800 rounded-lg p-6">
+                            <h4 class="font-semibold text-white mb-4">서비스별 ROI 벤치마크</h4>
+                            <div class="chart-container" id="serviceROIChart"></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Section 4: Advanced Visualizations -->
+                <section class="space-y-4">
+                    <h3 class="text-lg font-bold text-white">🎨 고급 시각화</h3>
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                        <!-- Gauge: Goal Achievement -->
+                        <div class="bg-slate-900 border border-slate-800 rounded-lg p-6">
+                            <h4 class="font-semibold text-white mb-4">목표 달성도</h4>
+                            <div class="gauge-container" id="gaugeChart"></div>
+                        </div>
+
+                        <!-- Treemap: Value Distribution -->
+                        <div class="bg-slate-900 border border-slate-800 rounded-lg p-6">
+                            <h4 class="font-semibold text-white mb-4">가치 규모 분포 (트리맵)</h4>
+                            <div id="treemapChart" style="width: 100%; height: 250px;"></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Section 5: Issues & Opportunities -->
+                <section class="space-y-4">
+                    <h3 class="text-lg font-bold text-white">⚠️ 경고 & 기회</h3>
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                        <!-- Critical Issues -->
+                        <div class="space-y-2">
+                            <h4 class="text-sm font-semibold text-white">위험 (상위 3)</h4>
+                            <div class="alert-item alert-critical">
+                                <div class="flex-1">
+                                    <p class="text-sm font-semibold">CooCook 매출 부진</p>
+                                    <p class="text-xs opacity-80">목표 대비 22% 미달</p>
+                                </div>
+                                <span class="text-lg">🔴</span>
+                            </div>
+                            <div class="alert-item alert-critical">
+                                <div class="flex-1">
+                                    <p class="text-sm font-semibold">CAC 상승세</p>
+                                    <p class="text-xs opacity-80">월간 +15% 증가 추세</p>
+                                </div>
+                                <span class="text-lg">📈</span>
+                            </div>
+                            <div class="alert-item alert-warning">
+                                <div class="flex-1">
+                                    <p class="text-sm font-semibold">이탈율 증가</p>
+                                    <p class="text-xs opacity-80">전월 대비 +8%</p>
+                                </div>
+                                <span class="text-lg">⚠️</span>
+                            </div>
+                        </div>
+
+                        <!-- Warnings -->
+                        <div class="space-y-2">
+                            <h4 class="text-sm font-semibold text-white">주의 (상위 3)</h4>
+                            <div class="alert-item alert-warning">
+                                <div class="flex-1">
+                                    <p class="text-sm font-semibold">Review API 응답 지연</p>
+                                    <p class="text-xs opacity-80">목표 대비 12% 초과</p>
+                                </div>
+                                <span class="text-lg">🐌</span>
+                            </div>
+                            <div class="alert-item alert-warning">
+                                <div class="flex-1">
+                                    <p class="text-sm font-semibold">LTV 감소 신호</p>
+                                    <p class="text-xs opacity-80">구매 빈도 ↓ 3개월</p>
+                                </div>
+                                <span class="text-lg">📉</span>
+                            </div>
+                            <div class="alert-item alert-warning">
+                                <div class="flex-1">
+                                    <p class="text-sm font-semibold">마케팅 ROI 악화</p>
+                                    <p class="text-xs opacity-80">ROAS 4.2x → 3.8x</p>
+                                </div>
+                                <span class="text-lg">💰</span>
+                            </div>
+                        </div>
+
+                        <!-- Opportunities -->
+                        <div class="space-y-2">
+                            <h4 class="text-sm font-semibold text-white">기회 (상위 3)</h4>
+                            <div class="alert-item alert-opportunity">
+                                <div class="flex-1">
+                                    <p class="text-sm font-semibold">SNS Auto 상한선 돌파</p>
+                                    <p class="text-xs opacity-80">목표 대비 +32% 달성</p>
+                                </div>
+                                <span class="text-lg">✨</span>
+                            </div>
+                            <div class="alert-item alert-opportunity">
+                                <div class="flex-1">
+                                    <p class="text-sm font-semibold">WebApp Builder 성장</p>
+                                    <p class="text-xs opacity-80">신규 사용자 +45%</p>
+                                </div>
+                                <span class="text-lg">🚀</span>
+                            </div>
+                            <div class="alert-item alert-opportunity">
+                                <div class="flex-1">
+                                    <p class="text-sm font-semibold">교차판매 기회</p>
+                                    <p class="text-xs opacity-80">기존 고객 300명 대상</p>
+                                </div>
+                                <span class="text-lg">🎯</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Section 6: YoY Comparison -->
+                <section class="space-y-4">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-lg font-bold text-white">📊 YoY (전년 동기 대비) 추이</h3>
+                        <p class="text-xs text-slate-400">2025년 2월 vs 2026년 2월</p>
+                    </div>
+                    <div class="bg-slate-900 border border-slate-800 rounded-lg p-6">
+                        <div class="chart-container" id="yoyChart"></div>
+                    </div>
+                </section>
+
+                <!-- Section 7: AI Recommendations -->
+                <section class="space-y-4">
+                    <h3 class="text-lg font-bold text-white">🤖 AI 추천 액션</h3>
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                        <div class="bg-gradient-to-r from-indigo-900 to-blue-900 border border-indigo-700 rounded-lg p-6">
+                            <div class="flex items-start gap-4">
+                                <span class="text-2xl">💡</span>
+                                <div class="flex-1">
+                                    <h4 class="font-semibold text-white mb-2">CooCook 매출 증대</h4>
+                                    <p class="text-sm text-blue-200 mb-3">신규 셰프 온보딩 및 마케팅 강화 권장</p>
+                                    <div class="flex gap-2">
+                                        <button onclick="showAction('coocook')" class="text-xs px-3 py-1 bg-blue-700 hover:bg-blue-600 rounded transition">상세 분석</button>
+                                        <button onclick="acceptAction('coocook')" class="text-xs px-3 py-1 bg-green-700 hover:bg-green-600 rounded transition">수행</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-gradient-to-r from-green-900 to-emerald-900 border border-green-700 rounded-lg p-6">
+                            <div class="flex items-start gap-4">
+                                <span class="text-2xl">💎</span>
+                                <div class="flex-1">
+                                    <h4 class="font-semibold text-white mb-2">SNS Auto 확장</h4>
+                                    <p class="text-sm text-green-200 mb-3">성공 가능성 높음, 고급 기능 추가</p>
+                                    <div class="flex gap-2">
+                                        <button onclick="showAction('sns')" class="text-xs px-3 py-1 bg-green-700 hover:bg-green-600 rounded transition">상세 분석</button>
+                                        <button onclick="acceptAction('sns')" class="text-xs px-3 py-1 bg-green-700 hover:bg-green-600 rounded transition">수행</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Dashboard
+        document.addEventListener('DOMContentLoaded', async () => {
+            await initializeDashboard();
+        });
+
+        async function initializeDashboard() {
+            // Load user info
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
+            document.getElementById('userName').textContent = user.name || 'Demo User';
+            document.getElementById('userEmail').textContent = user.email || 'demo@softfactory.com';
+
+            // Initialize all charts
+            updateAllCharts();
+            initializeTreemap();
+            initializeGaugeChart();
+        }
+
+        async function updateAllCharts() {
+            const period = document.getElementById('timePeriod').value;
+
+            // Monthly Growth Chart
+            initializeMonthlyGrowthChart(period);
+
+            // Service ROI Chart
+            initializeServiceROIChart();
+
+            // YoY Chart
+            initializeYoYChart();
+        }
+
+        function initializeMonthlyGrowthChart(period) {
+            const options = {
+                chart: { type: 'area', height: 320, toolbar: { show: false }, sparkline: { enabled: false } },
+                series: [
+                    { name: '매출', data: [22, 24, 25.2, 28.5] },
+                    { name: '목표', data: [25, 26, 28, 30] }
+                ],
+                xaxis: { categories: ['11월', '12월', '1월', '2월'] },
+                colors: ['#10b981', '#ef4444'],
+                stroke: { curve: 'smooth', width: 2 },
+                fill: { type: 'gradient', gradient: { opacityFrom: 0.45, opacityTo: 0.05 } },
+                grid: { borderColor: '#334155', strokeDashArray: 3 },
+                yaxis: { labels: { formatter: val => '₩' + val + 'M' }, tickAmount: 4 },
+                theme: { mode: 'dark' },
+                tooltip: { theme: 'dark', x: { format: 'MMM' } }
+            };
+
+            const chart = new ApexCharts(document.getElementById('monthlyGrowthChart'), options);
+            chart.render();
+        }
+
+        function initializeServiceROIChart() {
+            const options = {
+                chart: { type: 'bar', height: 320, toolbar: { show: false } },
+                series: [{ name: 'ROI (%)', data: [285, 220, 195, 160, 145] }],
+                xaxis: { categories: ['SNS Auto', 'AI Automation', 'Review', 'WebApp', 'CooCook'] },
+                colors: ['#3b82f6'],
+                grid: { borderColor: '#334155' },
+                plotOptions: { bar: { borderRadius: 4, dataLabels: { position: 'top' } } },
+                dataLabels: { enabled: true, formatter: val => val + '%' },
+                theme: { mode: 'dark' }
+            };
+
+            const chart = new ApexCharts(document.getElementById('serviceROIChart'), options);
+            chart.render();
+        }
+
+        function initializeYoYChart() {
+            const options = {
+                chart: { type: 'column', height: 350, toolbar: { show: false } },
+                series: [
+                    { name: '2025년 2월', data: [18500, 15200, 12800, 8500, 6200] },
+                    { name: '2026년 2월', data: [28500, 22100, 18600, 12400, 9100] }
+                ],
+                xaxis: { categories: ['매출', '신규고객', '주문량', 'API호출', '가입'] },
+                colors: ['#8b5cf6', '#06b6d4'],
+                grid: { borderColor: '#334155' },
+                plotOptions: { column: { borderRadius: 4 } },
+                yaxis: { labels: { formatter: val => val / 1000 + 'K' } },
+                theme: { mode: 'dark' },
+                legend: { position: 'top' }
+            };
+
+            const chart = new ApexCharts(document.getElementById('yoyChart'), options);
+            chart.render();
+        }
+
+        function initializeTreemap() {
+            const data = [
+                { name: 'SNS Auto', value: 285, roi: 285 },
+                { name: 'AI Automation', value: 220, roi: 220 },
+                { name: 'Review', value: 195, roi: 195 },
+                { name: 'WebApp Builder', value: 160, roi: 160 },
+                { name: 'CooCook', value: 145, roi: 145 }
+            ];
+
+            const colors = ['#06b6d4', '#3b82f6', '#8b5cf6', '#ec4899', '#f59e0b'];
+            const colorMap = {};
+            data.forEach((d, i) => colorMap[d.name] = colors[i]);
+
+            const container = d3.select('#treemapChart');
+            const width = container.node().offsetWidth;
+            const height = 250;
+
+            // Create treemap
+            const root = d3.hierarchy({ children: data })
+                .sum(d => d.value)
+                .sort((a, b) => b.value - a.value);
+
+            const treemap = d3.treemap()
+                .size([width, height])
+                .paddingTop(0)
+                .paddingRight(2)
+                .paddingBottom(2)
+                .paddingLeft(2);
+
+            const nodes = treemap(root).leaves();
+
+            const svg = container.append('svg')
+                .attr('width', width)
+                .attr('height', height);
+
+            svg.selectAll('g')
+                .data(nodes)
+                .enter()
+                .append('g')
+                .attr('transform', d => `translate(${d.x0},${d.y0})`)
+                .append('rect')
+                .attr('width', d => d.x1 - d.x0)
+                .attr('height', d => d.y1 - d.y0)
+                .attr('fill', d => colorMap[d.data.name])
+                .attr('opacity', 0.8)
+                .attr('rx', 4);
+
+            svg.selectAll('g')
+                .append('text')
+                .attr('x', 4)
+                .attr('y', 18)
+                .attr('font-size', '12px')
+                .attr('font-weight', '600')
+                .attr('fill', 'white')
+                .text(d => d.data.name);
+
+            svg.selectAll('g')
+                .append('text')
+                .attr('x', 4)
+                .attr('y', 32)
+                .attr('font-size', '14px')
+                .attr('font-weight', '700')
+                .attr('fill', 'white')
+                .text(d => d.data.roi + '%');
+        }
+
+        function initializeGaugeChart() {
+            const options = {
+                chart: { type: 'radialBar', height: 300, sparkline: { enabled: false } },
+                series: [87],
+                plotOptions: {
+                    radialBar: {
+                        startAngle: -135,
+                        endAngle: 135,
+                        track: { background: '#334155' },
+                        dataLabels: {
+                            name: { fontSize: '14px', color: '#94a3b8' },
+                            value: { fontSize: '32px', color: '#10b981' }
+                        }
+                    }
+                },
+                labels: ['목표 달성도'],
+                colors: ['#10b981'],
+                theme: { mode: 'dark' }
+            };
+
+            const chart = new ApexCharts(document.getElementById('gaugeChart'), options);
+            chart.render();
+        }
+
+        function showAction(actionType) {
+            const details = {
+                coocook: '1) 신규 셰프 5명 모집\n2) 마케팅 예산 50% 증대\n3) 프로모션 이벤트 실행\n예상 효과: +35% 매출',
+                sns: '1) 고급 분석 기능 추가\n2) 팀 협업 도구 강화\n3) 가격 계층화 (Tier 추가)\n예상 효과: +22% ARPU'
+            };
+            alert('📊 상세 분석\n\n' + details[actionType]);
+        }
+
+        function acceptAction(actionType) {
+            alert('✅ ' + (actionType === 'coocook' ? 'CooCook 매출 증대' : 'SNS Auto 확장') + ' 계획이 승인되었습니다.\n\n담당팀에 할당되었습니다.');
+        }
+
+        async function logout() {
+            localStorage.clear();
+            window.location.href = 'login.html';
+        }
+    </script>
+    <script src="../mobile-optimization.js" defer></script>
+</body>
+</html>

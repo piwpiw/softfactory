@@ -1,46 +1,9 @@
 # CLAUDE.md — Multi-Agent Standard Architecture
-> **Project Completion Engine v3.0** | Claude Code Official Sub-Agent Framework
+> **Project Completion Engine v2.1** | Claude Code Official Sub-Agent Framework
 >
 > **Updated:** 2026-02-25 | **Status:** PRODUCTION | **Mode:** Auto-Execution
 >
 > **Core Principle:** 프로젝트 주제 제시 → 다중 에이전트 자동 실행 → 상용 표준 완성
-
----
-
-## 🔗 **IMPORTS** (모든 에이전트 — 액션 전 필독)
-
-```
-# LAYER 1: Governance
-# → orchestrator/README.md                (Master integration guide — START HERE)
-# → CLAUDE.md Section 17                  (15 Enterprise Governance Principles)
-
-# LAYER 2: Shared Intelligence
-# → shared-intelligence/patterns.md       (Reusable solutions — reuse first)
-# → shared-intelligence/decisions.md      (ADR log — check before deciding)
-# → shared-intelligence/pitfalls.md       (Failure prevention — check before coding)
-
-# LAYER 3: Execution System
-# → orchestrator/phase-structure-v4.md    (7 phases: Research→Plan→Req→Doc→Design→Code→Test)
-# → orchestrator/prompt-templates.md      (7 fixed prompts, parameter injection)
-# → orchestrator/orchestration-engine.md  (Task dependency graph, smart parallelization)
-# → orchestrator/agent-registry.md        (Authority matrix — prevent unauthorized actions)
-# → orchestrator/mcp-registry.md          (10 MCP connections — no ad-hoc APIs)
-
-# LAYER 4: Agent Collaboration
-# → core/AGENT_COLLABORATION_LAYER.md     (Agent spawner, consultation bus, mission manager)
-# → core/agent_spawner.py                 (Dynamic agent creation, authority enforcement)
-# → core/consultation_bus.py              (Inter-agent async communication)
-# → core/mission_manager.py               (Task state machine, dependencies, parallelization)
-
-# LAYER 5: Operational Excellence
-# → orchestrator/lean-execution-protocol.md   (Append-only docs, context auto-compact)
-# → shared-intelligence/token-budget-strategy.md (Prediction, allocation, monitoring)
-# → shared-intelligence/cost-log.md       (Real-time token tracking)
-```
-
-**Rule:** Every agent reads layers 1-5 (`#` import chain) before any action.
-- Critical path: orchestrator/README.md → phase-structure → prompt-templates → core/ ← START HERE
-- Never skip: Authority validation (agent-registry.md), Reuse check (patterns.md), Pitfall review (pitfalls.md)
 
 ---
 
@@ -49,22 +12,9 @@
 ```
 새 프로젝트 시작:
 "프로젝트: [이름], 요구사항: [설명], 스택: [기술], 마감: [날짜]"
-→ Orchestrator 자동 활성화
-→ Phase -1 ~ 7 자동 실행 (Spec-First, Doc-First, Review-Heavy)
-→ Production-ready 결과 납품 + PR 자동 생성
-
-실행 순서 (CRITICAL):
-  Research → Plan → Requirement → Documentation (중요!) → Design → Code → Test → Deploy
-
-모델 전략:
-  - 기본: Haiku (빠름, 저비용) — Phases -1 ~ 6
-  - Critical만: Sonnet (정확함) — Phase 2 검증, Phase 5 보안, Phase 7 최종
-  - Cost: 227K (Haiku all) vs 105K (Haiku+Sonnet critical) = 76% 절감
-
-당신의 역할: Supervisor + Approver + Integrator
-  - 감독: 대시보드 보기 (5분/프로젝트)
-  - 승인: Critical만 (scope, security, deploy)
-  - 통합: 최종 배포
+→ Orchestrator 자동 활성화 (.claude/agents/orchestrator.md)
+→ Phase 0-4 자동 실행
+→ Production-ready 결과 납품
 
 현재 실행 중인 서비스: http://localhost:8000
 데모 접근: passkey = demo2026
@@ -90,23 +40,11 @@ D:/Project/
 │   ├── skills/                    ← Sonolbot 스킬
 │   │   ├── sonolbot-tasks/
 │   │   └── sonolbot-telegram/
-│   └── settings.local.json        ← Bash(*) 권한 + 4 Hooks
+│   └── settings.local.json        ← Bash(*) 권한
 │
 ├── .mcp.json                      ← 10개 MCP 서버 설정
 ├── .env                           ← 환경변수 (git 제외)
-├── CLAUDE.md                      ← 이 파일 (v3.0)
-│
-├── shared-intelligence/           ← 크로스-세션 에이전트 메모리
-│   ├── pitfalls.md                ← 실패 방지 (매 태스크 추가 필수)
-│   ├── patterns.md                ← 재사용 솔루션 라이브러리
-│   ├── decisions.md               ← ADR 로그 (모든 결정 기록)
-│   ├── cost-log.md                ← 토큰/비용 추적
-│   ├── handoffs/                  ← 에이전트간 핸드오프 노트
-│   └── checkpoints/               ← 장기 태스크 체크포인트
-│
-├── orchestrator/                  ← 거버넌스 레이어
-│   ├── mcp-registry.md            ← 모든 MCP 서버 (외부 연결 선언 필수)
-│   └── agent-registry.md          ← 에이전트 권한 매트릭스
+├── CLAUDE.md                      ← 이 파일 (v2.1)
 │
 ├── agents/                        ← Python 에이전트 구현체
 │   ├── 01_dispatcher/             ← Chief Dispatcher
@@ -494,11 +432,8 @@ Orchestrator:
 ### **활성 프로젝트**
 | ID | 이름 | 상태 | 시작 | 예상 완료 | 담당 |
 |----|------|------|------|----------|------|
-| M-001 | Infrastructure | ✅ COMPLETE | 2026-02-22 | 2026-02-22 | PA-01 |
-| M-002 | CooCook API | 🔄 IN_PROGRESS (30%) | 2026-02-22 | 2026-04-15 | PA-04 → PA-05 |
-| M-003 | SoftFactory Hub | ✅ DEPLOYED | 2026-02-23 | 2026-02-24 | PA-05 + PA-06 |
-| M-004 | JARVIS Telegram Bot | ✅ ACTIVE | 2026-02-22 | Ongoing | PA-10 |
-| M-005 | Sonolbot Daemon | ✅ ACTIVE | 2026-02-23 | Ongoing | PA-01 |
+| P001 | SoftFactory | COMPLETE | 2026-02-23 | 2026-02-24 | C (Dev) |
+| P002 | CooCook API | IN_PROGRESS | 2026-02-22 | 2026-03-15 | B (Arch) → C (Dev) |
 
 ---
 
@@ -688,11 +623,10 @@ DOMAIN=yourdomain.com
 
 | 날짜 | Agent | 액션 |
 |------|-------|-----|
-| 2026-02-25 | Orchestrator | Governance v3.0 — shared-intelligence/, orchestrator/, 4 hooks, import chaining |
-| 2026-02-25 | Orchestrator | CLAUDE.md v3.0 (15-principle enterprise standard) |
-| 2026-02-24 | PA-07 (QA) | SoftFactory 16/16 API 테스트 100% 통과 |
-| 2026-02-24 | PA-05 (Dev) | SoftFactory 완전 구현 (75 HTML pages, 5 services) |
-| 2026-02-23 | PA-01 | M-005 Sonolbot daemon 통합 + Project Brain 강화 |
+| 2026-02-25 | Orchestrator | CLAUDE.md v2.0 표준화 완료 |
+| 2026-02-24 | Agent C (Dev) | SoftFactory 완전 구현 (75 pages) |
+| 2026-02-24 | Agent D (QA) | SoftFactory 100% 테스트 통과 |
+| 2026-02-24 | Agent E (DevOps) | SoftFactory 배포 완료 |
 
 ---
 
@@ -709,219 +643,6 @@ DOMAIN=yourdomain.com
 
 ---
 
----
-
-## 🎮 **SECTION 18: 당신의 역할 정의 (YOU = Supervisor + Approver + Integrator)**
-
-> **New (v3.1):** Orchestration v2.0과 함께 당신의 역할을 최소화하고 시스템 자동화를 극대화합니다.
-
-### **당신이 해야 할 일 (3가지만)**
-
-```
-1️⃣  SUPERVISOR (감독)
-   ├─ 대시보드 보기: 실시간 프로젝트 진행도
-   ├─ 경고 받기: Critical alert 자동 통보
-   └─ 개입 필요 시: 만 요청
-
-2️⃣  APPROVER (승인)
-   ├─ Critical 결정만 승인 (scope 변경, 시간 연장)
-   ├─ 나머지는 자동: 기준 명확 → 자동 실행
-   └─ PR review: 최종 merge 승인만
-
-3️⃣  INTEGRATOR (통합)
-   ├─ 최종 테스트: QA 완료 후 smoke test
-   ├─ 배포 승인: Go/No-go 결정
-   └─ 모니터링: 배포 후 1시간 관찰
-```
-
-### **당신이 하지 말아야 할 일**
-
-```
-❌ 코드 작성 (에이전트가 함)
-❌ 테스트 작성 (QA Engineer가 함)
-❌ 설계 (Architect가 함)
-❌ 일상적 승인 (정책 자동화)
-❌ 병렬/순차 결정 (Smart orchestrator가 함)
-❌ Conflict 해결 (자동 merge 전략)
-```
-
----
-
-## ⚙️ **SECTION 19: 자동화 정책 (Complete Autonomy)**
-
-### **정책 1: Token 폭탄 방지**
-
-```
-🎯 Hard Limit:
-├─ Per-session: 200K tokens (초과 시 즉시 STOP)
-├─ Per-project: Budget × 1.2 (경고 @ 110%, 중단 @ 120%)
-├─ Per-agent: Role-specific limit (DevLead < 50K, etc.)
-└─ Auto-action: 초과 시 자동 압축 또는 프로젝트 분할
-
-📊 Monitoring:
-├─ Real-time tracker (token-tracker.json)
-├─ Auto-alert @ 80%, 90%, 100%, 110% 지점
-├─ Auto-recover: Batch compression, context caching 자동 적용
-└─ You: 경고받기만 (수동 개입 불필요)
-```
-
-### **정책 2: Merge Hell 방지**
-
-```
-🔀 Branch Strategy (자동):
-├─ Per-project: feature/{project-id}/{date} 자동 생성
-├─ Per-agent: feature/{project}/{agent-role} 자동 분기
-├─ Conflict detection: Merge 전 자동 감지
-└─ Auto-resolve: 정책 기반 자동 해결
-   ├─ Schema changes: DB-last wins (migration safety)
-   ├─ API changes: API spec wins (contract first)
-   ├─ Config changes: User's local config wins
-   └─ Docs: Auto-merge (non-blocking)
-
-🚦 Merge Gate:
-├─ 조건 1: CI/CD 100% PASS
-├─ 조건 2: Code review (1 approval)
-├─ 조건 3: Test coverage >= 80%
-├─ 조건 4: Security scan 0 critical
-└─ Auto-merge: 모든 조건 충족 시 자동 merge (당신 승인 불필요)
-   └─ Exception: Production deploy는 당신 최종 승인 필수
-```
-
-### **정책 3: 병목 제거**
-
-```
-🚀 Bottleneck Detection (자동):
-├─ Task waiting > 5 min? → Auto-escalate to orchestrator
-├─ Agent blocked? → Auto-assign fallback agent
-├─ Dependency unmet? → Auto-reorder tasks
-├─ Resource exhausted? → Auto-queue & alert you
-
-⚡ Parallelization (스마트 자동):
-├─ Independent tasks → 자동 병렬화
-├─ Serial dependencies → 자동 감지 & 순차화
-├─ Smart batching → 유사 작업 묶음 (tokens 절감)
-└─ You: 모니터만 (개입 불필요)
-```
-
-### **정책 4: 선제적 판단 (Proactive)**
-
-```
-🧠 Auto-Decision Engine:
-├─ Risk detected? → Self-healing 시도
-├─ Healing 실패? → 당신에게 escalate with options
-├─ User input needed? → 2분 대기, 응답 없으면 default 선택
-├─ Anomaly? → Slack/Telegram alert (real-time)
-└─ Critical issue? → 자동 rollback (롤백 후 보고)
-
-📋 Decision Criteria (명확):
-├─ Scope change: User approval only
-├─ Timeline change: Auto-eval, 당신 승인
-├─ Feature cut: Auto-recommend, 당신 decision
-├─ Quality issue: Auto-fix if possible, else escalate
-└─ Security issue: 즉시 STOP, 당신 승인 전 proceed 금지
-```
-
----
-
-## 🎯 **SECTION 20: 실행 체크리스트 (Orchestrator Auto-Checklist)**
-
-모든 프로젝트 실행 전 Orchestrator가 자동으로 확인:
-
-```
-[ ] 요구사항 명확한가?
-    → No? → 당신에게 2개 clarifying questions 제시
-    → Yes? → Continue
-
-[ ] 기술 스택 정의되었는가?
-    → No? → 기존 스택과 일치성 확인, default 제안
-    → Yes? → Continue
-
-[ ] 마감일 현실적인가?
-    → No? → 당신에게 "마감일 연장 또는 scope 축소" 선택 제시
-    → Yes? → Continue
-
-[ ] Token 예산 충분한가?
-    → No? → 자동 scope 축소 제안 또는 session split
-    → Yes? → Continue
-
-[ ] 코드/문서 기존에 있는가?
-    → Yes? → Phase -1 (분석) 자동 시작
-    → No? → Phase 0 (discovery) 자동 시작
-
-[ ] 병렬화 가능한가?
-    → Yes? → Smart parallelization 자동 활성화
-    → No? → Serial execution with checkpoints
-
-[ ] 승인 필요한가?
-    → 기준 충족 & low-risk? → Auto-approve (당신 개입 불필요)
-    → High-risk or scope change? → 당신 승인 요청
-```
-
----
-
-## 🚨 **SECTION 21: 경고 & 에스컬레이션**
-
-당신이 받을 경고 (3가지만):
-
-```
-🟢 INFO (무시해도 됨)
-├─ "Phase 1 complete: PRD ready"
-├─ "M-002: 68% token efficiency"
-└─ "Token tracker updated"
-
-🟡 WARNING (확인 추천)
-├─ "Token usage 80%" → 프로젝트 계속 가능하지만 주의
-├─ "Phase 2 → Phase 3 delay detected" → 원인 자동 분석, 보고
-└─ "Build failing on 1/5 test cases" → 자동 재실행 후 보고
-
-🔴 CRITICAL (즉시 개입 필요)
-├─ "Token 초과" → 당신 결정: Continue(expensive) / Stop(loss)
-├─ "Security vulnerability detected" → 자동 STOP, 당신 승인 필요
-├─ "Merge conflict 자동 해결 불가" → 당신이 선택지 제시받음
-└─ "Production deploy failed" → 자동 rollback, 당신 승인으로 재시도
-```
-
----
-
 **Version History:**
 - v1.0: 2026-02-22 (Deca-Agent 초기)
-- v2.0: 2026-02-25 (표준화 완료)
-- v3.0: 2026-02-25 (Enterprise Governance — 15 principles, shared-intelligence, orchestrator registry, hooks)
-- v3.1: 2026-02-25 (Orchestration v2.0 — 당신의 역할 최소화, 자동화 극대화)
-
----
-
-## 🏛️ **SECTION 17: Enterprise Governance Standards (15 Principles)**
-
-> **Authoritative source** — these 15 principles override all other conventions.
-> Every agent inherits these at all layers: root, agent, sub-project.
-
-**[1]** You are the master orchestrator of an enterprise multi-agent SaaS platform built exclusively on Claude Code official standards, methodologies, and maximum known capability benchmarks.
-
-**[2]** Enforce CLAUDE.md at root, agent, and sub-project layers with `#` import chaining — every agent reads its scoped constitution before any action; no agent acts outside its defined authority matrix.
-
-**[3]** All external connections via MCP only (stdio + SSE transport) — maintain MCP registry at `orchestrator/mcp-registry.md`; no ad-hoc API calls, no direct DB access, no undeclared dependencies.
-
-**[4]** Activate all four Hooks: PreToolUse (scope + permission validation), PostToolUse (action logging + QA trigger), Stop (force shared-intelligence update before close), Notification (escalate to orchestrator on threshold breach). Config: `.claude/settings.local.json`.
-
-**[5]** Execute independent tasks via parallel subagents using git worktree isolation per agent; enforce sequential execution with explicit handoff protocol for dependent tasks; checkpoint every long-running task to `shared-intelligence/checkpoints/[task-id].md`.
-
-**[6]** Apply full quality gate pipeline before every commit and handoff: test coverage ≥80%, zero lint warnings, type check pass, secret scan clean, prompt injection surface reviewed, inter-agent message sanitized and orchestrator-validated.
-
-**[7]** Failure recovery: max 3 retries with modified approach per failure, fallback to backup agent on breach, root cause logged immediately — zero silent failures, zero unlogged state changes, zero unresolved escalations.
-
-**[8]** Cost discipline: log token usage and estimated cost per agent per task per sub-project to `shared-intelligence/cost-log.md`; flag tasks exceeding threshold to orchestrator; prefer parallel execution to minimize wall-clock time and maximize token efficiency.
-
-**[9]** After every task without exception: append to `shared-intelligence/pitfalls.md`, `patterns.md`, `decisions.md` (ADR format), `cost-log.md`; write handoff notes for next agent; promote reusable solutions to patterns library; update CLAUDE.md prevention rules from new pitfalls.
-
-**[10]** The system is a compounding intelligence engine — every sub-project adds capability, every failure adds prevention, every pattern reduces future cost; complexity is the enemy, efficiency is the law.
-
-**[11]** New sub-project onboarding: create `/sub-projects/[name]/CLAUDE.md` from master template; define scope-in and scope-out in one sentence each; declare all consumed main-service APIs; assign agents with explicit authority boundaries (`orchestrator/agent-registry.md`); inherit all `shared-intelligence/` knowledge; confirm tech stack matches platform standards; set measurable success metrics before first commit.
-
-**[12]** Session and context management: use `--resume` to continue interrupted sessions; use `--continue` for same-context follow-up; compress context proactively on long agentic loops; never allow context window overflow to cause silent task abandonment.
-
-**[13]** CI/CD pipeline integration: run Claude Code in headless mode with `--dangerously-skip-permissions` in isolated pipeline environments only; pipe `--output-format stream-json` to structured log collectors; gate deployments on all quality checks passing; no manual override without orchestrator approval logged in ADR.
-
-**[14]** Sub-project authority: each sub-project agent inherits platform standards but owns its local CLAUDE.md; local overrides allowed only for project-specific tooling; no local override may weaken security, quality gates, or shared-intelligence update obligations.
-
-**[15]** Anthropic Cookbook patterns, Claude Code changelog, and `modelcontextprotocol.io` spec must be reviewed before implementing any new agent capability — no reinvention of solved patterns; reuse first, extend second, build new only when justified in ADR (`shared-intelligence/decisions.md`).
+- v2.0: 2026-02-25 (표준화 완료 - 현재)

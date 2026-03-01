@@ -296,3 +296,13 @@ def cached_endpoint(ttl: int = 300):
 def get_cache() -> AdvancedCache:
     """Get global cache instance"""
     return _global_cache
+
+
+def cache_get(key: str) -> Optional[Any]:
+    """Get value from cache"""
+    return _global_cache.get(key)
+
+
+def cache_set(key: str, value: Any, ttl: int = 300) -> None:
+    """Set value in cache"""
+    _global_cache.set(key, value, ttl)

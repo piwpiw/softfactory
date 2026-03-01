@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#111827">
+  <title>모니터링 대시보드 — SoftFactory</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="api.js"></script>
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+
+    /* Status badge */
+    .badge-ok       { background:#16a34a; color:#fff; }
+    .badge-degraded { background:#ca8a04; color:#fff; }
+    .badge-error    { background:#dc2626; color:#fff; }
+    .badge-unknown  { background:#475569; color:#fff; }
+
+    /* Health indicator dot */
+    .dot-ok      { background:#22c55e; }
+    .dot-degraded{ background:#eab308; }
+    .dot-error   { background:#ef4444; }
+    .dot-unknown { background:#64748b; }
+
+    .pulse { animation: pulse 2s cubic-bezier(0.4,0,0.6,1) infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.5} }
+
+    /* Alert log rows */
+    .alert-info     { border-left: 3px solid #3b82f6; }
+    .alert-warning  { border-left: 3px solid #f59e0b; }
+    .alert-error    { border-left: 3px solid #ef4444; }
+    .alert-critical { border-left: 3px solid #dc2626; }
+    .alert-success  { border-left: 3px solid #22c55e; }
+  </style>
+</head>
+
+<body class="bg-slate-950 text-slate-100 min-h-screen">
+
+<!-- Layout -->
+<div class="flex h-screen overflow-hidden">
+
+  <!-- Sidebar -->
+  <aside class="w-64 bg-slate-900 border-r border-slate-800 flex flex-col shrink-0">
+    <div class="p-6">
+      <a href="dashboard.html" class="flex items-center gap-2">
+        <span class="text-2xl">🏭</span>
+        <div>
+          <h1 class="font-bold text-white text-sm">SoftFactory</h1>
+          <p class="text-xs text-slate-400">Admin</p>
+        </div>
+      </a>
+    </div>
+
+    <nav class="flex-1 px-4 space-y-1">
+      <a href="admin.html"            class="block px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 text-sm">⚙️ 관리</a>
+      <a href="admin-monitoring.html" class="block px-4 py-2.5 rounded-lg bg-indigo-600 text-white font-medium text-sm">📡 모니터링</a>
+      <a href="dashboard.html"        class="block px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 text-sm">📊 대시보드</a>
+    </nav>
+
+    <div class="p-6 border-t border-slate-800">
+      <button onclick="logout()"
+        class="w-full px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium text-sm">
+        로그아웃
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main content -->
+  <div class="flex-1 flex flex-col overflow-hidden">
+
+    <!-- Top bar -->
+    <header class="h-16 bg-slate-900 border-b border-slate-800 px-6 flex items-center justify-between">
+      <h2 class="text-xl font-bold text-white">📡 Production Monitoring</h2>
+      <div class="flex items-center gap-3">
+        <div id="refresh-indicator" class="flex items-center gap-2 text-sm text-slate-400">
+          <div class="w-2 h-2 rounded-full bg-green-500 pulse"></div>
+          <span>Auto-refresh 10s</span>
+        </div>
+        <button onclick="refresh()"
+          class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-medium">
+          Refresh
+        </button>
+      </div>
+    </header>
+
+    <!-- Scrollable content -->
+    <main class="flex-1 overflow-y-auto p-6 space-y-6">
+
+      <!-- Overall health status banner -->
+      <div id="health-banner"
+        class="rounded-xl p-4 border border-slate-700 bg-slate-800 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div id="health-dot" class="w-4 h-4 rounded-full dot-unknown pulse"></div>
+          <div>
+            <p class="font-semibold text-white text-lg" id="health-title">Checking…</p>
+            <p class="text-slate-400 text-sm" id="health-subtitle">Loading health status</p>
+          </div>
+        </div>
+        <div class="text-right">
+          <p class="text-slate-400 text-xs">Version</p>
+          <p class="font-mono text-white" id="health-version">—</p>
+        </div>
+      </div>
+
+      <!-- KPI row -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="bg-slate-800 rounded-xl p-5 border border-slate-700">
+          <p class="text-slate-400 text-xs mb-1">Uptime</p>
+          <p class="text-2xl font-bold text-white" id="kpi-uptime">—</p>
+        </div>
+        <div class="bg-slate-800 rounded-xl p-5 border border-slate-700">
+          <p class="text-slate-400 text-xs mb-1">Memory (RSS)</p>
+          <p class="text-2xl font-bold text-white" id="kpi-memory">—</p>
+        </div>
+        <div class="bg-slate-800 rounded-xl p-5 border border-slate-700">
+          <p class="text-slate-400 text-xs mb-1">CPU %</p>
+          <p class="text-2xl font-bold text-white" id="kpi-cpu">—</p>
+        </div>
+        <div class="bg-slate-800 rounded-xl p-5 border border-slate-700">
+          <p class="text-slate-400 text-xs mb-1">Error Rate</p>
+          <p class="text-2xl font-bold text-white" id="kpi-error-rate">—</p>
+        </div>
+      </div>
+
+      <!-- Charts row -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+        <!-- Error rate chart -->
+        <div class="bg-slate-800 rounded-xl p-6 border border-slate-700">
+          <h3 class="text-base font-semibold text-white mb-4">Error Rate (last 20 polls)</h3>
+          <div id="chart-error-rate"></div>
+        </div>
+
+        <!-- Response time chart -->
+        <div class="bg-slate-800 rounded-xl p-6 border border-slate-700">
+          <h3 class="text-base font-semibold text-white mb-4">Avg Response Time — Top Endpoints (ms)</h3>
+          <div id="chart-response-time"></div>
+        </div>
+
+      </div>
+
+      <!-- Services status + active users -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+        <!-- Services -->
+        <div class="bg-slate-800 rounded-xl p-6 border border-slate-700">
+          <h3 class="text-base font-semibold text-white mb-4">Service Status</h3>
+          <div id="services-grid" class="grid grid-cols-2 gap-3">
+            <div class="text-slate-500 text-sm">Loading…</div>
+          </div>
+        </div>
+
+        <!-- Business KPIs -->
+        <div class="bg-slate-800 rounded-xl p-6 border border-slate-700">
+          <h3 class="text-base font-semibold text-white mb-4">Business Snapshot</h3>
+          <div class="space-y-3">
+            <div class="flex justify-between text-sm">
+              <span class="text-slate-400">Total Users</span>
+              <span class="font-semibold text-white" id="biz-users">—</span>
+            </div>
+            <div class="flex justify-between text-sm">
+              <span class="text-slate-400">Active Subscriptions</span>
+              <span class="font-semibold text-white" id="biz-subs">—</span>
+            </div>
+            <div class="flex justify-between text-sm">
+              <span class="text-slate-400">Total Revenue</span>
+              <span class="font-semibold text-white" id="biz-revenue">—</span>
+            </div>
+            <div class="flex justify-between text-sm">
+              <span class="text-slate-400">Total Requests</span>
+              <span class="font-semibold text-white" id="biz-requests">—</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Scheduler jobs -->
+      <div class="bg-slate-800 rounded-xl p-6 border border-slate-700">
+        <h3 class="text-base font-semibold text-white mb-4">Scheduler Jobs</h3>
+        <div id="scheduler-table" class="overflow-x-auto">
+          <p class="text-slate-500 text-sm">Loading…</p>
+        </div>
+      </div>
+
+      <!-- Slowest endpoints -->
+      <div class="bg-slate-800 rounded-xl p-6 border border-slate-700">
+        <h3 class="text-base font-semibold text-white mb-4">Slowest Endpoints (top 5)</h3>
+        <div id="slow-endpoints" class="overflow-x-auto">
+          <p class="text-slate-500 text-sm">Loading…</p>
+        </div>
+      </div>
+
+      <!-- Recent alerts log -->
+      <div class="bg-slate-800 rounded-xl p-6 border border-slate-700">
+        <h3 class="text-base font-semibold text-white mb-4">Recent Errors (last 10)</h3>
+        <div id="recent-errors" class="space-y-2">
+          <p class="text-slate-500 text-sm">Loading…</p>
+        </div>
+      </div>
+
+    </main>
+  </div><!-- /main content -->
+</div><!-- /layout -->
+
+<script>
+  requireAuth();
+
+  /* ------------------------------------------------------------------
+   * Chart instances
+   * ------------------------------------------------------------------ */
+  const API = window.API_BASE || 'http://localhost:8000';
+
+  // Sliding-window data for trend charts
+  const MAX_POINTS = 20;
+  const errorRateHistory  = [];
+  const timeLabels        = [];
+
+  let errorRateChart  = null;
+  let responseChart   = null;
+
+  function initCharts() {
+    errorRateChart = new ApexCharts(document.getElementById('chart-error-rate'), {
+      chart:  { type: 'area', height: 220, background: 'transparent',
+                toolbar: { show: false }, animations: { enabled: false } },
+      theme:  { mode: 'dark' },
+      stroke: { curve: 'smooth', width: 2 },
+      fill:   { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: 0.4, opacityTo: 0.05 } },
+      colors: ['#ef4444'],
+      series: [{ name: 'Error Rate %', data: [] }],
+      xaxis:  { categories: [], labels: { style: { colors: '#94a3b8', fontSize: '11px' } } },
+      yaxis:  { labels: { style: { colors: '#94a3b8' }, formatter: v => v.toFixed(1) + '%' } },
+      grid:   { borderColor: '#1e293b' },
+      tooltip:{ theme: 'dark' },
+    });
+    errorRateChart.render();
+
+    responseChart = new ApexCharts(document.getElementById('chart-response-time'), {
+      chart:  { type: 'bar', height: 220, background: 'transparent',
+                toolbar: { show: false }, animations: { enabled: false } },
+      theme:  { mode: 'dark' },
+      colors: ['#6366f1'],
+      plotOptions: { bar: { borderRadius: 4, horizontal: true } },
+      series: [{ name: 'Avg ms', data: [] }],
+      xaxis:  { categories: [], labels: { style: { colors: '#94a3b8', fontSize: '11px' } } },
+      yaxis:  { labels: { style: { colors: '#94a3b8', fontSize: '10px' } } },
+      grid:   { borderColor: '#1e293b' },
+      tooltip:{ theme: 'dark' },
+    });
+    responseChart.render();
+  }
+
+  /* ------------------------------------------------------------------
+   * Data fetchers
+   * ------------------------------------------------------------------ */
+
+  async function fetchHealth() {
+    try {
+      const r = await fetch(`${API}/health`);
+      return await r.json();
+    } catch { return null; }
+  }
+
+  async function fetchAdminMetrics() {
+    try {
+      const token = localStorage.getItem('access_token') || 'demo_token';
+      const r = await fetch(`${API}/api/admin/metrics`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (!r.ok) return null;
+      return await r.json();
+    } catch { return null; }
+  }
+
+  /* ------------------------------------------------------------------
+   * DOM helpers
+   * ------------------------------------------------------------------ */
+
+  function setEl(id, text) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = text;
+  }
+
+  function serviceCard(name, statusStr) {
+    const ok      = statusStr === 'ok';
+    const dotCls  = ok ? 'dot-ok' : 'dot-error';
+    const label   = ok ? 'OK' : statusStr;
+    return `
+      <div class="flex items-center gap-2 bg-slate-700 rounded-lg px-3 py-2">
+        <div class="w-2.5 h-2.5 rounded-full ${dotCls}"></div>
+        <span class="text-sm text-slate-300 flex-1">${name}</span>
+        <span class="text-xs font-medium ${ok ? 'text-green-400' : 'text-red-400'}">${label}</span>
+      </div>`;
+  }
+
+  function tableRow(...cells) {
+    return `<tr class="border-t border-slate-700">${
+      cells.map((c, i) =>
+        `<td class="px-4 py-2 text-sm ${i === 0 ? 'text-slate-300 font-mono' : 'text-slate-400'}">${c}</td>`
+      ).join('')
+    }</tr>`;
+  }
+
+  function wrapTable(header, rows) {
+    if (!rows.length) return '<p class="text-slate-500 text-sm">데이터 없음</p>';
+    return `<table class="w-full">
+      <thead><tr>${header.map(h =>
+        `<th class="px-4 py-2 text-left text-xs font-medium text-slate-500 uppercase">${h}</th>`
+      ).join('')}</tr></thead>
+      <tbody>${rows.join('')}</tbody>
+    </table>`;
+  }
+
+  /* ------------------------------------------------------------------
+   * Render functions
+   * ------------------------------------------------------------------ */
+
+  function renderHealth(data) {
+    if (!data) {
+      setEl('health-title',    'Health check failed');
+      setEl('health-subtitle', 'Could not reach /health');
+      document.getElementById('health-dot').className = 'w-4 h-4 rounded-full dot-error';
+      return;
+    }
+
+    const ok = data.status === 'ok';
+    document.getElementById('health-dot').className =
+      `w-4 h-4 rounded-full ${ok ? 'dot-ok' : 'dot-degraded'} pulse`;
+    setEl('health-title',    ok ? 'All Systems Operational' : 'Degraded — check services');
+    setEl('health-subtitle', `DB: ${data.database || '—'} | Scheduler: ${data.scheduler || '—'}`);
+    setEl('health-version',  data.version || '—');
+    setEl('kpi-uptime',      data.uptime || '—');
+    setEl('kpi-memory',      data.memory_mb != null ? data.memory_mb + ' MB' : '—');
+    setEl('kpi-cpu',         data.cpu_percent != null ? data.cpu_percent + '%' : '—');
+
+    // Services grid
+    const svcs = data.services || {};
+    const html = Object.entries(svcs).map(([k, v]) => serviceCard(k, v)).join('');
+    document.getElementById('services-grid').innerHTML = html || '<p class="text-slate-500 text-sm">No service data</p>';
+  }
+
+  function renderAdminMetrics(data) {
+    if (!data) return;
+
+    // Business KPIs
+    setEl('biz-users',    data.total_users    != null ? data.total_users    : '—');
+    setEl('biz-subs',     data.active_subscriptions != null ? data.active_subscriptions : '—');
+    setEl('biz-revenue',  data.total_revenue  != null ? '₩' + data.total_revenue.toLocaleString() : '—');
+    setEl('biz-requests', data.global_request_count != null ? data.global_request_count.toLocaleString() : '—');
+
+    // Error rate KPI + history
+    const errRate = data.global_error_rate_pct ?? 0;
+    setEl('kpi-error-rate', errRate.toFixed(2) + '%');
+
+    const now = new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    errorRateHistory.push(errRate);
+    timeLabels.push(now);
+    if (errorRateHistory.length > MAX_POINTS) { errorRateHistory.shift(); timeLabels.shift(); }
+    if (errorRateChart) {
+      errorRateChart.updateOptions({
+        series: [{ name: 'Error Rate %', data: [...errorRateHistory] }],
+        xaxis:  { categories: [...timeLabels] },
+      });
+    }
+
+    // Response time bar chart (top 5 slowest)
+    const slow  = (data.slowest_endpoints || []).slice(0, 5);
+    const labels = slow.map(e => e.method + ' ' + (e.endpoint || '').slice(0, 30));
+    const vals   = slow.map(e => e.avg_ms || 0);
+    if (responseChart) {
+      responseChart.updateOptions({
+        series: [{ name: 'Avg ms', data: vals }],
+        xaxis:  { categories: labels },
+      });
+    }
+
+    // Scheduler table
+    const sched = data.scheduler || {};
+    const jobs  = sched.jobs || [];
+    if (jobs.length) {
+      const rows = jobs.map(j => tableRow(
+        j.id || '—',
+        j.name || '—',
+        j.next_run_time ? new Date(j.next_run_time).toLocaleString('ko-KR') : '—',
+        j.trigger || '—',
+      ));
+      document.getElementById('scheduler-table').innerHTML = wrapTable(
+        ['Job ID', 'Name', 'Next Run', 'Trigger'], rows
+      );
+    } else {
+      const st = sched.running != null
+        ? (sched.running ? 'Running (' + (sched.job_count || 0) + ' jobs)' : 'Stopped')
+        : JSON.stringify(sched);
+      document.getElementById('scheduler-table').innerHTML =
+        `<p class="text-slate-400 text-sm">${st}</p>`;
+    }
+
+    // Slowest endpoints table
+    const slowRows = (data.slowest_endpoints || []).map(e => tableRow(
+      e.endpoint || '—',
+      e.method || '—',
+      (e.avg_ms || 0).toFixed(1) + ' ms',
+      e.request_count || 0,
+      e.error_rate_pct + '%',
+    ));
+    document.getElementById('slow-endpoints').innerHTML = wrapTable(
+      ['Endpoint', 'Method', 'Avg ms', 'Requests', 'Error %'], slowRows
+    );
+
+    // Recent errors
+    const errs = data.recent_errors || [];
+    if (errs.length) {
+      document.getElementById('recent-errors').innerHTML = errs.map(e => `
+        <div class="alert-error bg-slate-700 rounded-lg px-4 py-2 flex items-center justify-between gap-3">
+          <div class="flex items-center gap-2 min-w-0">
+            <span class="text-red-400 font-semibold text-sm shrink-0">${e.status_code}</span>
+            <span class="font-mono text-sm text-slate-300 truncate">${e.method} ${e.endpoint}</span>
+          </div>
+          <div class="text-right shrink-0">
+            <span class="text-xs text-slate-500">${e.duration_ms} ms</span>
+            <br>
+            <span class="text-xs text-slate-500">${e.timestamp ? new Date(e.timestamp).toLocaleTimeString('ko-KR') : ''}</span>
+          </div>
+        </div>`).join('');
+    } else {
+      document.getElementById('recent-errors').innerHTML =
+        '<p class="text-green-400 text-sm">No recent errors</p>';
+    }
+  }
+
+  /* ------------------------------------------------------------------
+   * Main refresh loop
+   * ------------------------------------------------------------------ */
+
+  async function refresh() {
+    const [healthData, metricsData] = await Promise.all([
+      fetchHealth(),
+      fetchAdminMetrics(),
+    ]);
+    renderHealth(healthData);
+    renderAdminMetrics(metricsData);
+  }
+
+  // Bootstrap
+  initCharts();
+  refresh();
+
+  // Auto-refresh every 10 seconds
+  setInterval(refresh, 10_000);
+</script>
+</body>
+</html>

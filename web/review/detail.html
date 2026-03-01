@@ -1,99 +1,198 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>캠페인 상세 — Review | SoftFactory</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#020617">
+    <title>Campaign Intelligence — ReviewEverything Platinum</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
     <script src="../platform/api.js"></script>
-    <style>body { font-family: 'Inter', sans-serif; }</style>
+    <style>
+        :root {
+            --primary-amber: #f59e0b;
+            --primary-dark: #020617;
+            --glass-bg: rgba(15, 23, 42, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: #020617;
+            color: #f8fafc;
+        }
+
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+        }
+
+        .hero-gradient {
+            background: linear-gradient(to bottom, rgba(2, 6, 23, 0) 0%, #020617 100%);
+        }
+
+        .scroll-hide::-webkit-scrollbar {
+            display: none;
+        }
+    </style>
 </head>
-<body class="bg-slate-950 text-slate-100">
+
+<body class="overflow-hidden bg-slate-950">
     <div class="flex h-screen overflow-hidden">
-        <aside class="w-64 bg-slate-900 border-r border-slate-800 flex flex-col shrink-0">
-            <div class="p-6 border-b border-slate-800">
-                <a href="index.html" class="flex items-center gap-3">
-                    <span>←</span><span class="text-sm font-medium">돌아가기</span>
+        <!-- Platinum Sidebar -->
+        <aside class="w-72 glass-panel border-r border-slate-800/50 flex flex-col z-50">
+            <div class="p-8 border-b border-slate-800/50">
+                <a href="index.html" class="flex items-center gap-4 group">
+                    <div
+                        class="w-10 h-10 rounded-xl bg-slate-800 flex items-center justify-center group-hover:bg-amber-500 group-hover:text-black transition-all">
+                        ←</div>
+                    <span class="text-sm font-bold text-slate-400 group-hover:text-white">BACK TO HUB</span>
                 </a>
             </div>
-            <div class="p-6 border-t border-slate-800">
-                <button onclick="logout()" class="p-2 hover:bg-slate-800 rounded-lg">🚪</button>
-            </div>
+            <nav class="flex-1 p-8 space-y-6">
+                <div class="space-y-2">
+                    <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Analytics</p>
+                    <div class="glass-panel p-4 rounded-2xl bg-slate-900/50">
+                        <p class="text-[10px] text-slate-500 font-black uppercase mb-1">Profit Index</p>
+                        <p class="text-2xl font-black text-amber-500">92%</p>
+                    </div>
+                </div>
+                <div class="space-y-2">
+                    <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Probablity</p>
+                    <div class="glass-panel p-4 rounded-2xl bg-slate-900/50">
+                        <p class="text-[10px] text-slate-500 font-black uppercase mb-1">Approval Odds</p>
+                        <p class="text-2xl font-black text-indigo-400">High</p>
+                    </div>
+                </div>
+            </nav>
         </aside>
-        <div class="flex-1 flex flex-col overflow-hidden">
-            <header class="h-16 bg-slate-900 border-b border-slate-800 px-6 flex items-center justify-between shrink-0">
-                <h2 class="text-xl font-bold text-white" id="campaignTitle">캠페인 로딩중...</h2>
-            </header>
-            <main class="flex-1 overflow-y-auto p-6">
-                <div class="grid grid-cols-3 gap-6">
-                    <div class="col-span-2 space-y-6">
-                        <div class="bg-slate-800 rounded-xl p-6 border border-slate-700">
-                            <h3 class="text-lg font-bold text-white mb-4">📝 캠페인 소개</h3>
-                            <p class="text-slate-300" id="campaignDesc">캠페인 설명 로딩중...</p>
-                        </div>
-                        <div class="bg-slate-800 rounded-xl p-6 border border-slate-700">
-                            <h3 class="text-lg font-bold text-white mb-4">📋 캠페인 정보</h3>
-                            <div class="grid grid-cols-2 gap-4">
-                                <div>
-                                    <p class="text-slate-400 text-sm">상품명</p>
-                                    <p class="font-semibold text-white" id="productName">-</p>
-                                </div>
-                                <div>
-                                    <p class="text-slate-400 text-sm">카테고리</p>
-                                    <p class="font-semibold text-white" id="category">-</p>
-                                </div>
-                                <div>
-                                    <p class="text-slate-400 text-sm">리워드</p>
-                                    <p class="font-semibold text-amber-400" id="reward">-</p>
-                                </div>
-                                <div>
-                                    <p class="text-slate-400 text-sm">마감일</p>
-                                    <p class="font-semibold text-white" id="deadline">-</p>
-                                </div>
-                            </div>
+
+        <div class="flex-1 flex flex-col overflow-hidden relative">
+            <main class="flex-1 overflow-y-auto scroll-hide">
+                <!-- Hero Section -->
+                <div class="relative h-[400px] w-full">
+                    <img id="heroImage" src="https://via.placeholder.com/1200x600" class="w-full h-full object-cover"
+                        alt="Hero">
+                    <div class="absolute inset-0 hero-gradient"></div>
+                    <div class="absolute bottom-0 left-0 p-12 w-full">
+                        <span id="platformBadge"
+                            class="bg-amber-500 text-black text-[10px] font-black px-3 py-1 rounded-full tracking-widest uppercase mb-4 inline-block">PLATFORM
+                            NODE</span>
+                        <h2 id="campaignTitle"
+                            class="text-5xl font-black text-white tracking-tighter mb-4 leading-none">Campaign
+                            Loading...</h2>
+                        <div class="flex items-center gap-6">
+                            <span id="brandName"
+                                class="text-lg font-bold text-slate-400 uppercase tracking-wider">PREMIUM BRAND</span>
+                            <div class="h-4 w-[1px] bg-slate-700"></div>
+                            <span id="rewardValue" class="text-2xl font-black text-amber-500">₩0</span>
                         </div>
                     </div>
-                    <div class="space-y-6">
-                        <div class="bg-gradient-to-br from-amber-900/30 to-amber-900/10 rounded-xl p-6 border-2 border-amber-600">
-                            <p class="text-slate-400 text-sm mb-2">모집 현황</p>
-                            <p class="text-3xl font-bold text-white mb-4"><span id="currentReviewers">0</span>/<span id="maxReviewers">20</span></p>
-                            <div class="w-full bg-slate-700 rounded-full h-3 mb-4">
-                                <div id="progressBar" class="bg-amber-500 h-3 rounded-full" style="width: 0%"></div>
+                </div>
+
+                <div class="p-12 grid grid-cols-1 lg:grid-cols-3 gap-12">
+                    <!-- Left: Details -->
+                    <div class="lg:col-span-2 space-y-12">
+                        <section>
+                            <h3 class="text-xs font-black text-slate-500 uppercase tracking-[0.2em] mb-6">Objective &
+                                Scope</h3>
+                            <div class="glass-panel rounded-[2.5rem] p-8 bg-slate-900/40 text-slate-300 leading-relaxed text-sm"
+                                id="campaignDesc">
+                                Content synchronizing...
                             </div>
-                            <a href="apply.html" class="w-full block text-center px-4 py-3 bg-amber-600 hover:bg-amber-700 text-white rounded-lg font-semibold transition">
-                                🎯 신청하기
-                            </a>
+                        </section>
+
+                        <section>
+                            <h3 class="text-xs font-black text-slate-500 uppercase tracking-[0.2em] mb-6">Requirement
+                                Node</h3>
+                            <div class="grid grid-cols-2 gap-6">
+                                <div class="glass-panel p-6 rounded-3xl flex items-center gap-4">
+                                    <div class="text-2xl">📝</div>
+                                    <div>
+                                        <p class="text-[10px] text-slate-500 font-black uppercase">Content Type</p>
+                                        <p id="contentType" class="text-sm font-black text-white">Naver Blog Review</p>
+                                    </div>
+                                </div>
+                                <div class="glass-panel p-6 rounded-3xl flex items-center gap-4">
+                                    <div class="text-2xl">⏳</div>
+                                    <div>
+                                        <p class="text-[10px] text-slate-500 font-black uppercase">Deadline</p>
+                                        <p id="deadlineDate" class="text-sm font-black text-white">2026.03.12</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+
+                    <!-- Right: Action & Stats -->
+                    <div class="space-y-8">
+                        <div
+                            class="glass-panel rounded-[2.5rem] p-10 bg-gradient-to-br from-slate-900 to-indigo-900/10 border-amber-500/20 shadow-2xl">
+                            <h3 class="text-xs font-black text-slate-500 uppercase tracking-[0.2em] mb-6">Application
+                                Node</h3>
+                            <div class="mb-10">
+                                <p class="text-4xl font-black text-white mb-2"><span id="currentApps">0</span><span
+                                        class="text-slate-600 text-xl font-medium"> / </span><span id="maxApps">0</span>
+                                </p>
+                                <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Active
+                                    Applicants</p>
+                            </div>
+                            <div class="w-full bg-slate-950 rounded-full h-2 mb-10 overflow-hidden">
+                                <div id="progressFill" class="bg-amber-500 h-2 rounded-full" style="width: 25%"></div>
+                            </div>
+                            <button onclick="location.href='apply.html?id=' + campaignId"
+                                class="w-full py-5 bg-amber-500 text-black font-black text-sm rounded-2xl shadow-xl shadow-amber-900/30 active:scale-95 transition-all">
+                                INITIATE APPLICATION
+                            </button>
+                            <p class="text-center text-[10px] text-slate-600 font-bold uppercase mt-6 tracking-widest">
+                                Verified Secured Node</p>
+                        </div>
+
+                        <div class="glass-panel rounded-[2.5rem] p-8 border-slate-800/50">
+                            <h3 class="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-4">AI Insight
+                            </h3>
+                            <p class="text-xs text-slate-400 leading-relaxed font-medium italic">"Based on your 84%
+                                approval history in Beauty, we highly recommend this node for immediate revenue
+                                capture."</p>
                         </div>
                     </div>
                 </div>
             </main>
         </div>
     </div>
+
     <script>
         requireAuth();
+        let campaignId = 1;
 
         async function init() {
             try {
                 const params = new URLSearchParams(window.location.search);
-                const campaignId = params.get('id') || 1;
+                campaignId = params.get('id') || 1;
                 const campaign = await getCampaignDetail(campaignId);
 
                 document.getElementById('campaignTitle').textContent = campaign.title;
                 document.getElementById('campaignDesc').textContent = campaign.description;
-                document.getElementById('productName').textContent = campaign.product_name;
-                document.getElementById('category').textContent = campaign.category;
-                document.getElementById('reward').textContent = campaign.reward_value;
-                document.getElementById('deadline').textContent = formatDate(campaign.deadline, 'short');
-                document.getElementById('currentReviewers').textContent = '5';
-                document.getElementById('maxReviewers').textContent = '20';
-                document.getElementById('progressBar').style.width = '25%';
+                document.getElementById('brandName').textContent = campaign.brand || 'PREMIUM BRAND';
+                document.getElementById('rewardValue').textContent = campaign.reward_value;
+                document.getElementById('deadlineDate').textContent = new Date(campaign.deadline).toLocaleDateString();
+                document.getElementById('currentApps').textContent = '12';
+                document.getElementById('maxApps').textContent = '20';
+                document.getElementById('progressFill').style.width = '60%';
+                if (campaign.image_url) document.getElementById('heroImage').src = campaign.image_url;
+                if (campaign.platform) document.getElementById('platformBadge').textContent = campaign.platform + " NODE";
             } catch (error) {
-                showError('캠페인 로드 실패');
+                console.error('Intelligence Load Error:', error);
             }
         }
 
         document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
+
 </html>

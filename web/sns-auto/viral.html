@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#111827">
+<title>바이럴 발견 — SNS Auto | SoftFactory</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="../platform/api.js"></script>
+    <link rel="stylesheet" href="../responsive-framework.css">
+  </head>
+<body class="bg-slate-950 text-slate-100">
+    <div class="flex h-screen overflow-hidden">
+        <aside class="w-64 bg-slate-900 border-r border-slate-800 flex flex-col">
+            <div class="p-6 border-b border-slate-800">
+                <a href="../platform/dashboard.html" class="flex items-center gap-3">
+                    <span class="text-2xl">🏭</span>
+                    <div><h1 class="font-bold text-white text-sm">SoftFactory</h1></div>
+                </a>
+            </div>
+            <nav class="flex-1 p-6 space-y-2">
+    <button class="hamburger" aria-label="Toggle navigation menu">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+                <a href="index.html" class="flex items-center gap-3 px-4 py-2.5 text-slate-300 hover:bg-slate-800 rounded-lg">📊 대시보드</a>
+                <a href="viral.html" class="flex items-center gap-3 px-4 py-2.5 bg-red-600 text-white rounded-lg font-medium">🚀 바이럴</a>
+                <a href="monetize.html" class="flex items-center gap-3 px-4 py-2.5 text-slate-300 hover:bg-slate-800 rounded-lg">💰 수익화</a>
+                <a href="link-in-bio.html" class="flex items-center gap-3 px-4 py-2.5 text-slate-300 hover:bg-slate-800 rounded-lg">🔗 Link in Bio</a>
+                <a href="competitor.html" class="flex items-center gap-3 px-4 py-2.5 text-slate-300 hover:bg-slate-800 rounded-lg">👁️ 경쟁사분석</a>
+            </nav>
+        </aside>
+
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <header class="h-16 bg-slate-900 border-b border-slate-800 px-6 flex items-center justify-between">
+                <div>
+                    <h2 class="text-xl font-bold text-white">🚀 바이럴 콘텐츠 발견</h2>
+                    <p class="text-xs text-slate-400">트렌딩 해시태그 및 토픽</p>
+                </div>
+                <button onclick="refreshTrends()" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-medium">
+                    🔄 새로고침
+                </button>
+            </header>
+
+            <main class="flex-1 overflow-hidden grid grid-cols-3 gap-0">
+                <div class="col-span-2 overflow-y-auto p-6 border-r border-slate-800">
+                    <h3 class="text-lg font-bold text-white mb-4">📈 트렌딩 해시태그</h3>
+                    <div class="space-y-3">
+                        <div class="bg-slate-800 p-4 rounded-lg border border-slate-700 hover:border-red-500 transition cursor-pointer">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-lg font-bold text-red-400">#트렌드</span>
+                                <span class="text-xs bg-red-900/30 text-red-300 px-2 py-1 rounded">📈 +45%</span>
+                            </div>
+                            <p class="text-sm text-slate-400">지난 24시간 | 1.2M 게시물</p>
+                            <div class="mt-2 flex gap-2">
+                                <button onclick="useHashtag('#트렌드')" class="text-xs px-3 py-1 bg-red-600 hover:bg-red-700 text-white rounded font-medium">사용하기</button>
+                                <button class="text-xs px-3 py-1 bg-slate-700 hover:bg-slate-600 text-slate-100 rounded">추가정보</button>
+                            </div>
+                        </div>
+
+                        <div class="bg-slate-800 p-4 rounded-lg border border-slate-700 hover:border-red-500 transition cursor-pointer">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-lg font-bold text-red-400">#SNS</span>
+                                <span class="text-xs bg-red-900/30 text-red-300 px-2 py-1 rounded">📈 +32%</span>
+                            </div>
+                            <p class="text-sm text-slate-400">지난 24시간 | 850K 게시물</p>
+                            <div class="mt-2 flex gap-2">
+                                <button onclick="useHashtag('#SNS')" class="text-xs px-3 py-1 bg-red-600 hover:bg-red-700 text-white rounded font-medium">사용하기</button>
+                                <button class="text-xs px-3 py-1 bg-slate-700 hover:bg-slate-600 text-slate-100 rounded">추가정보</button>
+                            </div>
+                        </div>
+
+                        <div class="bg-slate-800 p-4 rounded-lg border border-slate-700 hover:border-red-500 transition cursor-pointer">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-lg font-bold text-red-400">#마케팅</span>
+                                <span class="text-xs bg-red-900/30 text-red-300 px-2 py-1 rounded">📈 +28%</span>
+                            </div>
+                            <p class="text-sm text-slate-400">지난 24시간 | 720K 게시물</p>
+                            <div class="mt-2 flex gap-2">
+                                <button onclick="useHashtag('#마케팅')" class="text-xs px-3 py-1 bg-red-600 hover:bg-red-700 text-white rounded font-medium">사용하기</button>
+                                <button class="text-xs px-3 py-1 bg-slate-700 hover:bg-slate-600 text-slate-100 rounded">추가정보</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3 class="text-lg font-bold text-white mt-6 mb-4">💡 추천 콘텐츠 타입</h3>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="bg-slate-800 p-4 rounded-lg border border-slate-700">
+                            <p class="font-bold text-white mb-2">🎬 쇼츠</p>
+                            <p class="text-xs text-slate-400">최고 참여율 15-20%</p>
+                        </div>
+                        <div class="bg-slate-800 p-4 rounded-lg border border-slate-700">
+                            <p class="font-bold text-white mb-2">🤣 밈</p>
+                            <p class="text-xs text-slate-400">공유율 35% 이상</p>
+                        </div>
+                        <div class="bg-slate-800 p-4 rounded-lg border border-slate-700">
+                            <p class="font-bold text-white mb-2">🎥 Transition</p>
+                            <p class="text-xs text-slate-400">TikTok 상위 5%</p>
+                        </div>
+                        <div class="bg-slate-800 p-4 rounded-lg border border-slate-700">
+                            <p class="font-bold text-white mb-2">📱 전용 팁</p>
+                            <p class="text-xs text-slate-400">대량 저장 유도</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-slate-900 overflow-y-auto p-6">
+                    <h3 class="text-lg font-bold text-white mb-4">🎯 바이럴 체크리스트</h3>
+                    <div class="space-y-3">
+                        <label class="flex items-center gap-3 cursor-pointer">
+                            <input type="checkbox" class="w-4 h-4 rounded">
+                            <span class="text-sm text-slate-300">트렌딩 해시태그 5개 이상</span>
+                        </label>
+                        <label class="flex items-center gap-3 cursor-pointer">
+                            <input type="checkbox" class="w-4 h-4 rounded">
+                            <span class="text-sm text-slate-300">처음 3초 내 훅 삽입</span>
+                        </label>
+                        <label class="flex items-center gap-3 cursor-pointer">
+                            <input type="checkbox" class="w-4 h-4 rounded">
+                            <span class="text-sm text-slate-300">CTA (Call-to-Action) 포함</span>
+                        </label>
+                        <label class="flex items-center gap-3 cursor-pointer">
+                            <input type="checkbox" class="w-4 h-4 rounded">
+                            <span class="text-sm text-slate-300">댓글 유도 질문 추가</span>
+                        </label>
+                        <label class="flex items-center gap-3 cursor-pointer">
+                            <input type="checkbox" class="w-4 h-4 rounded">
+                            <span class="text-sm text-slate-300">자막 또는 텍스트 오버레이</span>
+                        </label>
+                        <label class="flex items-center gap-3 cursor-pointer">
+                            <input type="checkbox" class="w-4 h-4 rounded">
+                            <span class="text-sm text-slate-300">음향 효과/음악 포함</span>
+                        </label>
+                        <label class="flex items-center gap-3 cursor-pointer">
+                            <input type="checkbox" class="w-4 h-4 rounded">
+                            <span class="text-sm text-slate-300">주제와 톤 일치</span>
+                        </label>
+                    </div>
+
+                    <div class="mt-6 p-4 bg-red-900/20 border border-red-900 rounded-lg">
+                        <p class="text-sm font-bold text-red-300 mb-2">💡 바이럴 팁</p>
+                        <p class="text-xs text-slate-300">
+                            처음 3초 내 관심을 끌고, 시청자가 댓글을 남기도록 유도하는 콘텐츠가 가장 많이 공유됩니다.
+                        </p>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        requireAuth();
+
+        const trendingHashtags = [
+            { tag: '#트렌드', growth: 45, posts: '1.2M', platform: 'Instagram' },
+            { tag: '#SNS', growth: 32, posts: '850K', platform: 'TikTok' },
+            { tag: '#마케팅', growth: 28, posts: '720K', platform: 'YouTube' },
+            { tag: '#콘텐츠', growth: 35, posts: '950K', platform: 'Instagram' },
+            { tag: '#브랜딩', growth: 22, posts: '580K', platform: 'LinkedIn' }
+        ];
+
+        const contentTips = [
+            { emoji: '🎬', title: '쇼츠', desc: '최고 참여율 15-20%', tip: '짧고 임팩트 있게' },
+            { emoji: '🤣', title: '밈', desc: '공유율 35% 이상', tip: '재미있고 관련성 있게' },
+            { emoji: '🎥', title: 'Transition', desc: 'TikTok 상위 5%', tip: '부드러운 전환 효과' },
+            { emoji: '📱', title: '팁 영상', desc: '대량 저장 유도', tip: '실용적이고 명확하게' }
+        ];
+
+        const viralChecklist = [
+            '트렌딩 해시태그 5개 이상',
+            '처음 3초 내 훅 삽입',
+            'CTA (Call-to-Action) 포함',
+            '댓글 유도 질문 추가',
+            '자막 또는 텍스트 오버레이',
+            '음향 효과/음악 포함',
+            '주제와 톤 일치'
+        ];
+
+        function initHashtags() {
+            const container = document.querySelector('.space-y-3');
+            container.innerHTML = trendingHashtags.map((h, i) => `
+                <div class="bg-slate-800 p-4 rounded-lg border border-slate-700 hover:border-red-500 transition cursor-pointer">
+                    <div class="flex items-center justify-between mb-2">
+                        <div>
+                            <span class="text-lg font-bold text-red-400">${h.tag}</span>
+                            <span class="text-xs text-slate-500 ml-2">${h.platform}</span>
+                        </div>
+                        <span class="text-xs bg-red-900/30 text-red-300 px-2 py-1 rounded">📈 +${h.growth}%</span>
+                    </div>
+                    <p class="text-sm text-slate-400">지난 24시간 | ${h.posts} 게시물</p>
+                    <div class="mt-3 flex gap-2">
+                        <button onclick="useHashtag('${h.tag}')" class="text-xs px-3 py-1 bg-red-600 hover:bg-red-700 text-white rounded font-medium transition">사용하기</button>
+                        <button onclick="copyHashtag('${h.tag}')" class="text-xs px-3 py-1 bg-slate-700 hover:bg-slate-600 text-slate-100 rounded transition">복사</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function initContentTypes() {
+            const container = document.querySelector('.grid.grid-cols-2');
+            container.innerHTML = contentTips.map(c => `
+                <div class="bg-slate-800 p-4 rounded-lg border border-slate-700 hover:border-red-500 transition">
+                    <p class="font-bold text-white mb-2">${c.emoji} ${c.title}</p>
+                    <p class="text-xs text-slate-400 mb-2">${c.desc}</p>
+                    <p class="text-xs text-red-400 font-medium">💡 ${c.tip}</p>
+                </div>
+            `).join('');
+        }
+
+        function initChecklist() {
+            // 바이럴 체크리스트 섹션 찾기
+            const sidebarSection = document.querySelector('.bg-slate-900.overflow-y-auto.p-6');
+            const existingChecklist = sidebarSection.querySelector('.space-y-3');
+
+            if (existingChecklist) {
+                existingChecklist.innerHTML = viralChecklist.map((item, i) => `
+                    <label class="flex items-center gap-3 cursor-pointer hover:bg-slate-800/50 p-2 rounded transition">
+                        <input type="checkbox" class="w-4 h-4 rounded accent-red-500" onchange="updateChecklistProgress()">
+                        <span class="text-sm text-slate-300">${item}</span>
+                    </label>
+                `).join('');
+            }
+        }
+
+        function updateChecklistProgress() {
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            if (checkboxes.length === 0) return;
+
+            const checked = Array.from(checkboxes).filter(c => c.checked).length;
+            const progress = Math.floor((checked / checkboxes.length) * 100);
+
+            let progressBar = document.querySelector('#checklistProgress');
+            if (!progressBar) {
+                progressBar = document.createElement('div');
+                progressBar.id = 'checklistProgress';
+                progressBar.className = 'mt-4 p-3 bg-slate-700/50 rounded-lg';
+                const tipBox = document.querySelector('.mt-6.p-4');
+                if (tipBox) {
+                    tipBox.parentElement.insertBefore(progressBar, tipBox);
+                }
+            }
+
+            progressBar.innerHTML = `
+                <p class="text-xs text-slate-400 mb-2">완성도: ${progress}%</p>
+                <div class="w-full bg-slate-700 rounded-full h-2">
+                    <div class="bg-red-600 h-2 rounded-full transition-all" style="width: ${progress}%"></div>
+                </div>
+            `;
+        }
+
+        function copyHashtag(hashtag) {
+            navigator.clipboard.writeText(hashtag);
+            showSuccess(`${hashtag}가 복사되었습니다`);
+        }
+
+        function useHashtag(hashtag) {
+            showInfo(`${hashtag} 해시태그로 포스트 작성 창을 여시겠습니까?`);
+            setTimeout(() => {
+                window.location.href = `create.html?hashtag=${encodeURIComponent(hashtag)}`;
+            }, 500);
+        }
+
+        async function refreshTrends() {
+            try {
+                const button = event.target;
+                const originalText = button.textContent;
+                button.disabled = true;
+                button.textContent = '⏳ 새로고침 중...';
+
+                showInfo('최신 트렌드를 가져오는 중...');
+
+                // 시뮬레이션: 실제로는 API에서 데이터를 가져옴
+                await new Promise(resolve => setTimeout(resolve, 1500));
+
+                // 트렌드 데이터 셔플
+                trendingHashtags.sort(() => Math.random() - 0.5);
+
+                initHashtags();
+                button.disabled = false;
+                button.textContent = originalText;
+                showSuccess('트렌드가 업데이트되었습니다!');
+            } catch (error) {
+                showError('트렌드 업데이트 실패');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initHashtags();
+            initContentTypes();
+            initChecklist();
+            updateChecklistProgress();
+        });
+    </script>
+    <script src="../mobile-optimization.js" defer></script>
+</body>
+</html>

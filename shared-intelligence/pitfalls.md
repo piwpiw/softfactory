@@ -750,3 +750,19 @@ curl -X POST http://localhost:8000/api/admin/public-url-update \
 - **Current Status:** ⚠️ Partially implemented — infrastructure ready, auto-write logic deferred to Phase 2
 - **Reference:** Mission requirement lines: "Create auto-update mechanism: ErrorPattern → pitfall entry format"
 
+### PF-046: OAuth Provider Import from Relative Module Path
+- **Date:** 2026-02-26
+- **Agent:** Team A (SNS OAuth Implementation)
+- **Task:** Task #14 — SNS OAuth & Social Login Implementation
+- **Pitfall:** Initial import used `from ..models import SNSOAuthState` (relative path up two levels) which failed. Correct path from `backend/auth.py` is `from .models import SNSOAuthState` (same package).
+- **Prevention:** When importing from within Flask blueprint packages, use single-dot relative imports for same-level modules. Test imports with: `python3 -c "from backend.auth import auth_bp"` before deployment.
+- **Files:** `backend/auth.py` line 232
+
+### PF-047: OAuth User Model Missing Fields in to_dict()
+- **Date:** 2026-02-26
+- **Agent:** Team A (SNS OAuth Implementation)
+- **Task:** Task #14 — SNS OAuth & Social Login Implementation
+- **Pitfall:** User.to_dict() did not include oauth_provider, oauth_id fields added to User model. This caused OAuth users to appear as non-social-login users after token refresh.
+- **Prevention:** When adding new columns to SQLAlchemy models, immediately update to_dict() method to include all user-facing fields. Add to model documentation template.
+- **Files:** `backend/models.py` User.to_dict() method
+

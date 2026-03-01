@@ -2,18 +2,27 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>설정 — SNS Auto | SoftFactory</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#111827">
+<title>설정 — SNS Auto | SoftFactory</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="../platform/api.js"></script>
     <style>body { font-family: 'Inter', sans-serif; }</style>
-</head>
+    <link rel="stylesheet" href="../responsive-framework.css">
+  </head>
 <body class="bg-slate-950 text-slate-100">
     <div class="flex h-screen overflow-hidden">
         <aside class="w-64 bg-slate-900 border-r border-slate-800 flex flex-col shrink-0">
             <div class="p-6"><a href="index.html" class="flex items-center gap-3"><span class="text-2xl">📱</span><h1 class="font-bold text-white text-sm">SNS Auto</h1></a></div>
             <nav class="flex-1 p-6 space-y-2">
+    <button class="hamburger" aria-label="Toggle navigation menu">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
                 <a href="index.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">📊 대시</a>
                 <a href="settings.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg bg-pink-600 text-white font-medium">⚙️ 설정</a>
             </nav>
@@ -22,82 +31,33 @@
             <header class="h-16 bg-slate-900 border-b border-slate-800 px-6 flex items-center"><h2 class="text-xl font-bold text-white">⚙️ SNS Auto 설정</h2></header>
             <main class="flex-1 overflow-y-auto p-6">
                 <div class="max-w-2xl space-y-6">
-                    <form id="settingsForm" class="space-y-6">
-                        <div class="bg-slate-800 rounded-xl p-8 border border-slate-700">
-                            <h3 class="text-xl font-bold text-white mb-6">발행 설정</h3>
-                            <div class="space-y-4">
-                                <label class="flex items-center gap-3">
-                                    <input type="checkbox" name="auto_optimal_time" class="w-4 h-4 rounded">
-                                    <span class="text-white">자동 최적 시간 발행</span>
-                                </label>
-                                <label class="flex items-center gap-3">
-                                    <input type="checkbox" name="engagement_notifications" class="w-4 h-4 rounded">
-                                    <span class="text-white">엔게이지먼트 알림</span>
-                                </label>
-                                <label class="flex items-center gap-3">
-                                    <input type="checkbox" name="auto_reply_enabled" class="w-4 h-4 rounded">
-                                    <span class="text-white">댓글 자동 응답</span>
-                                </label>
-                            </div>
+                    <div class="bg-slate-800 rounded-xl p-8 border border-slate-700">
+                        <h3 class="text-xl font-bold text-white mb-6">발행 설정</h3>
+                        <div class="space-y-4">
+                            <label class="flex items-center gap-3"><input type="checkbox" checked class="w-4 h-4 rounded"><span class="text-white">자동 최적 시간 발행</span></label>
+                            <label class="flex items-center gap-3"><input type="checkbox" checked class="w-4 h-4 rounded"><span class="text-white">엔게이지먼트 알림</span></label>
+                            <label class="flex items-center gap-3"><input type="checkbox" class="w-4 h-4 rounded"><span class="text-white">댓글 자동 응답</span></label>
+                            <button class="w-full px-4 py-3 bg-pink-600 hover:bg-pink-700 text-white rounded-lg font-medium transition">저장</button>
                         </div>
+                    </div>
 
-                        <div class="bg-slate-800 rounded-xl p-8 border border-slate-700">
-                            <h3 class="text-xl font-bold text-white mb-6">콘텐츠 필터</h3>
-                            <div class="space-y-4">
-                                <div>
-                                    <label class="block text-sm font-medium text-slate-300 mb-2">금지 키워드 (쉼표로 구분)</label>
-                                    <input type="text" name="banned_keywords" placeholder="광고, 스팸, ..." class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white placeholder-slate-500 focus:border-pink-500 focus:outline-none">
-                                </div>
+                    <div class="bg-slate-800 rounded-xl p-8 border border-slate-700">
+                        <h3 class="text-xl font-bold text-white mb-6">콘텐츠 필터</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-slate-300 mb-2">금지 키워드</label>
+                                <input type="text" placeholder="쉼표로 구분" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white placeholder-slate-500 focus:border-pink-500 focus:outline-none">
                             </div>
+                            <button class="w-full px-4 py-3 bg-pink-600 hover:bg-pink-700 text-white rounded-lg font-medium transition">저장</button>
                         </div>
-
-                        <button type="submit" class="w-full px-4 py-3 bg-pink-600 hover:bg-pink-700 text-white rounded-lg font-medium transition">저장하기</button>
-                    </form>
+                    </div>
                 </div>
             </main>
         </div>
     </div>
     <script>
         requireAuth();
-
-        async function init() {
-            try {
-                const result = await apiFetch('/api/sns/settings').then(r => r.json());
-                const settings = result.settings || {};
-
-                // Load settings into form
-                if (settings.auto_optimal_time) document.querySelector('[name="auto_optimal_time"]').checked = true;
-                if (settings.engagement_notifications) document.querySelector('[name="engagement_notifications"]').checked = true;
-                if (settings.auto_reply_enabled) document.querySelector('[name="auto_reply_enabled"]').checked = true;
-                if (settings.banned_keywords) document.querySelector('[name="banned_keywords"]').value = settings.banned_keywords.join(', ');
-            } catch (error) {
-                console.log('Settings load skipped (API not ready)');
-            }
-        }
-
-        document.getElementById('settingsForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            try {
-                const formData = new FormData(e.target);
-                const payload = {
-                    auto_optimal_time: formData.get('auto_optimal_time') === 'on',
-                    engagement_notifications: formData.get('engagement_notifications') === 'on',
-                    auto_reply_enabled: formData.get('auto_reply_enabled') === 'on',
-                    banned_keywords: formData.get('banned_keywords').split(',').map(k => k.trim()).filter(k => k)
-                };
-
-                const result = await apiFetch('/api/sns/settings', {
-                    method: 'PUT',
-                    body: JSON.stringify(payload)
-                }).then(r => r.json());
-
-                showSuccess('설정이 저장되었습니다!');
-            } catch (error) {
-                showError('설정 저장 실패: ' + error.message);
-            }
-        });
-
-        document.addEventListener('DOMContentLoaded', init);
     </script>
+    <script src="../mobile-optimization.js" defer></script>
 </body>
 </html>

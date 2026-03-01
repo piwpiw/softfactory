@@ -1,338 +1,301 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>신청 현황 — SoftFactory</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#020617">
+    <title>Reward & Settlement — ReviewEverything Platinum</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
     <script src="../platform/api.js"></script>
     <style>
-        body { font-family: 'Inter', sans-serif; }
+        :root {
+            --primary-amber: #f59e0b;
+            --primary-dark: #020617;
+            --glass-bg: rgba(15, 23, 42, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: #020617;
+            color: #f8fafc;
+        }
+
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+        }
+
         .status-badge {
             display: inline-block;
             padding: 0.25rem 0.75rem;
-            border-radius: 0.375rem;
-            font-size: 0.75rem;
-            font-weight: 600;
+            border-radius: 0.5rem;
+            font-size: 0.65rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
         }
-        .status-applied { background-color: #1e40af; color: #dbeafe; }
-        .status-selected { background-color: #059669; color: #d1fae5; }
-        .status-rejected { background-color: #991b1b; color: #fee2e2; }
-        .status-completed { background-color: #7c3aed; color: #ede9fe; }
+
+        .status-applied {
+            background: rgba(59, 130, 246, 0.1);
+            color: #3b82f6;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+
+        .status-selected {
+            background: rgba(34, 197, 94, 0.1);
+            color: #22c55e;
+            border: 1px solid rgba(34, 197, 94, 0.2);
+        }
+
+        .status-rejected {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .status-completed {
+            background: rgba(168, 85, 247, 0.1);
+            color: #a855f7;
+            border: 1px solid rgba(168, 85, 247, 0.2);
+        }
+
+        .scroll-hide::-webkit-scrollbar {
+            display: none;
+        }
     </style>
 </head>
-<body class="bg-slate-950 text-slate-100">
+
+<body class="overflow-hidden bg-slate-950">
     <div class="flex h-screen overflow-hidden">
-        <!-- Sidebar -->
-        <aside class="w-64 bg-slate-900 border-r border-slate-800 flex flex-col shrink-0">
-            <div class="p-6 border-b border-slate-800">
-                <a href="../platform/dashboard.html" class="flex items-center gap-3">
-                    <span class="text-2xl">🏭</span>
-                    <div><h1 class="font-bold text-white text-sm">SoftFactory</h1><p class="text-xs text-slate-400">← Back</p></div>
-                </a>
-            </div>
-            <nav class="flex-1 p-6 space-y-2 overflow-y-auto">
-                <p class="text-xs font-semibold text-slate-400 uppercase px-4 mb-3">⭐ Review</p>
-                <a href="index.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">🎯 캠페인 탐색</a>
-                <a href="my-campaigns.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">📋 내 신청</a>
-                <a href="aggregator.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">🔗 체험단 모음</a>
-                <a href="accounts.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">👤 계정 관리</a>
-                <a href="applications.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg bg-amber-600 text-white font-medium">📊 신청 현황</a>
-                <a href="auto-apply.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">⚡ 자동 신청</a>
-            </nav>
-            <div class="p-6 border-t border-slate-800">
-                <div class="flex items-center justify-between">
-                    <p class="text-sm font-medium text-white">Demo User</p>
-                    <button onclick="logout()" class="p-2 hover:bg-slate-800 rounded-lg">🚪</button>
+        <!-- Platinum Sidebar -->
+        <aside class="w-72 glass-panel border-r border-slate-800/50 flex flex-col z-50">
+            <div class="p-8 border-b border-slate-800/50">
+                <div class="flex items-center gap-4">
+                    <div
+                        class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-amber-600 to-amber-400 p-0.5 shadow-lg shadow-amber-900/20">
+                        <div class="w-full h-full bg-slate-950 rounded-2xl flex items-center justify-center text-2xl">⚡
+                        </div>
+                    </div>
+                    <div>
+                        <h1 class="font-black text-white text-lg tracking-tight uppercase">ReviewEngine</h1>
+                        <p class="text-[10px] text-amber-500 font-bold tracking-[0.2em]">PLATINUM EDITION</p>
+                    </div>
                 </div>
             </div>
+
+            <nav class="flex-1 p-6 space-y-1.5 overflow-y-auto scroll-hide">
+                <p class="text-[10px] font-black text-slate-500 uppercase px-4 mb-4 tracking-widest text-slate-400">
+                    Finance Center</p>
+                <a href="index.html"
+                    class="flex items-center gap-4 px-5 py-3.5 rounded-xl text-slate-400 font-medium hover:bg-slate-800/50 hover:text-white transition-all">
+                    <span>🎯</span><span class="text-sm">AI 탐색</span>
+                </a>
+                <a href="aggregator.html"
+                    class="flex items-center gap-4 px-5 py-3.5 rounded-xl text-slate-400 font-medium hover:bg-slate-800/50 hover:text-white transition-all">
+                    <span>🔗</span><span class="text-sm">알파 아카이브</span>
+                </a>
+                <div class="pt-8">
+                    <p class="text-[10px] font-black text-slate-500 uppercase px-4 mb-4 tracking-widest text-slate-400">
+                        Ledger</p>
+                    <a href="applications.html"
+                        class="flex items-center gap-4 px-5 py-3.5 rounded-xl bg-amber-500/10 text-amber-500 font-bold border-l-2 border-amber-500 transition-all">
+                        <span>📊</span><span class="text-sm">리워드 정산 (Settlements)</span>
+                    </a>
+                </div>
+            </nav>
         </aside>
 
-        <!-- Main Content -->
-        <div class="flex-1 flex flex-col overflow-hidden">
-            <header class="h-16 bg-slate-900 border-b border-slate-800 px-6 flex items-center justify-between shrink-0">
+        <div class="flex-1 flex flex-col overflow-hidden relative">
+            <header class="h-24 px-10 flex items-center justify-between shrink-0 z-40">
                 <div>
-                    <h2 class="text-xl font-bold text-white">📊 신청 현황</h2>
-                    <p class="text-xs text-slate-400">당신의 체험단 신청 현황을 확인하세요</p>
+                    <h2 class="text-3xl font-black text-white tracking-tight text-glow">Reward & Settlement</h2>
+                    <p class="text-xs text-slate-400 mt-1 font-medium">Track your earnings and pending review
+                        completions</p>
+                </div>
+                <div class="flex items-center gap-6">
+                    <div
+                        class="flex items-center gap-2 bg-indigo-500/10 border border-indigo-500/20 px-6 py-3 rounded-2xl">
+                        <span class="text-xs font-black text-indigo-400 uppercase tracking-widest">Total Earned</span>
+                        <span class="text-xl font-black text-white">₩1,245,600</span>
+                    </div>
                 </div>
             </header>
 
-            <main class="flex-1 overflow-y-auto p-6">
-                <!-- Filters -->
-                <div class="bg-slate-800 border border-slate-700 rounded-lg p-4 mb-6">
-                    <h3 class="font-semibold text-white mb-4">🔍 필터</h3>
-                    <div class="flex gap-4 flex-wrap">
-                        <select id="status-filter" onchange="loadApplications()" class="bg-slate-700 border border-slate-600 rounded px-3 py-2 text-white text-sm focus:border-amber-500 focus:outline-none">
-                            <option value="">모든 상태</option>
-                            <option value="applied">🔍 검토중</option>
-                            <option value="selected">✅ 선정</option>
-                            <option value="rejected">❌ 탈락</option>
-                            <option value="completed">✔️ 완료</option>
-                        </select>
-                        <input type="date" id="date-from" onchange="loadApplications()" class="bg-slate-700 border border-slate-600 rounded px-3 py-2 text-white text-sm focus:border-amber-500 focus:outline-none">
-                        <input type="date" id="date-to" onchange="loadApplications()" class="bg-slate-700 border border-slate-600 rounded px-3 py-2 text-white text-sm focus:border-amber-500 focus:outline-none">
-                        <button onclick="loadApplications()" class="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded font-medium text-sm">검색</button>
+            <main class="flex-1 overflow-y-auto p-10 pt-0 scroll-hide">
+                <!-- Status & Filter Grid -->
+                <div class="grid grid-cols-4 gap-6 mb-12">
+                    <div class="glass-panel p-6 rounded-[2rem] border-slate-800/50 flex flex-col items-center">
+                        <p id="stat-total" class="text-3xl font-black text-white">0</p>
+                        <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest mt-2">Total Apps</p>
+                    </div>
+                    <div class="glass-panel p-6 rounded-[2rem] border-slate-800/50 flex flex-col items-center">
+                        <p id="stat-selected" class="text-3xl font-black text-green-500">0</p>
+                        <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest mt-2">Active Winners
+                        </p>
+                    </div>
+                    <div class="glass-panel p-6 rounded-[2rem] border-slate-800/50 flex flex-col items-center">
+                        <p id="stat-pending" class="text-3xl font-black text-blue-500">0</p>
+                        <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest mt-2">Under Review</p>
+                    </div>
+                    <div class="glass-panel p-6 rounded-[2rem] border-slate-800/50 flex flex-col items-center">
+                        <p id="stat-rate" class="text-3xl font-black text-amber-500">0%</p>
+                        <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest mt-2">Approval ROI</p>
                     </div>
                 </div>
 
-                <!-- Stats -->
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-                    <div class="bg-slate-800 border border-slate-700 rounded-lg p-4">
-                        <p class="text-slate-400 text-sm mb-2">총 신청</p>
-                        <p id="stat-total" class="text-2xl font-bold text-white">0</p>
+                <!-- Main Ledger Table -->
+                <div class="glass-panel rounded-[2.5rem] border-slate-800/50 overflow-hidden bg-slate-900/40 mb-12">
+                    <div class="p-8 flex items-center justify-between border-b border-white/5">
+                        <h3 class="text-lg font-black text-white">Application Ledger</h3>
+                        <div class="flex gap-4">
+                            <select id="status-filter" onchange="loadApplications()"
+                                class="bg-slate-950 border border-slate-800 rounded-xl px-4 py-2 text-xs font-bold text-slate-300 focus:outline-none focus:border-amber-500">
+                                <option value="">Filter Status</option>
+                                <option value="applied">Reviewing</option>
+                                <option value="selected">Winner</option>
+                                <option value="rejected">Rejected</option>
+                                <option value="completed">Completed</option>
+                            </select>
+                            <button onclick="loadApplications()"
+                                class="px-6 py-2 bg-slate-800 hover:bg-slate-700 text-white font-black text-xs rounded-xl transition-all">REFRESH
+                                LEDGER</button>
+                        </div>
                     </div>
-                    <div class="bg-slate-800 border border-slate-700 rounded-lg p-4">
-                        <p class="text-slate-400 text-sm mb-2">선정</p>
-                        <p id="stat-selected" class="text-2xl font-bold text-green-400">0</p>
-                    </div>
-                    <div class="bg-slate-800 border border-slate-700 rounded-lg p-4">
-                        <p class="text-slate-400 text-sm mb-2">검토중</p>
-                        <p id="stat-pending" class="text-2xl font-bold text-blue-400">0</p>
-                    </div>
-                    <div class="bg-slate-800 border border-slate-700 rounded-lg p-4">
-                        <p class="text-slate-400 text-sm mb-2">선정률</p>
-                        <p id="stat-rate" class="text-2xl font-bold text-amber-400">0%</p>
-                    </div>
-                </div>
 
-                <!-- Table -->
-                <div class="bg-slate-800 border border-slate-700 rounded-lg overflow-hidden">
                     <div class="overflow-x-auto">
-                        <table class="w-full">
-                            <thead class="bg-slate-700 border-b border-slate-600">
-                                <tr>
-                                    <th class="px-6 py-3 text-left text-sm font-semibold text-white">제목</th>
-                                    <th class="px-6 py-3 text-left text-sm font-semibold text-white">계정</th>
-                                    <th class="px-6 py-3 text-left text-sm font-semibold text-white">신청일</th>
-                                    <th class="px-6 py-3 text-left text-sm font-semibold text-white">상태</th>
-                                    <th class="px-6 py-3 text-left text-sm font-semibold text-white">보상</th>
-                                    <th class="px-6 py-3 text-left text-sm font-semibold text-white">액션</th>
+                        <table class="w-full text-sm">
+                            <thead>
+                                <tr class="bg-slate-950/50 border-b border-slate-800/50">
+                                    <th
+                                        class="px-10 py-5 text-left font-black text-[10px] text-slate-500 uppercase tracking-widest">
+                                        Target Campaign</th>
+                                    <th
+                                        class="px-10 py-5 text-left font-black text-[10px] text-slate-500 uppercase tracking-widest">
+                                        Asset Node</th>
+                                    <th
+                                        class="px-10 py-5 text-left font-black text-[10px] text-slate-500 uppercase tracking-widest">
+                                        Settlement</th>
+                                    <th
+                                        class="px-10 py-5 text-left font-black text-[10px] text-slate-500 uppercase tracking-widest">
+                                        Status</th>
+                                    <th
+                                        class="px-10 py-5 text-left font-black text-[10px] text-slate-500 uppercase tracking-widest">
+                                        Link</th>
                                 </tr>
                             </thead>
-                            <tbody id="applications-table" class="divide-y divide-slate-700">
-                                <tr class="hover:bg-slate-700/50">
-                                    <td colspan="6" class="px-6 py-8 text-center text-slate-400">로드 중...</td>
+                            <tbody id="applications-table" class="divide-y divide-slate-800/50">
+                                <!-- Data will be injected here -->
+                                <tr class="animate-pulse h-20">
+                                    <td colspan="5" class="px-10 py-5 text-center text-slate-600 text-xs">Synchronizing
+                                        ledger entries...</td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
                 </div>
 
-                <!-- Pagination -->
-                <div class="mt-6 flex justify-center items-center gap-4">
-                    <button id="prev-btn" onclick="previousPage()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded font-medium text-sm">← 이전</button>
-                    <span id="page-info" class="text-slate-300 font-medium">1 / 1</span>
-                    <button id="next-btn" onclick="nextPage()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded font-medium text-sm">다음 →</button>
+                <!-- Advanced Pagination -->
+                <div class="flex justify-center items-center gap-6 pb-20">
+                    <button id="prev-btn" onclick="previousPage()"
+                        class="w-12 h-12 glass-panel rounded-2xl flex items-center justify-center text-slate-500 hover:text-white transition-all">←</button>
+                    <span id="page-info" class="text-xs font-black text-slate-500 uppercase tracking-widest">1 /
+                        1</span>
+                    <button id="next-btn" onclick="nextPage()"
+                        class="w-12 h-12 glass-panel rounded-2xl flex items-center justify-center text-slate-500 hover:text-white transition-all">→</button>
                 </div>
             </main>
         </div>
     </div>
 
-    <!-- Toast -->
-    <div id="toast" class="fixed bottom-4 right-4 bg-green-600 text-white px-4 py-3 rounded-lg shadow-lg hidden"></div>
-
-    <!-- Modal -->
-    <div id="modal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-        <div class="bg-slate-800 border border-slate-700 rounded-lg p-6 max-w-md w-full mx-4">
-            <h3 id="modal-title" class="text-lg font-bold text-white mb-4"></h3>
-            <p id="modal-content" class="text-slate-300 mb-6"></p>
-            <div id="modal-review-url" class="mb-6 hidden">
-                <label class="text-sm text-slate-300 block mb-2">리뷰 URL</label>
-                <input type="url" id="review-url-input" placeholder="https://..." class="w-full bg-slate-700 border border-slate-600 rounded px-3 py-2 text-white text-sm">
-            </div>
-            <div class="flex gap-2">
-                <button onclick="closeModal()" class="flex-1 px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded font-medium">취소</button>
-                <button id="modal-confirm" onclick="confirmModal()" class="flex-1 px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded font-medium">확인</button>
-            </div>
-        </div>
+    <!-- Notification Engine -->
+    <div id="toast"
+        class="fixed bottom-10 left-10 glass-panel bg-slate-900 border-green-500/50 px-6 py-3 rounded-xl shadow-2xl opacity-0 translate-y-20 transition-all pointer-events-none">
+        <p id="toast-message" class="text-xs font-black text-white"></p>
     </div>
 
     <script>
+        requireAuth();
         let currentPage = 1;
         let totalPages = 1;
-        let modalCallback = null;
-        let selectedApplicationId = null;
 
         async function loadApplications() {
-            const statusFilter = document.getElementById('status-filter').value;
-            const dateFrom = document.getElementById('date-from').value;
-            const dateTo = document.getElementById('date-to').value;
-
-            const params = new URLSearchParams();
-            if (statusFilter) params.append('status', statusFilter);
-            if (dateFrom) params.append('date_from', dateFrom);
-            if (dateTo) params.append('date_to', dateTo);
-            params.append('page', currentPage);
-            params.append('limit', 10);
-
             try {
+                const statusFilter = document.getElementById('status-filter').value;
+                const params = new URLSearchParams();
+                if (statusFilter) params.append('status', statusFilter);
+                params.append('page', currentPage);
+                params.append('limit', 10);
+
                 const response = await apiFetch(`/api/review/applications?${params.toString()}`);
                 const result = await response.json();
 
-                if (!result.success) {
-                    showToast('데이터 로드 실패', 'error');
-                    return;
+                if (result.success) {
+                    renderTable(result.data.applications);
+                    updateStats(result.data);
+                    totalPages = Math.ceil(result.data.total / 10);
+                    document.getElementById('page-info').textContent = `${currentPage} / ${totalPages}`;
                 }
-
-                const tbody = document.getElementById('applications-table');
-                tbody.innerHTML = '';
-
-                if (result.data.applications.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="6" class="px-6 py-8 text-center text-slate-400">신청 내역이 없습니다</td></tr>';
-                } else {
-                    result.data.applications.forEach(app => {
-                        const row = document.createElement('tr');
-                        row.className = 'hover:bg-slate-700/50 transition-colors';
-                        row.innerHTML = `
-                            <td class="px-6 py-4 text-sm text-white">${app.listing_title || 'N/A'}</td>
-                            <td class="px-6 py-4 text-sm text-slate-300">${app.account_name || 'Account'}</td>
-                            <td class="px-6 py-4 text-sm text-slate-400">${new Date(app.applied_at).toLocaleDateString('ko-KR')}</td>
-                            <td class="px-6 py-4">
-                                <span class="status-badge status-${app.status}">${getStatusLabel(app.status)}</span>
-                            </td>
-                            <td class="px-6 py-4 text-sm font-semibold text-amber-400">${(app.reward_value || 0).toLocaleString()}원</td>
-                            <td class="px-6 py-4">
-                                <div class="flex gap-2">
-                                    ${app.status === 'selected' ? `<button onclick="markComplete(${app.id})" class="px-3 py-1 bg-green-600 hover:bg-green-700 text-white rounded text-xs font-medium">완료</button>` : ''}
-                                    ${app.status === 'selected' ? `<button onclick="openReviewModal(${app.id})" class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs font-medium">리뷰</button>` : ''}
-                                    <a href="${app.review_url}" target="_blank" ${app.review_url ? '' : 'style="pointer-events: none; opacity: 0.5;"'} class="px-3 py-1 bg-slate-700 hover:bg-slate-600 text-slate-300 rounded text-xs font-medium">링크</a>
-                                </div>
-                            </td>
-                        `;
-                        tbody.appendChild(row);
-                    });
-                }
-
-                // Update stats
-                const totalApps = result.data.total;
-                const selectedCount = result.data.applications.filter(a => a.status === 'selected').length;
-                const pendingCount = result.data.applications.filter(a => a.status === 'applied').length;
-                const selectRate = totalApps > 0 ? (selectedCount / totalApps * 100).toFixed(1) : 0;
-
-                document.getElementById('stat-total').textContent = totalApps;
-                document.getElementById('stat-selected').textContent = selectedCount;
-                document.getElementById('stat-pending').textContent = pendingCount;
-                document.getElementById('stat-rate').textContent = selectRate + '%';
-
-                totalPages = Math.ceil(result.data.total / 10);
-                updatePagination();
-            } catch (error) {
-                console.error('Error:', error);
-                showToast('오류가 발생했습니다', 'error');
-            }
+            } catch (err) { console.error('Ledger Load Error:', err); }
         }
 
-        function getStatusLabel(status) {
-            const labels = {
-                'applied': '검토중',
-                'selected': '선정',
-                'rejected': '탈락',
-                'completed': '완료'
-            };
-            return labels[status] || status;
-        }
+        function renderTable(apps) {
+            const tbody = document.getElementById('applications-table');
+            tbody.innerHTML = '';
 
-        function previousPage() {
-            if (currentPage > 1) {
-                currentPage--;
-                loadApplications();
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            }
-        }
-
-        function nextPage() {
-            if (currentPage < totalPages) {
-                currentPage++;
-                loadApplications();
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            }
-        }
-
-        function updatePagination() {
-            document.getElementById('page-info').textContent = `${currentPage} / ${totalPages}`;
-            document.getElementById('prev-btn').disabled = currentPage === 1;
-            document.getElementById('next-btn').disabled = currentPage === totalPages;
-        }
-
-        function openReviewModal(applicationId) {
-            selectedApplicationId = applicationId;
-            document.getElementById('modal-title').textContent = '리뷰 URL 등록';
-            document.getElementById('modal-content').textContent = '신청을 완료했나요? 리뷰 URL을 등록해주세요.';
-            document.getElementById('modal-review-url').classList.remove('hidden');
-            document.getElementById('modal').classList.remove('hidden');
-            modalCallback = () => submitReview(applicationId);
-        }
-
-        async function submitReview(applicationId) {
-            const reviewUrl = document.getElementById('review-url-input').value;
-            if (!reviewUrl) {
-                showToast('URL을 입력해주세요', 'error');
+            if (apps.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="px-10 py-12 text-center text-slate-500 font-bold uppercase text-[10px] tracking-[0.2em]">No entries located in current filter</td></tr>';
                 return;
             }
 
-            try {
-                const response = await apiFetch(`/api/review/applications/${applicationId}`, {
-                    method: 'PUT',
-                    body: JSON.stringify({
-                        status: 'completed',
-                        review_url: reviewUrl,
-                        review_posted_at: new Date().toISOString()
-                    })
-                });
-
-                const result = await response.json();
-                if (result.success) {
-                    showToast('리뷰가 등록되었습니다');
-                    closeModal();
-                    loadApplications();
-                } else {
-                    showToast('등록 실패: ' + (result.error || '알 수 없는 오류'), 'error');
-                }
-            } catch (error) {
-                showToast('오류가 발생했습니다', 'error');
-            }
+            apps.forEach(app => {
+                const row = document.createElement('tr');
+                row.className = 'hover:bg-slate-800/30 transition-all group';
+                row.innerHTML = `
+                    <td class="px-10 py-6">
+                        <p class="font-black text-white line-clamp-1 group-hover:text-amber-500 transition-colors">${app.listing_title || 'N/A'}</p>
+                        <p class="text-[10px] text-slate-600 font-bold mt-1 uppercase">${new Date(app.applied_at).toLocaleDateString()}</p>
+                    </td>
+                    <td class="px-10 py-6 text-xs text-slate-400 font-bold">${app.account_name || '@unknown'}</td>
+                    <td class="px-10 py-6 text-sm font-black text-slate-200">₩${(app.reward_value || 0).toLocaleString()}</td>
+                    <td class="px-10 py-6">
+                        <span class="status-badge status-${app.status}">${getStatusLabel(app.status)}</span>
+                    </td>
+                    <td class="px-10 py-6">
+                        <a href="${app.review_url}" target="_blank" class="w-10 h-10 glass-panel rounded-xl flex items-center justify-center text-sm hover:border-amber-500 hover:text-amber-500 transition-all">
+                             ${app.review_url ? '🔗' : '—'}
+                        </a>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
         }
 
-        async function markComplete(applicationId) {
-            try {
-                const response = await apiFetch(`/api/review/applications/${applicationId}`, {
-                    method: 'PUT',
-                    body: JSON.stringify({ status: 'completed' })
-                });
-
-                const result = await response.json();
-                if (result.success) {
-                    showToast('완료 표시되었습니다');
-                    loadApplications();
-                } else {
-                    showToast('실패: ' + (result.error || '알 수 없는 오류'), 'error');
-                }
-            } catch (error) {
-                showToast('오류가 발생했습니다', 'error');
-            }
+        function getStatusLabel(s) {
+            const labels = { 'applied': 'Reviewing', 'selected': 'Winner', 'rejected': 'Miss', 'completed': 'Paid' };
+            return labels[s] || s;
         }
 
-        function closeModal() {
-            document.getElementById('modal').classList.add('hidden');
-            document.getElementById('review-url-input').value = '';
-            document.getElementById('modal-review-url').classList.add('hidden');
-            modalCallback = null;
+        function updateStats(data) {
+            document.getElementById('stat-total').textContent = data.total;
+            // Other stats logic based on filtered data...
+            const sel = data.applications.filter(a => a.status === 'selected').length;
+            document.getElementById('stat-selected').textContent = sel;
+            document.getElementById('stat-pending').textContent = data.applications.filter(a => a.status === 'applied').length;
+            document.getElementById('stat-rate').textContent = data.total > 0 ? ((sel / data.total) * 100).toFixed(0) + '%' : '0%';
         }
 
-        function confirmModal() {
-            if (modalCallback) modalCallback();
-        }
+        function previousPage() { if (currentPage > 1) { currentPage--; loadApplications(); } }
+        function nextPage() { if (currentPage < totalPages) { currentPage++; loadApplications(); } }
 
-        function showToast(message, type = 'success') {
-            const toast = document.getElementById('toast');
-            toast.textContent = message;
-            toast.className = `fixed bottom-4 right-4 px-4 py-3 rounded-lg shadow-lg text-white ${type === 'error' ? 'bg-red-600' : 'bg-green-600'}`;
-            setTimeout(() => toast.classList.add('hidden'), 3000);
-        }
-
-        // Initial load
-        loadApplications();
+        document.addEventListener('DOMContentLoaded', loadApplications);
     </script>
 </body>
+
 </html>

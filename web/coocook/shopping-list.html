@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#111827">
+    <title>쇼핑리스트 — CooCook — SoftFactory</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="../platform/api.js"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .modal-overlay { backdrop-filter: blur(4px); }
+        .item-row { border-bottom: 1px solid #1e293b; }
+        .item-row:last-child { border-bottom: none; }
+    </style>
+    <link rel="stylesheet" href="../responsive-framework.css">
+</head>
+<body class="bg-slate-950 text-slate-100">
+    <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar Navigation -->
+        <aside class="w-64 bg-slate-900 border-r border-slate-800 flex flex-col shrink-0 overflow-y-auto">
+            <div class="p-6 border-b border-slate-800">
+                <a href="index.html" class="flex items-center gap-3">
+                    <span class="text-2xl">🍳</span>
+                    <div><h1 class="font-bold text-white text-sm">CooCook</h1><p class="text-xs text-slate-400">쇼핑리스트</p></div>
+                </a>
+            </div>
+            <nav class="flex-1 p-6 space-y-2">
+                <a href="index.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">🏠 홈</a>
+                <a href="recipes.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">📖 레시피</a>
+                <a href="shopping-list.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg bg-orange-600 text-white font-medium">🛒 쇼핑리스트</a>
+                <a href="feed.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">📱 피드</a>
+            </nav>
+
+            <div class="p-6 border-t border-slate-800 space-y-3">
+                <button onclick="openCreateModal()" class="w-full px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-lg font-medium text-sm">+ 새 리스트</button>
+                <button onclick="logout()" class="p-2 hover:bg-slate-800 rounded-lg w-full text-left text-sm">🚪 로그아웃</button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <!-- Header -->
+            <header class="h-16 bg-slate-900 border-b border-slate-800 px-6 flex items-center justify-between shrink-0">
+                <div>
+                    <h2 class="text-xl font-bold text-white">🛒 쇼핑리스트</h2>
+                    <p class="text-xs text-slate-400">요리에 필요한 재료를 정리하세요</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <span id="totalPrice" class="text-lg font-bold text-orange-400">₩0</span>
+                </div>
+            </header>
+
+            <!-- Shopping List -->
+            <main class="flex-1 overflow-y-auto p-6">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Items List -->
+                    <div class="lg:col-span-2">
+                        <div class="bg-slate-800 rounded-lg border border-slate-700">
+                            <div class="p-6 border-b border-slate-700 flex items-center justify-between">
+                                <h3 class="text-lg font-semibold text-white">재료 목록</h3>
+                                <button onclick="openCreateModal()" class="px-3 py-1 bg-orange-600 hover:bg-orange-700 text-white text-sm rounded-lg">+ 추가</button>
+                            </div>
+
+                            <div id="itemsList" class="divide-y divide-slate-700">
+                                <!-- Items will be rendered here -->
+                                <div class="p-6 text-center text-slate-400">
+                                    <p>쇼핑리스트가 비어있습니다.</p>
+                                    <button onclick="openCreateModal()" class="mt-3 px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-lg text-sm">레시피 추가하기</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Summary & Actions -->
+                    <div class="lg:col-span-1">
+                        <div class="bg-slate-800 rounded-lg border border-slate-700 p-6 space-y-4">
+                            <div>
+                                <h4 class="text-sm font-semibold text-slate-400 mb-3">요약</h4>
+                                <div class="space-y-2">
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-slate-400">총 재료 수</span>
+                                        <span id="itemCount" class="font-semibold text-white">0</span>
+                                    </div>
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-slate-400">서빙 수</span>
+                                        <input type="number" id="servings" value="1" min="1" max="10" class="w-12 px-2 py-1 bg-slate-700 text-white rounded border border-slate-600 text-sm" onchange="recalculate()">
+                                    </div>
+                                    <div class="border-t border-slate-600 pt-2 mt-2 flex justify-between">
+                                        <span class="font-semibold text-white">예상 가격</span>
+                                        <span id="estimatedPrice" class="text-lg font-bold text-orange-400">₩0</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="border-t border-slate-600 pt-4 space-y-2">
+                                <button onclick="shareList()" class="w-full px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium text-sm">👥 공유하기</button>
+                                <button onclick="downloadPDF()" class="w-full px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium text-sm">📄 다운로드</button>
+                                <button onclick="openClearModal()" class="w-full px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium text-sm">🗑️ 전체 삭제</button>
+                            </div>
+
+                            <div class="bg-slate-700 rounded p-3">
+                                <p class="text-xs text-slate-300"><strong>💡 팁:</strong> 체크박스로 구입한 항목을 표시하세요.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Create Shopping List Modal -->
+    <div id="createModal" class="fixed inset-0 bg-black/50 modal-overlay hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-slate-800 rounded-xl border border-slate-700 max-w-lg w-full">
+            <div class="flex items-center justify-between p-6 border-b border-slate-700">
+                <h3 class="text-xl font-bold text-white">새 쇼핑리스트 만들기</h3>
+                <button onclick="closeCreateModal()" class="text-slate-400 hover:text-white text-xl">✕</button>
+            </div>
+            <div class="p-6 space-y-4">
+                <div>
+                    <label class="block text-sm font-semibold text-white mb-2">리스트 이름</label>
+                    <input type="text" id="listName" placeholder="예: 오늘 저녁 요리" class="w-full px-4 py-2 bg-slate-700 text-white rounded-lg border border-slate-600 placeholder-slate-500">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-white mb-2">📖 포함할 레시피</label>
+                    <div id="recipesList" class="space-y-2 max-h-48 overflow-y-auto">
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" class="recipe-select" value="1" data-name="김치찌개" data-ingredients="김치,돼지고기,두부,파" data-prices="5000,8000,3000,2000">
+                            <span class="text-sm text-slate-300">김치찌개</span>
+                        </label>
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" class="recipe-select" value="2" data-name="파스타 카르보나라" data-ingredients="파스타,계란,베이컨,치즈" data-prices="3000,4000,6000,5000">
+                            <span class="text-sm text-slate-300">파스타 카르보나라</span>
+                        </label>
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" class="recipe-select" value="3" data-name="초밥 롤" data-ingredients="쌀,노리,연어,오이" data-prices="6000,3000,12000,2000">
+                            <span class="text-sm text-slate-300">초밥 롤</span>
+                        </label>
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" class="recipe-select" value="4" data-name="비프 스테이크" data-ingredients="소고기,버터,마늘,로즈메리" data-prices="25000,3000,1000,2000">
+                            <span class="text-sm text-slate-300">비프 스테이크</span>
+                        </label>
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" class="recipe-select" value="5" data-name="타코" data-ingredients="또띠야,닭고기,양파,라임" data-prices="2000,6000,1000,1500">
+                            <span class="text-sm text-slate-300">타코</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-white mb-2">서빙 수</label>
+                    <input type="number" id="createServings" value="1" min="1" max="10" class="w-full px-4 py-2 bg-slate-700 text-white rounded-lg border border-slate-600">
+                </div>
+
+                <div>
+                    <h4 class="text-sm font-semibold text-white mb-2">미리보기 (자동 병합)</h4>
+                    <div id="previewIngredients" class="bg-slate-700 rounded p-3 text-sm text-slate-300 max-h-40 overflow-y-auto">
+                        <p class="text-slate-400">레시피를 선택하면 재료가 표시됩니다.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-6 border-t border-slate-700 flex gap-3">
+                <button onclick="closeCreateModal()" class="flex-1 px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg font-medium">취소</button>
+                <button onclick="createShoppingList()" class="flex-1 px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-lg font-medium">✅ 생성</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Share Modal -->
+    <div id="shareModal" class="fixed inset-0 bg-black/50 modal-overlay hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-slate-800 rounded-xl border border-slate-700 max-w-lg w-full">
+            <div class="flex items-center justify-between p-6 border-b border-slate-700">
+                <h3 class="text-xl font-bold text-white">쇼핑리스트 공유</h3>
+                <button onclick="closeShareModal()" class="text-slate-400 hover:text-white text-xl">✕</button>
+            </div>
+            <div class="p-6 space-y-4">
+                <div>
+                    <label class="block text-sm font-semibold text-white mb-2">👥 공유 대상</label>
+                    <div class="space-y-2">
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" class="share-target" value="family" checked>
+                            <span class="text-sm text-slate-300">가족</span>
+                        </label>
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" class="share-target" value="friends">
+                            <span class="text-sm text-slate-300">친구</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-white mb-2">📱 공유 링크</label>
+                    <div class="flex gap-2">
+                        <input type="text" readonly value="https://softfactory.com/share/sl-abc123" class="flex-1 px-4 py-2 bg-slate-700 text-white rounded-lg border border-slate-600 text-sm">
+                        <button onclick="copyLink()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium text-sm">복사</button>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-white mb-2">📧 이메일로 전송</label>
+                    <div class="flex gap-2">
+                        <input type="email" placeholder="이메일 주소" class="flex-1 px-4 py-2 bg-slate-700 text-white rounded-lg border border-slate-600 placeholder-slate-500">
+                        <button onclick="sendEmail()" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium text-sm">전송</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-6 border-t border-slate-700">
+                <button onclick="closeShareModal()" class="w-full px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg font-medium">닫기</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Clear Modal -->
+    <div id="clearModal" class="fixed inset-0 bg-black/50 modal-overlay hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-slate-800 rounded-xl border border-slate-700 max-w-md w-full">
+            <div class="p-6 text-center">
+                <p class="text-lg font-semibold text-white mb-4">⚠️ 정말로 모든 항목을 삭제하시겠습니까?</p>
+                <p class="text-sm text-slate-400 mb-6">이 작업은 되돌릴 수 없습니다.</p>
+            </div>
+            <div class="p-6 border-t border-slate-700 flex gap-3">
+                <button onclick="closeClearModal()" class="flex-1 px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg font-medium">취소</button>
+                <button onclick="clearAll()" class="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium">삭제</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        requireAuth();
+
+        let shoppingItems = [
+            { id: 1, name: '김치', quantity: 1, unit: '봉', price: 5000, checked: false },
+            { id: 2, name: '돼지고기', quantity: 500, unit: 'g', price: 8000, checked: false },
+            { id: 3, name: '두부', quantity: 1, unit: '모', price: 3000, checked: false },
+            { id: 4, name: '파', quantity: 1, unit: '줄', price: 2000, checked: false },
+        ];
+
+        function init() {
+            renderItems();
+            updateSummary();
+            setupRecipeSelectListeners();
+        }
+
+        function setupRecipeSelectListeners() {
+            document.querySelectorAll('.recipe-select').forEach(el => {
+                el.addEventListener('change', updatePreview);
+            });
+        }
+
+        function updatePreview() {
+            const selected = document.querySelectorAll('.recipe-select:checked');
+            const preview = document.getElementById('previewIngredients');
+
+            if (selected.length === 0) {
+                preview.innerHTML = '<p class="text-slate-400">레시피를 선택하면 재료가 표시됩니다.</p>';
+                return;
+            }
+
+            let ingredients = {};
+            selected.forEach(recipe => {
+                const ingredientNames = recipe.dataset.ingredients.split(',');
+                const prices = recipe.dataset.prices.split(',').map(Number);
+                ingredientNames.forEach((ing, idx) => {
+                    if (!ingredients[ing]) {
+                        ingredients[ing] = 0;
+                    }
+                    ingredients[ing] += prices[idx];
+                });
+            });
+
+            preview.innerHTML = Object.entries(ingredients)
+                .map(([ing, price]) => `<div class="flex justify-between"><span>${ing}</span><span>₩${price.toLocaleString('ko-KR')}</span></div>`)
+                .join('');
+        }
+
+        function renderItems() {
+            const itemsList = document.getElementById('itemsList');
+
+            if (shoppingItems.length === 0) {
+                itemsList.innerHTML = `
+                    <div class="p-6 text-center text-slate-400">
+                        <p>쇼핑리스트가 비어있습니다.</p>
+                        <button onclick="openCreateModal()" class="mt-3 px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-lg text-sm">레시피 추가하기</button>
+                    </div>
+                `;
+                return;
+            }
+
+            itemsList.innerHTML = shoppingItems.map((item, idx) => `
+                <div class="item-row p-4 flex items-center justify-between gap-4">
+                    <div class="flex items-center gap-3 flex-1">
+                        <input type="checkbox" ${item.checked ? 'checked' : ''} onchange="toggleItem(${idx})" class="w-5 h-5 cursor-pointer">
+                        <div class="flex-1">
+                            <p class="font-semibold text-white ${item.checked ? 'line-through text-slate-500' : ''}">${item.name}</p>
+                            <p class="text-xs text-slate-400">${item.quantity}${item.unit}</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="font-semibold text-white">₩${item.price.toLocaleString('ko-KR')}</p>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="decreaseQty(${idx})" class="px-2 py-1 bg-slate-700 hover:bg-slate-600 text-white rounded text-sm">−</button>
+                        <input type="number" value="${item.quantity}" onchange="updateQty(${idx}, this.value)" class="w-12 px-2 py-1 bg-slate-700 text-white rounded text-sm border border-slate-600 text-center">
+                        <button onclick="increaseQty(${idx})" class="px-2 py-1 bg-slate-700 hover:bg-slate-600 text-white rounded text-sm">+</button>
+                    </div>
+                    <button onclick="removeItem(${idx})" class="px-3 py-1 bg-red-600 hover:bg-red-700 text-white rounded text-sm">🗑️</button>
+                </div>
+            `).join('');
+        }
+
+        function toggleItem(idx) {
+            shoppingItems[idx].checked = !shoppingItems[idx].checked;
+            renderItems();
+        }
+
+        function updateQty(idx, value) {
+            shoppingItems[idx].quantity = parseInt(value) || 1;
+            updateSummary();
+        }
+
+        function increaseQty(idx) {
+            shoppingItems[idx].quantity += 1;
+            updateSummary();
+            renderItems();
+        }
+
+        function decreaseQty(idx) {
+            if (shoppingItems[idx].quantity > 1) {
+                shoppingItems[idx].quantity -= 1;
+                updateSummary();
+                renderItems();
+            }
+        }
+
+        function removeItem(idx) {
+            shoppingItems.splice(idx, 1);
+            updateSummary();
+            renderItems();
+        }
+
+        function updateSummary() {
+            const total = shoppingItems.reduce((sum, item) => sum + item.price, 0);
+            document.getElementById('totalPrice').textContent = '₩' + total.toLocaleString('ko-KR');
+            document.getElementById('estimatedPrice').textContent = '₩' + total.toLocaleString('ko-KR');
+            document.getElementById('itemCount').textContent = shoppingItems.length;
+        }
+
+        function recalculate() {
+            updateSummary();
+        }
+
+        function openCreateModal() {
+            document.getElementById('createModal').classList.remove('hidden');
+            updatePreview();
+        }
+
+        function closeCreateModal() {
+            document.getElementById('createModal').classList.add('hidden');
+        }
+
+        function createShoppingList() {
+            const selected = document.querySelectorAll('.recipe-select:checked');
+            if (selected.length === 0) {
+                showError('최소 1개 이상의 레시피를 선택하세요.');
+                return;
+            }
+
+            const newItems = [];
+            selected.forEach(recipe => {
+                const ingredientNames = recipe.dataset.ingredients.split(',');
+                const prices = recipe.dataset.prices.split(',').map(Number);
+                ingredientNames.forEach((ing, idx) => {
+                    const existing = newItems.find(item => item.name === ing);
+                    if (existing) {
+                        existing.quantity += 1;
+                        existing.price += prices[idx];
+                    } else {
+                        newItems.push({ id: Date.now() + idx, name: ing, quantity: 1, unit: '개', price: prices[idx], checked: false });
+                    }
+                });
+            });
+
+            shoppingItems = [...shoppingItems, ...newItems];
+            updateSummary();
+            renderItems();
+            closeCreateModal();
+            showSuccess('쇼핑리스트가 생성되었습니다!');
+        }
+
+        function shareList() {
+            document.getElementById('shareModal').classList.remove('hidden');
+        }
+
+        function closeShareModal() {
+            document.getElementById('shareModal').classList.add('hidden');
+        }
+
+        function copyLink() {
+            const link = document.querySelector('#shareModal input[readonly]');
+            navigator.clipboard.writeText(link.value).then(() => {
+                showSuccess('링크가 복사되었습니다!');
+            });
+        }
+
+        function sendEmail() {
+            showSuccess('이메일이 전송되었습니다!');
+        }
+
+        function downloadPDF() {
+            showSuccess('PDF가 다운로드되었습니다!');
+        }
+
+        function openClearModal() {
+            document.getElementById('clearModal').classList.remove('hidden');
+        }
+
+        function closeClearModal() {
+            document.getElementById('clearModal').classList.add('hidden');
+        }
+
+        function clearAll() {
+            shoppingItems = [];
+            updateSummary();
+            renderItems();
+            closeClearModal();
+            showSuccess('모든 항목이 삭제되었습니다.');
+        }
+
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+    <script src="../mobile-optimization.js" defer></script>
+</body>
+</html>

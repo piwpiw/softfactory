@@ -2,13 +2,17 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>문의하기 — SoftFactory</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#111827">
+<title>문의하기 — SoftFactory</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="api.js"></script>
     <style>body { font-family: 'Inter', sans-serif; }</style>
-</head>
+    <link rel="stylesheet" href="../responsive-framework.css">
+  </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen">
     <div class="max-w-2xl mx-auto px-6 py-12">
         <h1 class="text-4xl font-bold text-white mb-8">📞 문의하기</h1>
@@ -77,5 +81,6 @@
             setTimeout(() => { window.location.href = 'dashboard.html'; }, 2000);
         }
     </script>
+    <script src="../mobile-optimization.js" defer></script>
 </body>
 </html>

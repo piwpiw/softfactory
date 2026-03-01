@@ -66,7 +66,7 @@ class TestPasswordValidator:
 class TestRegisterWithPasswordPolicy:
     """Test registration with password validation"""
 
-    def test_register_with_weak_password(self, client, app_context):
+    def test_register_with_weak_password(self, client, app):
         """Registration fails with weak password"""
         response = client.post('/api/auth/register', json={
             'email': 'newuser@test.com',
@@ -78,7 +78,7 @@ class TestRegisterWithPasswordPolicy:
         assert 'error' in data
         assert 'requirements' in data
 
-    def test_register_with_strong_password(self, client, app_context):
+    def test_register_with_strong_password(self, client, app):
         """Registration succeeds with strong password"""
         response = client.post('/api/auth/register', json={
             'email': 'newuser@test.com',
@@ -106,7 +106,7 @@ class TestDemoTokenBypass:
         data = json.loads(response.data)
         assert 'error' in data
 
-    def test_valid_jwt_required(self, client, app_context):
+    def test_valid_jwt_required(self, client, app):
         """Only valid JWT tokens are accepted"""
         # First login to get valid token
         client.post('/api/auth/register', json={
@@ -134,7 +134,7 @@ class TestDemoTokenBypass:
 class TestRateLimiting:
     """Test rate limiting on login endpoint"""
 
-    def test_rate_limit_after_5_failures(self, client, app_context):
+    def test_rate_limit_after_5_failures(self, client, app):
         """Rate limiting kicks in after 5 failed attempts"""
         email = 'ratelimit@test.com'
 
@@ -156,7 +156,7 @@ class TestRateLimiting:
         assert 'error' in data
         assert 'RATE_LIMITED' in data.get('error_code', '')
 
-    def test_rate_limit_with_correct_password(self, client, app_context):
+    def test_rate_limit_with_correct_password(self, client, app):
         """Correct password is attempted after rate limit"""
         email = 'user@rate.com'
 
@@ -186,7 +186,7 @@ class TestRateLimiting:
 class TestAccountLockout:
     """Test account lockout mechanism"""
 
-    def test_account_locks_after_5_failures(self, client, app_context):
+    def test_account_locks_after_5_failures(self, client, app):
         """Account locks after 5 failed login attempts"""
         email = 'lockout@test.com'
 
@@ -209,7 +209,7 @@ class TestAccountLockout:
         assert user.is_locked is True
         assert user.locked_until is not None
 
-    def test_locked_account_cannot_login(self, client, app_context):
+    def test_locked_account_cannot_login(self, client, app):
         """Locked account cannot login even with correct password"""
         email = 'locked@test.com'
 
@@ -235,7 +235,7 @@ class TestAccountLockout:
         data = json.loads(response.data)
         assert 'ACCOUNT_LOCKED' in data.get('error_code', '')
 
-    def test_account_unlocks_after_timeout(self, app_context):
+    def test_account_unlocks_after_timeout(self, app):
         """Account unlocks after lockout duration expires"""
         # Create and lock user
         user = User(email='unlock@test.com', name='Test')
@@ -255,7 +255,7 @@ class TestAccountLockout:
 class TestLoginAttemptTracking:
     """Test login attempt recording and tracking"""
 
-    def test_failed_attempt_recorded(self, app_context):
+    def test_failed_attempt_recorded(self, app):
         """Failed login attempt is recorded"""
         email = 'tracked@test.com'
 
@@ -264,7 +264,7 @@ class TestLoginAttemptTracking:
         assert attempt.success is False
         assert attempt.timestamp is not None
 
-    def test_successful_attempt_recorded(self, app_context):
+    def test_successful_attempt_recorded(self, app):
         """Successful login attempt is recorded"""
         email = 'tracked@test.com'
 
@@ -272,7 +272,7 @@ class TestLoginAttemptTracking:
         assert attempt.email == email
         assert attempt.success is True
 
-    def test_get_recent_attempts(self, app_context):
+    def test_get_recent_attempts(self, app):
         """Get recent login attempts"""
         email = 'tracked@test.com'
 
@@ -282,7 +282,7 @@ class TestLoginAttemptTracking:
         recent = LoginAttemptTracker.get_recent_attempts(email, minutes=1)
         assert len(recent) == 3
 
-    def test_failed_count_in_window(self, app_context):
+    def test_failed_count_in_window(self, app):
         """Count failed attempts in time window"""
         email = 'tracked@test.com'
 
@@ -292,7 +292,7 @@ class TestLoginAttemptTracking:
         count = LoginAttemptTracker.get_failed_attempt_count(email, minutes=1)
         assert count == 3
 
-    def test_clear_attempts(self, app_context):
+    def test_clear_attempts(self, app):
         """Clear login attempts"""
         email = 'tracked@test.com'
 
@@ -308,7 +308,7 @@ class TestLoginAttemptTracking:
 class TestSecurityEventLogging:
     """Test security event logging"""
 
-    def test_login_success_logged(self, app_context):
+    def test_login_success_logged(self, app):
         """Successful login is logged"""
         user_id = 1
         email = 'logged@test.com'
@@ -319,7 +319,7 @@ class TestSecurityEventLogging:
         assert event['email'] == email
         assert 'timestamp' in event
 
-    def test_failed_login_logged(self, app_context):
+    def test_failed_login_logged(self, app):
         """Failed login is logged"""
         email = 'failed@test.com'
         ip = '192.168.1.1'
@@ -329,7 +329,7 @@ class TestSecurityEventLogging:
         assert event['email'] == email
         assert event['ip_address'] == ip
 
-    def test_account_locked_logged(self, app_context):
+    def test_account_locked_logged(self, app):
         """Account lockout is logged"""
         user_id = 1
 
@@ -345,7 +345,7 @@ class TestSecurityEventLogging:
 class TestSubscriptionLockout:
     """Test that subscription bypass is fixed"""
 
-    def test_subscription_requires_valid_subscription(self, client, app_context):
+    def test_subscription_requires_valid_subscription(self, client, app):
         """Subscription check requires actual database record"""
         # Register user
         response = client.post('/api/auth/register', json={
@@ -368,7 +368,7 @@ class TestSubscriptionLockout:
 class TestSensitiveDataRemoval:
     """Test that sensitive data is not exposed in responses"""
 
-    def test_login_response_no_password_hash(self, client, app_context):
+    def test_login_response_no_password_hash(self, client, app):
         """Login response doesn't expose password hash"""
         response = client.post('/api/auth/register', json={
             'email': 'safe@test.com',
@@ -381,7 +381,7 @@ class TestSensitiveDataRemoval:
         assert 'is_locked' not in data['user']
         assert 'locked_until' not in data['user']
 
-    def test_login_no_sensitive_fields(self, client, app_context):
+    def test_login_no_sensitive_fields(self, client, app):
         """Login response doesn't expose sensitive fields"""
         client.post('/api/auth/register', json={
             'email': 'test@test.com',

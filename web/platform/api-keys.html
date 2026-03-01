@@ -2,8 +2,11 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>API 키 관리 — SoftFactory</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#111827">
+<title>API 키 관리 — SoftFactory</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="api.js"></script>
@@ -13,7 +16,8 @@
         ::-webkit-scrollbar-track { background: #0f172a; }
         ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
     </style>
-</head>
+    <link rel="stylesheet" href="../responsive-framework.css">
+  </head>
 <body class="bg-slate-950 text-slate-100 antialiased">
     <div class="flex h-screen overflow-hidden">
         <aside class="w-60 bg-slate-900 border-r border-slate-800 flex flex-col shrink-0">
@@ -21,6 +25,11 @@
                 <h1 class="text-xl font-bold text-white">🏭 SoftFactory</h1>
             </div>
             <nav class="flex-1 p-4 space-y-2 overflow-y-auto">
+    <button class="hamburger" aria-label="Toggle navigation menu">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
                 <a href="dashboard.html" class="block px-4 py-2 rounded-lg text-slate-300 hover:bg-slate-800">📊 대시보드</a>
                 <a href="billing.html" class="block px-4 py-2 rounded-lg text-slate-300 hover:bg-slate-800">💳 결제</a>
                 <a href="profile.html" class="block px-4 py-2 rounded-lg text-slate-300 hover:bg-slate-800">👤 프로필</a>
@@ -222,5 +231,6 @@
             window.location.href = 'login.html';
         }
     </script>
+    <script src="../mobile-optimization.js" defer></script>
 </body>
 </html>

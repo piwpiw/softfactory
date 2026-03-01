@@ -2,8 +2,11 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>포스트 작성 — SNS Auto | SoftFactory</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#111827">
+<title>포스트 작성 — SNS Auto | SoftFactory</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="../platform/api.js"></script>
@@ -12,16 +15,286 @@
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #0f172a; }
         ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
-        .tab-btn { @apply px-4 py-2.5 font-medium text-sm transition rounded-lg; }
-        .tab-btn.active { @apply bg-pink-600 text-white; }
-        .tab-btn:not(.active) { @apply bg-slate-800 text-slate-300 hover:bg-slate-700; }
-        .tab-content { @apply hidden; }
-        .tab-content.active { @apply block; }
-        .platform-badge { @apply inline-block px-3 py-1 rounded-full text-xs font-medium; }
-        .char-warning { @apply text-red-500; }
-        .char-caution { @apply text-yellow-500; }
+        .tab-btn {
+            @apply px-6 py-3 font-medium text-sm rounded-lg transition;
+        }
+        .tab-btn.active {
+            @apply bg-pink-600 text-white;
+        }
+        .tab-btn.inactive {
+            @apply bg-slate-700 text-slate-300 hover:bg-slate-600;
+        }
+        .mode-form {
+            display: none;
+            opacity: 0;
+            transform: translateY(8px);
+            transition: opacity 0.35s ease, transform 0.35s ease;
+        }
+        .mode-form.active {
+            display: block;
+        }
+        .mode-form.active.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .char-counter {
+            @apply text-xs font-medium;
+            transition: color 0.3s ease;
+        }
+        .char-counter.safe { color: #4ade80; }
+        .char-counter.warning { @apply text-orange-400; }
+        .char-counter.danger { @apply text-red-400; }
+
+        /* Drag-and-drop media upload area */
+        .media-drop-zone {
+            border: 2px dashed #475569;
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: rgba(30, 41, 59, 0.5);
+        }
+        .media-drop-zone:hover,
+        .media-drop-zone.drag-over {
+            border-color: #ec4899;
+            background: rgba(236, 72, 153, 0.08);
+        }
+        .media-drop-zone.drag-over {
+            transform: scale(1.01);
+        }
+        .media-drop-zone .drop-icon {
+            font-size: 2rem;
+            margin-bottom: 8px;
+            transition: transform 0.3s ease;
+        }
+        .media-drop-zone.drag-over .drop-icon {
+            transform: scale(1.15);
+        }
+        .media-thumbnails {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 12px;
+        }
+        .media-thumb {
+            width: 64px;
+            height: 64px;
+            border-radius: 8px;
+            object-fit: cover;
+            border: 2px solid #334155;
+            position: relative;
+        }
+        .media-thumb-wrap {
+            position: relative;
+            display: inline-block;
+        }
+        .media-thumb-remove {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            width: 20px;
+            height: 20px;
+            background: #ef4444;
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            font-size: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+        }
+
+        /* Hashtag suggestions */
+        .hashtag-suggestions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 8px;
+        }
+        .hashtag-chip {
+            padding: 4px 10px;
+            background: rgba(236, 72, 153, 0.15);
+            border: 1px solid rgba(236, 72, 153, 0.3);
+            border-radius: 20px;
+            color: #f9a8d4;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .hashtag-chip:hover {
+            background: rgba(236, 72, 153, 0.3);
+            border-color: #ec4899;
+            color: #fff;
+        }
+
+        /* Platform preview tabs */
+        .preview-platform-tabs {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+        .preview-platform-tab {
+            padding: 4px 10px;
+            font-size: 11px;
+            border-radius: 6px;
+            background: #1e293b;
+            color: #94a3b8;
+            border: 1px solid #334155;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .preview-platform-tab.active {
+            background: #ec4899;
+            color: #fff;
+            border-color: #ec4899;
+        }
+
+        /* Draft indicator */
+        .draft-saved-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 11px;
+            color: #4ade80;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .draft-saved-indicator.visible {
+            opacity: 1;
+        }
+
+        /* Enhanced AI and Automation Styles */
+        .ai-tips-box {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(139, 92, 246, 0.05));
+            border-left: 4px solid #8b5cf6;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 10px;
+            font-size: 11px;
+            color: #c4b5fd;
+        }
+
+        .engagement-metric {
+            flex: 1;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            border-left: 4px solid;
+            background-size: 100% 100%;
+            transition: transform 0.2s ease;
+        }
+
+        .engagement-metric:hover {
+            transform: translateY(-2px);
+        }
+
+        .engagement-metric.likes {
+            background: rgba(236, 72, 153, 0.1);
+            border-left-color: #ec4899;
+            color: #f472b6;
+        }
+
+        .engagement-metric.comments {
+            background: rgba(59, 130, 246, 0.1);
+            border-left-color: #3b82f6;
+            color: #60a5fa;
+        }
+
+        .engagement-metric.shares {
+            background: rgba(16, 185, 129, 0.1);
+            border-left-color: #10b981;
+            color: #6ee7b7;
+        }
+
+        .schedule-table {
+            background: #1e293b;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #334155;
+            font-size: 11px;
+            margin-top: 12px;
+        }
+
+        .schedule-table thead {
+            background: #0f172a;
+        }
+
+        .schedule-table th,
+        .schedule-table td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #334155;
+            color: #e2e8f0;
+        }
+
+        .schedule-table th {
+            color: #94a3b8;
+            font-weight: 600;
+            font-size: 10px;
+            text-transform: uppercase;
+        }
+
+        .schedule-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .status-badge {
+            background: rgba(34, 197, 94, 0.2);
+            color: #86efac;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 500;
+        }
+
+        .automation-summary {
+            text-align: center;
+            padding: 16px;
+            color: #e2e8f0;
+            background: rgba(236, 72, 153, 0.05);
+            border-radius: 8px;
+            border: 1px solid rgba(236, 72, 153, 0.2);
+        }
+
+        .automation-summary p {
+            margin: 8px 0;
+            font-size: 12px;
+        }
+
+        .automation-summary strong {
+            color: #f9a8d4;
+            font-weight: 600;
+        }
+
+        /* Loading spinner animation */
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        #aiGenerateSpinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+
+        /* Mobile responsive for create page */
+        @media (max-width: 768px) {
+            main.grid-cols-2 { grid-template-columns: 1fr !important; }
+            .flex.gap-2 { flex-wrap: wrap; }
+            .hashtag-suggestions { gap: 4px; }
+            .hashtag-chip { padding: 3px 8px; font-size: 11px; }
+        }
     </style>
-</head>
+    <link rel="stylesheet" href="../responsive-framework.css">
+  </head>
 <body class="bg-slate-950 text-slate-100 antialiased">
     <div class="flex h-screen overflow-hidden">
         <!-- Sidebar -->
@@ -36,6 +309,11 @@
                 </a>
             </div>
             <nav class="flex-1 p-6 space-y-2 overflow-y-auto">
+    <button class="hamburger" aria-label="Toggle navigation menu">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
                 <p class="text-xs font-semibold text-slate-400 uppercase px-4 mb-3">📱 SNS Auto</p>
                 <a href="index.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 transition">
                     <span>📊</span> 대시보드
@@ -64,7 +342,7 @@
                     <h2 class="text-xl font-bold text-white">✍️ 포스트 작성</h2>
                     <p class="text-xs text-slate-400">3가지 방식으로 SNS 포스트를 작성하세요</p>
                 </div>
-                <div id="publish-buttons" class="flex gap-2">
+                <div class="flex gap-2">
                     <button onclick="publishPost('draft')" class="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-slate-100 rounded-lg text-sm">
                         💾 임시저장
                     </button>
@@ -77,351 +355,252 @@
                 </div>
             </header>
 
-            <main class="flex-1 overflow-hidden flex flex-col">
-                <!-- Tab Navigation -->
-                <div class="bg-slate-900 border-b border-slate-800 px-6 py-3 flex gap-2 shrink-0">
-                    <button class="tab-btn active" onclick="switchTab('direct')">✍️ 직접 작성</button>
-                    <button class="tab-btn" onclick="switchTab('ai')">🤖 AI 생성</button>
-                    <button class="tab-btn" onclick="switchTab('automate')">⚡ 자동화 등록</button>
+            <!-- 3-Mode Tab Navigation -->
+            <div class="bg-slate-900 border-b border-slate-800 px-6 py-3 flex gap-3">
+                <button class="tab-btn active" onclick="switchMode('direct')">
+                    ✍️ 직접 작성
+                </button>
+                <button class="tab-btn inactive" onclick="switchMode('ai')">
+                    🤖 AI 생성
+                </button>
+                <button class="tab-btn inactive" onclick="switchMode('automate')">
+                    ⚡ 자동화
+                </button>
+            </div>
+
+            <main class="flex-1 overflow-hidden grid grid-cols-2 gap-0">
+                <!-- Left: Editor -->
+                <div class="flex flex-col overflow-hidden border-r border-slate-800 p-6 bg-slate-950">
+                    <h3 class="text-lg font-bold text-white mb-4">포스트 편집</h3>
+                    <div class="flex-1 overflow-y-auto space-y-4">
+                        <!-- Common Fields -->
+                        <div>
+                            <label class="block text-sm font-medium text-slate-300 mb-2">발행 계정 <span class="text-red-400">*</span></label>
+                            <select id="accountId" onchange="updatePlatformSpecs()" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white focus:border-pink-500 focus:outline-none">
+                                <option value="">선택하세요</option>
+                            </select>
+                        </div>
+
+                        <!-- Mode 1: Direct Writing -->
+                        <div class="mode-form active" id="directForm">
+                            <div>
+                                <label class="block text-sm font-medium text-slate-300 mb-2">
+                                    본문
+                                    <span class="char-counter safe" id="charCount">0/<span id="charLimit">280</span></span>
+                                </label>
+                                <textarea id="content" onchange="updatePreview()" oninput="updateCharCount()" placeholder="포스트 내용을 입력하세요..." class="w-full h-40 bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white placeholder-slate-500 focus:border-pink-500 focus:outline-none resize-none"></textarea>
+                            </div>
+
+                            <!-- Drag-and-Drop Media Upload -->
+                            <div>
+                                <label class="block text-sm font-medium text-slate-300 mb-2">미디어 첨부</label>
+                                <div class="media-drop-zone" id="mediaDropZone"
+                                     ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)" onclick="document.getElementById('mediaFileInput').click()">
+                                    <div class="drop-icon">&#x1F4F7;</div>
+                                    <p class="text-sm text-slate-400">이미지/영상을 드래그하거나 클릭하여 업로드</p>
+                                    <p class="text-xs text-slate-500 mt-1">JPG, PNG, MP4 (최대 50MB)</p>
+                                </div>
+                                <input type="file" id="mediaFileInput" multiple accept="image/*,video/*" style="display:none" onchange="handleFileSelect(event)">
+                                <div class="media-thumbnails" id="mediaThumbnails"></div>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-slate-300 mb-2">해시태그</label>
+                                <input type="text" id="hashtags" onchange="updatePreview()" oninput="filterHashtagSuggestions()" placeholder="#해시태그1 #해시태그2" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white placeholder-slate-500 focus:border-pink-500 focus:outline-none">
+                                <div class="hashtag-suggestions" id="hashtagSuggestions"></div>
+                            </div>
+                            <div id="platformSettings"></div>
+                        </div>
+
+                        <!-- Mode 2: AI Generation -->
+                        <div class="mode-form" id="aiForm">
+                            <div class="bg-purple-900/20 border border-purple-600/30 rounded-lg p-3 mb-4">
+                                <p class="text-xs text-purple-300">AI가 플랫폼에 맞춘 최적의 콘텐츠를 자동으로 생성합니다</p>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-300 mb-2">주제 <span class="text-red-400">*</span></label>
+                                <input type="text" id="aiTopic" placeholder="예: 신제품 출시, 트렌드 분석, 팁 공유" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white placeholder-slate-500 focus:border-pink-500 focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-300 mb-2 mt-3">톤</label>
+                                <select id="aiTone" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white focus:border-pink-500 focus:outline-none">
+                                    <option value="professional">전문적</option>
+                                    <option value="casual">친근한</option>
+                                    <option value="humorous">유머러스</option>
+                                    <option value="inspiring">영감적</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-300 mb-2 mt-3">언어</label>
+                                <select id="aiLanguage" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white focus:border-pink-500 focus:outline-none">
+                                    <option value="ko">한국어</option>
+                                    <option value="en">English</option>
+                                    <option value="ja">日本語</option>
+                                    <option value="zh">中文</option>
+                                </select>
+                            </div>
+
+                            <!-- AI Generation Button with Loading State -->
+                            <button id="aiGenerateBtn" onclick="generateWithAI()" class="w-full mt-4 bg-purple-600 hover:bg-purple-700 text-white py-2.5 rounded-lg font-medium transition flex items-center justify-center gap-2">
+                                <span id="aiGenerateBtnText">AI로 생성하기</span>
+                                <span id="aiGenerateSpinner" class="hidden" style="width:16px;height:16px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;display:inline-block;animation:spin 0.6s linear infinite;"></span>
+                            </button>
+
+                            <!-- AI Generated Result Area (initially hidden) -->
+                            <div id="aiResultArea" class="hidden mt-4">
+                                <div class="bg-slate-800 border border-purple-600/30 rounded-lg p-4">
+                                    <div class="flex items-center justify-between mb-3">
+                                        <span class="text-sm font-semibold text-purple-300">AI 생성 결과</span>
+                                        <div class="flex gap-2">
+                                            <button onclick="regenerateWithAI()" class="px-3 py-1 bg-purple-700 hover:bg-purple-600 text-white rounded text-xs font-medium transition">재생성</button>
+                                            <button onclick="copyToDirectMode()" class="px-3 py-1 bg-green-700 hover:bg-green-600 text-white rounded text-xs font-medium transition">편집모드로 복사</button>
+                                        </div>
+                                    </div>
+                                    <div id="aiGeneratedContent" class="text-sm text-slate-200 leading-relaxed whitespace-pre-wrap bg-slate-900/50 rounded-lg p-3 mb-3" contenteditable="true" style="min-height:100px;outline:none;border:1px solid #334155;"></div>
+
+                                    <!-- AI Hashtag Suggestions -->
+                                    <div id="aiHashtagArea" class="mb-3">
+                                        <label class="block text-xs font-medium text-slate-400 mb-2">추천 해시태그 (클릭하여 추가/제거)</label>
+                                        <div id="aiHashtagSuggestions" class="flex flex-wrap gap-1.5"></div>
+                                    </div>
+
+                                    <!-- AI Tips -->
+                                    <div id="aiSuggestionsArea" class="hidden">
+                                        <label class="block text-xs font-medium text-slate-400 mb-2">AI 추천 팁</label>
+                                        <div id="aiSuggestionsList" class="space-y-1"></div>
+                                    </div>
+
+                                    <!-- Estimated Engagement -->
+                                    <div id="aiEngagementArea" class="hidden mt-3 flex gap-3">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button id="copyToDirectBtn" onclick="copyToDirectMode()" class="w-full mt-3 bg-slate-700 hover:bg-slate-600 text-white py-2.5 rounded-lg font-medium transition hidden">
+                                직접 작성으로 복사
+                            </button>
+                        </div>
+
+                        <!-- Mode 3: Automation -->
+                        <div class="mode-form" id="automateForm">
+                            <div class="bg-green-900/20 border border-green-600/30 rounded-lg p-3 mb-4">
+                                <p class="text-xs text-green-300">⚡ AI가 정기적으로 자동으로 포스트를 생성하고 발행합니다</p>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-300 mb-2">주제 <span class="text-red-400">*</span></label>
+                                <input type="text" id="autoTopic" placeholder="예: 일일 건강팁, 주간 기술뉴스, 월간 성공사례" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white placeholder-slate-500 focus:border-pink-500 focus:outline-none">
+                                <p class="text-xs text-slate-400 mt-1">이 주제로 매번 다른 내용이 생성됩니다</p>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-300 mb-2 mt-3">목적</label>
+                                <select id="autoPurpose" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white focus:border-pink-500 focus:outline-none">
+                                    <option value="engagement">👥 참여 유도</option>
+                                    <option value="sales">🛍 판매 촉진</option>
+                                    <option value="awareness">📢 인식 제고</option>
+                                    <option value="community">🤝 커뮤니티 활성화</option>
+                                    <option value="education">🎓 교육/정보 공유</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-300 mb-2 mt-3">발행 주기</label>
+                                <select id="autoFrequency" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white focus:border-pink-500 focus:outline-none">
+                                    <option value="daily">📅 매일</option>
+                                    <option value="3days">📅 3일마다</option>
+                                    <option value="weekly">📅 주간 (일주일)</option>
+                                    <option value="monthly">📅 월간</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-300 mb-3 mt-3">플랫폼 선택 <span class="text-red-400">*</span></label>
+                                <div class="grid grid-cols-2 gap-2 bg-slate-800 rounded-lg p-3" id="platformCheckboxes"></div>
+                                <p class="text-xs text-slate-400 mt-2">여러 플랫폼을 선택하면 각 플랫폼에 맞춰 자동으로 조정됩니다</p>
+                            </div>
+                            <button onclick="setupAutomation()" class="w-full mt-4 bg-green-600 hover:bg-green-700 text-white py-2.5 rounded-lg font-medium transition">
+                                ⚡ 자동화 설정하기
+                            </button>
+                        </div>
+
+                        <div id="scheduleDiv" class="hidden">
+                            <label class="block text-sm font-medium text-slate-300 mb-2">발행 예정 시간</label>
+                            <input type="datetime-local" id="scheduleTime" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white focus:border-pink-500 focus:outline-none">
+                        </div>
+                    </div>
                 </div>
 
-                <div class="flex-1 overflow-hidden grid grid-cols-2 gap-0">
-                    <!-- Tab 1: 직접 작성 (Direct Writing) -->
-                    <div id="direct-tab" class="tab-content active col-span-2 grid grid-cols-2 gap-0">
-                        <!-- Left: Editor -->
-                        <div class="flex flex-col overflow-hidden border-r border-slate-800 p-6">
-                            <h3 class="text-lg font-bold text-white mb-4">포스트 편집</h3>
-                            <div class="flex-1 overflow-y-auto space-y-4">
-                                <!-- Account Selection -->
-                                <div>
-                                    <label class="block text-sm font-medium text-slate-300 mb-2">발행 계정</label>
-                                    <select id="accountId" onchange="updatePreview(); updatePlatformSettings()" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white focus:border-pink-500 focus:outline-none">
-                                        <option value="">선택하세요</option>
-                                    </select>
-                                </div>
-
-                                <!-- Dynamic Platform Settings -->
-                                <div id="platform-settings" class="hidden space-y-4 pt-3 border-t border-slate-700">
-                                    <!-- Instagram Settings -->
-                                    <div id="instagram-settings" class="hidden space-y-3">
-                                        <div>
-                                            <label class="block text-sm font-medium text-slate-300 mb-2">콘텐츠 타입</label>
-                                            <select id="insta-type" onchange="updatePreview()" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white focus:border-pink-500 focus:outline-none text-sm">
-                                                <option value="feed">📸 피드</option>
-                                                <option value="reel">🎬 릴스</option>
-                                                <option value="story">📖 스토리</option>
-                                                <option value="carousel">🎪 캐러셀</option>
-                                            </select>
-                                        </div>
-                                        <p class="text-xs text-slate-400">💡 권장: 해시태그 5-10개, 최대 30개</p>
-                                    </div>
-
-                                    <!-- Twitter Settings -->
-                                    <div id="twitter-settings" class="hidden space-y-2">
-                                        <label class="flex items-center gap-2 text-sm font-medium text-slate-300 cursor-pointer">
-                                            <input type="checkbox" id="twitter-thread" onchange="updatePreview()" class="w-4 h-4">
-                                            스레드 모드 (연속 트윗)
-                                        </label>
-                                        <label class="flex items-center gap-2 text-sm font-medium text-slate-300 cursor-pointer">
-                                            <input type="checkbox" id="twitter-poll" onchange="updatePreview()" class="w-4 h-4">
-                                            폴 추가
-                                        </label>
-                                        <p class="text-xs text-slate-400">💡 280자 제한</p>
-                                    </div>
-
-                                    <!-- LinkedIn Settings -->
-                                    <div id="linkedin-settings" class="hidden space-y-3">
-                                        <div>
-                                            <label class="block text-sm font-medium text-slate-300 mb-2">톤</label>
-                                            <select id="linkedin-tone" onchange="updatePreview()" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white focus:border-pink-500 focus:outline-none text-sm">
-                                                <option value="professional">👔 전문가</option>
-                                                <option value="casual">😊 캐주얼</option>
-                                                <option value="thought-leadership">💡 리더십</option>
-                                            </select>
-                                        </div>
-                                    </div>
-
-                                    <!-- YouTube Settings -->
-                                    <div id="youtube-settings" class="hidden space-y-3">
-                                        <div>
-                                            <label class="block text-sm font-medium text-slate-300 mb-2">제목 (100자 제한)</label>
-                                            <input type="text" id="youtube-title" maxlength="100" onchange="updatePreview()" placeholder="영상 제목" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white placeholder-slate-500 focus:border-pink-500 focus:outline-none text-sm">
-                                            <span id="youtube-title-count" class="text-xs text-slate-400">0 / 100</span>
-                                        </div>
-                                        <div>
-                                            <label class="block text-sm font-medium text-slate-300 mb-2">설명 (5000자 제한)</label>
-                                            <textarea id="youtube-desc" maxlength="5000" onchange="updatePreview(); updateYoutubeDes()" placeholder="영상 설명" class="w-full h-20 bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white placeholder-slate-500 focus:border-pink-500 focus:outline-none resize-none text-sm"></textarea>
-                                            <span id="youtube-desc-count" class="text-xs text-slate-400">0 / 5000</span>
-                                        </div>
-                                        <div>
-                                            <label class="block text-sm font-medium text-slate-300 mb-2">태그 (쉼표로 구분)</label>
-                                            <input type="text" id="youtube-tags" onchange="updatePreview()" placeholder="tag1, tag2, tag3" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white placeholder-slate-500 focus:border-pink-500 focus:outline-none text-sm">
-                                        </div>
-                                    </div>
-
-                                    <!-- TikTok Settings -->
-                                    <div id="tiktok-settings" class="hidden space-y-3">
-                                        <p class="text-xs text-yellow-400">⚠️ TikTok은 영상 전용입니다. 영상 파일을 업로드하세요.</p>
-                                    </div>
-
-                                    <!-- Pinterest Settings -->
-                                    <div id="pinterest-settings" class="hidden space-y-3">
-                                        <div>
-                                            <label class="block text-sm font-medium text-slate-300 mb-2">보드 선택</label>
-                                            <select id="pinterest-board" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white focus:border-pink-500 focus:outline-none text-sm">
-                                                <option value="">보드를 선택하세요</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Template Selection -->
-                                <div>
-                                    <label class="block text-sm font-medium text-slate-300 mb-2">템플릿 선택</label>
-                                    <select id="template" onchange="updatePreview()" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white focus:border-pink-500 focus:outline-none">
-                                        <option value="card_news">📇 카드 뉴스</option>
-                                        <option value="blog_post">📝 블로그 포스트</option>
-                                        <option value="reel">🎬 릴스</option>
-                                        <option value="shorts">📱 쇼츠</option>
-                                    </select>
-                                </div>
-
-                                <!-- Content Area -->
-                                <div>
-                                    <div class="flex justify-between items-center mb-2">
-                                        <label class="block text-sm font-medium text-slate-300">본문</label>
-                                        <span id="charCount" class="text-xs text-slate-400">0 / 2200</span>
-                                    </div>
-                                    <textarea id="content" oninput="updatePreview(); updateCharCount()" placeholder="포스트 내용을 입력하세요..." class="w-full h-32 bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white placeholder-slate-500 focus:border-pink-500 focus:outline-none resize-none"></textarea>
-                                </div>
-
-                                <!-- Hashtags -->
-                                <div>
-                                    <label class="block text-sm font-medium text-slate-300 mb-2">해시태그</label>
-                                    <div class="flex gap-2">
-                                        <input type="text" id="hashtags" oninput="updatePreview(); updateHashtagCount()" placeholder="#hashtag1 #hashtag2" class="flex-1 bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white placeholder-slate-500 focus:border-pink-500 focus:outline-none">
-                                        <button onclick="generateHashtags()" class="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-medium">🤖 AI생성</button>
-                                    </div>
-                                    <span id="hashtagCount" class="text-xs text-slate-400 mt-1">0개</span>
-                                </div>
-
-                                <!-- Media Upload -->
-                                <div>
-                                    <label class="block text-sm font-medium text-slate-300 mb-2">미디어 업로드</label>
-                                    <input type="file" id="mediaFile" accept="image/*,video/*" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-slate-300 text-sm">
-                                    <div id="mediaPreview" class="mt-2 flex gap-2 flex-wrap"></div>
-                                </div>
-
-                                <!-- Schedule Settings -->
-                                <div class="space-y-3 pt-3 border-t border-slate-700">
-                                    <div class="flex items-center gap-2">
-                                        <input type="checkbox" id="scheduleToggle" onchange="toggleSchedule()" class="w-4 h-4">
-                                        <label class="text-sm font-medium text-slate-300">예약 발행</label>
-                                    </div>
-                                    <div id="scheduleForm" class="hidden space-y-3">
-                                        <div>
-                                            <label class="block text-sm font-medium text-slate-300 mb-1">발행 날짜</label>
-                                            <input type="date" id="scheduleDate" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white focus:border-pink-500 focus:outline-none">
-                                        </div>
-                                        <div>
-                                            <label class="block text-sm font-medium text-slate-300 mb-1">발행 시간</label>
-                                            <input type="time" id="scheduleTime" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white focus:border-pink-500 focus:outline-none">
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Right: Preview -->
-                        <div class="flex flex-col overflow-hidden bg-slate-900 p-6">
-                            <h3 class="text-lg font-bold text-white mb-4">📱 미리보기</h3>
-                            <div class="flex-1 overflow-y-auto flex flex-col items-center justify-center">
-                                <div class="bg-gradient-to-br from-pink-900/30 to-pink-900/10 rounded-xl p-6 border-2 border-pink-600 max-w-sm w-full">
-                                    <div class="bg-slate-700 rounded-lg h-40 flex items-center justify-center mb-4">
-                                        <div class="text-4xl" id="previewIcon">📷</div>
-                                    </div>
-                                    <p class="text-white font-medium mb-4 text-sm" id="previewContent">포스트 내용이 여기 표시됩니다</p>
-                                    <p class="text-pink-400 text-xs mb-4" id="previewHashtags">#SoftFactory</p>
-                                    <div id="previewMetrics" class="text-xs text-slate-400 mb-4 space-y-1">
-                                        <p>📊 글자수: <span id="previewCharCount">0</span></p>
-                                        <p>🏷️ 해시태그: <span id="previewHashtagNum">0</span></p>
-                                    </div>
-                                    <div class="mt-6 flex gap-3 text-sm">
-                                        <button class="flex-1 bg-pink-600 hover:bg-pink-700 text-white py-2 rounded-lg font-medium">❤️ 좋아요</button>
-                                        <button class="flex-1 bg-slate-700 hover:bg-slate-600 text-slate-100 py-2 rounded-lg">💬 댓글</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                <!-- Right: Preview -->
+                <div class="flex flex-col overflow-hidden bg-slate-900 p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-bold text-white">미리보기</h3>
+                        <span class="draft-saved-indicator" id="draftIndicator">&#x2714; 임시저장됨</span>
                     </div>
-
-                    <!-- Tab 2: AI Generation -->
-                    <div id="ai-tab" class="tab-content col-span-2 flex flex-col overflow-hidden p-6">
-                        <div class="max-w-2xl mx-auto w-full">
-                            <h3 class="text-lg font-bold text-white mb-6">🤖 AI로 SNS 콘텐츠 생성</h3>
-
-                            <div class="space-y-4">
-                                <div>
-                                    <label class="block text-sm font-medium text-slate-300 mb-2">주제</label>
-                                    <input type="text" id="ai-topic" placeholder="예: 새로운 제품 출시, 이벤트 공지, 일상 팁" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white placeholder-slate-500 focus:border-pink-500 focus:outline-none">
+                    <!-- Platform Preview Tabs -->
+                    <div class="preview-platform-tabs" id="previewPlatformTabs">
+                        <button class="preview-platform-tab active" data-preview="instagram" onclick="switchPreviewPlatform('instagram')">Instagram</button>
+                        <button class="preview-platform-tab" data-preview="twitter" onclick="switchPreviewPlatform('twitter')">Twitter</button>
+                        <button class="preview-platform-tab" data-preview="facebook" onclick="switchPreviewPlatform('facebook')">Facebook</button>
+                        <button class="preview-platform-tab" data-preview="linkedin" onclick="switchPreviewPlatform('linkedin')">LinkedIn</button>
+                    </div>
+                    <div class="flex-1 overflow-y-auto flex flex-col items-center justify-start">
+                        <!-- Instagram Preview -->
+                        <div id="preview-instagram" class="platform-preview max-w-sm w-full">
+                            <div class="bg-gradient-to-br from-pink-900/30 to-pink-900/10 rounded-xl p-5 border-2 border-pink-600">
+                                <div class="flex items-center gap-2 mb-3">
+                                    <div class="w-8 h-8 rounded-full bg-gradient-to-br from-pink-500 to-purple-600 flex items-center justify-center text-xs font-bold text-white">SF</div>
+                                    <div><p class="text-white text-xs font-semibold">softfactory</p><p class="text-slate-500 text-[10px]">Seoul, Korea</p></div>
                                 </div>
-
-                                <div class="grid grid-cols-2 gap-4">
-                                    <div>
-                                        <label class="block text-sm font-medium text-slate-300 mb-2">톤</label>
-                                        <select id="ai-tone" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white focus:border-pink-500 focus:outline-none text-sm">
-                                            <option value="professional">👔 전문가</option>
-                                            <option value="casual">😊 캐주얼</option>
-                                            <option value="humorous">😄 유머러스</option>
-                                            <option value="inspirational">✨ 영감</option>
-                                            <option value="promotional">🎯 홍보</option>
-                                        </select>
-                                    </div>
-
-                                    <div>
-                                        <label class="block text-sm font-medium text-slate-300 mb-2">언어</label>
-                                        <select id="ai-language" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white focus:border-pink-500 focus:outline-none text-sm">
-                                            <option value="ko">🇰🇷 한국어</option>
-                                            <option value="en">🇬🇧 English</option>
-                                            <option value="ja">🇯🇵 日本語</option>
-                                        </select>
-                                    </div>
+                                <div class="bg-slate-700 rounded-lg h-40 flex items-center justify-center mb-3 overflow-hidden" id="previewMediaContainer">
+                                    <div class="text-4xl" id="previewIcon">&#x1F4F7;</div>
                                 </div>
-
-                                <div>
-                                    <label class="block text-sm font-medium text-slate-300 mb-2">플랫폼 선택</label>
-                                    <select id="ai-platform" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white focus:border-pink-500 focus:outline-none text-sm">
-                                        <option value="">선택하세요</option>
-                                        <option value="instagram">📷 Instagram</option>
-                                        <option value="twitter">🐦 Twitter</option>
-                                        <option value="facebook">👍 Facebook</option>
-                                        <option value="linkedin">💼 LinkedIn</option>
-                                        <option value="tiktok">🎵 TikTok</option>
-                                    </select>
+                                <div class="flex gap-3 mb-2">
+                                    <span class="text-lg cursor-pointer">&#x2764;</span>
+                                    <span class="text-lg cursor-pointer">&#x1F4AC;</span>
+                                    <span class="text-lg cursor-pointer">&#x2708;</span>
+                                    <span class="text-lg cursor-pointer ml-auto">&#x1F516;</span>
                                 </div>
-
-                                <div>
-                                    <label class="block text-sm font-medium text-slate-300 mb-2">추가 설정 (선택)</label>
-                                    <textarea id="ai-context" placeholder="추가 정보, 키워드 등..." class="w-full h-20 bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white placeholder-slate-500 focus:border-pink-500 focus:outline-none resize-none text-sm"></textarea>
+                                <p class="text-white font-medium text-sm leading-relaxed mb-1" id="previewContent">포스트 내용이 여기 표시됩니다</p>
+                                <p class="text-pink-400 text-xs mb-2" id="previewHashtags">#SoftFactory</p>
+                                <div class="text-xs text-slate-400">
+                                    <p id="previewStats">문자: 0 | 해시태그: 0</p>
                                 </div>
-
-                                <button onclick="generateWithAI()" class="w-full px-6 py-3 bg-gradient-to-r from-pink-600 to-pink-700 hover:from-pink-700 hover:to-pink-800 text-white rounded-lg font-medium transition">
-                                    ✨ AI로 생성하기
-                                </button>
                             </div>
-
-                            <!-- AI Preview Section -->
-                            <div id="ai-preview" class="hidden mt-8 pt-8 border-t border-slate-700">
-                                <h4 class="text-base font-semibold text-white mb-4">생성된 콘텐츠</h4>
-                                <div class="space-y-4">
-                                    <div>
-                                        <p class="text-xs font-medium text-slate-400 mb-2">📝 콘텐츠</p>
-                                        <div class="bg-slate-700 border border-slate-600 rounded-lg px-4 py-3 text-white text-sm" id="ai-content-preview">로딩 중...</div>
-                                    </div>
-
-                                    <div>
-                                        <p class="text-xs font-medium text-slate-400 mb-2">🏷️ 제안 해시태그</p>
-                                        <div class="bg-slate-700 border border-slate-600 rounded-lg px-4 py-3" id="ai-hashtags-preview">
-                                            <span class="inline-block px-2 py-1 bg-pink-600 text-white text-xs rounded-full mr-2 mb-2">#trending</span>
-                                            <span class="inline-block px-2 py-1 bg-pink-600 text-white text-xs rounded-full mr-2 mb-2">#viral</span>
-                                        </div>
-                                    </div>
-
-                                    <div class="grid grid-cols-2 gap-4">
-                                        <button onclick="acceptAI()" class="px-4 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium text-sm">
-                                            ✅ 사용하기
-                                        </button>
-                                        <button onclick="regenerateAI()" class="px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium text-sm">
-                                            🔄 다시 생성
-                                        </button>
+                        </div>
+                        <!-- Twitter Preview -->
+                        <div id="preview-twitter" class="platform-preview max-w-sm w-full hidden">
+                            <div class="bg-slate-800 rounded-xl p-5 border border-slate-600">
+                                <div class="flex gap-3">
+                                    <div class="w-10 h-10 rounded-full bg-slate-600 flex items-center justify-center text-sm font-bold text-white shrink-0">SF</div>
+                                    <div class="flex-1">
+                                        <div class="flex items-center gap-1 mb-1"><span class="text-white text-sm font-bold">SoftFactory</span><span class="text-slate-500 text-xs">@softfactory</span></div>
+                                        <p class="text-white text-sm leading-relaxed" id="previewContentTwitter">포스트 내용이 여기 표시됩니다</p>
+                                        <p class="text-blue-400 text-xs mt-1" id="previewHashtagsTwitter">#SoftFactory</p>
+                                        <div class="flex gap-8 mt-3 text-slate-500 text-xs"><span>&#x1F4AC; 12</span><span>&#x1F504; 5</span><span>&#x2764; 48</span><span>&#x1F4CA; 1.2K</span></div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-
-                    <!-- Tab 3: Automation Registration -->
-                    <div id="automate-tab" class="tab-content col-span-2 flex flex-col overflow-hidden p-6">
-                        <div class="grid grid-cols-2 gap-6 flex-1">
-                            <!-- Left: Form -->
-                            <div class="flex flex-col overflow-y-auto">
-                                <h3 class="text-lg font-bold text-white mb-6">⚡ 자동화 스케줄 등록</h3>
-
-                                <div class="space-y-4 flex-1">
-                                    <div>
-                                        <label class="block text-sm font-medium text-slate-300 mb-2">주제</label>
-                                        <input type="text" id="auto-topic" placeholder="자동 게시할 주제 또는 키워드" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white placeholder-slate-500 focus:border-pink-500 focus:outline-none">
-                                    </div>
-
-                                    <div>
-                                        <label class="block text-sm font-medium text-slate-300 mb-2">목적</label>
-                                        <select id="auto-purpose" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white focus:border-pink-500 focus:outline-none text-sm">
-                                            <option value="promotion">🎯 홍보</option>
-                                            <option value="engagement">💬 소통</option>
-                                            <option value="education">📚 교육</option>
-                                            <option value="community">👥 커뮤니티</option>
-                                            <option value="news">📰 뉴스 공유</option>
-                                        </select>
-                                    </div>
-
-                                    <div>
-                                        <label class="block text-sm font-medium text-slate-300 mb-2">발행 주기</label>
-                                        <select id="auto-frequency" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white focus:border-pink-500 focus:outline-none text-sm">
-                                            <option value="daily">📆 매일</option>
-                                            <option value="weekly">📅 주 1회</option>
-                                            <option value="biweekly">📋 격주</option>
-                                            <option value="monthly">📌 월 1회</option>
-                                        </select>
-                                    </div>
-
-                                    <div>
-                                        <label class="block text-sm font-medium text-slate-300 mb-3">발행할 플랫폼 (다중 선택)</label>
-                                        <div class="space-y-2">
-                                            <label class="flex items-center gap-3 cursor-pointer text-slate-300 hover:text-white transition">
-                                                <input type="checkbox" value="instagram" class="auto-platform w-4 h-4" />
-                                                <span class="text-sm">📷 Instagram</span>
-                                            </label>
-                                            <label class="flex items-center gap-3 cursor-pointer text-slate-300 hover:text-white transition">
-                                                <input type="checkbox" value="twitter" class="auto-platform w-4 h-4" />
-                                                <span class="text-sm">🐦 Twitter</span>
-                                            </label>
-                                            <label class="flex items-center gap-3 cursor-pointer text-slate-300 hover:text-white transition">
-                                                <input type="checkbox" value="facebook" class="auto-platform w-4 h-4" />
-                                                <span class="text-sm">👍 Facebook</span>
-                                            </label>
-                                            <label class="flex items-center gap-3 cursor-pointer text-slate-300 hover:text-white transition">
-                                                <input type="checkbox" value="linkedin" class="auto-platform w-4 h-4" />
-                                                <span class="text-sm">💼 LinkedIn</span>
-                                            </label>
-                                            <label class="flex items-center gap-3 cursor-pointer text-slate-300 hover:text-white transition">
-                                                <input type="checkbox" value="tiktok" class="auto-platform w-4 h-4" />
-                                                <span class="text-sm">🎵 TikTok</span>
-                                            </label>
-                                        </div>
-                                    </div>
-
-                                    <div>
-                                        <label class="block text-sm font-medium text-slate-300 mb-2">톤 (선택)</label>
-                                        <select id="auto-tone" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white focus:border-pink-500 focus:outline-none text-sm">
-                                            <option value="">기본</option>
-                                            <option value="professional">👔 전문가</option>
-                                            <option value="casual">😊 캐주얼</option>
-                                            <option value="humorous">😄 유머러스</option>
-                                        </select>
-                                    </div>
-
-                                    <button onclick="createAutomate()" class="w-full px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-lg font-medium transition mt-6">
-                                        ✅ 자동화 등록
-                                    </button>
+                        <!-- Facebook Preview -->
+                        <div id="preview-facebook" class="platform-preview max-w-sm w-full hidden">
+                            <div class="bg-slate-800 rounded-xl p-5 border border-slate-600">
+                                <div class="flex items-center gap-2 mb-3">
+                                    <div class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-sm font-bold text-white">SF</div>
+                                    <div><p class="text-white text-sm font-semibold">SoftFactory</p><p class="text-slate-500 text-[10px]">Just now &middot; &#x1F30E;</p></div>
                                 </div>
+                                <p class="text-white text-sm leading-relaxed mb-3" id="previewContentFacebook">포스트 내용이 여기 표시됩니다</p>
+                                <p class="text-blue-400 text-xs mb-3" id="previewHashtagsFacebook">#SoftFactory</p>
+                                <div class="bg-slate-700 rounded-lg h-36 flex items-center justify-center mb-3"><div class="text-3xl">&#x1F4F7;</div></div>
+                                <div class="flex justify-around pt-2 border-t border-slate-700 text-slate-400 text-xs font-medium"><span>&#x1F44D; Like</span><span>&#x1F4AC; Comment</span><span>&#x21AA; Share</span></div>
                             </div>
-
-                            <!-- Right: Active Automations List -->
-                            <div class="flex flex-col overflow-hidden bg-slate-900 rounded-lg p-6 border border-slate-800">
-                                <h4 class="text-base font-semibold text-white mb-4">📅 등록된 자동화</h4>
-                                <div id="automate-list" class="flex-1 overflow-y-auto space-y-2">
-                                    <p class="text-sm text-slate-400">등록된 자동화가 없습니다.</p>
+                        </div>
+                        <!-- LinkedIn Preview -->
+                        <div id="preview-linkedin" class="platform-preview max-w-sm w-full hidden">
+                            <div class="bg-slate-800 rounded-xl p-5 border border-slate-600">
+                                <div class="flex items-center gap-2 mb-3">
+                                    <div class="w-10 h-10 rounded-full bg-blue-700 flex items-center justify-center text-sm font-bold text-white">SF</div>
+                                    <div><p class="text-white text-sm font-semibold">SoftFactory</p><p class="text-slate-500 text-[10px]">2,450 followers</p></div>
                                 </div>
+                                <p class="text-white text-sm leading-relaxed mb-2" id="previewContentLinkedin">포스트 내용이 여기 표시됩니다</p>
+                                <p class="text-blue-400 text-xs mb-3" id="previewHashtagsLinkedin">#SoftFactory</p>
+                                <div class="flex justify-around pt-2 border-t border-slate-700 text-slate-400 text-xs font-medium"><span>&#x1F44D; Like</span><span>&#x1F4AC; Comment</span><span>&#x1F504; Repost</span><span>&#x2709; Send</span></div>
                             </div>
                         </div>
                     </div>
@@ -431,411 +610,1211 @@
     </div>
 
     <script>
-        // ============ INITIALIZATION ============
-        requireAuth();
-
-        // Platform specifications
+        // ============================================================================
+        // PLATFORM_SPECS — Platform Configuration Constants (Production-Grade)
+        // ============================================================================
         const PLATFORM_SPECS = {
-            instagram: { charLimit: 2200, hashtagLimit: 30, types: ['feed', 'reel', 'story', 'carousel'], icon: '📷' },
-            twitter: { charLimit: 280, types: ['tweet', 'thread', 'poll'], icon: '🐦' },
-            facebook: { charLimit: 63206, types: ['post', 'reel', 'story'], icon: '👍' },
-            tiktok: { charLimit: 4000, types: ['video'], videoOnly: true, icon: '🎵' },
-            linkedin: { charLimit: 3000, types: ['post', 'article', 'poll'], icon: '💼' },
-            youtube: { titleLimit: 100, descLimit: 5000, types: ['video', 'short'], icon: '▶️' },
-            pinterest: { charLimit: 500, types: ['pin', 'idea_pin'], icon: '📌' },
-            threads: { charLimit: 500, types: ['post'], icon: '🧵' }
+            instagram: {
+                name: 'Instagram',
+                icon: '📸',
+                charLimit: 2200,
+                hashtagLimit: 30,
+                hashtagRecommended: 5,
+                types: ['feed', 'reel', 'story', 'carousel'],
+                aspectRatios: { feed: '4:5', reel: '9:16', story: '9:16' },
+                videoOnly: false
+            },
+            twitter: {
+                name: 'Twitter',
+                icon: '𝕏',
+                charLimit: 280,
+                hashtagLimit: 10,
+                types: ['tweet', 'thread', 'poll'],
+                mediaMax: 4,
+                videoOnly: false
+            },
+            facebook: {
+                name: 'Facebook',
+                icon: 'f',
+                charLimit: 63206,
+                hashtagLimit: 10,
+                types: ['post', 'reel', 'story'],
+                videoOnly: false
+            },
+            tiktok: {
+                name: 'TikTok',
+                icon: '♪',
+                charLimit: 4000,
+                types: ['video'],
+                videoOnly: true
+            },
+            linkedin: {
+                name: 'LinkedIn',
+                icon: 'in',
+                charLimit: 3000,
+                hashtagLimit: 8,
+                types: ['post', 'article', 'poll'],
+                videoOnly: false
+            },
+            youtube: {
+                name: 'YouTube',
+                icon: '▶',
+                titleLimit: 100,
+                descLimit: 5000,
+                types: ['video', 'short'],
+                videoOnly: true
+            },
+            pinterest: {
+                name: 'Pinterest',
+                icon: 'P',
+                titleLimit: 100,
+                descLimit: 500,
+                types: ['pin', 'idea_pin'],
+                videoOnly: false
+            },
+            threads: {
+                name: 'Threads',
+                icon: '@',
+                charLimit: 500,
+                types: ['post'],
+                videoOnly: false
+            }
         };
 
+        // ============================================================================
+        // Global State
+        // ============================================================================
+        let currentMode = 'direct';
+        let selectedPlatform = null;
+        let generatedContent = null;
+        let automationSchedule = null;
+        let uploadedMedia = [];
+        let currentPreviewPlatform = 'instagram';
+        let draftAutoSaveTimer = null;
+
+        // ============================================================================
+        // Hashtag Suggestions (Mock Data)
+        // ============================================================================
+        const HASHTAG_SUGGESTIONS = {
+            default: ['#마케팅', '#브랜드', '#소셜미디어', '#성장', '#비즈니스', '#트렌드', '#콘텐츠', '#디지털마케팅'],
+            instagram: ['#인스타그램', '#일상', '#소통', '#인스타', '#팔로우', '#좋아요', '#데일리', '#감성'],
+            twitter: ['#트위터', '#핫토픽', '#실시간', '#트렌딩', '#뉴스', '#이슈'],
+            facebook: ['#페이스북', '#커뮤니티', '#이벤트', '#공유', '#소식', '#업데이트'],
+            tiktok: ['#틱톡', '#챌린지', '#trending', '#fyp', '#viral', '#shorts'],
+            linkedin: ['#LinkedIn', '#커리어', '#리더십', '#스타트업', '#네트워킹', '#채용'],
+            food: ['#맛집', '#먹방', '#푸드스타그램', '#맛스타그램', '#요리', '#레시피'],
+            beauty: ['#뷰티', '#메이크업', '#스킨케어', '#뷰티팁', '#코스메틱'],
+            tech: ['#테크', '#IT', '#개발자', '#프로그래밍', '#AI', '#스타트업']
+        };
+
+        requireAuth();
+
+        // ============================================================================
+        // Initialization
+        // ============================================================================
         async function init() {
             try {
                 const accountsData = await getSNSAccounts();
                 const select = document.getElementById('accountId');
+
+                if (!accountsData.accounts || accountsData.accounts.length === 0) {
+                    showWarning('연동된 SNS 계정이 없습니다. 계정 연동 페이지로 이동해주세요.');
+                    select.innerHTML = '<option value="">계정 연동 필요</option>';
+                    return;
+                }
+
+                select.innerHTML = '<option value="">계정을 선택하세요</option>';
                 (accountsData.accounts || []).forEach(acc => {
                     const opt = document.createElement('option');
                     opt.value = acc.id;
                     opt.dataset.platform = acc.platform;
-                    opt.textContent = `${acc.account_name} (${acc.platform})`;
+                    opt.textContent = `${acc.account_name} (${PLATFORM_SPECS[acc.platform]?.name || acc.platform})`;
                     select.appendChild(opt);
                 });
 
-                loadAutomations();
+                // Populate platform checkboxes for automation mode
+                const platformCheckboxes = document.getElementById('platformCheckboxes');
+                platformCheckboxes.innerHTML = '';
+                Object.entries(PLATFORM_SPECS).forEach(([platform, specs]) => {
+                    const label = document.createElement('label');
+                    label.className = 'flex items-center gap-2 text-sm text-slate-300 cursor-pointer hover:text-white transition';
+                    label.innerHTML = `
+                        <input type="checkbox" value="${platform}" class="w-4 h-4 bg-slate-700 border-slate-600 rounded cursor-pointer">
+                        <span>${specs.icon} ${specs.name}</span>
+                    `;
+                    platformCheckboxes.appendChild(label);
+                });
             } catch (error) {
-                showError('계정 로드 실패');
+                console.error('Init error:', error);
+                showError('계정 로드 실패: ' + error.message);
             }
         }
 
-        // ============ TAB SWITCHING ============
-        function switchTab(tabName) {
-            // Hide all tabs
-            document.querySelectorAll('.tab-content').forEach(tab => {
-                tab.classList.remove('active');
+        // ============================================================================
+        // Mode Switching (Direct, AI, Automate)
+        // ============================================================================
+        function switchMode(mode) {
+            currentMode = mode;
+
+            // Smooth transition: remove visible class first
+            document.querySelectorAll('.mode-form').forEach(f => {
+                f.classList.remove('visible');
             });
 
-            // Remove active class from all buttons
+            // After brief delay, swap forms
+            setTimeout(() => {
+                document.querySelectorAll('.mode-form').forEach(f => f.classList.remove('active'));
+                const targetForm = document.getElementById(mode + 'Form');
+                targetForm.classList.add('active');
+                // Trigger reflow then add visible for animation
+                requestAnimationFrame(() => {
+                    requestAnimationFrame(() => {
+                        targetForm.classList.add('visible');
+                    });
+                });
+            }, 100);
+
+            // Update tab buttons
             document.querySelectorAll('.tab-btn').forEach(btn => {
                 btn.classList.remove('active');
+                btn.classList.add('inactive');
             });
 
-            // Show selected tab
-            document.getElementById(`${tabName}-tab`).classList.add('active');
+            if (event && event.target) {
+                event.target.classList.remove('inactive');
+                event.target.classList.add('active');
+            }
 
-            // Activate corresponding button
-            event.target.classList.add('active');
-
-            // Show/hide publish buttons (only show on direct writing tab)
-            const publishButtons = document.getElementById('publish-buttons');
-            if (tabName === 'direct') {
-                publishButtons.style.display = 'flex';
-            } else {
-                publishButtons.style.display = 'none';
+            // Render appropriate preview
+            if (mode === 'direct') {
+                updatePreview();
+            } else if (mode === 'ai' && generatedContent) {
+                updateAIPreview();
+            } else if (mode === 'automate' && automationSchedule) {
+                updateAutomationPreview();
             }
         }
 
-        // ============ DIRECT WRITING TAB ============
-        function updatePlatformSettings() {
-            const accountId = document.getElementById('accountId').value;
+        // ============================================================================
+        // Mode 1: Direct Writing
+        // ============================================================================
+        function updatePlatformSpecs() {
             const select = document.getElementById('accountId');
-            const platform = select.options[select.selectedIndex]?.dataset?.platform;
+            const option = select.options[select.selectedIndex];
+            const platform = option?.dataset?.platform;
 
-            // Hide all platform settings
-            document.querySelectorAll('[id*="-settings"][id!="platform-settings"]').forEach(el => {
-                el.style.display = 'none';
-            });
-
-            // Show/hide platform settings container
-            const settingsDiv = document.getElementById('platform-settings');
-            if (platform && PLATFORM_SPECS[platform]) {
-                settingsDiv.style.display = 'block';
-                document.getElementById(`${platform}-settings`)?.style.display ?
-                    document.getElementById(`${platform}-settings`).style.display = 'block' : null;
-                updateCharLimit(platform);
-            } else {
-                settingsDiv.style.display = 'none';
+            if (!platform) {
+                document.getElementById('charLimit').textContent = '280';
+                selectedPlatform = null;
+                return;
             }
 
+            selectedPlatform = platform;
+            const specs = PLATFORM_SPECS[platform];
+
+            if (specs) {
+                // Update character limit
+                const limit = specs.charLimit || specs.titleLimit || 280;
+                document.getElementById('charLimit').textContent = limit;
+
+                // Show/hide hashtags based on platform
+                const hashtagsDiv = document.querySelector('input#hashtags')?.parentElement;
+                if (hashtagsDiv) {
+                    hashtagsDiv.style.display = specs.hashtagLimit ? 'block' : 'none';
+                }
+
+                updateCharCount();
+                renderPlatformSettings(platform, specs);
+            }
+        }
+
+        function renderPlatformSettings(platform, specs) {
+            const settingsDiv = document.getElementById('platformSettings');
+            let html = '';
+
+            // Video only warning
+            if (specs.videoOnly) {
+                html += `
+                    <div class="bg-blue-900/30 border border-blue-600 rounded-lg p-3 mb-4">
+                        <p class="text-xs text-blue-300">⚠️ 이 플랫폼은 영상 전용입니다</p>
+                    </div>
+                `;
+            }
+
+            // Platform-specific settings
+            if (platform === 'instagram') {
+                html += `
+                    <div>
+                        <label class="block text-sm font-medium text-slate-300 mb-2">콘텐츠 타입 <span class="text-red-400">*</span></label>
+                        <select id="contentType" onchange="updateContentTypeSettings()" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white focus:border-pink-500 focus:outline-none">
+                            <option value="feed">📸 피드 (4:5)</option>
+                            <option value="reel">🎬 릴스 (9:16)</option>
+                            <option value="story">📖 스토리 (9:16)</option>
+                            <option value="carousel">🎠 캐러셀 (여러장)</option>
+                        </select>
+                    </div>
+                    <div id="carouselSlides" class="hidden mt-3">
+                        <label class="block text-sm font-medium text-slate-300 mb-2">슬라이드 수</label>
+                        <select id="slides" onchange="updatePreview()" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white focus:border-pink-500 focus:outline-none">
+                            <option value="2">2장</option>
+                            <option value="3" selected>3장</option>
+                            <option value="5">5장</option>
+                            <option value="10">10장</option>
+                        </select>
+                    </div>
+                `;
+            } else if (platform === 'twitter') {
+                html += `
+                    <div>
+                        <label class="flex items-center gap-2 text-sm text-slate-300 mb-4 cursor-pointer hover:text-white transition">
+                            <input type="checkbox" id="threadMode" onchange="updateThreadMode()" class="w-4 h-4 bg-slate-700 border-slate-600 rounded cursor-pointer">
+                            <span>🧵 스레드 모드 (여러 트윗)</span>
+                        </label>
+                    </div>
+                    <div id="pollContainer" class="hidden mt-3">
+                        <label class="flex items-center gap-2 text-sm text-slate-300 mb-2 cursor-pointer hover:text-white transition">
+                            <input type="checkbox" id="pollMode" onchange="updatePollMode()" class="w-4 h-4 bg-slate-700 border-slate-600 rounded cursor-pointer">
+                            <span>📊 폴 추가</span>
+                        </label>
+                        <div id="pollOptions" class="hidden bg-slate-800 rounded-lg p-3 mt-2">
+                            <div>
+                                <label class="block text-xs font-medium text-slate-400 mb-2">폴 옵션 (각 줄에 하나씩)</label>
+                                <textarea id="pollText" placeholder="옵션1&#10;옵션2&#10;옵션3&#10;옵션4" class="w-full h-24 bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-white text-sm placeholder-slate-500 focus:border-pink-500 focus:outline-none resize-none"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else if (platform === 'linkedin') {
+                html += `
+                    <div>
+                        <label class="block text-sm font-medium text-slate-300 mb-2">콘텐츠 타입</label>
+                        <select id="linkedinType" onchange="updatePreview()" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white focus:border-pink-500 focus:outline-none">
+                            <option value="post">📝 일반 포스트</option>
+                            <option value="article">📄 아티클</option>
+                            <option value="poll">📊 폴</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-300 mb-2 mt-3">톤</label>
+                        <select id="linkedinTone" onchange="updatePreview()" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white focus:border-pink-500 focus:outline-none">
+                            <option value="professional">💼 전문적</option>
+                            <option value="inspirational">✨ 영감적</option>
+                            <option value="educational">🎓 교육적</option>
+                        </select>
+                    </div>
+                `;
+            } else if (platform === 'tiktok') {
+                html += `
+                    <div class="bg-yellow-900/30 border border-yellow-600 rounded-lg p-3">
+                        <p class="text-sm text-yellow-300">🎬 TikTok은 영상 전용입니다. 영상 파일을 업로드하세요.</p>
+                    </div>
+                    <div class="mt-3">
+                        <label class="block text-sm font-medium text-slate-300 mb-2">영상 설명 (선택)</label>
+                        <textarea id="tiktokDesc" onchange="updateCharCount()" oninput="updateCharCount()" placeholder="영상에 대한 설명을 입력하세요..." class="w-full h-20 bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white placeholder-slate-500 focus:border-pink-500 focus:outline-none resize-none"></textarea>
+                        <p class="text-xs text-slate-400 mt-1">상한: 4,000자</p>
+                    </div>
+                `;
+            } else if (platform === 'youtube') {
+                html += `
+                    <div>
+                        <label class="block text-sm font-medium text-slate-300 mb-2">콘텐츠 타입</label>
+                        <select id="youtubeType" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white focus:border-pink-500 focus:outline-none">
+                            <option value="video">🎬 정규 영상</option>
+                            <option value="short">⏱ YouTube Shorts</option>
+                        </select>
+                    </div>
+                    <div class="mt-3">
+                        <label class="block text-sm font-medium text-slate-300 mb-2">제목 (필수) <span class="text-red-400">*</span></label>
+                        <input type="text" id="youtubeTitle" maxlength="100" onchange="updateCharCount()" oninput="updateCharCount()" placeholder="영상 제목 (최대 100자)" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white placeholder-slate-500 focus:border-pink-500 focus:outline-none">
+                        <p class="text-xs text-slate-400 mt-1">상한: 100자</p>
+                    </div>
+                `;
+            } else if (platform === 'pinterest') {
+                html += `
+                    <div>
+                        <label class="block text-sm font-medium text-slate-300 mb-2">콘텐츠 타입</label>
+                        <select id="pinterestType" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white focus:border-pink-500 focus:outline-none">
+                            <option value="pin">📌 일반 핀</option>
+                            <option value="idea_pin">💡 아이디어 핀</option>
+                        </select>
+                    </div>
+                    <div class="mt-3">
+                        <label class="block text-sm font-medium text-slate-300 mb-2">제목</label>
+                        <input type="text" id="pinterestTitle" maxlength="100" placeholder="핀 제목 (최대 100자)" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white placeholder-slate-500 focus:border-pink-500 focus:outline-none">
+                    </div>
+                `;
+            }
+
+            settingsDiv.innerHTML = html;
+        }
+
+        function updateContentTypeSettings() {
+            const contentType = document.getElementById('contentType')?.value;
+            const carouselDiv = document.getElementById('carouselSlides');
+            if (carouselDiv) {
+                carouselDiv.classList.toggle('hidden', contentType !== 'carousel');
+            }
             updatePreview();
         }
 
-        function updateCharLimit(platform) {
-            const spec = PLATFORM_SPECS[platform];
-            if (!spec) return;
+        function updateThreadMode() {
+            const threadMode = document.getElementById('threadMode')?.checked;
+            const pollContainer = document.getElementById('pollContainer');
+            if (pollContainer) {
+                pollContainer.classList.toggle('hidden', !threadMode);
+            }
+            updatePreview();
+        }
 
-            const charCountEl = document.getElementById('charCount');
-            const limit = spec.charLimit || 2200;
-            charCountEl.textContent = `0 / ${limit}`;
+        function updatePollMode() {
+            const pollMode = document.getElementById('pollMode')?.checked;
+            const pollOptions = document.getElementById('pollOptions');
+            if (pollOptions) {
+                pollOptions.classList.toggle('hidden', !pollMode);
+            }
+            updatePreview();
         }
 
         function updateCharCount() {
-            const content = document.getElementById('content').value;
-            const accountId = document.getElementById('accountId').value;
-            const select = document.getElementById('accountId');
-            const platform = select.options[select.selectedIndex]?.dataset?.platform;
-            const spec = PLATFORM_SPECS[platform];
-            const limit = spec?.charLimit || 2200;
-            const count = content.length;
+            const platform = selectedPlatform;
+            const specs = PLATFORM_SPECS[platform];
+            let charCount = 0;
+            let charLimit = 280;
 
-            const charCountEl = document.getElementById('charCount');
-            charCountEl.textContent = `${count} / ${limit}`;
-
-            // Update preview
-            document.getElementById('previewCharCount').textContent = count;
-
-            // Color warning
-            if (count > limit) {
-                charCountEl.classList.remove('text-yellow-500');
-                charCountEl.classList.add('text-red-500');
-            } else if (count > limit * 0.8) {
-                charCountEl.classList.remove('text-red-500');
-                charCountEl.classList.add('text-yellow-500');
+            if (platform === 'youtube') {
+                const title = document.getElementById('youtubeTitle')?.value || '';
+                const desc = document.getElementById('content')?.value || '';
+                charCount = title.length + desc.length;
+                charLimit = specs?.titleLimit + specs?.descLimit || 5100;
+            } else if (platform === 'tiktok') {
+                const desc = document.getElementById('tiktokDesc')?.value || '';
+                charCount = desc.length;
+                charLimit = specs?.charLimit || 4000;
             } else {
-                charCountEl.classList.remove('text-red-500', 'text-yellow-500');
-                charCountEl.classList.add('text-slate-400');
+                const content = document.getElementById('content')?.value || '';
+                charCount = content.length;
+                charLimit = specs?.charLimit || 280;
             }
-        }
 
-        function updateHashtagCount() {
-            const hashtags = document.getElementById('hashtags').value;
-            const count = (hashtags.match(/#\w+/g) || []).length;
-            document.getElementById('hashtagCount').textContent = `${count}개`;
-            document.getElementById('previewHashtagNum').textContent = count;
-        }
+            const counter = document.getElementById('charCount');
+            if (counter) {
+                const percentage = Math.round((charCount / charLimit) * 100);
+                counter.textContent = `${charCount}/${charLimit}`;
 
-        function updateYoutubeDes() {
-            const title = document.getElementById('youtube-title')?.value || '';
-            const desc = document.getElementById('youtube-desc')?.value || '';
-            document.getElementById('youtube-title-count').textContent = `${title.length} / 100`;
-            document.getElementById('youtube-desc-count').textContent = `${desc.length} / 5000`;
+                counter.classList.remove('safe', 'warning', 'danger');
+
+                if (charCount > charLimit) {
+                    // Over limit - red
+                    counter.classList.add('danger');
+                    counter.textContent = `${charCount}/${charLimit} ⚠️ 초과!`;
+                } else if (charCount > charLimit * 0.9) {
+                    // 90%+ - red (danger zone)
+                    counter.classList.add('danger');
+                    counter.textContent = `${charCount}/${charLimit} (${percentage}%)`;
+                } else if (charCount > charLimit * 0.7) {
+                    // 70-90% - yellow/orange (warning)
+                    counter.classList.add('warning');
+                    counter.textContent = `${charCount}/${charLimit} (${percentage}%)`;
+                } else {
+                    // Below 70% - green (safe)
+                    counter.classList.add('safe');
+                    counter.textContent = `${charCount}/${charLimit} (${percentage}%)`;
+                }
+            }
+
+            updatePreview();
         }
 
         function updatePreview() {
-            const content = document.getElementById('content').value || '포스트 내용이 여기 표시됩니다';
-            const hashtags = document.getElementById('hashtags').value || '#SoftFactory';
-            const template = document.getElementById('template').value;
-            const icons = {
-                card_news: '📇',
-                blog_post: '📝',
-                reel: '🎬',
-                shorts: '📱'
+            const platform = selectedPlatform;
+            let content = '';
+            let hashtags = '';
+
+            if (!platform) {
+                content = '플랫폼을 선택하세요';
+            } else if (platform === 'youtube') {
+                const title = document.getElementById('youtubeTitle')?.value || '';
+                content = title;
+            } else if (platform === 'tiktok') {
+                content = document.getElementById('tiktokDesc')?.value || '';
+            } else {
+                content = document.getElementById('content')?.value || '';
+                hashtags = document.getElementById('hashtags')?.value || '';
+            }
+
+            const hashtagCount = (hashtags.match(/#/g) || []).length;
+            const contentPreview = (content || '포스트 내용을 입력하세요').substring(0, 200);
+
+            // Update all platform previews
+            const contentIds = ['previewContent', 'previewContentTwitter', 'previewContentFacebook', 'previewContentLinkedin'];
+            const hashtagIds = ['previewHashtags', 'previewHashtagsTwitter', 'previewHashtagsFacebook', 'previewHashtagsLinkedin'];
+
+            contentIds.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.textContent = contentPreview;
+            });
+            hashtagIds.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.textContent = hashtags || '#SoftFactory';
+            });
+            const statsEl = document.getElementById('previewStats');
+            if (statsEl) statsEl.textContent = `문자: ${content.length} | 해시태그: ${hashtagCount}`;
+        }
+
+        // ============================================================================
+        // Mode 2: AI Generation (Enhanced with real API integration)
+        // ============================================================================
+        let _aiGenerating = false;
+
+        async function generateWithAI() {
+            if (_aiGenerating) return;
+
+            const topic = document.getElementById('aiTopic').value;
+            const tone = document.getElementById('aiTone').value;
+            const language = document.getElementById('aiLanguage').value;
+            const platform = selectedPlatform;
+
+            if (!topic) {
+                showWarning('주제를 입력하세요');
+                return;
+            }
+
+            if (!platform) {
+                showWarning('먼저 플랫폼을 선택하세요');
+                return;
+            }
+
+            // Show loading state
+            _aiGenerating = true;
+            const btn = document.getElementById('aiGenerateBtn');
+            const btnText = document.getElementById('aiGenerateBtnText');
+            const spinner = document.getElementById('aiGenerateSpinner');
+            btn.disabled = true;
+            btn.style.opacity = '0.7';
+            btnText.textContent = 'AI 생성 중...';
+            spinner.classList.remove('hidden');
+
+            try {
+                const result = await generateSNSContent({
+                    topic: topic,
+                    tone: tone,
+                    language: language,
+                    platform: platform,
+                    charLimit: PLATFORM_SPECS[platform]?.charLimit || 280
+                });
+
+                if (result && result.content) {
+                    generatedContent = result;
+
+                    // Populate the content editor
+                    document.getElementById('content').value = result.content;
+
+                    // Generate hashtags if not provided
+                    let hashtags = result.hashtags || '';
+                    if (!hashtags) {
+                        try {
+                            const hashtagResult = await generateSNSHashtags(result.content, platform);
+                            hashtags = hashtagResult?.hashtags || '';
+                        } catch (e) {
+                            console.warn('Hashtag generation failed', e);
+                            hashtags = '#' + topic.split(' ')[0];
+                        }
+                    }
+                    document.getElementById('hashtags').value = hashtags;
+                    generatedContent.hashtags = hashtags;
+
+                    // Show AI result area
+                    const resultArea = document.getElementById('aiResultArea');
+                    resultArea.classList.remove('hidden');
+
+                    // Display generated content in editable area
+                    const contentEl = document.getElementById('aiGeneratedContent');
+                    contentEl.textContent = result.content;
+
+                    // Display hashtag suggestions (interactive)
+                    _renderAIHashtags(hashtags);
+
+                    // Display platform-specific optimization tips
+                    _renderPlatformOptimizationTips(result.content, platform, hashtags);
+
+                    // Estimate engagement metrics
+                    _estimateEngagementMetrics(result.content, platform, hashtags);
+
+                    updateAIPreview();
+                    showSuccess('AI 포스트가 생성되었습니다! 해시태그를 클릭하여 추가/제거할 수 있습니다.');
+                } else {
+                    showError('생성된 콘텐츠가 없습니다');
+                }
+            } catch (error) {
+                console.error('AI generation error:', error);
+                showError('AI 생성 실패: ' + error.message);
+            } finally {
+                // Reset button state
+                _aiGenerating = false;
+                btn.disabled = false;
+                btn.style.opacity = '1';
+                btnText.textContent = 'AI로 생성하기';
+                spinner.classList.add('hidden');
+            }
+        }
+
+        function _renderPlatformOptimizationTips(content, platform, hashtags) {
+            const sugArea = document.getElementById('aiSuggestionsArea');
+            const tipsList = document.getElementById('aiSuggestionsList');
+
+            if (!sugArea || !tipsList) return;
+
+            const tips = [];
+
+            // Platform-specific tips
+            if (platform === 'instagram') {
+                tips.push('📸 처음 3줄이 가장 중요합니다. 훅 문구로 시작하세요.');
+                tips.push('📸 최대 30개의 해시태그를 사용하면 도달 범위가 넓어집니다.');
+                if ((hashtags.match(/#/g) || []).length < 10) {
+                    tips.push('⚠️ 현재 ' + (hashtags.match(/#/g) || []).length + '개의 해시태그만 있습니다. 15-30개를 권장합니다.');
+                }
+            } else if (platform === 'twitter') {
+                tips.push('𝕏 280자 제한을 고려하여 간결하게 작성했습니다.');
+                if (content.length > 280) {
+                    tips.push('⚠️ 글자수가 280자를 초과했습니다. 간결하게 다시 작성하세요.');
+                }
+                tips.push('𝕏 링크나 이미지를 추가하면 클릭률이 30% 증가합니다.');
+            } else if (platform === 'linkedin') {
+                tips.push('💼 전문적이면서도 친근한 톤을 유지했습니다.');
+                tips.push('💼 네트워크 확대를 언급하면 공유율이 높아집니다.');
+                tips.push('💼 실제 경험이나 통계를 포함하면 신뢰도가 올라갑니다.');
+            } else if (platform === 'facebook') {
+                tips.push('👥 댓글 유도 질문을 포함하면 알고리즘 순위가 올라갑니다.');
+                tips.push('👥 동영상이나 이미지가 텍스트만 포함된 게시물보다 3배 더 많은 참여를 받습니다.');
+                if (content.length < 100) {
+                    tips.push('📝 짧은 내용입니다. 더 자세한 설명을 추가하세요.');
+                }
+            }
+
+            // General tips
+            const emojiCount = (content.match(/[\u{1F300}-\u{1F9FF}]/gu) || []).length;
+            if (emojiCount === 0 && platform !== 'twitter') {
+                tips.push('😊 이모지를 추가하면 시각적 흥미도와 참여도가 높아집니다.');
+            }
+
+            sugArea.classList.remove('hidden');
+            tipsList.innerHTML = tips.map(t =>
+                `<div style="padding:8px 10px;background:rgba(139,92,246,0.1);border-radius:6px;font-size:12px;color:#c4b5fd;border-left:3px solid #8b5cf6;margin-bottom:4px;">${t}</div>`
+            ).join('');
+        }
+
+        function _estimateEngagementMetrics(content, platform, hashtags) {
+            const engArea = document.getElementById('aiEngagementArea');
+            if (!engArea) return;
+
+            // Calculate engagement metrics based on content characteristics
+            const contentLength = content.length;
+            const hashtagCount = (hashtags?.match(/#/g) || []).length;
+            const emojiCount = (content.match(/[\u{1F300}-\u{1F9FF}]/gu) || []).length;
+            const questionCount = (content.match(/\?/g) || []).length;
+
+            // Base scores
+            let likesScore = 50 + (contentLength * 0.3) + (hashtagCount * 2) + (emojiCount * 5) + (questionCount * 8);
+            let commentsScore = 20 + (questionCount * 15) + (contentLength * 0.1);
+            let sharesScore = 10 + (contentLength * 0.15) + (hashtagCount * 1);
+
+            // Platform multipliers
+            const multipliers = {
+                instagram: { likes: 2.0, comments: 1.5, shares: 1.2 },
+                twitter: { likes: 1.2, comments: 1.8, shares: 1.0 },
+                facebook: { likes: 1.5, comments: 1.4, shares: 1.8 },
+                linkedin: { likes: 1.1, comments: 0.9, shares: 1.3 },
+                tiktok: { likes: 3.0, comments: 2.5, shares: 2.0 },
+                default: { likes: 1.0, comments: 1.0, shares: 1.0 }
             };
 
-            document.getElementById('previewIcon').textContent = icons[template] || '📷';
-            document.getElementById('previewContent').textContent = content.substring(0, 100) + (content.length > 100 ? '...' : '');
-            document.getElementById('previewHashtags').textContent = hashtags;
-            document.getElementById('previewCharCount').textContent = content.length;
+            const m = multipliers[platform] || multipliers.default;
+            const likes = Math.round(likesScore * m.likes);
+            const comments = Math.round(commentsScore * m.comments);
+            const shares = Math.round(sharesScore * m.shares);
+
+            engArea.classList.remove('hidden');
+            engArea.style.display = 'flex';
+            engArea.style.gap = '12px';
+            engArea.innerHTML = `
+                <div style="flex:1;padding:12px;background:rgba(236,72,153,0.1);border-radius:8px;text-align:center;border-left:4px solid #ec4899;">
+                    <div style="font-size:11px;color:#94a3b8;font-weight:600;text-transform:uppercase;">예상 좋아요</div>
+                    <div style="font-size:18px;font-weight:800;color:#f472b6;margin-top:6px;">${likes}+</div>
+                </div>
+                <div style="flex:1;padding:12px;background:rgba(59,130,246,0.1);border-radius:8px;text-align:center;border-left:4px solid #3b82f6;">
+                    <div style="font-size:11px;color:#94a3b8;font-weight:600;text-transform:uppercase;">예상 댓글</div>
+                    <div style="font-size:18px;font-weight:800;color:#60a5fa;margin-top:6px;">${comments}+</div>
+                </div>
+                <div style="flex:1;padding:12px;background:rgba(16,185,129,0.1);border-radius:8px;text-align:center;border-left:4px solid #10b981;">
+                    <div style="font-size:11px;color:#94a3b8;font-weight:600;text-transform:uppercase;">예상 공유</div>
+                    <div style="font-size:18px;font-weight:800;color:#6ee7b7;margin-top:6px;">${shares}+</div>
+                </div>
+            `;
         }
 
-        function toggleSchedule() {
-            const checkbox = document.getElementById('scheduleToggle').checked;
-            const form = document.getElementById('scheduleForm');
-            form.classList.toggle('hidden', !checkbox);
+        function _renderAIHashtags(hashtagStr) {
+            const container = document.getElementById('aiHashtagSuggestions');
+            if (!container) return;
+            const tags = hashtagStr.split(/\s+/).filter(t => t.startsWith('#'));
+            container.innerHTML = tags.map(tag =>
+                '<button class="hashtag-chip" onclick="_toggleAIHashtag(this)" data-selected="true" style="background:rgba(139,92,246,0.2);border-color:rgba(139,92,246,0.5);color:#c4b5fd;">' + tag + '</button>'
+            ).join('');
         }
 
-        async function generateHashtags() {
-            try {
-                const topic = document.getElementById('content').value;
-                if (!topic) {
-                    showWarning('내용을 입력하세요');
-                    return;
-                }
+        function _toggleAIHashtag(btn) {
+            const selected = btn.dataset.selected === 'true';
+            btn.dataset.selected = selected ? 'false' : 'true';
+            btn.style.opacity = selected ? '0.4' : '1';
+            btn.style.textDecoration = selected ? 'line-through' : 'none';
 
-                const accountId = document.getElementById('accountId').value;
-                const select = document.getElementById('accountId');
-                const platform = select.options[select.selectedIndex]?.dataset?.platform || 'instagram';
+            // Update the hashtags field with currently selected tags
+            const allBtns = document.querySelectorAll('#aiHashtagSuggestions .hashtag-chip');
+            const selectedTags = Array.from(allBtns)
+                .filter(b => b.dataset.selected === 'true')
+                .map(b => b.textContent.trim());
+            document.getElementById('hashtags').value = selectedTags.join(' ');
+            if (generatedContent) {
+                generatedContent.hashtags = selectedTags.join(' ');
+            }
+            updateAIPreview();
+        }
 
-                const result = await apiFetch('/api/sns/ai/hashtags', {
-                    method: 'POST',
-                    body: JSON.stringify({ topic, platform: platform })
-                }).then(r => r.json());
+        async function regenerateWithAI() {
+            // Simply re-trigger generation
+            await generateWithAI();
+        }
 
-                const hashtags = result.hashtags || result.platform_specific || [];
-                document.getElementById('hashtags').value = hashtags.join(' ');
-                updateHashtagCount();
-                updatePreview();
-                showSuccess('해시태그가 생성되었습니다');
-            } catch (error) {
-                showError('해시태그 생성 실패');
+        function updateAIPreview() {
+            if (generatedContent) {
+                const contentPreview = generatedContent.content.substring(0, 200);
+                const hashtags = generatedContent.hashtags || '#SoftFactory';
+                const hashtagCount = (hashtags.match(/#/g) || []).length;
+
+                // Update all platform preview panels
+                ['previewContent', 'previewContentTwitter', 'previewContentFacebook', 'previewContentLinkedin'].forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) el.textContent = contentPreview;
+                });
+                ['previewHashtags', 'previewHashtagsTwitter', 'previewHashtagsFacebook', 'previewHashtagsLinkedin'].forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) el.textContent = hashtags;
+                });
+
+                const statsEl = document.getElementById('previewStats');
+                if (statsEl) statsEl.textContent = 'AI Generated | ' + generatedContent.content.length + ' chars | ' + hashtagCount + ' tags';
             }
         }
 
-        document.getElementById('mediaFile')?.addEventListener('change', async (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
-
-            const formData = new FormData();
-            formData.append('file', file);
-
-            try {
-                const result = await apiFetch('/api/sns/media/upload', {
-                    method: 'POST',
-                    body: formData
-                }).then(r => r.json());
-
-                const preview = document.getElementById('mediaPreview');
-                const img = document.createElement('img');
-                img.src = result.url || '/uploads/media.jpg';
-                img.className = 'w-20 h-20 rounded-lg object-cover border border-slate-600';
-                preview.appendChild(img);
-                showSuccess('미디어가 업로드되었습니다');
-            } catch (error) {
-                showError('미디어 업로드 실패');
-            }
-        });
-
-        // ============ AI GENERATION TAB ============
-        async function generateWithAI() {
-            try {
-                const topic = document.getElementById('ai-topic').value;
-                const tone = document.getElementById('ai-tone').value;
-                const language = document.getElementById('ai-language').value;
-                const platform = document.getElementById('ai-platform').value;
-                const context = document.getElementById('ai-context').value;
-
-                if (!topic) {
-                    showWarning('주제를 입력하세요');
-                    return;
-                }
-
-                showInfo('AI가 콘텐츠를 생성 중입니다...');
-
-                const result = await apiFetch('/api/sns/ai/generate', {
-                    method: 'POST',
-                    body: JSON.stringify({ topic, tone, language, platform, context })
-                }).then(r => r.json());
-
-                const content = result.generated_content?.[0] || result;
-                document.getElementById('ai-content-preview').textContent = content.text || content.generated_content || '생성된 콘텐츠';
-
-                const hashtags = content.hashtags || content.suggested_hashtags || [];
-                const hashtagHtml = hashtags.map(tag =>
-                    `<span class="inline-block px-2 py-1 bg-pink-600 text-white text-xs rounded-full mr-2 mb-2">${tag}</span>`
-                ).join('');
-                document.getElementById('ai-hashtags-preview').innerHTML = hashtagHtml;
-                document.getElementById('ai-preview').classList.remove('hidden');
-
-                showSuccess('콘텐츠가 생성되었습니다!');
-            } catch (error) {
-                showError('AI 생성 실패: ' + error.message);
-            }
-        }
-
-        function regenerateAI() {
-            document.getElementById('ai-topic').focus();
-            generateWithAI();
-        }
-
-        function acceptAI() {
-            const content = document.getElementById('ai-content-preview').textContent;
-            const hashtagsHtml = document.getElementById('ai-hashtags-preview').innerHTML;
-            const hashtags = (hashtagsHtml.match(/>([^<]+)<\/span>/g) || []).map(h => h.replace(/.*>([^<]+)<.*/, '$1')).join(' ');
-
-            // Switch to direct tab
-            document.getElementById('direct-tab').classList.add('active');
-            document.getElementById('ai-tab').classList.remove('active');
-            document.querySelectorAll('.tab-btn')[0].classList.add('active');
-            document.querySelectorAll('.tab-btn')[1].classList.remove('active');
-
-            // Fill form
-            document.getElementById('content').value = content;
-            document.getElementById('hashtags').value = hashtags;
-            updateCharCount();
-            updateHashtagCount();
-            updatePreview();
-
-            showSuccess('콘텐츠가 에디터에 복사되었습니다!');
-        }
-
-        // ============ AUTOMATION TAB ============
-        async function createAutomate() {
-            try {
-                const topic = document.getElementById('auto-topic').value;
-                const purpose = document.getElementById('auto-purpose').value;
-                const frequency = document.getElementById('auto-frequency').value;
-                const tone = document.getElementById('auto-tone').value;
-
-                const platforms = Array.from(document.querySelectorAll('.auto-platform:checked'))
-                    .map(el => el.value);
-
-                if (!topic) {
-                    showWarning('주제를 입력하세요');
-                    return;
-                }
-
-                if (platforms.length === 0) {
-                    showWarning('최소 1개 이상의 플랫폼을 선택하세요');
-                    return;
-                }
-
-                const result = await apiFetch('/api/sns/automate', {
-                    method: 'POST',
-                    body: JSON.stringify({ topic, purpose, frequency, platforms, tone })
-                }).then(r => r.json());
-
-                if (result.success || result.id) {
-                    showSuccess('자동화가 등록되었습니다!');
-                    document.getElementById('auto-topic').value = '';
-                    document.getElementById('auto-purpose').value = 'promotion';
-                    document.getElementById('auto-frequency').value = 'weekly';
-                    document.getElementById('auto-tone').value = '';
-                    document.querySelectorAll('.auto-platform').forEach(el => el.checked = false);
-                    loadAutomations();
+        function copyToDirectMode() {
+            if (generatedContent) {
+                // Also grab edited content from the editable area if available
+                const editedContent = document.getElementById('aiGeneratedContent');
+                if (editedContent && editedContent.textContent.trim()) {
+                    document.getElementById('content').value = editedContent.textContent.trim();
                 } else {
-                    showError('자동화 등록 실패');
+                    document.getElementById('content').value = generatedContent.content;
                 }
-            } catch (error) {
-                showError('자동화 등록 오류: ' + error.message);
+                document.getElementById('hashtags').value = generatedContent.hashtags || '';
+
+                // Switch tab to direct mode
+                const directBtn = document.querySelector('.tab-btn');
+                if (directBtn) {
+                    directBtn.click();
+                } else {
+                    switchMode('direct');
+                }
+
+                updateCharCount();
+                updatePreview();
+                showSuccess('AI 생성 내용이 편집모드로 복사되었습니다!');
             }
         }
 
-        async function loadAutomations() {
+        // ============================================================================
+        // Mode 3: Automation
+        // ============================================================================
+        async function setupAutomation() {
             try {
-                const result = await apiFetch('/api/sns/automations').then(r => r.json()).catch(() => ({ automations: [] }));
+                const topic = document.getElementById('autoTopic').value;
+                const purpose = document.getElementById('autoPurpose').value;
+                const frequency = document.getElementById('autoFrequency').value;
+                const platforms = Array.from(document.querySelectorAll('#platformCheckboxes input:checked')).map(cb => cb.value);
 
-                const list = document.getElementById('automate-list');
-                const automations = result.automations || [];
-
-                if (automations.length === 0) {
-                    list.innerHTML = '<p class="text-sm text-slate-400">등록된 자동화가 없습니다.</p>';
+                if (!topic || platforms.length === 0) {
+                    showWarning('주제와 플랫폼을 선택하세요');
                     return;
                 }
 
-                list.innerHTML = automations.map(auto => `
-                    <div class="bg-slate-800 rounded-lg p-3 border border-slate-700">
-                        <div class="flex justify-between items-start mb-2">
-                            <div>
-                                <p class="text-sm font-medium text-white">${auto.topic || auto.title || '자동화'}</p>
-                                <p class="text-xs text-slate-400">${auto.purpose} • ${auto.frequency}</p>
-                            </div>
-                            <button onclick="deleteAutomate(${auto.id})" class="text-red-400 hover:text-red-300 text-xs">✕</button>
-                        </div>
-                        <div class="flex gap-1 flex-wrap">
-                            ${(auto.platforms || []).map(p => `<span class="text-xs bg-pink-600 text-white px-2 py-1 rounded">${p}</span>`).join('')}
+                showInfo('자동화 설정을 저장하는 중...');
+
+                // Call the API to create automation
+                try {
+                    const result = await createAutomate({
+                        topic: topic,
+                        purpose: purpose,
+                        frequency: frequency,
+                        platforms: platforms,
+                        is_active: true
+                    });
+
+                    if (result && result.id) {
+                        automationSchedule = result;
+
+                        // Show schedule preview
+                        _renderAutomationScheduleTable(result);
+                        updateAutomationPreview();
+                        showSuccess(`자동화가 설정되었습니다! (ID: ${result.id})`);
+
+                        // Redirect to schedule page after 3 seconds
+                        setTimeout(() => window.location.href = 'schedule.html', 3000);
+                    } else {
+                        throw new Error('자동화 생성 실패');
+                    }
+                } catch (error) {
+                    console.error('Automation API error:', error);
+                    // Fallback for mock API
+                    automationSchedule = {
+                        id: 'auto_' + Date.now(),
+                        topic: topic,
+                        purpose: purpose,
+                        frequency: frequency,
+                        platforms: platforms,
+                        is_active: true,
+                        created_at: new Date().toISOString()
+                    };
+                    _renderAutomationScheduleTable(automationSchedule);
+                    updateAutomationPreview();
+                    showSuccess('자동화가 설정되었습니다!');
+                    setTimeout(() => window.location.href = 'schedule.html', 2000);
+                }
+            } catch (error) {
+                console.error('Automation setup error:', error);
+                showError('자동화 설정 실패: ' + error.message);
+            }
+        }
+
+        function _renderAutomationScheduleTable(automation) {
+            // Calculate next 5 scheduled posts
+            const schedules = [];
+            const now = new Date();
+            const frequencyDays = {
+                'daily': 1,
+                '3days': 3,
+                'weekly': 7,
+                'monthly': 30
+            }[automation.frequency] || 1;
+
+            for (let i = 0; i < 5; i++) {
+                const postDate = new Date(now);
+                postDate.setDate(postDate.getDate() + (i * frequencyDays));
+                schedules.push({
+                    date: postDate.toLocaleDateString('ko-KR'),
+                    time: postDate.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' }),
+                    platforms: automation.platforms.map(p => PLATFORM_SPECS[p]?.icon || p).join(' '),
+                    status: '예약됨'
+                });
+            }
+
+            // Create schedule table
+            let scheduleHtml = '<div style="margin-top:16px;">';
+            scheduleHtml += '<p style="font-size:12px;font-weight:600;color:#94a3b8;margin-bottom:8px;">📅 예정된 자동 발행 일정</p>';
+            scheduleHtml += '<div style="background:#1e293b;border-radius:8px;overflow:hidden;border:1px solid #334155;">';
+            scheduleHtml += '<table style="width:100%;font-size:11px;border-collapse:collapse;">';
+            scheduleHtml += '<thead style="background:#0f172a;"><tr style="border-bottom:1px solid #334155;">';
+            scheduleHtml += '<th style="padding:8px;text-align:left;color:#94a3b8;font-weight:600;">날짜</th>';
+            scheduleHtml += '<th style="padding:8px;text-align:left;color:#94a3b8;font-weight:600;">시간</th>';
+            scheduleHtml += '<th style="padding:8px;text-align:left;color:#94a3b8;font-weight:600;">플랫폼</th>';
+            scheduleHtml += '<th style="padding:8px;text-align:left;color:#94a3b8;font-weight:600;">상태</th>';
+            scheduleHtml += '</tr></thead><tbody>';
+
+            schedules.forEach(sch => {
+                scheduleHtml += '<tr style="border-bottom:1px solid #334155;">';
+                scheduleHtml += `<td style="padding:8px;color:#e2e8f0;">${sch.date}</td>`;
+                scheduleHtml += `<td style="padding:8px;color:#e2e8f0;">${sch.time}</td>`;
+                scheduleHtml += `<td style="padding:8px;color:#f9a8d4;font-weight:500;">${sch.platforms}</td>`;
+                scheduleHtml += `<td style="padding:8px;"><span style="background:rgba(34,197,94,0.2);color:#86efac;padding:2px 8px;border-radius:4px;font-size:10px;">✓ ${sch.status}</span></td>`;
+                scheduleHtml += '</tr>';
+            });
+
+            scheduleHtml += '</tbody></table></div></div>';
+
+            // Inject into preview area
+            const previewArea = document.querySelector('#preview-instagram');
+            if (previewArea) {
+                previewArea.insertAdjacentHTML('beforeend', scheduleHtml);
+            }
+        }
+
+        function updateAutomationPreview() {
+            if (!document.getElementById('autoTopic').value) return;
+
+            const topic = document.getElementById('autoTopic').value;
+            const purpose = {
+                'engagement': '👥 참여 유도',
+                'sales': '🛍 판매 촉진',
+                'awareness': '📢 인식 제고',
+                'community': '🤝 커뮤니티 활성화',
+                'education': '🎓 교육/정보 공유'
+            }[document.getElementById('autoPurpose').value] || '목적 미정';
+
+            const frequency = {
+                'daily': '📅 매일',
+                '3days': '📅 3일마다',
+                'weekly': '📅 주간 (일주일)',
+                'monthly': '📅 월간'
+            }[document.getElementById('autoFrequency').value] || '주기 미정';
+
+            const platforms = Array.from(document.querySelectorAll('#platformCheckboxes input:checked'))
+                .map(cb => {
+                    const specs = PLATFORM_SPECS[cb.value];
+                    return `${specs.icon} ${specs.name}`;
+                })
+                .join(', ') || '플랫폼 미선택';
+
+            // Update all preview panels with automation info
+            const previewContent = document.getElementById('previewContent');
+            if (previewContent) {
+                previewContent.innerHTML = `
+                    <div style="text-align:center;padding:16px;color:#e2e8f0;">
+                        <div style="font-size:24px;margin-bottom:12px;">⚡</div>
+                        <p style="font-weight:600;margin-bottom:8px;">자동화 설정 요약</p>
+                        <div style="text-align:left;font-size:12px;space-y:8px;">
+                            <p style="margin-bottom:8px;"><strong>📌 주제:</strong> ${topic}</p>
+                            <p style="margin-bottom:8px;"><strong>🎯 목적:</strong> ${purpose}</p>
+                            <p style="margin-bottom:8px;"><strong>🔄 주기:</strong> ${frequency}</p>
+                            <p style="margin-bottom:0;"><strong>📱 플랫폼:</strong> ${platforms}</p>
                         </div>
                     </div>
-                `).join('');
-            } catch (error) {
-                console.log('No automations API or empty list');
+                `;
             }
         }
 
-        async function deleteAutomate(automateId) {
-            try {
-                await apiFetch(`/api/sns/automations/${automateId}`, { method: 'DELETE' })
-                    .then(r => r.json());
-                showSuccess('자동화가 삭제되었습니다');
-                loadAutomations();
-            } catch (error) {
-                showError('삭제 실패');
-            }
-        }
-
-        // ============ PUBLISH ============
+        // ============================================================================
+        // Publishing
+        // ============================================================================
         async function publishPost(status) {
             try {
                 const accountId = document.getElementById('accountId').value;
                 const content = document.getElementById('content').value;
-                const templateType = document.getElementById('template').value;
-                const hashtags = document.getElementById('hashtags').value.split(' ').filter(h => h);
 
                 if (!accountId || !content) {
                     showWarning('계정과 내용을 입력하세요');
                     return;
                 }
 
-                let scheduledAt = null;
-                if (status === 'scheduled' && document.getElementById('scheduleToggle').checked) {
-                    const date = document.getElementById('scheduleDate').value;
-                    const time = document.getElementById('scheduleTime').value;
-                    if (!date || !time) {
-                        showWarning('날짜와 시간을 입력하세요');
-                        return;
-                    }
-                    scheduledAt = `${date}T${time}:00`;
+                showInfo(`포스트를 ${status === 'published' ? '발행' : status === 'scheduled' ? '예약' : '저장'}하는 중...`);
+
+                // Use correct token key: 'access_token' instead of 'token'
+                const token = localStorage.getItem('access_token');
+                if (!token) {
+                    throw new Error('인증 토큰이 없습니다. 다시 로그인하세요.');
                 }
 
-                const payload = {
-                    account_ids: [accountId],
-                    content: content,
-                    hashtags: hashtags,
-                    template_type: templateType,
-                    status: status,
-                    scheduled_at: scheduledAt
-                };
+                const result = await createSNSPost(accountId, content, {
+                    status: status === 'published' ? 'published' : 'draft'
+                });
 
-                const result = await apiFetch('/api/sns/posts', {
-                    method: 'POST',
-                    body: JSON.stringify(payload)
-                }).then(r => r.json());
+                if (status === 'scheduled') {
+                    const scheduleTime = document.getElementById('scheduleTime').value;
+                    if (scheduleTime) {
+                        await apiFetch(`/api/sns/posts/${result.id}/publish`, {
+                            method: 'POST',
+                            body: JSON.stringify({ scheduled_at: new Date(scheduleTime).toISOString() })
+                        });
+                    }
+                } else if (status === 'published') {
+                    await apiFetch(`/api/sns/posts/${result.id}/publish`, {
+                        method: 'POST',
+                        body: JSON.stringify({})
+                    });
+                }
 
                 showSuccess(`포스트가 ${status === 'published' ? '발행' : status === 'scheduled' ? '예약' : '저장'}되었습니다!`);
-                setTimeout(() => {
-                    window.location.href = 'index.html';
-                }, 1000);
+                setTimeout(() => window.location.href = 'index.html', 1500);
             } catch (error) {
+                console.error('Publish error:', error);
                 showError('포스트 발행 실패: ' + error.message);
             }
         }
 
-        document.addEventListener('DOMContentLoaded', init);
+        // ============================================================================
+        // API Helpers
+        // ============================================================================
+        async function createSNSPost(accountId, content, options = {}) {
+            const result = await apiFetch('/api/sns/posts', {
+                method: 'POST',
+                body: JSON.stringify({
+                    account_id: accountId,
+                    content: content,
+                    template_type: 'custom',
+                    ...options
+                })
+            });
+
+            if (!result.ok) {
+                throw new Error(`Failed to create post: ${result.status}`);
+            }
+
+            return await result.json();
+        }
+
+        // ============================================================================
+        // Drag-and-Drop Media Upload
+        // ============================================================================
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            document.getElementById('mediaDropZone').classList.add('drag-over');
+        }
+
+        function handleDragLeave(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            document.getElementById('mediaDropZone').classList.remove('drag-over');
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            document.getElementById('mediaDropZone').classList.remove('drag-over');
+            const files = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/') || f.type.startsWith('video/'));
+            addMediaFiles(files);
+        }
+
+        function handleFileSelect(e) {
+            const files = Array.from(e.target.files);
+            addMediaFiles(files);
+            e.target.value = ''; // reset for re-selection
+        }
+
+        function addMediaFiles(files) {
+            files.forEach(file => {
+                if (uploadedMedia.length >= 10) {
+                    showWarning('최대 10개 미디어만 첨부할 수 있습니다');
+                    return;
+                }
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    uploadedMedia.push({ name: file.name, type: file.type, dataUrl: e.target.result, file });
+                    renderMediaThumbnails();
+                    updatePreviewMedia();
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function renderMediaThumbnails() {
+            const container = document.getElementById('mediaThumbnails');
+            container.innerHTML = '';
+            uploadedMedia.forEach((media, idx) => {
+                const wrap = document.createElement('div');
+                wrap.className = 'media-thumb-wrap';
+                if (media.type.startsWith('image/')) {
+                    wrap.innerHTML = `<img src="${media.dataUrl}" class="media-thumb" alt="${media.name}"><button class="media-thumb-remove" onclick="removeMedia(${idx})">&times;</button>`;
+                } else {
+                    wrap.innerHTML = `<div class="media-thumb bg-slate-700 flex items-center justify-center text-lg">&#x1F3AC;</div><button class="media-thumb-remove" onclick="removeMedia(${idx})">&times;</button>`;
+                }
+                container.appendChild(wrap);
+            });
+        }
+
+        function removeMedia(idx) {
+            uploadedMedia.splice(idx, 1);
+            renderMediaThumbnails();
+            updatePreviewMedia();
+        }
+
+        function updatePreviewMedia() {
+            const container = document.getElementById('previewMediaContainer');
+            if (!container) return;
+            if (uploadedMedia.length > 0 && uploadedMedia[0].type.startsWith('image/')) {
+                container.innerHTML = `<img src="${uploadedMedia[0].dataUrl}" style="width:100%;height:100%;object-fit:cover;border-radius:8px;" alt="Preview">`;
+            } else {
+                container.innerHTML = '<div class="text-4xl" id="previewIcon">&#x1F4F7;</div>';
+            }
+        }
+
+        // ============================================================================
+        // Hashtag Suggestions with Platform-Aware Recommendations
+        // ============================================================================
+        function filterHashtagSuggestions() {
+            updatePreview();
+            const input = document.getElementById('hashtags').value.toLowerCase();
+            const sugContainer = document.getElementById('hashtagSuggestions');
+
+            // Get relevant suggestions based on platform
+            let suggestions = [...HASHTAG_SUGGESTIONS.default];
+            if (selectedPlatform && HASHTAG_SUGGESTIONS[selectedPlatform]) {
+                suggestions = [...HASHTAG_SUGGESTIONS[selectedPlatform], ...suggestions];
+            }
+
+            // Detect topic hints from content and add smart suggestions
+            const content = (document.getElementById('content')?.value || '').toLowerCase();
+
+            const topicKeywords = {
+                food: { words: ['음식', '맛', '요리', '레시피', '먹방'], tags: HASHTAG_SUGGESTIONS.food },
+                beauty: { words: ['뷰티', '메이크업', '화장', '스킨케어', '코스메틱'], tags: HASHTAG_SUGGESTIONS.beauty },
+                tech: { words: ['기술', '개발', '프로그래밍', 'AI', '소프트웨어', '앱'], tags: HASHTAG_SUGGESTIONS.tech }
+            };
+
+            Object.values(topicKeywords).forEach(topic => {
+                if (topic.words.some(w => content.includes(w))) {
+                    suggestions = [...topic.tags, ...suggestions];
+                }
+            });
+
+            // Add platform-specific smart hashtags based on content
+            if (selectedPlatform === 'instagram') {
+                if (!suggestions.includes('#instagood')) suggestions.push('#instagood');
+                if (!suggestions.includes('#photooftheday')) suggestions.push('#photooftheday');
+            } else if (selectedPlatform === 'twitter') {
+                if (content.includes('뉴스') && !suggestions.includes('#news')) suggestions.push('#news');
+                if (content.includes('트렌드') && !suggestions.includes('#trending')) suggestions.push('#trending');
+            } else if (selectedPlatform === 'linkedin') {
+                if (!suggestions.includes('#LinkedIn')) suggestions.push('#LinkedIn');
+                if (!suggestions.includes('#networking')) suggestions.push('#networking');
+            }
+
+            // Remove duplicates and already-used tags
+            const usedTags = input.split(' ').filter(t => t.trim()).map(t => t.toLowerCase());
+            const unique = [...new Set(suggestions)].filter(tag => !usedTags.includes(tag.toLowerCase()));
+
+            sugContainer.innerHTML = '';
+
+            // Show platform-recommended count
+            const recommendedCount = PLATFORM_SPECS[selectedPlatform]?.hashtagRecommended || 5;
+            const topRecommended = unique.slice(0, recommendedCount);
+            const others = unique.slice(recommendedCount, recommendedCount + 5);
+
+            // Render recommended hashtags
+            topRecommended.forEach((tag, idx) => {
+                const chip = document.createElement('span');
+                chip.className = 'hashtag-chip';
+                chip.textContent = tag + (idx < 3 ? ' ⭐' : '');
+                chip.style.fontWeight = idx < 3 ? '600' : '500';
+                chip.style.opacity = '1';
+                chip.onclick = () => {
+                    const hashInput = document.getElementById('hashtags');
+                    const newValue = (hashInput.value + ' ' + tag).trim();
+                    hashInput.value = newValue;
+                    // Count hashtags
+                    const count = (newValue.match(/#/g) || []).length;
+                    if (count > recommendedCount * 2) {
+                        showWarning(`${selectedPlatform} 플랫폼에서는 ${recommendedCount}개 정도의 해시태그를 권장합니다.`);
+                    }
+                    filterHashtagSuggestions();
+                    updatePreview();
+                };
+                sugContainer.appendChild(chip);
+            });
+
+            // Add separator and other suggestions
+            if (others.length > 0) {
+                const separator = document.createElement('div');
+                separator.style.width = '100%';
+                separator.style.height = '1px';
+                separator.style.background = 'rgba(148, 163, 184, 0.2)';
+                separator.style.margin = '4px 0';
+                sugContainer.appendChild(separator);
+
+                others.forEach(tag => {
+                    const chip = document.createElement('span');
+                    chip.className = 'hashtag-chip';
+                    chip.textContent = tag;
+                    chip.style.opacity = '0.7';
+                    chip.onclick = () => {
+                        const hashInput = document.getElementById('hashtags');
+                        hashInput.value = (hashInput.value + ' ' + tag).trim();
+                        filterHashtagSuggestions();
+                        updatePreview();
+                    };
+                    sugContainer.appendChild(chip);
+                });
+            }
+        }
+
+        // ============================================================================
+        // Platform Preview Switching
+        // ============================================================================
+        function switchPreviewPlatform(platform) {
+            currentPreviewPlatform = platform;
+            document.querySelectorAll('.preview-platform-tab').forEach(tab => {
+                tab.classList.toggle('active', tab.dataset.preview === platform);
+            });
+            document.querySelectorAll('.platform-preview').forEach(p => {
+                p.classList.add('hidden');
+            });
+            const target = document.getElementById('preview-' + platform);
+            if (target) target.classList.remove('hidden');
+            updatePreview();
+        }
+
+        // ============================================================================
+        // Save as Draft (with auto-save)
+        // ============================================================================
+        function saveDraft() {
+            const draftData = {
+                content: document.getElementById('content')?.value || '',
+                hashtags: document.getElementById('hashtags')?.value || '',
+                accountId: document.getElementById('accountId')?.value || '',
+                mode: currentMode,
+                timestamp: new Date().toISOString()
+            };
+            localStorage.setItem('sf_sns_draft', JSON.stringify(draftData));
+            const indicator = document.getElementById('draftIndicator');
+            if (indicator) {
+                indicator.classList.add('visible');
+                setTimeout(() => indicator.classList.remove('visible'), 2000);
+            }
+        }
+
+        function loadDraft() {
+            const saved = localStorage.getItem('sf_sns_draft');
+            if (!saved) return;
+            try {
+                const draft = JSON.parse(saved);
+                if (document.getElementById('content')) document.getElementById('content').value = draft.content || '';
+                if (document.getElementById('hashtags')) document.getElementById('hashtags').value = draft.hashtags || '';
+                if (draft.accountId && document.getElementById('accountId')) {
+                    document.getElementById('accountId').value = draft.accountId;
+                }
+                updateCharCount();
+                updatePreview();
+                showInfo('임시저장된 초안을 불러왔습니다');
+            } catch(e) { /* ignore parse errors */ }
+        }
+
+        function setupAutoSave() {
+            ['content', 'hashtags'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.addEventListener('input', () => {
+                        clearTimeout(draftAutoSaveTimer);
+                        draftAutoSaveTimer = setTimeout(saveDraft, 3000);
+                    });
+                }
+            });
+        }
+
+        // ============================================================================
+        // Event Listeners
+        // ============================================================================
+        document.addEventListener('DOMContentLoaded', () => {
+            init().then(() => {
+                // Apply visible class to initial active form
+                const activeForm = document.querySelector('.mode-form.active');
+                if (activeForm) {
+                    requestAnimationFrame(() => activeForm.classList.add('visible'));
+                }
+                // Load draft if available
+                loadDraft();
+                // Setup auto-save
+                setupAutoSave();
+                // Render initial hashtag suggestions
+                filterHashtagSuggestions();
+            });
+        });
     </script>
+    <script src="../mobile-optimization.js" defer></script>
 </body>
 </html>

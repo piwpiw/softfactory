@@ -2,8 +2,11 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JARVIS 대시보드 — 10 팀 / 70 스킬</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#111827">
+<title>JARVIS 대시보드 — 10 팀 / 70 스킬</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
@@ -17,10 +20,16 @@
         .skill-progress { background: #f59e0b; color: white; }
         .skill-pending { background: #6b7280; color: white; }
     </style>
-</head>
+    <link rel="stylesheet" href="../responsive-framework.css">
+  </head>
 <body class="bg-gradient-to-b from-gray-900 via-gray-800 to-black text-white">
     <!-- Header -->
     <nav class="bg-gradient-to-r from-gray-900 to-gray-800 border-b border-cyan-500/30 px-6 py-4 sticky top-0 z-50">
+    <button class="hamburger" aria-label="Toggle navigation menu">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
         <div class="max-w-7xl mx-auto flex justify-between items-center">
             <div class="flex items-center gap-3">
                 <h1 class="text-3xl font-black bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">JARVIS</h1>
@@ -346,5 +355,6 @@
         // Initialize on load
         window.addEventListener('load', loadDashboard);
     </script>
+    <script src="../mobile-optimization.js" defer></script>
 </body>
 </html>

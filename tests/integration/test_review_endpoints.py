@@ -7,45 +7,10 @@ import pytest
 import json
 from datetime import datetime, timedelta
 from backend.models import db, User
-from backend.app import app
 
 
 @pytest.fixture
-def app_context():
-    """Application context for testing"""
-    app.config['TESTING'] = True
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
-    app.config['JWT_SECRET_KEY'] = 'test-secret-key'
-
-    with app.app_context():
-        db.create_all()
-        yield app
-        db.session.remove()
-        db.drop_all()
-
-
-@pytest.fixture
-def client(app_context):
-    """Test client"""
-    return app_context.test_client()
-
-
-@pytest.fixture
-def demo_user():
-    """Create demo user"""
-    with app.app_context():
-        user = User(
-            email='review_test@example.com',
-            password='hashed_password',
-            name='Review Test User'
-        )
-        db.session.add(user)
-        db.session.commit()
-        return user
-
-
-@pytest.fixture
-def auth_headers(demo_user):
+def auth_headers():
     """Authentication headers"""
     return {
         'Authorization': 'Bearer demo_token',

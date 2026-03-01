@@ -2,14 +2,18 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>분석 — SNS Auto | SoftFactory</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#111827">
+<title>분석 — SNS Auto | SoftFactory</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="../platform/api.js"></script>
     <style>body { font-family: 'Inter', sans-serif; }</style>
-</head>
+    <link rel="stylesheet" href="../responsive-framework.css">
+  </head>
 <body class="bg-slate-950 text-slate-100">
     <div class="flex h-screen overflow-hidden">
         <aside class="w-64 bg-slate-900 border-r border-slate-800 flex flex-col shrink-0">
@@ -20,6 +24,11 @@
                 </a>
             </div>
             <nav class="flex-1 p-6 space-y-2 overflow-y-auto">
+    <button class="hamburger" aria-label="Toggle navigation menu">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
                 <p class="text-xs font-semibold text-slate-400 uppercase px-4 mb-3">📱 SNS Auto</p>
                 <a href="index.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">📊 대시보드</a>
                 <a href="accounts.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">🔗 계정 연동</a>
@@ -38,25 +47,6 @@
                 <div><h2 class="text-xl font-bold text-white">📈 분석</h2><p class="text-xs text-slate-400">SNS 성과 분석</p></div>
             </header>
             <main class="flex-1 overflow-y-auto p-6 space-y-6">
-                <!-- Filters -->
-                <div class="bg-slate-800 rounded-lg p-4 border border-slate-700 flex gap-4 flex-wrap items-end">
-                    <div>
-                        <label class="block text-xs font-medium text-slate-400 mb-2">시작 날짜</label>
-                        <input type="date" id="startDate" class="bg-slate-700 border border-slate-600 rounded px-3 py-2 text-white text-sm" onchange="loadAnalytics()">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-medium text-slate-400 mb-2">종료 날짜</label>
-                        <input type="date" id="endDate" class="bg-slate-700 border border-slate-600 rounded px-3 py-2 text-white text-sm" onchange="loadAnalytics()">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-medium text-slate-400 mb-2">계정 선택</label>
-                        <select id="accountFilter" class="bg-slate-700 border border-slate-600 rounded px-3 py-2 text-white text-sm" onchange="loadAnalytics()">
-                            <option value="">전체 계정</option>
-                        </select>
-                    </div>
-                    <button onclick="loadAnalytics()" class="px-4 py-2 bg-pink-600 hover:bg-pink-700 text-white rounded text-sm">새로고침</button>
-                </div>
-
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     <div class="bg-slate-800 rounded-xl p-6 border border-slate-700">
                         <p class="text-slate-400 text-sm mb-2">총 포스트</p>
@@ -157,5 +147,6 @@
 
         document.addEventListener('DOMContentLoaded', init);
     </script>
+    <script src="../mobile-optimization.js" defer></script>
 </body>
 </html>

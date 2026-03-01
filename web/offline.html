@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="theme-color" content="#1e293b">
+    <title>오프라인 - SoftFactory</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 25%, #0f172a 50%, #1a1f35 75%, #0f172a 100%);
+            background-attachment: fixed;
+            min-height: 100vh;
+        }
+
+        .pulse-ring {
+            animation: pulse-ring 2s infinite;
+        }
+
+        @keyframes pulse-ring {
+            0% {
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(239, 68, 68, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+            }
+        }
+
+        .offline-icon {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 2rem;
+        }
+
+        .connection-status {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 0.5rem;
+            color: #fecaca;
+            font-weight: 500;
+            margin-top: 2rem;
+        }
+
+        .connection-status.online {
+            background: rgba(34, 197, 94, 0.1);
+            border-color: rgba(34, 197, 94, 0.3);
+            color: #bbf7d0;
+        }
+
+        .cached-pages {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .cached-page-link {
+            display: block;
+            padding: 1rem;
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(71, 85, 105, 0.5);
+            border-radius: 0.5rem;
+            color: #cbd5e1;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .cached-page-link:hover {
+            background: rgba(30, 41, 59, 1);
+            border-color: rgba(100, 116, 139, 0.8);
+            color: #e2e8f0;
+            transform: translateY(-2px);
+        }
+
+        .cached-page-link-title {
+            font-weight: 600;
+            color: #f1f5f9;
+            margin-bottom: 0.5rem;
+        }
+
+        .cached-page-link-description {
+            font-size: 0.875rem;
+            color: #94a3b8;
+        }
+    </style>
+</head>
+<body class="text-slate-300">
+    <div class="min-h-screen flex flex-col items-center justify-center px-6 py-12">
+        <div class="max-w-md w-full text-center">
+            <!-- Offline Icon -->
+            <div class="offline-icon pulse-ring">
+                <svg class="w-16 h-16 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071l3.534-3.534a1 1 0 011.414 0l3.534 3.534M5 13a8 8 0 0116 0m-16-5a8 8 0 0116 0"></path>
+                </svg>
+            </div>
+
+            <!-- Title -->
+            <h1 class="text-3xl md:text-4xl font-bold text-slate-100 mb-2">
+                오프라인 상태입니다
+            </h1>
+
+            <!-- Status -->
+            <div class="connection-status" id="statusIndicator">
+                <span id="statusText">네트워크 연결 끊김</span>
+            </div>
+
+            <!-- Description -->
+            <p class="text-slate-400 text-center mt-6">
+                현재 인터넷 연결이 없습니다. 아래에서 캐시된 페이지를 방문하거나 연결을 복구할 때까지 기다려주세요.
+            </p>
+
+            <!-- Cached Pages -->
+            <div class="cached-pages">
+                <a href="/web/platform/index.html" class="cached-page-link">
+                    <div class="cached-page-link-title">📊 대시보드</div>
+                    <div class="cached-page-link-description">CEO 대시보드 (캐시됨)</div>
+                </a>
+
+                <a href="/web/dashboard.html" class="cached-page-link">
+                    <div class="cached-page-link-title">📈 분석</div>
+                    <div class="cached-page-link-description">분석 데이터 (캐시됨)</div>
+                </a>
+
+                <a href="/web/analytics.html" class="cached-page-link">
+                    <div class="cached-page-link-title">💹 보고서</div>
+                    <div class="cached-page-link-description">분석 보고서 (캐시됨)</div>
+                </a>
+
+                <a href="/web/operations.html" class="cached-page-link">
+                    <div class="cached-page-link-title">⚙️ 운영</div>
+                    <div class="cached-page-link-description">운영 관리 (캐시됨)</div>
+                </a>
+            </div>
+
+            <!-- Help Section -->
+            <div class="mt-8 p-4 bg-slate-800/50 rounded-lg border border-slate-700/50">
+                <h3 class="text-sm font-semibold text-slate-200 mb-2">연결 확인 팁:</h3>
+                <ul class="text-xs text-slate-400 space-y-1 text-left">
+                    <li>✓ WiFi 연결 상태 확인</li>
+                    <li>✓ 모바일 데이터 활성화 확인</li>
+                    <li>✓ 항공기 모드 비활성화</li>
+                    <li>✓ 라우터 재시작</li>
+                </ul>
+            </div>
+
+            <!-- Retry Button -->
+            <button
+                id="retryBtn"
+                class="mt-6 w-full px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-all duration-300 active:scale-95"
+                onclick="retryConnection()"
+            >
+                연결 다시 시도
+            </button>
+        </div>
+    </div>
+
+    <script>
+        /**
+         * Retry connection and return to previous page
+         */
+        function retryConnection() {
+            const btn = document.getElementById('retryBtn');
+            btn.disabled = true;
+            btn.textContent = '확인 중...';
+
+            // Test connection
+            fetch('/health', { method: 'HEAD' })
+                .then(() => {
+                    // Connection restored
+                    updateStatus(true);
+                    setTimeout(() => {
+                        window.location.href = document.referrer || '/web/platform/index.html';
+                    }, 1000);
+                })
+                .catch(() => {
+                    // Still offline
+                    btn.disabled = false;
+                    btn.textContent = '연결 다시 시도';
+                    updateStatus(false);
+                });
+        }
+
+        /**
+         * Update connection status display
+         */
+        function updateStatus(isOnline) {
+            const indicator = document.getElementById('statusIndicator');
+            const statusText = document.getElementById('statusText');
+
+            if (isOnline) {
+                indicator.classList.add('online');
+                statusText.textContent = '네트워크 연결됨';
+            } else {
+                indicator.classList.remove('online');
+                statusText.textContent = '네트워크 연결 끊김';
+            }
+        }
+
+        /**
+         * Listen for online/offline events
+         */
+        window.addEventListener('online', () => {
+            console.log('[Offline Page] Back online');
+            updateStatus(true);
+            setTimeout(() => {
+                window.location.href = document.referrer || '/web/platform/index.html';
+            }, 1500);
+        });
+
+        window.addEventListener('offline', () => {
+            console.log('[Offline Page] Went offline');
+            updateStatus(false);
+        });
+
+        // Check initial status
+        updateStatus(navigator.onLine);
+
+        console.log('[Offline Page] Loaded');
+    </script>
+</body>
+</html>
