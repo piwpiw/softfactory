@@ -8,7 +8,7 @@
 # ============================================================
 # STAGE 1: Builder — install Python deps in isolated userspace
 # ============================================================
-FROM python:3.11-slim AS builder
+FROM python:3.14-slim AS builder
 
 WORKDIR /app
 
@@ -27,7 +27,7 @@ RUN pip install --no-cache-dir --user -r requirements.txt
 # ============================================================
 # STAGE 2: Runtime — lean image with only what's needed
 # ============================================================
-FROM python:3.11-slim
+FROM python:3.14-slim
 
 LABEL org.opencontainers.image.title="SoftFactory Platform"
 LABEL org.opencontainers.image.description="SoftFactory SaaS platform (Flask + gunicorn)"
