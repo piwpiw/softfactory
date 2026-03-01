@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background: #111827; color: #fff; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
+        .header h1 { margin: 0; color: #F97316; }
+        .content { background: #f9fafb; padding: 30px; border-radius: 0 0 8px 8px; }
+        .button { display: inline-block; background: #F97316; color: #fff; padding: 10px 20px; text-decoration: none; border-radius: 4px; margin: 20px 0; }
+        .footer { text-align: center; color: #666; font-size: 12px; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 JARVIS</h1>
+            <p>팀 운영 시스템에 오신 것을 환영합니다</p>
+        </div>
+        <div class="content">
+            <p>안녕하세요 {{name}}님,</p>
+
+            <p>JARVIS 팀 운영 시스템에 성공적으로 가입되었습니다!</p>
+
+            <p>이제 다음의 기능들을 이용할 수 있습니다:</p>
+            <ul>
+                <li>팀 운영 및 관리</li>
+                <li>성과 분석 및 리포팅</li>
+                <li>협업 도구 및 통신</li>
+                <li>자동화된 워크플로우</li>
+            </ul>
+
+            <p>계정을 시작하려면 아래 버튼을 클릭하세요:</p>
+            <a href="{{login_url}}" class="button">계정 확인하기</a>
+
+            <p><strong>로그인 정보:</strong></p>
+            <ul>
+                <li>이메일: {{email}}</li>
+                <li>임시 비밀번호: {{temporary_password}}</li>
+            </ul>
+
+            <p>보안을 위해 첫 로그인 시 비밀번호를 변경해주시기 바랍니다.</p>
+
+            <p>궁금한 사항이 있으시면 <a href="mailto:support@jarvis.com">support@jarvis.com</a>으로 문의해주세요.</p>
+
+            <p>감사합니다,<br>JARVIS 팀</p>
+        </div>
+        <div class="footer">
+            <p>&copy; 2026 JARVIS. 모든 권리 보유.</p>
+            <p><a href="{{unsubscribe_url}}">이메일 구독 해제</a></p>
+        </div>
+    </div>
+</body>
+</html>

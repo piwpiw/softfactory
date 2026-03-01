@@ -7,31 +7,13 @@ import pytest
 import json
 from datetime import datetime, timedelta
 from backend.models import (
-    User, SNSAccount, SNSPost, SNSCampaign, SNSTemplate,
+    db, User, SNSAccount, SNSPost, SNSCampaign, SNSTemplate,
     SNSAnalytics, SNSInboxMessage, SNSOAuthState, SNSSettings
 )
-from backend.app import app, db
-from backend.services.sns_auto import (
-    create_sns_post, publish_scheduled_posts, get_sns_analytics,
-    generate_content_ai
-)
 
 
 @pytest.fixture
-def client():
-    """Test client with in-memory SQLite"""
-    app.config['TESTING'] = True
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
-
-    with app.app_context():
-        db.create_all()
-        yield app.test_client()
-        db.session.remove()
-        db.drop_all()
-
-
-@pytest.fixture
-def auth_headers(client):
+def auth_headers():
     """Fixture for auth token headers"""
     return {
         'Authorization': 'Bearer demo_token',
@@ -40,37 +22,39 @@ def auth_headers(client):
 
 
 @pytest.fixture
-def demo_user(client):
-    """Create demo user for tests"""
+def demo_user(app):
+    """Create or get demo user for tests"""
     with app.app_context():
-        user = User(
-            email='test@example.com',
-            password='hashed_password',
-            name='Test User'
-        )
-        db.session.add(user)
-        db.session.commit()
+        user = User.query.filter_by(email='test_advanced@example.com').first()
+        if not user:
+            user = User(
+                email='test_advanced@example.com',
+                name='Test User'
+            )
+            user.set_password('testpass123')
+            db.session.add(user)
+            db.session.commit()
         return user
 
 
 @pytest.fixture
-def demo_account(demo_user):
+def demo_account(app, demo_user):
     """Create demo SNS account"""
-    account = SNSAccount(
-        user_id=demo_user.id,
-        platform='instagram',
-        account_name='@test_account',
-        is_active=True,
-        access_token='demo_token',
-        refresh_token='demo_refresh',
-        token_expires_at=datetime.utcnow() + timedelta(days=30),
-        platform_user_id='12345',
-        followers_count=2540,
-        permissions_json={'read': True, 'write': True}
-    )
-    db.session.add(account)
-    db.session.commit()
-    return account
+    with app.app_context():
+        account = SNSAccount(
+            user_id=demo_user.id,
+            platform='instagram',
+            account_name='@test_account',
+            is_active=True,
+            access_token='demo_token',
+            refresh_token='demo_refresh',
+            token_expires_at=datetime.utcnow() + timedelta(days=30),
+            platform_user_id='12345',
+            followers_count=2540,
+        )
+        db.session.add(account)
+        db.session.commit()
+        return account
 
 
 # ============ OAUTH TESTS (3) ============

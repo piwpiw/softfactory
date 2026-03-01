@@ -3,7 +3,6 @@ from flask import Blueprint, request, jsonify, g
 from datetime import datetime
 from ..models import db, AIEmployee, Scenario
 from ..auth import require_auth, require_subscription
-from ..code_executor import JavaScriptExecutor, CodeValidator, CODE_TEMPLATES
 
 ai_automation_bp = Blueprint('ai_automation', __name__, url_prefix='/api/ai-automation')
 
@@ -200,94 +199,4 @@ def get_dashboard():
         'total_monthly_savings_hours': total_savings,
         'estimated_annual_savings': f'₩{total_savings * 15000:,}',  # 시간당 15000원 기준
         'employees': [e.to_dict() for e in employees]
-    }), 200
-
-
-# ============ CODE NODE EXECUTION ============
-
-@ai_automation_bp.route('/code/validate', methods=['POST'])
-@require_auth
-@require_subscription('ai-automation')
-def validate_code():
-    """Validate JavaScript code before execution"""
-    data = request.get_json()
-    code = data.get('code', '')
-
-    is_valid, error_msg = CodeValidator.validate(code)
-
-    return jsonify({
-        'valid': is_valid,
-        'error': error_msg
-    }), 200
-
-
-@ai_automation_bp.route('/code/execute', methods=['POST'])
-@require_auth
-@require_subscription('ai-automation')
-def execute_code():
-    """Execute custom JavaScript code in sandbox"""
-    data = request.get_json()
-    code = data.get('code', '')
-    timeout_ms = data.get('timeout_ms', 5000)
-
-    if not code or not code.strip():
-        return jsonify({'error': 'Code cannot be empty'}), 400
-
-    # Validate code first
-    is_valid, error_msg = CodeValidator.validate(code)
-    if not is_valid:
-        return jsonify({
-            'status': 'validation_error',
-            'error': error_msg
-        }), 400
-
-    # Execute code
-    result = JavaScriptExecutor.execute(code, timeout_ms, api_token=g.get('api_token'))
-
-    return jsonify(result.to_dict()), 200 if result.status.value == 'success' else 400
-
-
-@ai_automation_bp.route('/code/templates', methods=['GET'])
-@require_auth
-@require_subscription('ai-automation')
-def get_code_templates():
-    """Get available code templates"""
-    template_id = request.args.get('id')
-
-    if template_id:
-        if template_id in CODE_TEMPLATES:
-            template = CODE_TEMPLATES[template_id]
-            return jsonify({
-                'id': template_id,
-                'name': template['name'],
-                'description': template['description'],
-                'code': template['code']
-            }), 200
-        else:
-            return jsonify({'error': 'Template not found'}), 404
-
-    # Return all templates (metadata only)
-    templates = [{
-        'id': tid,
-        'name': template['name'],
-        'description': template['description']
-    } for tid, template in CODE_TEMPLATES.items()]
-
-    return jsonify({'templates': templates}), 200
-
-
-@ai_automation_bp.route('/code/templates/<template_id>', methods=['GET'])
-@require_auth
-@require_subscription('ai-automation')
-def get_code_template(template_id):
-    """Get specific code template"""
-    if template_id not in CODE_TEMPLATES:
-        return jsonify({'error': 'Template not found'}), 404
-
-    template = CODE_TEMPLATES[template_id]
-    return jsonify({
-        'id': template_id,
-        'name': template['name'],
-        'description': template['description'],
-        'code': template['code']
     }), 200

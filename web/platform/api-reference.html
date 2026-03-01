@@ -2,8 +2,11 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>API 레퍼런스 — SoftFactory</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#111827">
+<title>API 레퍼런스 — SoftFactory</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
@@ -14,7 +17,8 @@
         code { background: #1e293b; padding: 2px 6px; border-radius: 3px; }
         pre { background: #0f172a; padding: 16px; border-radius: 8px; overflow-x: auto; }
     </style>
-</head>
+    <link rel="stylesheet" href="../responsive-framework.css">
+  </head>
 <body class="bg-slate-950 text-slate-100 antialiased">
     <div class="max-w-6xl mx-auto px-6 py-12">
         <div class="mb-8">
@@ -29,6 +33,11 @@
                 <div class="bg-slate-800 rounded-xl p-4 border border-slate-700 sticky top-6">
                     <h3 class="font-bold text-white mb-4">📖 목차</h3>
                     <nav class="space-y-2 text-sm">
+    <button class="hamburger" aria-label="Toggle navigation menu">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
                         <a href="#authentication" class="block px-3 py-2 rounded text-slate-300 hover:bg-slate-700 transition">인증</a>
                         <a href="#sns-auto" class="block px-3 py-2 rounded text-slate-300 hover:bg-slate-700 transition">SNS Auto</a>
                         <a href="#review" class="block px-3 py-2 rounded text-slate-300 hover:bg-slate-700 transition">Review API</a>
@@ -236,5 +245,6 @@ Response: 201 Created
             </main>
         </div>
     </div>
+    <script src="../mobile-optimization.js" defer></script>
 </body>
 </html>

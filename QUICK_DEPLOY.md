@@ -49,7 +49,7 @@ heroku create
 ### 4️⃣ API 키 설정 (1분)
 ```bash
 # Anthropic API 키 설정
-heroku config:set ANTHROPIC_API_KEY=YOUR_ANTHROPIC_API_KEY[YOUR_KEY_HERE]
+heroku config:set ANTHROPIC_API_KEY=sk-ant-api03-[YOUR_KEY_HERE]
 
 # Telegram (선택)
 heroku config:set TELEGRAM_BOT_TOKEN=8461725251:AAE...

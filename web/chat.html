@@ -2,12 +2,21 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat - JARVIS</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#111827">
+<title>Chat - JARVIS</title>
     <script src="https://cdn.tailwindcss.com"></script>
-</head>
+    <link rel="stylesheet" href="responsive-framework.css">
+  </head>
 <body class="bg-gray-900 text-white">
     <nav class="bg-gray-800 border-b border-gray-700 px-6 py-4 flex justify-between items-center">
+    <button class="hamburger" aria-label="Toggle navigation menu">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
         <h1 class="text-2xl font-bold">06 Frontend: 팀 협업 채팅</h1>
         <a href="index.html" class="text-gray-400 hover:text-white">← 홈</a>
     </nav>
@@ -64,5 +73,6 @@
             input.value = '';
         }
     </script>
+    <script src="mobile-optimization.js" defer></script>
 </body>
 </html>

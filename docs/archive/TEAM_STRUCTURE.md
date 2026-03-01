@@ -412,7 +412,7 @@
 - Retrospective reports
 
 **Current Status (M-004 JARVIS):**
-- ✅ Bot ACTIVE (TELEGRAM_BOT_TOKEN_REDACTED)
+- ✅ Bot ACTIVE (8461725251:AAELKRbZkpa3u6WK24q4k-RGkzedHxjTLiM)
 - ✅ Notifications 24/7
 - ✅ Railway deployment stable
 

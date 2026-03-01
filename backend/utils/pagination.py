@@ -137,6 +137,11 @@ class FieldFilter:
         return [FieldFilter.filter_dict(item, fields) for item in items]
 
 
+def paginate_query(query, page: int = 1, per_page: int = 50):
+    """Simple pagination helper"""
+    return OffsetPagination.paginate_query(query, page, per_page)
+
+
 class PaginationMixin:
     """Mixin for easy pagination in endpoints"""
 

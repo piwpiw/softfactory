@@ -1,0 +1,318 @@
+/**
+ * WCAG 2.1 AA Accessibility Standard CSS
+ * Global accessibility rules for all pages
+ * Last updated: 2026-02-26
+ */
+
+/* ================================================
+   1. SKIP TO MAIN CONTENT LINK
+   ================================================ */
+.skip-to-main {
+    position: absolute;
+    top: -40px;
+    left: 0;
+    background: #ec4899;
+    color: white;
+    padding: 8px 12px;
+    z-index: 9999;
+    text-decoration: none;
+    border-radius: 0 0 4px 0;
+}
+
+.skip-to-main:focus {
+    top: 0;
+}
+
+/* ================================================
+   2. FOCUS INDICATORS (WCAG 2.4.7 Focus Visible)
+   ================================================ */
+
+/* Outline: 3px solid with 2px offset (WCAG AA minimum) */
+button:focus,
+input:focus,
+select:focus,
+textarea:focus,
+a:focus,
+[tabindex]:focus,
+[role="button"]:focus {
+    outline: 3px solid #ec4899;
+    outline-offset: 2px;
+}
+
+/* Remove default focus outline and apply custom */
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+a:focus-visible,
+[tabindex]:focus-visible {
+    outline: 3px solid #ec4899;
+    outline-offset: 2px;
+}
+
+/* ================================================
+   3. COLOR CONTRAST (WCAG 2.1.4.3 - 4.5:1 minimum)
+   ================================================ */
+
+/* Text on dark backgrounds */
+body {
+    color: #e2e8f0; /* #cbd5e1 on #0f172a (4.8:1) */
+}
+
+p {
+    color: #cbd5e1; /* 4.5:1 on dark backgrounds */
+}
+
+label {
+    color: #cbd5e1;
+}
+
+/* Buttons with sufficient contrast */
+button:not([aria-disabled="true"]) {
+    color: white;
+}
+
+/* Links must have 3:1 minimum contrast */
+a {
+    color: #60a5fa; /* 3.5:1 on dark */
+    text-decoration: underline;
+}
+
+a:hover,
+a:focus {
+    color: #93c5fd; /* Lighter on hover */
+}
+
+/* ================================================
+   4. SCREEN READER ONLY TEXT
+   ================================================ */
+
+.sr-only,
+.visually-hidden {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border-width: 0 !important;
+}
+
+/* ================================================
+   5. TOUCH TARGET SIZE (WCAG 2.5.5 Target Size)
+   ================================================ */
+
+/* Minimum 48px x 48px for touch targets */
+button,
+a[role="button"],
+input[type="checkbox"],
+input[type="radio"],
+select {
+    min-height: 48px;
+    min-width: 48px;
+}
+
+/* Inputs should be at least 44px tall */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="search"],
+textarea,
+select {
+    min-height: 44px;
+    padding: 10px 12px;
+}
+
+/* ================================================
+   6. TEXT LEGIBILITY
+   ================================================ */
+
+/* Minimum font size: 14px for body text */
+body {
+    font-size: 16px;
+    line-height: 1.5;
+    letter-spacing: 0;
+}
+
+p,
+span,
+li {
+    line-height: 1.6;
+}
+
+/* Headings must have proper contrast */
+h1, h2, h3, h4, h5, h6 {
+    color: white;
+    line-height: 1.3;
+    margin: 1rem 0 0.5rem 0;
+}
+
+/* Code blocks need contrast */
+code,
+pre {
+    background: #1e293b;
+    color: #cbd5e1;
+    border-radius: 4px;
+    padding: 2px 6px;
+}
+
+/* ================================================
+   7. FORM ACCESSIBILITY
+   ================================================ */
+
+/* Labels must be associated with inputs */
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+/* Error messages */
+.form-error,
+[role="alert"] {
+    color: #fca5a5;
+    font-weight: 500;
+    margin-top: 8px;
+}
+
+/* Required field indicators */
+.required::after {
+    content: " *";
+    color: #fca5a5;
+    aria-label: "required";
+}
+
+/* ================================================
+   8. MOTION & ANIMATION
+   ================================================ */
+
+/* Respect prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+/* ================================================
+   9. RESPONSIVE TEXT SIZING
+   ================================================ */
+
+/* Support browser zoom */
+body {
+    font-size: 100%;
+}
+
+/* Allow text to be enlarged up to 200% without loss of functionality */
+@media (max-height: 500px) {
+    body {
+        font-size: 14px;
+    }
+}
+
+/* ================================================
+   10. LINK UNDERLINES (WCAG 1.4.1)
+   ================================================ */
+
+a {
+    text-decoration: underline;
+}
+
+a:visited {
+    color: #a78bfa;
+}
+
+/* ================================================
+   11. DISABLED ELEMENTS
+   ================================================ */
+
+button:disabled,
+input:disabled,
+select:disabled,
+textarea:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* ================================================
+   12. KEYBOARD NAVIGATION
+   ================================================ */
+
+/* Show focus on tab navigation */
+*:focus {
+    outline-width: 3px;
+}
+
+/* Tab order should be logical */
+/* Use tabindex only when necessary */
+
+/* ================================================
+   13. ZOOMED/MAGNIFIED VIEWS
+   ================================================ */
+
+/* Support zoom up to 200% without horizontal scroll */
+@media (min-width: 320px) {
+    html {
+        font-size: 100%;
+    }
+}
+
+/* ================================================
+   14. ARIA LANDMARK ROLES
+   ================================================ */
+
+main {
+    display: block;
+}
+
+nav {
+    display: block;
+}
+
+header {
+    display: block;
+}
+
+footer {
+    display: block;
+}
+
+section {
+    display: block;
+}
+
+article {
+    display: block;
+}
+
+aside {
+    display: block;
+}
+
+/* ================================================
+   15. PRINT STYLES
+   ================================================ */
+
+@media print {
+    /* Ensure links are visible when printed */
+    a {
+        text-decoration: underline;
+    }
+
+    /* Hide skip links when printing */
+    .skip-to-main {
+        display: none;
+    }
+
+    /* Ensure sufficient contrast */
+    body {
+        color: black;
+        background: white;
+    }
+}

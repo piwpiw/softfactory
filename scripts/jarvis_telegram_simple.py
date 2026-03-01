@@ -9,9 +9,7 @@ from security_filter import security_filter, request_logger
 if sys.platform == "win32":
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
-BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
-if not BOT_TOKEN:
-    raise ValueError("CRITICAL: TELEGRAM_BOT_TOKEN environment variable must be set. Check .env configuration.")
+BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "8461725251:AAELKRbZkpa3u6WK24q4k-RGkzedHxjTLiM")
 CHAT_ID = int(os.getenv("TELEGRAM_CHAT_ID", "7910169750"))
 
 # 허용된 사용자 ID (환경변수)

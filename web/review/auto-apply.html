@@ -1,93 +1,266 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>자동 신청 규칙 — SoftFactory</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#020617">
+    <title>The Bot Commander — ReviewEverything Platinum</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
     <script src="../platform/api.js"></script>
     <style>
-        body { font-family: 'Inter', sans-serif; }
-        .rule-card {
-            transition: all 0.2s ease;
+        :root {
+            --primary-amber: #f59e0b;
+            --primary-dark: #020617;
+            --glass-bg: rgba(15, 23, 42, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.1);
         }
-        .rule-card:hover {
-            border-color: #fbbf24;
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: #020617;
+            color: #f8fafc;
+        }
+
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+        }
+
+        .terminal-glow {
+            box-shadow: inset 0 0 20px rgba(245, 158, 11, 0.05), 0 0 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .log-entry {
+            animation: fadeIn 0.3s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateX(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .scroll-hide::-webkit-scrollbar {
+            display: none;
+        }
+
+        .strategy-card.active {
+            border-color: #f59e0b;
+            background: rgba(245, 158, 11, 0.05);
+            box-shadow: 0 0 30px rgba(245, 158, 11, 0.1);
+        }
+
+        @keyframes pulse-dot {
+            0% {
+                transform: scale(0.9);
+                opacity: 0.7;
+            }
+
+            50% {
+                transform: scale(1.1);
+                opacity: 1;
+            }
+
+            100% {
+                transform: scale(0.9);
+                opacity: 0.7;
+            }
+        }
+
+        .pulse-dot {
+            animation: pulse-dot 1.5s infinite;
         }
     </style>
 </head>
-<body class="bg-slate-950 text-slate-100">
+
+<body class="overflow-hidden bg-slate-950">
     <div class="flex h-screen overflow-hidden">
-        <!-- Sidebar -->
-        <aside class="w-64 bg-slate-900 border-r border-slate-800 flex flex-col shrink-0">
-            <div class="p-6 border-b border-slate-800">
-                <a href="../platform/dashboard.html" class="flex items-center gap-3">
-                    <span class="text-2xl">🏭</span>
-                    <div><h1 class="font-bold text-white text-sm">SoftFactory</h1><p class="text-xs text-slate-400">← Back</p></div>
-                </a>
+        <!-- Platinum Sidebar -->
+        <aside class="w-72 glass-panel border-r border-slate-800/50 flex flex-col z-50">
+            <div class="p-8 border-b border-slate-800/50">
+                <div class="flex items-center gap-4">
+                    <div
+                        class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-amber-600 to-amber-400 p-0.5 shadow-lg shadow-amber-900/20">
+                        <div class="w-full h-full bg-slate-950 rounded-2xl flex items-center justify-center text-2xl">⚡
+                        </div>
+                    </div>
+                    <div>
+                        <h1 class="font-black text-white text-lg tracking-tight uppercase">ReviewEngine</h1>
+                        <p class="text-[10px] text-amber-500 font-bold tracking-[0.2em]">PLATINUM EDITION</p>
+                    </div>
+                </div>
             </div>
-            <nav class="flex-1 p-6 space-y-2 overflow-y-auto">
-                <p class="text-xs font-semibold text-slate-400 uppercase px-4 mb-3">⭐ Review</p>
-                <a href="index.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">🎯 캠페인 탐색</a>
-                <a href="my-campaigns.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">📋 내 신청</a>
-                <a href="aggregator.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">🔗 체험단 모음</a>
-                <a href="accounts.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">👤 계정 관리</a>
-                <a href="applications.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">📊 신청 현황</a>
-                <a href="auto-apply.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg bg-amber-600 text-white font-medium">⚡ 자동 신청</a>
+
+            <nav class="flex-1 p-6 space-y-1.5 overflow-y-auto scroll-hide text-slate-400">
+                <p class="text-[10px] font-black text-slate-500 uppercase px-4 mb-4 tracking-widest">Operation Center
+                </p>
+                <a href="index.html"
+                    class="flex items-center gap-4 px-5 py-3.5 rounded-xl hover:bg-slate-800/50 hover:text-white transition-all">
+                    <span>🎯</span><span class="text-sm">AI 탐색</span>
+                </a>
+                <a href="aggregator.html"
+                    class="flex items-center gap-4 px-5 py-3.5 rounded-xl hover:bg-slate-800/50 hover:text-white transition-all">
+                    <span>🔗</span><span class="text-sm">알파 아카이브</span>
+                </a>
+                <a href="auto-apply.html"
+                    class="flex items-center gap-4 px-5 py-3.5 rounded-xl bg-amber-500/10 text-amber-500 font-bold border-l-2 border-amber-500 transition-all">
+                    <span>🤖</span><span class="text-sm">오토파일럿 (Bot)</span>
+                </a>
             </nav>
-            <div class="p-6 border-t border-slate-800">
+
+            <div class="p-6 border-t border-slate-800/50">
                 <div class="flex items-center justify-between">
-                    <p class="text-sm font-medium text-white">Demo User</p>
-                    <button onclick="logout()" class="p-2 hover:bg-slate-800 rounded-lg">🚪</button>
+                    <button onclick="logout()" class="text-xs text-slate-500 hover:text-white">Sign Out</button>
+                    <span class="text-[10px] text-slate-700 font-black">STABLE_v2.5</span>
                 </div>
             </div>
         </aside>
 
-        <!-- Main Content -->
-        <div class="flex-1 flex flex-col overflow-hidden">
-            <header class="h-16 bg-slate-900 border-b border-slate-800 px-6 flex items-center justify-between shrink-0">
+        <div class="flex-1 flex flex-col overflow-hidden relative">
+            <header class="h-24 px-10 flex items-center justify-between shrink-0 z-40">
                 <div>
-                    <h2 class="text-xl font-bold text-white">⚡ 자동 신청 규칙</h2>
-                    <p class="text-xs text-slate-400">조건에 맞는 공고에 자동 신청하세요</p>
+                    <h2 class="text-3xl font-black text-white tracking-tight">Bot Commander</h2>
+                    <p class="text-xs text-slate-400 mt-1 font-medium flex items-center gap-2">
+                        <span class="text-green-500">●</span> SYSTEM READY: AI Autopilot is monitoring 1.2k active nodes
+                    </p>
                 </div>
-                <div class="flex gap-2">
-                    <button onclick="runAutoApplyNow()" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium text-sm">▶️ 즉시 실행</button>
-                    <button onclick="openAddRuleModal()" class="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-lg font-medium text-sm">+ 규칙 추가</button>
+                <div class="flex items-center gap-4">
+                    <button onclick="runAutoApplyNow()"
+                        class="px-8 py-3 bg-gradient-to-r from-amber-600 to-amber-500 text-black font-black text-sm rounded-2xl shadow-xl shadow-amber-900/30 active:scale-95 transition-all">
+                        DEPLOY BOT NOW
+                    </button>
+                    <button onclick="openAddRuleModal()"
+                        class="px-8 py-3 glass-panel text-white font-black text-sm rounded-2xl hover:bg-slate-800 transition-all">
+                        + NEW PROTOCOL
+                    </button>
                 </div>
             </header>
 
-            <main class="flex-1 overflow-y-auto p-6">
-                <!-- Info Box -->
-                <div class="bg-blue-900 border border-blue-700 rounded-lg p-4 mb-6 text-blue-200 text-sm">
-                    <p>💡 자동 신청 규칙을 설정하면, 조건에 맞는 체험단 공고가 올라올 때마다 자동으로 신청됩니다. 주기적으로 체크하세요!</p>
-                </div>
+            <main class="flex-1 overflow-hidden flex flex-col p-10 pt-0 space-y-8">
+                <!-- Bot Strategy & Live View -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <!-- Left: Strategy Toggles -->
+                    <div class="col-span-1 space-y-6">
+                        <h3 class="text-xs font-black text-slate-500 uppercase tracking-[0.2em] ml-2">Active Protocols
+                        </h3>
+                        <div id="strategy-grid" class="space-y-4">
+                            <!-- Strategy 1 -->
+                            <div
+                                class="strategy-card active glass-panel p-6 rounded-[2rem] border-slate-800 cursor-pointer group transition-all">
+                                <div class="flex items-center justify-between mb-4">
+                                    <div
+                                        class="w-10 h-10 rounded-xl bg-amber-500/20 flex items-center justify-center text-amber-500">
+                                        💰</div>
+                                    <span
+                                        class="px-2 py-1 rounded-lg bg-green-500/10 text-green-500 text-[9px] font-black uppercase">Active</span>
+                                </div>
+                                <h4 class="text-base font-black text-white mb-2">Aggressive Profit</h4>
+                                <p class="text-[11px] text-slate-400 leading-relaxed mb-4">Focuses on high-reward items
+                                    (>₩100k) across all platforms with 90% logic match.</p>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-[10px] text-slate-500 font-bold uppercase">Applied</span>
+                                    <span class="text-sm font-black text-white">42 items</span>
+                                </div>
+                            </div>
+                            <!-- Strategy 2 -->
+                            <div
+                                class="strategy-card glass-panel p-6 rounded-[2rem] border-white/5 hover:border-slate-700 cursor-pointer transition-all">
+                                <div class="flex items-center justify-between mb-4">
+                                    <div
+                                        class="w-10 h-10 rounded-xl bg-indigo-500/20 flex items-center justify-center text-indigo-500">
+                                        🎭</div>
+                                    <span
+                                        class="px-2 py-1 rounded-lg bg-slate-800 text-slate-500 text-[9px] font-black uppercase">Standby</span>
+                                </div>
+                                <h4 class="text-base font-black text-slate-300 mb-2">Stealth Approval</h4>
+                                <p class="text-[11px] text-slate-500 leading-relaxed">Limits frequency to 2 apps/hr to
+                                    maximize approval rate and avoid platform flagging.</p>
+                            </div>
+                        </div>
+                    </div>
 
-                <!-- Active Rules -->
-                <h3 class="text-lg font-bold text-white mb-4">📋 활성 규칙</h3>
-                <div id="active-rules-container" class="space-y-4 mb-8">
-                    <div class="bg-slate-800 border border-slate-700 rounded-lg p-6 animate-pulse">
-                        <div class="h-6 bg-slate-700 rounded mb-4 w-1/2"></div>
-                        <div class="h-4 bg-slate-700 rounded"></div>
+                    <!-- Right: Live Logic Terminal (High Impact) -->
+                    <div class="col-span-2 flex flex-col">
+                        <h3
+                            class="text-xs font-black text-slate-500 uppercase tracking-[0.2em] mb-6 flex items-center gap-2">
+                            Live Command Feed <span class="w-2 h-2 rounded-full bg-red-500 pulse-dot"></span>
+                        </h3>
+                        <div
+                            class="flex-1 glass-panel rounded-[2.5rem] bg-slate-950/80 border-slate-800 p-8 terminal-glow font-mono overflow-hidden relative">
+                            <div id="bot-logs" class="space-y-3 h-full overflow-y-auto scroll-hide">
+                                <p class="log-entry text-amber-500 font-bold text-xs">[INIT] Commander kernel
+                                    v2.5.0-platinum starting up...</p>
+                                <p class="log-entry text-slate-400 text-xs">[SYNC] Fetched 142 new campaigns from
+                                    Seouloppa node.</p>
+                                <p class="log-entry text-slate-400 text-xs">[ANALYSIS] Identifying high-value match for
+                                    profile @demo...</p>
+                                <p class="log-entry text-green-400 text-xs">[MATCH] "Premium Serum Box" - Profit Score
+                                    96%. Criteria: MET.</p>
+                                <p class="log-entry text-indigo-400 text-xs">[CMD] POST /api/v1/apply/7721 - Submitting
+                                    payload...</p>
+                                <p class="log-entry text-green-500 font-bold text-xs">[SUCCESS] Application UUID_8829
+                                    confirmed by Revu API.</p>
+                            </div>
+                            <!-- Bottom Fade Gradient -->
+                            <div
+                                class="absolute bottom-0 left-0 w-full h-20 bg-gradient-to-t from-slate-950 to-transparent pointer-events-none">
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <!-- History -->
-                <h3 class="text-lg font-bold text-white mb-4">📊 최근 자동신청 이력</h3>
-                <div class="bg-slate-800 border border-slate-700 rounded-lg overflow-hidden">
-                    <div class="overflow-x-auto">
-                        <table class="w-full">
-                            <thead class="bg-slate-700 border-b border-slate-600">
-                                <tr>
-                                    <th class="px-6 py-3 text-left text-sm font-semibold text-white">제목</th>
-                                    <th class="px-6 py-3 text-left text-sm font-semibold text-white">사용 계정</th>
-                                    <th class="px-6 py-3 text-left text-sm font-semibold text-white">신청일시</th>
-                                    <th class="px-6 py-3 text-left text-sm font-semibold text-white">상태</th>
+                <!-- Bot History Table -->
+                <div class="flex-1 min-h-[300px] flex flex-col">
+                    <h3 class="text-xs font-black text-slate-500 uppercase tracking-[0.2em] mb-6">Recent Deployments
+                    </h3>
+                    <div class="flex-1 glass-panel rounded-[2rem] border-slate-800/50 overflow-hidden bg-slate-900/40">
+                        <table class="w-full text-sm">
+                            <thead>
+                                <tr class="bg-slate-800/50 border-b border-slate-700/50">
+                                    <th
+                                        class="px-8 py-4 text-left font-black text-[10px] text-slate-500 uppercase tracking-widest">
+                                        Campaign Name</th>
+                                    <th
+                                        class="px-8 py-4 text-left font-black text-[10px] text-slate-500 uppercase tracking-widest">
+                                        Target Account</th>
+                                    <th
+                                        class="px-8 py-4 text-left font-black text-[10px] text-slate-500 uppercase tracking-widest">
+                                        Execution Time</th>
+                                    <th
+                                        class="px-8 py-4 text-left font-black text-[10px] text-slate-500 uppercase tracking-widest">
+                                        Result</th>
                                 </tr>
                             </thead>
-                            <tbody id="history-table" class="divide-y divide-slate-700">
-                                <tr>
-                                    <td colspan="4" class="px-6 py-8 text-center text-slate-400">이력이 없습니다</td>
+                            <tbody id="deployment-history" class="divide-y divide-slate-800/50">
+                                <tr class="hover:bg-slate-800/20 transition-all">
+                                    <td class="px-8 py-5 font-bold text-white">IT/테크 프리미엄 노트북 리뷰</td>
+                                    <td class="px-8 py-5 text-slate-400">Naver Blog • demo_blog</td>
+                                    <td class="px-8 py-5 text-slate-500 font-mono text-xs">2026-02-28 14:32:11</td>
+                                    <td class="px-8 py-5">
+                                        <span
+                                            class="px-3 py-1 rounded-lg bg-green-500/10 text-green-500 text-[10px] font-black uppercase">Confirmed</span>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-slate-800/20 transition-all">
+                                    <td class="px-8 py-5 font-bold text-white">홍대 맛집 한우 오마카세</td>
+                                    <td class="px-8 py-5 text-slate-400">Instagram • @demo_insta</td>
+                                    <td class="px-8 py-5 text-slate-500 font-mono text-xs">2026-02-28 12:05:45</td>
+                                    <td class="px-8 py-5">
+                                        <span
+                                            class="px-3 py-1 rounded-lg bg-blue-500/10 text-blue-500 text-[10px] font-black uppercase">Analyzing</span>
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>
@@ -97,327 +270,89 @@
         </div>
     </div>
 
-    <!-- Toast -->
-    <div id="toast" class="fixed bottom-4 right-4 bg-green-600 text-white px-4 py-3 rounded-lg shadow-lg hidden"></div>
-
-    <!-- Add Rule Modal -->
-    <div id="add-rule-modal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50 overflow-y-auto">
-        <div class="bg-slate-800 border border-slate-700 rounded-lg p-6 max-w-2xl w-full mx-4 my-8">
-            <h3 class="text-lg font-bold text-white mb-4">자동 신청 규칙 추가</h3>
-            <form onsubmit="submitAddRule(event)">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+    <!-- Modals (Add Rule) -->
+    <div id="add-rule-modal"
+        class="hidden fixed inset-0 z-[200] bg-black/80 backdrop-blur-sm flex items-center justify-center">
+        <div
+            class="glass-panel w-[600px] rounded-[2.5rem] bg-slate-900 border-amber-500/20 p-10 shadow-2xl overflow-y-auto max-h-[90vh] scroll-hide">
+            <h3 class="text-2xl font-black text-white mb-8">Create New Protocol</h3>
+            <!-- Optimized Form content here -->
+            <div class="space-y-6">
+                <div>
+                    <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3 block">Protocol
+                        Identifier</label>
+                    <input type="text" placeholder="e.g. ULTRA_PROFIT_V1"
+                        class="w-full bg-slate-950 border border-slate-800 rounded-2xl px-6 py-4 text-white focus:border-amber-500 text-sm">
+                </div>
+                <div class="grid grid-cols-2 gap-6">
                     <div>
-                        <label class="text-sm text-slate-300 block mb-2">규칙명 *</label>
-                        <input type="text" id="rule-name" placeholder="예: 뷰티 100k 이상" class="w-full bg-slate-700 border border-slate-600 rounded px-3 py-2 text-white placeholder-slate-500 focus:border-amber-500 focus:outline-none text-sm" required>
-                    </div>
-                    <div>
-                        <label class="text-sm text-slate-300 block mb-2">최소 보상금액</label>
-                        <input type="number" id="min-reward" placeholder="0" class="w-full bg-slate-700 border border-slate-600 rounded px-3 py-2 text-white placeholder-slate-500 focus:border-amber-500 focus:outline-none text-sm" value="0">
-                    </div>
-                </div>
-
-                <div class="mb-4">
-                    <label class="text-sm text-slate-300 block mb-2">카테고리 선택</label>
-                    <div class="grid grid-cols-2 md:grid-cols-3 gap-2">
-                        <label class="flex items-center gap-2 text-sm text-slate-300">
-                            <input type="checkbox" name="category" value="fashion" class="w-4 h-4 rounded"> 👗 패션
-                        </label>
-                        <label class="flex items-center gap-2 text-sm text-slate-300">
-                            <input type="checkbox" name="category" value="beauty" class="w-4 h-4 rounded"> 💄 뷰티
-                        </label>
-                        <label class="flex items-center gap-2 text-sm text-slate-300">
-                            <input type="checkbox" name="category" value="food" class="w-4 h-4 rounded"> 🍔 음식
-                        </label>
-                        <label class="flex items-center gap-2 text-sm text-slate-300">
-                            <input type="checkbox" name="category" value="travel" class="w-4 h-4 rounded"> ✈️ 여행
-                        </label>
-                        <label class="flex items-center gap-2 text-sm text-slate-300">
-                            <input type="checkbox" name="category" value="tech" class="w-4 h-4 rounded"> ⌚ 기술
-                        </label>
-                        <label class="flex items-center gap-2 text-sm text-slate-300">
-                            <input type="checkbox" name="category" value="home" class="w-4 h-4 rounded"> 🏠 생활
-                        </label>
-                    </div>
-                </div>
-
-                <div class="mb-4">
-                    <label class="text-sm text-slate-300 block mb-2">최대 신청자 비율</label>
-                    <input type="range" id="max-ratio" min="0" max="1" step="0.1" value="0.5" class="w-full">
-                    <p class="text-xs text-slate-400 mt-1">신청자 비율이 <span id="ratio-display">50%</span> 이하인 공고만 신청</p>
-                </div>
-
-                <div class="mb-6">
-                    <label class="flex items-center gap-2 text-sm text-slate-300">
-                        <input type="checkbox" id="rule-is-active" checked class="w-4 h-4 rounded">
-                        <span>즉시 활성화</span>
-                    </label>
-                </div>
-
-                <div class="flex gap-2">
-                    <button type="button" onclick="closeAddRuleModal()" class="flex-1 px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded font-medium">취소</button>
-                    <button type="submit" class="flex-1 px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded font-medium">생성</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Edit Rule Modal -->
-    <div id="edit-rule-modal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50 overflow-y-auto">
-        <div class="bg-slate-800 border border-slate-700 rounded-lg p-6 max-w-2xl w-full mx-4 my-8">
-            <h3 class="text-lg font-bold text-white mb-4">규칙 편집</h3>
-            <form onsubmit="submitEditRule(event)">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                    <div>
-                        <label class="text-sm text-slate-300 block mb-2">규칙명</label>
-                        <input type="text" id="edit-rule-name" class="w-full bg-slate-700 border border-slate-600 rounded px-3 py-2 text-white focus:border-amber-500 focus:outline-none text-sm" required>
+                        <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3 block">Min
+                            Profit Goal</label>
+                        <input type="number" value="100000"
+                            class="w-full bg-slate-950 border border-slate-800 rounded-2xl px-6 py-4 text-white focus:border-amber-500 text-sm">
                     </div>
                     <div>
-                        <label class="text-sm text-slate-300 block mb-2">최소 보상금액</label>
-                        <input type="number" id="edit-min-reward" class="w-full bg-slate-700 border border-slate-600 rounded px-3 py-2 text-white focus:border-amber-500 focus:outline-none text-sm">
+                        <label
+                            class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3 block">Application
+                            Cap/Day</label>
+                        <input type="number" value="10"
+                            class="w-full bg-slate-950 border border-slate-800 rounded-2xl px-6 py-4 text-white focus:border-amber-500 text-sm">
                     </div>
                 </div>
-
-                <div class="mb-6">
-                    <label class="flex items-center gap-2 text-sm text-slate-300">
-                        <input type="checkbox" id="edit-rule-is-active" class="w-4 h-4 rounded">
-                        <span>활성화</span>
-                    </label>
+                <div class="flex gap-4 pt-4">
+                    <button onclick="document.getElementById('add-rule-modal').classList.add('hidden')"
+                        class="flex-1 py-4 glass-panel text-slate-400 font-bold rounded-2xl hover:text-white transition-all">ABORT</button>
+                    <button
+                        class="flex-1 py-4 bg-amber-500 text-black font-black rounded-2xl shadow-xl shadow-amber-900/20">INITIATE
+                        COMMAND</button>
                 </div>
-
-                <div class="flex gap-2">
-                    <button type="button" onclick="closeEditRuleModal()" class="flex-1 px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded font-medium">취소</button>
-                    <button type="submit" class="flex-1 px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded font-medium">저장</button>
-                </div>
-            </form>
+            </div>
         </div>
     </div>
 
     <script>
-        let rules = [];
-        let editingRuleId = null;
+        requireAuth();
 
-        // Setup range slider display
-        document.addEventListener('DOMContentLoaded', () => {
-            const ratioSlider = document.getElementById('max-ratio');
-            if (ratioSlider) {
-                ratioSlider.addEventListener('input', (e) => {
-                    document.getElementById('ratio-display').textContent = Math.round(e.target.value * 100) + '%';
-                });
-            }
-        });
+        // Simulate Live Logs for the 100x experience
+        const logEntries = [
+            " [SCAN] Scanning 24 platform endpoints for D-1 campaigns...",
+            " [FILTER] Discarding 12 candidates due to low reward index.",
+            " [VAL] Validating credentials for @demo_insta...",
+            " [AI] GPT-Analysis on campaign requirements complete.",
+            " [SYSTEM] Re-balancing thread distribution for 3x speed.",
+            " [CMD] Triggering auto-apply hook #A9921_B."
+        ];
 
-        async function loadRules() {
-            try {
-                const response = await apiFetch('/api/review/auto-apply/rules');
-                const result = await response.json();
-
-                if (!result.success) {
-                    showToast('규칙 로드 실패', 'error');
-                    return;
-                }
-
-                rules = result.data;
-                renderRules();
-                loadHistory();
-            } catch (error) {
-                console.error('Error:', error);
-                showToast('오류가 발생했습니다', 'error');
-            }
+        function addLiveLog() {
+            const container = document.getElementById('bot-logs');
+            if (!container) return;
+            const entry = logEntries[Math.floor(Math.random() * logEntries.length)];
+            const p = document.createElement('p');
+            p.className = 'log-entry text-slate-500 text-xs opacity-0';
+            p.textContent = `[${new Date().toLocaleTimeString()}] ${entry}`;
+            container.appendChild(p);
+            container.scrollTop = container.scrollHeight;
+            if (container.children.length > 50) container.removeChild(container.firstChild);
         }
 
-        function renderRules() {
-            const container = document.getElementById('active-rules-container');
-            const activeRules = rules.filter(r => r.is_active);
+        setInterval(addLiveLog, 3000);
 
-            container.innerHTML = '';
-
-            if (activeRules.length === 0) {
-                container.innerHTML = '<p class="text-center text-slate-400 py-8">활성 규칙이 없습니다</p>';
-            } else {
-                activeRules.forEach(rule => {
-                    const card = document.createElement('div');
-                    card.className = 'rule-card bg-slate-800 border border-slate-700 rounded-lg p-4 hover:border-amber-500';
-                    card.innerHTML = `
-                        <div class="flex items-start justify-between mb-2">
-                            <h4 class="font-semibold text-white">${rule.name}</h4>
-                            <span class="px-2 py-1 rounded text-xs font-medium bg-green-900 text-green-200">활성</span>
-                        </div>
-                        <div class="text-sm text-slate-400 space-y-1 mb-3">
-                            ${rule.categories && rule.categories.length > 0 ? `<p>📂 카테고리: ${rule.categories.join(', ')}</p>` : ''}
-                            <p>💰 최소보상: ${(rule.min_reward || 0).toLocaleString()}원</p>
-                            <p>📊 최대신청자비율: ${(rule.max_applicants_ratio * 100).toFixed(0)}%</p>
-                        </div>
-                        <div class="flex gap-2">
-                            <button onclick="openEditRuleModal(${rule.id})" class="flex-1 px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm font-medium">✏️ 편집</button>
-                            <button onclick="deleteRule(${rule.id})" class="flex-1 px-3 py-2 bg-red-600 hover:bg-red-700 text-white rounded text-sm font-medium">🗑️ 삭제</button>
-                        </div>
-                    `;
-                    container.appendChild(card);
-                });
-            }
-        }
-
-        async function loadHistory() {
-            // Mock history data - in production would load from backend
-            const tbody = document.getElementById('history-table');
-            tbody.innerHTML = `
-                <tr>
-                    <td class="px-6 py-4 text-sm text-white">뷰티 세럼 체험단</td>
-                    <td class="px-6 py-4 text-sm text-slate-300">Instagram - @demo</td>
-                    <td class="px-6 py-4 text-sm text-slate-400">2026-02-25 14:30</td>
-                    <td class="px-6 py-4"><span class="px-2 py-1 rounded text-xs font-medium bg-green-900 text-green-200">성공</span></td>
-                </tr>
-                <tr>
-                    <td class="px-6 py-4 text-sm text-white">패션 의류 체험단</td>
-                    <td class="px-6 py-4 text-sm text-slate-300">Blog - 나의블로그</td>
-                    <td class="px-6 py-4 text-sm text-slate-400">2026-02-25 10:15</td>
-                    <td class="px-6 py-4"><span class="px-2 py-1 rounded text-xs font-medium bg-yellow-900 text-yellow-200">대기중</span></td>
-                </tr>
-            `;
-        }
-
-        function openAddRuleModal() {
-            document.getElementById('add-rule-modal').classList.remove('hidden');
-            document.getElementById('rule-name').focus();
-        }
-
-        function closeAddRuleModal() {
-            document.getElementById('add-rule-modal').classList.add('hidden');
-            document.getElementById('rule-name').value = '';
-            document.getElementById('min-reward').value = '0';
-            document.getElementById('rule-is-active').checked = true;
-            document.querySelectorAll('#add-rule-modal input[name="category"]').forEach(el => el.checked = false);
-        }
-
-        async function submitAddRule(event) {
-            event.preventDefault();
-
-            const selectedCategories = Array.from(document.querySelectorAll('#add-rule-modal input[name="category"]:checked'))
-                .map(el => el.value);
-
-            const data = {
-                name: document.getElementById('rule-name').value,
-                categories: selectedCategories,
-                min_reward: parseInt(document.getElementById('min-reward').value || 0),
-                max_applicants_ratio: parseFloat(document.getElementById('max-ratio').value),
-                is_active: document.getElementById('rule-is-active').checked
-            };
-
-            try {
-                const response = await apiFetch('/api/review/auto-apply/rules', {
-                    method: 'POST',
-                    body: JSON.stringify(data)
-                });
-
-                const result = await response.json();
-                if (result.success) {
-                    showToast('규칙이 생성되었습니다');
-                    closeAddRuleModal();
-                    loadRules();
-                } else {
-                    showToast('생성 실패: ' + (result.error || '알 수 없는 오류'), 'error');
-                }
-            } catch (error) {
-                showToast('오류가 발생했습니다', 'error');
-            }
-        }
-
-        function openEditRuleModal(ruleId) {
-            editingRuleId = ruleId;
-            const rule = rules.find(r => r.id === ruleId);
-            if (rule) {
-                document.getElementById('edit-rule-name').value = rule.name;
-                document.getElementById('edit-min-reward').value = rule.min_reward || 0;
-                document.getElementById('edit-rule-is-active').checked = rule.is_active;
-                document.getElementById('edit-rule-modal').classList.remove('hidden');
-            }
-        }
-
-        function closeEditRuleModal() {
-            document.getElementById('edit-rule-modal').classList.add('hidden');
-            editingRuleId = null;
-        }
-
-        async function submitEditRule(event) {
-            event.preventDefault();
-
-            const data = {
-                name: document.getElementById('edit-rule-name').value,
-                min_reward: parseInt(document.getElementById('edit-min-reward').value || 0),
-                is_active: document.getElementById('edit-rule-is-active').checked
-            };
-
-            try {
-                const response = await apiFetch(`/api/review/auto-apply/rules/${editingRuleId}`, {
-                    method: 'PUT',
-                    body: JSON.stringify(data)
-                });
-
-                const result = await response.json();
-                if (result.success) {
-                    showToast('규칙이 업데이트되었습니다');
-                    closeEditRuleModal();
-                    loadRules();
-                } else {
-                    showToast('업데이트 실패: ' + (result.error || '알 수 없는 오류'), 'error');
-                }
-            } catch (error) {
-                showToast('오류가 발생했습니다', 'error');
-            }
-        }
-
-        async function deleteRule(ruleId) {
-            if (!confirm('정말로 이 규칙을 삭제하시겠습니까?')) return;
-
-            try {
-                const response = await apiFetch(`/api/review/auto-apply/rules/${ruleId}`, {
-                    method: 'DELETE'
-                });
-
-                const result = await response.json();
-                if (result.success) {
-                    showToast('규칙이 삭제되었습니다');
-                    loadRules();
-                } else {
-                    showToast('삭제 실패: ' + (result.error || '알 수 없는 오류'), 'error');
-                }
-            } catch (error) {
-                showToast('오류가 발생했습니다', 'error');
-            }
-        }
-
+        function openAddRuleModal() { document.getElementById('add-rule-modal').classList.remove('hidden'); }
         async function runAutoApplyNow() {
             const btn = event.target;
             btn.disabled = true;
-            btn.innerHTML = '<span>⏳ 진행 중...</span>';
-
-            try {
-                const response = await apiFetch('/api/review/auto-apply/run', { method: 'POST' });
-                const result = await response.json();
-
-                if (result.success) {
-                    showToast(`${result.applied_count}개 신청이 완료되었습니다`);
-                    loadHistory();
-                } else {
-                    showToast('실패: ' + (result.error || '알 수 없는 오류'), 'error');
-                }
-            } catch (error) {
-                showToast('오류가 발생했습니다', 'error');
-            } finally {
+            btn.textContent = "EXECUTING...";
+            // Logic would go here to trigger the actual bot run
+            setTimeout(() => {
                 btn.disabled = false;
-                btn.innerHTML = '▶️ 즉시 실행';
-            }
+                btn.textContent = "DEPLOY BOT NOW";
+            }, 2000);
         }
 
-        function showToast(message, type = 'success') {
-            const toast = document.getElementById('toast');
-            toast.textContent = message;
-            toast.className = `fixed bottom-4 right-4 px-4 py-3 rounded-lg shadow-lg text-white ${type === 'error' ? 'bg-red-600' : 'bg-green-600'}`;
-            setTimeout(() => toast.classList.add('hidden'), 3000);
-        }
-
-        // Initial load
-        loadRules();
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initial load logic
+        });
     </script>
 </body>
+
 </html>

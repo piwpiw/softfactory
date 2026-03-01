@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>이메일 인증 — SoftFactory</title>
+  <!--[if mso]><noscript><xml><o:OfficeDocumentSettings><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml></noscript><![endif]-->
+  <style>
+    body { margin: 0; padding: 0; background-color: #f3f4f6; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; }
+    .wrapper { max-width: 600px; margin: 40px auto; padding: 0 16px; }
+    .card { background: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 24px rgba(0,0,0,0.08); }
+    .header { background: linear-gradient(135deg, #7C3AED 0%, #5B21B6 100%); padding: 40px 48px 36px; text-align: center; }
+    .header img { height: 36px; margin-bottom: 16px; }
+    .header h1 { margin: 0; color: #ffffff; font-size: 24px; font-weight: 700; letter-spacing: -0.3px; }
+    .header p { margin: 8px 0 0; color: rgba(255,255,255,0.85); font-size: 15px; }
+    .body { padding: 48px; }
+    .greeting { font-size: 16px; color: #374151; margin: 0 0 24px; }
+    .description { font-size: 15px; color: #6B7280; line-height: 1.7; margin: 0 0 32px; }
+    .code-wrapper { background: #F5F3FF; border: 2px dashed #7C3AED; border-radius: 12px; padding: 28px 24px; text-align: center; margin: 0 0 32px; }
+    .code-label { font-size: 13px; color: #7C3AED; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 12px; }
+    .code { font-size: 48px; font-weight: 800; color: #5B21B6; letter-spacing: 10px; font-variant-numeric: tabular-nums; margin: 0; line-height: 1; }
+    .cta-btn { display: block; background: linear-gradient(135deg, #7C3AED 0%, #5B21B6 100%); color: #ffffff !important; text-decoration: none; text-align: center; padding: 16px 32px; border-radius: 10px; font-size: 16px; font-weight: 600; margin: 0 0 32px; transition: opacity 0.2s; }
+    .expiry { background: #FFF7ED; border-left: 4px solid #F59E0B; border-radius: 0 8px 8px 0; padding: 14px 18px; font-size: 14px; color: #92400E; margin: 0 0 32px; }
+    .expiry strong { color: #B45309; }
+    .divider { border: none; border-top: 1px solid #E5E7EB; margin: 32px 0; }
+    .note { font-size: 13px; color: #9CA3AF; line-height: 1.6; margin: 0; }
+    .footer { padding: 24px 48px 40px; text-align: center; }
+    .footer p { font-size: 12px; color: #9CA3AF; margin: 4px 0; }
+    .footer a { color: #7C3AED; text-decoration: none; }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <div class="card">
+      <!-- Header -->
+      <div class="header">
+        <h1>SoftFactory</h1>
+        <p>이메일 주소를 인증해주세요</p>
+      </div>
+
+      <!-- Body -->
+      <div class="body">
+        <p class="greeting">안녕하세요, <strong>{{ user_name }}</strong>님!</p>
+        <p class="description">
+          SoftFactory 가입을 환영합니다. 아래의 6자리 인증 코드를 입력하여
+          이메일 주소를 확인해주세요.
+        </p>
+
+        <!-- Verification Code -->
+        <div class="code-wrapper">
+          <p class="code-label">인증 코드</p>
+          <p class="code">{{ verification_token }}</p>
+        </div>
+
+        <!-- Expiry notice -->
+        <div class="expiry">
+          이 인증 코드는 <strong>{{ expires_hours }}시간</strong> 후 만료됩니다.
+          코드를 제때 입력하지 않으면 재발송이 필요합니다.
+        </div>
+
+        <hr class="divider" />
+
+        <p class="note">
+          본인이 SoftFactory에 가입하지 않았거나 이 이메일을 요청하지 않았다면,
+          안전하게 무시하셔도 됩니다. 귀하의 계정은 영향을 받지 않습니다.
+        </p>
+      </div>
+
+      <!-- Footer -->
+      <div class="footer">
+        <p>&copy; {{ year }} SoftFactory. All rights reserved.</p>
+        <p>
+          <a href="https://softfactory.kr">softfactory.kr</a> &nbsp;|&nbsp;
+          <a href="https://softfactory.kr/privacy">개인정보처리방침</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

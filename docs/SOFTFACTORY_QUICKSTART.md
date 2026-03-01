@@ -55,7 +55,7 @@ D:/Project/
 ## 🔧 설정 (`.env`)
 
 ```env
-PLATFORM_SECRET_KEY=PLATFORM_SECRET_KEY_REDACTED
+PLATFORM_SECRET_KEY=softfactory-dev-secret-key-2026
 STRIPE_SECRET_KEY=sk_test_your_key_here    # 선택사항
 STRIPE_PUBLISHABLE_KEY=pk_test_your_key    # 선택사항
 PLATFORM_URL=http://localhost:8000

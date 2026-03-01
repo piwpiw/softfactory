@@ -5,10 +5,6 @@ SoftFactory Platform — Standard Test Suite
 import pytest
 import os
 import sys
-from dotenv import load_dotenv
-
-# Load environment variables
-load_dotenv(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), '.env'))
 
 # Add project root to path
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -28,7 +24,7 @@ def app():
 
     app = create_app()
 
-    # Apply test configuration after app creation
+    # Override config for testing
     app.config["TESTING"] = True
     app.config["SQLALCHEMY_DATABASE_URI"] = TEST_DATABASE
     app.config["JWT_SECRET_KEY"] = "test-secret-key"
@@ -44,6 +40,16 @@ def app():
 def client(app):
     """Test client."""
     return app.test_client()
+
+
+@pytest.fixture(autouse=True)
+def _cleanup_db(app):
+    """Auto-cleanup: delete all rows from every table after each test."""
+    yield
+    with app.app_context():
+        for table in reversed(_db.metadata.sorted_tables):
+            _db.session.execute(table.delete())
+        _db.session.commit()
 
 
 @pytest.fixture(scope="function")

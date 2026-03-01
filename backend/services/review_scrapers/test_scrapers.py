@@ -97,11 +97,12 @@ def test_aggregation() -> Dict:
         logger.info(f"Aggregation completed in {elapsed:.1f}s")
         logger.info(f"Results: {results}")
 
+        total = sum(r.get('count', 0) if isinstance(r, dict) else r for r in results.values())
         return {
             'success': True,
             'results': results,
             'elapsed_seconds': elapsed,
-            'total_listings': sum(results.values())
+            'total_listings': total
         }
 
     except Exception as e:

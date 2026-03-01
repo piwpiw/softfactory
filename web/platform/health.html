@@ -2,8 +2,11 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>시스템 상태 모니터링 — SoftFactory</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#111827">
+<title>시스템 상태 모니터링 — SoftFactory</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
@@ -14,7 +17,8 @@
         .status-badge { animation: pulse 2s infinite; }
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
     </style>
-</head>
+    <link rel="stylesheet" href="../responsive-framework.css">
+  </head>
 <body class="bg-slate-950 text-slate-100 antialiased">
     <div class="max-w-6xl mx-auto px-6 py-12">
         <div class="mb-12">
@@ -278,5 +282,6 @@
         // Auto-refresh every 60 seconds
         setTimeout(() => { location.reload(); }, 60000);
     </script>
+    <script src="../mobile-optimization.js" defer></script>
 </body>
 </html>

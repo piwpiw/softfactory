@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background: #111827; color: #fff; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
+        .header h1 { margin: 0; color: #F97316; }
+        .content { background: #f9fafb; padding: 30px; border-radius: 0 0 8px 8px; }
+        .button { display: inline-block; background: #F97316; color: #fff; padding: 10px 20px; text-decoration: none; border-radius: 4px; margin: 20px 0; }
+        .footer { text-align: center; color: #666; font-size: 12px; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 JARVIS</h1>
+            <p>欢迎来到团队运营系统</p>
+        </div>
+        <div class="content">
+            <p>您好 {{name}}，</p>
+
+            <p>欢迎来到JARVIS！您的账户已成功创建。</p>
+
+            <p>您现在可以访问:</p>
+            <ul>
+                <li>团队运营和管理</li>
+                <li>性能分析和报告</li>
+                <li>协作工具和通信</li>
+                <li>自动化工作流</li>
+            </ul>
+
+            <p>要开始使用，请点击下面的按钮:</p>
+            <a href="{{login_url}}" class="button">验证您的账户</a>
+
+            <p><strong>登录凭据:</strong></p>
+            <ul>
+                <li>邮箱: {{email}}</li>
+                <li>临时密码: {{temporary_password}}</li>
+            </ul>
+
+            <p>为了安全起见，请在首次登录时更改您的密码。</p>
+
+            <p>如有任何疑问，请联系我们 <a href="mailto:support@jarvis.com">support@jarvis.com</a>。</p>
+
+            <p>谢谢,<br>JARVIS团队</p>
+        </div>
+        <div class="footer">
+            <p>&copy; 2026 JARVIS. 版权所有。</p>
+            <p><a href="{{unsubscribe_url}}">取消订阅</a></p>
+        </div>
+    </div>
+</body>
+</html>

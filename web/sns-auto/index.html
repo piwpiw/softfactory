@@ -2,8 +2,11 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SNS Auto — SoftFactory</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#111827">
+<title>SNS Auto — SoftFactory</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -13,8 +16,52 @@
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #0f172a; }
         ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+
+        /* Mobile responsive for SNS dashboard */
+        @media (max-width: 768px) {
+            /* KPI cards: 2 columns on mobile */
+            .grid.grid-cols-1.md\:grid-cols-4 {
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 10px !important;
+            }
+            .grid.grid-cols-1.md\:grid-cols-4 .p-6 {
+                padding: 14px !important;
+            }
+            .grid.grid-cols-1.md\:grid-cols-4 .text-3xl {
+                font-size: 1.5rem !important;
+            }
+            /* Account cards: single column */
+            .grid.grid-cols-1.md\:grid-cols-3 {
+                grid-template-columns: 1fr !important;
+            }
+            /* Top post grid */
+            .grid.grid-cols-3 {
+                grid-template-columns: 1fr !important;
+                gap: 12px !important;
+            }
+            /* Header */
+            header .flex.items-center.gap-3 a {
+                font-size: 13px;
+                padding: 8px 12px;
+            }
+            /* Chart container */
+            canvas {
+                max-height: 200px !important;
+            }
+            /* Section headings */
+            h3.text-lg {
+                font-size: 1rem !important;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .grid.grid-cols-1.md\:grid-cols-4 {
+                grid-template-columns: 1fr !important;
+            }
+        }
     </style>
-</head>
+    <link rel="stylesheet" href="../responsive-framework.css">
+  </head>
 <body class="bg-slate-950 text-slate-100 antialiased">
     <div class="flex h-screen overflow-hidden">
         <!-- Sidebar -->
@@ -32,6 +79,11 @@
 
             <!-- Navigation -->
             <nav class="flex-1 p-6 space-y-2 overflow-y-auto">
+    <button class="hamburger" aria-label="Toggle navigation menu">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
                 <p class="text-xs font-semibold text-slate-400 uppercase px-4 mb-3">📱 SNS Auto</p>
                 <a href="index.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg bg-pink-600 text-white font-medium">
                     <span>📊</span> 대시보드
@@ -320,5 +372,6 @@
 
         document.addEventListener('DOMContentLoaded', init);
     </script>
+    <script src="../mobile-optimization.js" defer></script>
 </body>
 </html>

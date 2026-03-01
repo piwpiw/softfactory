@@ -59,6 +59,14 @@
       "command": "npx",
       "args": ["-y", "@modelcontextprotocol/server-postgres", "${DATABASE_URL}"],
       "description": "PostgreSQL access — production DB (CooCook P002)"
+    },
+    "claude": {
+      "command": "npx",
+      "args": ["-y", "@anthropic-ai/claude-code", "--mcp-server"],
+      "env": {
+        "ANTHROPIC_API_KEY": "${ANTHROPIC_API_KEY}"
+      },
+      "description": "Claude AI integration — content generation, analysis, recommendations"
     }
   }
 }

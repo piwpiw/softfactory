@@ -1,0 +1,96 @@
+global:
+  resolve_timeout: 5m
+  slack_api_url: '${SLACK_WEBHOOK_URL}'          # Set via environment
+  pagerduty_url: 'https://events.pagerduty.com/v2/enqueue'
+  telegram_api_url: 'https://api.telegram.org'
+
+# Root route with inherited parameters for all child routes
+route:
+  receiver: 'default'
+  group_by: ['alertname', 'cluster', 'service', 'instance']
+  group_wait: 30s              # Wait before sending first notification
+  group_interval: 5m           # Wait before sending update
+  repeat_interval: 12h         # Repeat unresolved alerts every 12 hours
+  routes:
+    # Critical alerts: instant notification, repeat every 5 minutes
+    - receiver: 'critical'
+      match:
+        severity: critical
+      group_wait: 0s
+      repeat_interval: 5m
+      continue: true
+
+    # Warning alerts: grouped, repeat every 1 hour
+    - receiver: 'warning'
+      match:
+        severity: warning
+      group_wait: 30s
+      repeat_interval: 1h
+      continue: true
+
+    # Info alerts: grouped, repeat every 24 hours
+    - receiver: 'info'
+      match:
+        severity: info
+      repeat_interval: 24h
+
+# Inhibition rules suppress alerts when certain conditions are met
+inhibit_rules:
+  # Suppress warning/info alerts if critical alert is firing
+  - source_match:
+      severity: 'critical'
+    target_match_re:
+      severity: 'warning|info'
+    equal: ['alertname', 'dev', 'instance']
+
+  # Suppress info alerts if warning alert is firing
+  - source_match:
+      severity: 'warning'
+    target_match:
+      severity: 'info'
+    equal: ['alertname', 'instance']
+
+# Named receivers define notification integrations
+receivers:
+  # Default receiver: webhook only
+  - name: 'default'
+    webhook_configs:
+      - url: 'http://localhost:5001/alerts'
+        send_resolved: true
+
+  # Critical alerts: email + webhook
+  - name: 'critical'
+    email_configs:
+      - to: 'ops@softfactory.local'
+        from: 'alertmanager@softfactory.local'
+        smarthost: 'localhost:25'
+        require_tls: false
+        headers:
+          Subject: '[CRITICAL] {{ .GroupLabels.alertname }}'
+
+    webhook_configs:
+      - url: 'http://localhost:5001/alerts/critical'
+        send_resolved: true
+
+  # Warning alerts: Slack notification
+  - name: 'warning'
+    slack_configs:
+      - api_url: '${SLACK_WEBHOOK_URL}'
+        channel: '#alerts-warning'
+        title: '[{{ .Status | upper }}] {{ .GroupLabels.alertname }}'
+        text: |
+          {{ range .Alerts }}
+          *Description:* {{ .Annotations.description }}
+          *Instance:* {{ .Labels.instance }}
+          {{ end }}
+        send_resolved: true
+
+    webhook_configs:
+      - url: 'http://localhost:5001/alerts/warning'
+        send_resolved: true
+
+  # Info alerts: minimal notification
+  - name: 'info'
+    webhook_configs:
+      - url: 'http://localhost:5001/alerts/info'
+        send_resolved: true
