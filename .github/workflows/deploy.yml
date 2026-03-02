@@ -10,6 +10,7 @@ permissions:
 env:
   REGISTRY: docker.io
   IMAGE_NAME: softfactory
+  DEFAULT_DOCKER_NAMESPACE: piwpiw99
 
 jobs:
   prepare:
@@ -20,6 +21,7 @@ jobs:
       image_tag: ${{ steps.meta.outputs.image_tag }}
       image_full: ${{ steps.meta.outputs.image_full }}
       image_latest: ${{ steps.meta.outputs.image_latest }}
+      docker_username: ${{ steps.meta.outputs.docker_username }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -29,14 +31,21 @@ jobs:
         run: |
           DOCKER_USERNAME='${{ secrets.DOCKER_USERNAME }}'
           DOCKER_PASSWORD='${{ secrets.DOCKER_PASSWORD }}'
+          DOCKER_NAMESPACE='${{ vars.DOCKER_NAMESPACE }}'
+          if [[ -z "$DOCKER_NAMESPACE" ]]; then
+            DOCKER_NAMESPACE='${{ env.DEFAULT_DOCKER_NAMESPACE }}'
+          fi
+          if [[ -z "$DOCKER_USERNAME" ]]; then
+            DOCKER_USERNAME="$DOCKER_NAMESPACE"
+          fi
 
           if [[ -n "$DOCKER_USERNAME" && -n "$DOCKER_PASSWORD" ]]; then
             IMAGE_NAME="${DOCKER_USERNAME}/softfactory"
             CAN_DEPLOY="true"
           else
-            IMAGE_NAME="${{ github.repository_owner }}/softfactory"
+            IMAGE_NAME="${DOCKER_NAMESPACE}/softfactory"
             CAN_DEPLOY="false"
-            echo "::notice::Missing DOCKER_USERNAME/DOCKER_PASSWORD, deployment is skipped safely."
+            echo "::notice::Missing DOCKER_PASSWORD, deployment is skipped safely."
           fi
 
           IMAGE_TAG="legacy-$(echo '${{ github.sha }}' | cut -c1-8)"
@@ -47,6 +56,7 @@ jobs:
           echo "image_tag=${IMAGE_TAG}" >> "$GITHUB_OUTPUT"
           echo "image_full=${IMAGE_FULL}" >> "$GITHUB_OUTPUT"
           echo "image_latest=${IMAGE_LATEST}" >> "$GITHUB_OUTPUT"
+          echo "docker_username=${DOCKER_USERNAME}" >> "$GITHUB_OUTPUT"
 
   build-and-push:
     name: Build & Push Image
@@ -71,7 +81,7 @@ jobs:
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
         with:
-          username: ${{ secrets.DOCKER_USERNAME }}
+          username: ${{ needs.prepare.outputs.docker_username }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Build and push image
@@ -159,7 +169,7 @@ jobs:
 
           if [[ "$PREP_RESULT" != "true" ]]; then
             ICON="[SKIP]"
-            STATUS="LEGACY DEPLOY SKIPPED: Missing DOCKER secrets."
+            STATUS="LEGACY DEPLOY SKIPPED: Missing DOCKER_PASSWORD."
           elif [[ "$DEPLOY_RESULT" == "success" ]]; then
             ICON="[OK]"
             STATUS="Legacy deployment completed."

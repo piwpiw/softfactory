@@ -69,7 +69,7 @@ services:
   # FLASK APP — gunicorn WSGI server
   # ─────────────────────────────────────────────
   web:
-    image: ${DOCKER_IMAGE:-softfactory:latest}
+    image: ${DOCKER_IMAGE:-piwpiw99/softfactory:latest}
     build:
       context: .
       dockerfile: Dockerfile

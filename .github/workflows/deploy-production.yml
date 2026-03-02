@@ -22,6 +22,7 @@ on:
 env:
   REGISTRY: docker.io
   IMAGE_NAME: softfactory
+  DEFAULT_DOCKER_NAMESPACE: piwpiw99
 
 # Never run two production deploys simultaneously
 concurrency:
@@ -41,6 +42,7 @@ jobs:
       image_full: ${{ steps.version.outputs.image_full }}
       can_deploy: ${{ steps.version.outputs.can_deploy }}
       image_latest: ${{ steps.version.outputs.image_latest }}
+      docker_username: ${{ steps.version.outputs.docker_username }}
 
     steps:
       - name: Checkout code
@@ -48,26 +50,25 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-
-      - name: Generate OpenAPI from routes
-        run: python scripts/generate_openapi.py
-
       - name: Resolve version
         id: version
         run: |
           DOCKER_USERNAME="${{ secrets.DOCKER_USERNAME }}"
           DOCKER_PASSWORD="${{ secrets.DOCKER_PASSWORD }}"
+          DOCKER_NAMESPACE="${{ vars.DOCKER_NAMESPACE }}"
+          if [[ -z "$DOCKER_NAMESPACE" ]]; then
+            DOCKER_NAMESPACE="${{ env.DEFAULT_DOCKER_NAMESPACE }}"
+          fi
+          if [[ -z "$DOCKER_USERNAME" ]]; then
+            DOCKER_USERNAME="$DOCKER_NAMESPACE"
+          fi
           if [[ -n "$DOCKER_USERNAME" && -n "$DOCKER_PASSWORD" ]]; then
             IMAGE_NAME="${DOCKER_USERNAME}/softfactory"
             CAN_DEPLOY="true"
           else
-            IMAGE_NAME="softfactory"
+            IMAGE_NAME="${DOCKER_NAMESPACE}/softfactory"
             CAN_DEPLOY="false"
-            echo "::notice::Skipping image build/deploy: DOCKER_USERNAME / DOCKER_PASSWORD not configured."
+            echo "::notice::Skipping image build/deploy: DOCKER_PASSWORD not configured."
           fi
 
           if [[ "${{ github.event_name }}" == "workflow_dispatch" && -n "${{ github.event.inputs.image_tag }}" ]]; then
@@ -87,6 +88,7 @@ jobs:
           echo "image_full=${IMAGE_FULL}" >> "$GITHUB_OUTPUT"
           echo "image_latest=${IMAGE_LATEST}" >> "$GITHUB_OUTPUT"
           echo "can_deploy=${CAN_DEPLOY}" >> "$GITHUB_OUTPUT"
+          echo "docker_username=${DOCKER_USERNAME}" >> "$GITHUB_OUTPUT"
 
           echo "Deploying version: ${VERSION}"
           echo "Image: ${IMAGE_FULL}"
@@ -105,13 +107,21 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Generate OpenAPI from routes
+        run: python scripts/generate_openapi.py
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
         with:
-          username: ${{ secrets.DOCKER_USERNAME }}
+          username: ${{ needs.prepare.outputs.docker_username }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Build and push
@@ -207,7 +217,7 @@ jobs:
           IMAGE_FULL:      ${{ needs.prepare.outputs.image_full }}
           IMAGE_TAG:       ${{ needs.prepare.outputs.image_tag }}
           VERSION:         ${{ needs.prepare.outputs.version }}
-          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_USERNAME: ${{ needs.prepare.outputs.docker_username }}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
           GIT_SHA:         ${{ github.sha }}
         with:
@@ -251,7 +261,7 @@ jobs:
             docker run -d \
               --name softfactory-canary \
               --restart no \
-              -p 9002:9000 \
+              -p 9002:8000 \
               --env-file "$DEPLOY_DIR/.env" \
               -e GIT_SHA="$GIT_SHA" \
               -e VERSION="$VERSION" \
@@ -294,7 +304,7 @@ jobs:
             docker run -d \
               --name softfactory-prod \
               --restart unless-stopped \
-              -p 9000:9000 \
+              -p 9000:8000 \
               --env-file "$DEPLOY_DIR/.env" \
               -e GIT_SHA="$GIT_SHA" \
               -e VERSION="$VERSION" \
@@ -318,7 +328,7 @@ jobs:
                 docker run -d \
                   --name softfactory-prod \
                   --restart unless-stopped \
-                  -p 9000:9000 \
+                  -p 9000:8000 \
                   --env-file "$DEPLOY_DIR/.env" \
                   "$ROLLBACK_IMAGE"
                 log "Rollback complete. Previous version restored."
@@ -402,7 +412,7 @@ jobs:
         run: |
           if [[ "$CAN_DEPLOY" != "true" ]]; then
             ICON="[SKIP]"
-            STATUS="DEPLOY SKIPPED: Missing container publish credentials (DOCKER_USERNAME/DOCKER_PASSWORD)"
+            STATUS="DEPLOY SKIPPED: Missing container publish credential (DOCKER_PASSWORD)"
           elif [[ "$DEPLOY_RESULT" == "success" ]]; then
             ICON="[OK]"
             STATUS="DEPLOYED TO PRODUCTION"
