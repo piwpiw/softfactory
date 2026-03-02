@@ -52,22 +52,6 @@ jobs:
       - name: Generate OpenAPI from routes
         run: python scripts/generate_openapi.py
 
-      - name: Harmonize Project State
-        id: harmonize
-        run: make sync-docs
-
-      - name: Commit Harmonized Docs
-        run: |
-          git config --global user.name 'github-actions'
-          git config --global user.email 'github-actions@github.com'
-          git add .
-          if git diff-index --quiet HEAD; then
-            echo "No changes to commit."
-          else
-            git commit -m "ci: Harmonize project documentation and API specs"
-            git push
-          fi
-
       - name: Resolve version
         id: version
         run: |
