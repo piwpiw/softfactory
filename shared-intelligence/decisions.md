@@ -42,6 +42,40 @@
 | ADR-0017 | Coverage Threshold 80% Minimum, 90% Target | ✅ ACCEPTED | 2026-02-25 | Platform-wide |
 | ADR-0018 | Claude API Integration for AI Suggestions (Sprint 2) | 📋 DESIGN COMPLETE | 2026-02-25 | All 5 services |
 | ADR-0019 | CI/CD Hardening: Multi-Workflow, Health Gates, Validation | ✅ ACCEPTED | 2026-02-25 | Platform-wide |
+| ADR-0020 | AI 비용 전략: 50% 절감 로드맵 + 멀티 모델 혼합 | ✅ ACCEPTED | 2026-03-02 | Platform-wide |
+
+---
+
+## ADR-0020: AI 비용 전략 — 50% 절감 로드맵 + 멀티 모델 혼합
+
+- **Status:** ✅ ACCEPTED
+- **Date:** 2026-03-02
+- **Applies To:** Platform-wide (Runtime + Dev)
+- **Decision Maker:** 프로젝트 오너 (전략 세션 직접 결정)
+- **Full Document:** `shared-intelligence/AI_COST_STRATEGY.md`
+
+### Context
+전체 개발 이력 검토 결과, 두 가지 근본 문제 확인:
+1. 단순 기능(해시태그, 게시시간, 트렌딩)에도 LLM을 사용 → Runtime 비용의 40-50% 낭비
+2. 단일 Claude 벤더 전면 의존 → 비용 리스크 + 다중 계정 집계 불가
+
+### Decision
+- **Runtime 단순 기능 (5개):** LLM 제거 → 정적 로직 / 외부 전용 API 대체
+- **Runtime 창의·분석 기능:** Claude Sonnet 유지
+- **모델 혼합:** Gemini Flash 2.0 도입 (Haiku 대비 3-4배 저렴)
+- **Dev 세션:** 항상 Haiku 기본 사용 (Sonnet/Opus 자동 전환 금지)
+- **멀티 계정 통합:** LiteLLM Proxy 도입으로 단일 집계 포인트 구성
+
+### Expected Outcome
+- 목표: 현재 총 비용의 50% 절감
+- 실현 가능 범위: 50-65% 절감
+- Phase 1 (즉시): ~30% / Phase 2 (2-3h): ~20% / Phase 3 (1일): ~15%
+
+### Consequences
+- `backend/services/claude_ai.py` 내 5개 함수 교체 필요
+- LiteLLM 의존성 추가
+- 기존 AIUsageTracker는 유지 (LiteLLM과 병행)
+- Opus는 어떤 자동 라우팅에도 포함 금지 (비상 수동 전용)
 
 ---
 
