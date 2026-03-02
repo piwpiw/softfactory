@@ -129,6 +129,22 @@
       "destination": "/index.html"
     },
     {
+      "source": "/web/analytics",
+      "destination": "/analytics/dashboard.html"
+    },
+    {
+      "source": "/web/analytics/",
+      "destination": "/analytics/dashboard.html"
+    },
+    {
+      "source": "/web/videos",
+      "destination": "/videos/player.html"
+    },
+    {
+      "source": "/web/videos/",
+      "destination": "/videos/player.html"
+    },
+    {
       "source": "/web/:path*",
       "destination": "/:path*"
     },
