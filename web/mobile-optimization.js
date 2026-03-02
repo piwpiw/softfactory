@@ -6,6 +6,54 @@
 (function() {
     'use strict';
 
+    // ============ Subproject Sidebar Recovery ============
+    const SUBPROJECT_LINKS = [
+        { href: '/web/sns-auto/index.html', icon: '📱', label: 'SNS Auto' },
+        { href: '/web/review/index.html', icon: '⭐', label: 'Review' },
+        { href: '/web/coocook/index.html', icon: '🍳', label: 'CooCook' },
+        { href: '/web/ai-automation/index.html', icon: '🤖', label: 'AI Automation' },
+        { href: '/web/bohemian-marketing/index.html', icon: '🚀', label: 'Bohemian Marketing AI' },
+        { href: '/web/webapp-builder/index.html', icon: '💻', label: 'WebApp Builder' }
+    ];
+
+    function ensureSubprojectLinks() {
+        const aside = document.querySelector('aside');
+        if (!aside) return;
+
+        const nav = aside.querySelector('nav');
+        if (!nav) return;
+
+        if (nav.querySelector('[data-soft-subprojects]')) return;
+
+        const hasSubprojectLink = nav.querySelectorAll(
+            'a[href*=\"/sns-auto/\"]' +
+            ',a[href*=\"/review/\"]' +
+            ',a[href*=\"/coocook/\"]' +
+            ',a[href*=\"/ai-automation/\"]' +
+            ',a[href*=\"/bohemian-marketing/\"]' +
+            ',a[href*=\"/webapp-builder/\"]'
+        ).length > 0;
+        if (hasSubprojectLink) return;
+
+        const heading = document.createElement('p');
+        heading.className = 'text-xs font-black text-slate-400 uppercase px-4 mb-3 mt-6 tracking-widest';
+        heading.textContent = '서비스';
+
+        const divider = document.createElement('div');
+        divider.className = 'my-6 border-t border-slate-800';
+
+        const list = document.createElement('div');
+        list.setAttribute('data-soft-subprojects', 'true');
+        list.className = 'space-y-1';
+        list.innerHTML = SUBPROJECT_LINKS.map(item => {
+            return `<a href="${item.href}" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 transition"><span aria-hidden="true">${item.icon}</span> <span>${item.label}</span></a>`;
+        }).join('');
+
+        nav.appendChild(divider);
+        nav.appendChild(heading);
+        nav.appendChild(list);
+    }
+
     // ============ Sidebar Toggle ============
     const hamburger = document.querySelector('.hamburger');
     const sidebar = document.querySelector('aside');
@@ -161,5 +209,7 @@
             }, { passive: true });
         }
     }
+
+    ensureSubprojectLinks();
 
 })();
