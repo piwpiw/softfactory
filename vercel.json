@@ -14,123 +14,127 @@
     },
     {
       "source": "/platform",
-      "destination": "/web/platform/index.html"
+      "destination": "/platform/index.html"
     },
     {
       "source": "/platform/",
-      "destination": "/web/platform/index.html"
+      "destination": "/platform/index.html"
     },
     {
       "source": "/sns-auto",
-      "destination": "/web/sns-auto/index.html"
+      "destination": "/sns-auto/index.html"
     },
     {
       "source": "/sns-auto/",
-      "destination": "/web/sns-auto/index.html"
+      "destination": "/sns-auto/index.html"
     },
     {
       "source": "/admin",
-      "destination": "/web/admin/index.html"
+      "destination": "/admin/index.html"
     },
     {
       "source": "/admin/",
-      "destination": "/web/admin/index.html"
+      "destination": "/admin/index.html"
     },
     {
       "source": "/analytics",
-      "destination": "/web/analytics/dashboard.html"
+      "destination": "/analytics/dashboard.html"
     },
     {
       "source": "/analytics/",
-      "destination": "/web/analytics/dashboard.html"
+      "destination": "/analytics/dashboard.html"
     },
     {
       "source": "/bohemian-marketing",
-      "destination": "/web/bohemian-marketing/index.html"
+      "destination": "/bohemian-marketing/index.html"
     },
     {
       "source": "/bohemian-marketing/",
-      "destination": "/web/bohemian-marketing/index.html"
+      "destination": "/bohemian-marketing/index.html"
     },
     {
       "source": "/coocook",
-      "destination": "/web/coocook/index.html"
+      "destination": "/coocook/index.html"
     },
     {
       "source": "/coocook/",
-      "destination": "/web/coocook/index.html"
+      "destination": "/coocook/index.html"
     },
     {
       "source": "/experience",
-      "destination": "/web/experience/index.html"
+      "destination": "/experience/index.html"
     },
     {
       "source": "/experience/",
-      "destination": "/web/experience/index.html"
+      "destination": "/experience/index.html"
     },
     {
       "source": "/infrastructure",
-      "destination": "/web/infrastructure/monitor.html"
+      "destination": "/infrastructure/monitor.html"
     },
     {
       "source": "/infrastructure/",
-      "destination": "/web/infrastructure/monitor.html"
+      "destination": "/infrastructure/monitor.html"
     },
     {
       "source": "/jarvis",
-      "destination": "/web/jarvis/dashboard.html"
+      "destination": "/jarvis/dashboard.html"
     },
     {
       "source": "/jarvis/",
-      "destination": "/web/jarvis/dashboard.html"
+      "destination": "/jarvis/dashboard.html"
     },
     {
       "source": "/marketplace",
-      "destination": "/web/marketplace/index.html"
+      "destination": "/marketplace/index.html"
     },
     {
       "source": "/marketplace/",
-      "destination": "/web/marketplace/index.html"
+      "destination": "/marketplace/index.html"
     },
     {
       "source": "/review",
-      "destination": "/web/review/index.html"
+      "destination": "/review/index.html"
     },
     {
       "source": "/review/",
-      "destination": "/web/review/index.html"
+      "destination": "/review/index.html"
     },
     {
       "source": "/videos",
-      "destination": "/web/videos/player.html"
+      "destination": "/videos/player.html"
     },
     {
       "source": "/videos/",
-      "destination": "/web/videos/player.html"
+      "destination": "/videos/player.html"
     },
     {
       "source": "/webapp-builder",
-      "destination": "/web/webapp-builder/index.html"
+      "destination": "/webapp-builder/index.html"
     },
     {
       "source": "/webapp-builder/",
-      "destination": "/web/webapp-builder/index.html"
+      "destination": "/webapp-builder/index.html"
     },
     {
       "source": "/ai-automation",
-      "destination": "/web/ai-automation/index.html"
+      "destination": "/ai-automation/index.html"
     },
     {
       "source": "/ai-automation/",
-      "destination": "/web/ai-automation/index.html"
+      "destination": "/ai-automation/index.html"
     },
     {
       "source": "/",
-      "destination": "/web/index.html"
+      "destination": "/index.html"
+    },
+    {
+      "source": "/web/:path*",
+      "destination": "/:path*"
     },
     {
       "source": "/:path*",
-      "destination": "/web/:path*"
+      "destination": "/:path*"
     }
   ],
   "headers": [
