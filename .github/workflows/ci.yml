@@ -1,10 +1,7 @@
 ﻿name: CI Test and Lint
 
 on:
-  push:
-    branches: [main, develop, 'feature/**']
-  pull_request:
-    branches: [main, develop]
+  workflow_dispatch:
 
 env:
   PYTHON_VERSION: '3.11'
