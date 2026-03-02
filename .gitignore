@@ -47,3 +47,4 @@ n8n-comfy/
 daemon/.venv/
 platform.db
 platform.db.backup*
+nul
