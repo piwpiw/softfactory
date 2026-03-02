@@ -13,10 +13,6 @@
       "destination": "/api/proxy?path=:path*"
     },
     {
-      "source": "/web/:path*",
-      "destination": "/web/:path*"
-    },
-    {
       "source": "/platform",
       "destination": "/web/platform/index.html"
     },
