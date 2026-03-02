@@ -667,6 +667,24 @@ def create_app():
             'camera=(), microphone=(), geolocation=(), payment=()'
         )
 
+        # Inject unified UI stylesheet into all served /web HTML pages.
+        # This gives a consistent look across legacy pages without per-file edits.
+        content_type = response.headers.get('Content-Type', '')
+        is_web_html = request.path.startswith('/web/') and 'text/html' in content_type.lower()
+        if is_web_html:
+            try:
+                response.direct_passthrough = False
+                html = response.get_data(as_text=True)
+                if '/web/unified-ui.css' not in html:
+                    snippet = '<link rel="stylesheet" href="/web/unified-ui.css">'
+                    if '</head>' in html:
+                        html = html.replace('</head>', f'  {snippet}\n</head>', 1)
+                    elif '<body' in html:
+                        html = f'{snippet}\n{html}'
+                    response.set_data(html)
+            except Exception:
+                pass
+
         return response
 
     # === HTTPS Enforcement Middleware ===

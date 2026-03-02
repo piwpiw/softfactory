@@ -1,0 +1,254 @@
+:root {
+  --bg: #f4f7fb;
+  --bg-elev: #ffffff;
+  --bg-hero: radial-gradient(1200px 500px at 10% -10%, #dff1ff 0%, transparent 45%),
+    radial-gradient(1000px 420px at 100% 0%, #ffe9d6 0%, transparent 42%),
+    linear-gradient(180deg, #f9fcff 0%, #f4f7fb 100%);
+  --text: #10233f;
+  --text-muted: #59708f;
+  --line: #d6e1ee;
+  --brand: #0f6fff;
+  --brand-strong: #0056d6;
+  --ok: #0b8e61;
+  --warn: #c98000;
+  --danger: #cf2e42;
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 18px;
+  --shadow-1: 0 10px 30px rgba(16, 35, 63, 0.08);
+  --shadow-2: 0 18px 45px rgba(16, 35, 63, 0.12);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+  color: var(--text);
+  background: var(--bg-hero);
+  font-family: "Pretendard", "SUIT", "Noto Sans KR", "Segoe UI", sans-serif;
+  line-height: 1.5;
+}
+
+main,
+section,
+article,
+.container,
+.content,
+.dashboard,
+.panel,
+.card,
+[class*="card"] {
+  border-radius: var(--radius-md);
+}
+
+.container,
+.content,
+main {
+  max-width: 1240px;
+}
+
+/* Surface system */
+.card,
+.panel,
+[class*="card"],
+[class*="panel"],
+table,
+form,
+.widget,
+.metric,
+.box {
+  background: var(--bg-elev);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-1);
+}
+
+/* Typography */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin-top: 0;
+  color: #0b1b35;
+  letter-spacing: -0.02em;
+}
+
+h1 {
+  font-size: clamp(1.8rem, 3vw, 2.5rem);
+  font-weight: 800;
+}
+
+h2 {
+  font-size: clamp(1.3rem, 2.2vw, 1.8rem);
+  font-weight: 700;
+}
+
+p,
+small,
+label,
+span,
+li,
+td,
+th {
+  color: var(--text-muted);
+}
+
+/* Buttons */
+button,
+.btn,
+input[type="button"],
+input[type="submit"],
+input[type="reset"] {
+  border: 1px solid transparent;
+  border-radius: 12px;
+  background: linear-gradient(180deg, #1f7cff 0%, #0f6fff 100%);
+  color: #fff;
+  font-weight: 600;
+  padding: 10px 16px;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.18s ease, background 0.2s ease;
+  box-shadow: 0 10px 22px rgba(15, 111, 255, 0.28);
+}
+
+button:hover,
+.btn:hover,
+input[type="button"]:hover,
+input[type="submit"]:hover,
+input[type="reset"]:hover {
+  transform: translateY(-1px);
+  background: linear-gradient(180deg, #2f88ff 0%, #1a74ff 100%);
+}
+
+button:active,
+.btn:active {
+  transform: translateY(0);
+}
+
+/* Inputs */
+input,
+select,
+textarea {
+  width: 100%;
+  max-width: 100%;
+  border: 1px solid #c5d4e7;
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  background: #fff;
+  color: var(--text);
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: #77aefc;
+  box-shadow: 0 0 0 3px rgba(15, 111, 255, 0.14);
+}
+
+/* Tables */
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  overflow: hidden;
+}
+
+th {
+  background: #eef5ff;
+  color: #1d3659;
+  font-weight: 700;
+}
+
+th,
+td {
+  border-bottom: 1px solid #e3ebf6;
+  padding: 11px 12px;
+}
+
+tr:hover td {
+  background: #f8fbff;
+}
+
+/* Nav and sidebars */
+nav,
+aside,
+.sidebar,
+.topbar,
+header {
+  backdrop-filter: saturate(130%) blur(8px);
+}
+
+nav a,
+aside a,
+.sidebar a,
+header a {
+  color: #27476f;
+  text-decoration: none;
+}
+
+nav a:hover,
+aside a:hover,
+.sidebar a:hover,
+header a:hover {
+  color: var(--brand);
+}
+
+/* Badges / status */
+.badge,
+.tag,
+[class*="status"],
+[class*="pill"] {
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-weight: 600;
+  border: 1px solid #d7e2f1;
+  background: #f5f9ff;
+  color: #2c4c74;
+}
+
+/* Motion */
+.card,
+[class*="card"],
+.panel,
+section {
+  animation: sfFadeUp 0.45s ease both;
+}
+
+@keyframes sfFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Mobile */
+@media (max-width: 900px) {
+  body {
+    background-attachment: scroll;
+  }
+
+  .container,
+  .content,
+  main {
+    width: 100%;
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+
+  h1 {
+    font-size: 1.55rem;
+  }
+}
