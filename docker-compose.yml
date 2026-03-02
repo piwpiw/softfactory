@@ -34,7 +34,7 @@ services:
       timeout: 10s
       retries: 3
       start_period: 40s
-    command: python run.py
+    command: python start_server.py
 
   # ========== PostgreSQL Database ==========
   postgres:

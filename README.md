@@ -35,7 +35,7 @@ Use one mode at a time.
 ### 1) API Dev Mode (port 8000)
 
 ```bash
-python run.py
+python start_server.py
 ```
 
 - Base URL: `http://127.0.0.1:8000`
