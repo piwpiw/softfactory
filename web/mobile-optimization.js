@@ -1,4 +1,4 @@
-/**
+﻿/**
  * SoftFactory Mobile Optimization v1.0
  * Handles hamburger menu, sidebar toggle, touch gestures, and mobile-specific behavior
  */
@@ -8,12 +8,12 @@
 
     // ============ Subproject Sidebar Recovery ============
     const SUBPROJECT_LINKS = [
-        { href: '/web/sns-auto/index.html', icon: '📱', label: 'SNS Auto' },
-        { href: '/web/review/index.html', icon: '⭐', label: 'Review' },
+        { href: '/web/sns-auto/index.html', icon: '📱', label: 'SNS 자동화' },
+        { href: '/web/review/index.html', icon: '⭐', label: '리뷰 자동화' },
         { href: '/web/coocook/index.html', icon: '🍳', label: 'CooCook' },
-        { href: '/web/ai-automation/index.html', icon: '🤖', label: 'AI Automation' },
-        { href: '/web/bohemian-marketing/index.html', icon: '🚀', label: 'Bohemian Marketing AI' },
-        { href: '/web/webapp-builder/index.html', icon: '💻', label: 'WebApp Builder' }
+        { href: '/web/ai-automation/index.html', icon: '🤖', label: 'AI 자동화' },
+        { href: '/web/bohemian-marketing/index.html', icon: '🚀', label: '보헤미안 마케팅 AI' },
+        { href: '/web/webapp-builder/index.html', icon: '💻', label: '웹앱 빌더' }
     ];
 
     function ensureSubprojectLinks() {
@@ -213,3 +213,4 @@
     ensureSubprojectLinks();
 
 })();
+
