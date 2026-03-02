@@ -1,0 +1,152 @@
+﻿{
+  "version": 2,
+  "outputDirectory": "web",
+  "cleanUrls": false,
+  "trailingSlash": false,
+  "rewrites": [
+    {
+      "source": "/api/_health",
+      "destination": "/api/_health"
+    },
+    {
+      "source": "/api/:path*",
+      "destination": "/api/proxy?path=:path*"
+    },
+    {
+      "source": "/web/:path*",
+      "destination": "/web/:path*"
+    },
+    {
+      "source": "/platform",
+      "destination": "/web/platform/index.html"
+    },
+    {
+      "source": "/platform/",
+      "destination": "/web/platform/index.html"
+    },
+    {
+      "source": "/sns-auto",
+      "destination": "/web/sns-auto/index.html"
+    },
+    {
+      "source": "/sns-auto/",
+      "destination": "/web/sns-auto/index.html"
+    },
+    {
+      "source": "/admin",
+      "destination": "/web/admin/index.html"
+    },
+    {
+      "source": "/admin/",
+      "destination": "/web/admin/index.html"
+    },
+    {
+      "source": "/analytics",
+      "destination": "/web/analytics/dashboard.html"
+    },
+    {
+      "source": "/analytics/",
+      "destination": "/web/analytics/dashboard.html"
+    },
+    {
+      "source": "/bohemian-marketing",
+      "destination": "/web/bohemian-marketing/index.html"
+    },
+    {
+      "source": "/bohemian-marketing/",
+      "destination": "/web/bohemian-marketing/index.html"
+    },
+    {
+      "source": "/coocook",
+      "destination": "/web/coocook/index.html"
+    },
+    {
+      "source": "/coocook/",
+      "destination": "/web/coocook/index.html"
+    },
+    {
+      "source": "/experience",
+      "destination": "/web/experience/index.html"
+    },
+    {
+      "source": "/experience/",
+      "destination": "/web/experience/index.html"
+    },
+    {
+      "source": "/infrastructure",
+      "destination": "/web/infrastructure/monitor.html"
+    },
+    {
+      "source": "/infrastructure/",
+      "destination": "/web/infrastructure/monitor.html"
+    },
+    {
+      "source": "/jarvis",
+      "destination": "/web/jarvis/dashboard.html"
+    },
+    {
+      "source": "/jarvis/",
+      "destination": "/web/jarvis/dashboard.html"
+    },
+    {
+      "source": "/marketplace",
+      "destination": "/web/marketplace/index.html"
+    },
+    {
+      "source": "/marketplace/",
+      "destination": "/web/marketplace/index.html"
+    },
+    {
+      "source": "/review",
+      "destination": "/web/review/index.html"
+    },
+    {
+      "source": "/review/",
+      "destination": "/web/review/index.html"
+    },
+    {
+      "source": "/videos",
+      "destination": "/web/videos/player.html"
+    },
+    {
+      "source": "/videos/",
+      "destination": "/web/videos/player.html"
+    },
+    {
+      "source": "/webapp-builder",
+      "destination": "/web/webapp-builder/index.html"
+    },
+    {
+      "source": "/webapp-builder/",
+      "destination": "/web/webapp-builder/index.html"
+    },
+    {
+      "source": "/ai-automation",
+      "destination": "/web/ai-automation/index.html"
+    },
+    {
+      "source": "/ai-automation/",
+      "destination": "/web/ai-automation/index.html"
+    },
+    {
+      "source": "/",
+      "destination": "/web/index.html"
+    },
+    {
+      "source": "/:path*",
+      "destination": "/web/:path*"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "X-Frame-Options", "value": "DENY" },
+        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
+        { "key": "Permissions-Policy", "value": "camera=(), microphone=(), geolocation=(), payment=()" },
+        { "key": "Cross-Origin-Opener-Policy", "value": "same-origin" }
+      ]
+    }
+  ]
+}
