@@ -1,10 +1,10 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
   <meta name="theme-color" content="#7C3AED" />
-  <title>이메일 인증 — SoftFactory</title>
+  <title>?대찓???몄쬆 ??SoftFactory</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="api.js"></script>
   <style>
@@ -13,6 +13,7 @@
     .spin { animation: spin 1s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
   </style>
+    <script src="../mobile-optimization.js" defer></script>
 </head>
 <body class="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center p-4">
 
@@ -21,7 +22,7 @@
     <!-- Logo -->
     <div class="text-center mb-8">
       <h1 class="text-3xl font-bold text-white">SoftFactory</h1>
-      <p class="text-gray-400 mt-1 text-sm">이메일 인증</p>
+      <p class="text-gray-400 mt-1 text-sm">?대찓???몄쬆</p>
     </div>
 
     <!-- Card -->
@@ -36,9 +37,9 @@
         </div>
       </div>
 
-      <h2 class="text-xl font-bold text-white text-center mb-2">이메일 인증</h2>
+      <h2 class="text-xl font-bold text-white text-center mb-2">?대찓???몄쬆</h2>
       <p id="subtitle" class="text-gray-400 text-sm text-center mb-8">
-        가입 시 사용한 이메일로 발송된 6자리 인증 코드를 입력하세요.
+        媛?????ъ슜???대찓?쇰줈 諛쒖넚??6?먮━ ?몄쬆 肄붾뱶瑜??낅젰?섏꽭??
       </p>
 
       <!-- Alert area -->
@@ -47,14 +48,14 @@
       <!-- Verification Form -->
       <form id="verifyForm" class="space-y-5">
         <div>
-          <label class="block text-sm font-semibold text-gray-300 mb-2">이메일 주소</label>
+          <label class="block text-sm font-semibold text-gray-300 mb-2">?대찓??二쇱냼</label>
           <input type="email" id="emailInput"
             class="w-full bg-gray-700 border border-gray-600 text-white rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
             placeholder="your@email.com"
             autocomplete="email" />
         </div>
         <div>
-          <label class="block text-sm font-semibold text-gray-300 mb-2">인증 코드 (6자리)</label>
+          <label class="block text-sm font-semibold text-gray-300 mb-2">?몄쬆 肄붾뱶 (6?먮━)</label>
           <input type="text" id="tokenInput"
             class="code-input w-full bg-gray-700 border border-gray-600 text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
             placeholder="______"
@@ -69,22 +70,22 @@
           <svg id="btnSpinner" class="hidden spin w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
           </svg>
-          <span id="btnText">인증하기</span>
+          <span id="btnText">?몄쬆?섍린</span>
         </button>
       </form>
 
       <div class="mt-6 pt-6 border-t border-gray-700 text-center">
-        <p class="text-gray-400 text-sm mb-3">인증 코드를 받지 못하셨나요?</p>
+        <p class="text-gray-400 text-sm mb-3">?몄쬆 肄붾뱶瑜?諛쏆? 紐삵븯?⑤굹??</p>
         <button id="resendBtn"
           class="text-purple-400 hover:text-purple-300 text-sm font-semibold transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
-          인증 이메일 재발송
+          ?몄쬆 ?대찓???щ컻??
         </button>
         <p id="resendTimer" class="hidden text-gray-500 text-xs mt-1"></p>
       </div>
 
       <div class="mt-4 text-center">
         <a href="login.html" class="text-gray-500 hover:text-gray-300 text-xs transition-colors duration-200">
-          로그인으로 돌아가기
+          濡쒓렇?몄쑝濡??뚯븘媛湲?
         </a>
       </div>
 
@@ -96,7 +97,7 @@
     let resendCooldown = 0;
     let resendTimer = null;
 
-    // ── Helpers ──────────────────────────────────────────────────────────────
+    // ?? Helpers ??????????????????????????????????????????????????????????????
 
     function showAlert(message, type) {
       const box = document.getElementById('alertBox');
@@ -114,7 +115,7 @@
 
     function setLoading(loading) {
       document.getElementById('btnSpinner').classList.toggle('hidden', !loading);
-      document.getElementById('btnText').textContent = loading ? '인증 중...' : '인증하기';
+      document.getElementById('btnText').textContent = loading ? '?몄쬆 以?..' : '?몄쬆?섍린';
       document.getElementById('verifyBtn').disabled = loading;
     }
 
@@ -125,15 +126,15 @@
             <polyline points="20 6 9 17 4 12" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </div>`;
-      document.getElementById('subtitle').textContent = '이메일 인증이 완료되었습니다!';
+      document.getElementById('subtitle').textContent = '?대찓???몄쬆???꾨즺?섏뿀?듬땲??';
       document.getElementById('verifyForm').innerHTML = `
         <a href="dashboard.html"
           class="block w-full bg-purple-600 hover:bg-purple-500 text-white font-bold py-3 px-4 rounded-xl text-center transition-colors duration-200">
-          대시보드로 이동
+          ??쒕낫?쒕줈 ?대룞
         </a>`;
     }
 
-    // ── Auto-read URL params ──────────────────────────────────────────────────
+    // ?? Auto-read URL params ??????????????????????????????????????????????????
 
     (function readUrlParams() {
       const params = new URLSearchParams(window.location.search);
@@ -147,16 +148,16 @@
       }
     })();
 
-    // ── Form Submit ───────────────────────────────────────────────────────────
+    // ?? Form Submit ???????????????????????????????????????????????????????????
 
     document.getElementById('verifyForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const token = document.getElementById('tokenInput').value.trim();
       const email = document.getElementById('emailInput').value.trim();
 
-      if (!token) { showAlert('인증 코드를 입력해주세요.', 'error'); return; }
+      if (!token) { showAlert('?몄쬆 肄붾뱶瑜??낅젰?댁＜?몄슂.', 'error'); return; }
       if (token.length !== 6 || !/^\d{6}$/.test(token)) {
-        showAlert('인증 코드는 6자리 숫자여야 합니다.', 'error'); return;
+        showAlert('?몄쬆 肄붾뱶??6?먮━ ?レ옄?ъ빞 ?⑸땲??', 'error'); return;
       }
 
       setLoading(true);
@@ -170,19 +171,19 @@
         });
         const data = await res.json();
         if (res.ok) {
-          showAlert(data.message || '이메일이 인증되었습니다.', 'success');
+          showAlert(data.message || '?대찓?쇱씠 ?몄쬆?섏뿀?듬땲??', 'success');
           setTimeout(showSuccess, 800);
         } else {
-          showAlert(data.error || '인증에 실패했습니다. 다시 시도해주세요.', 'error');
+          showAlert(data.error || '?몄쬆???ㅽ뙣?덉뒿?덈떎. ?ㅼ떆 ?쒕룄?댁＜?몄슂.', 'error');
         }
       } catch (err) {
-        showAlert('네트워크 오류가 발생했습니다. 잠시 후 다시 시도해주세요.', 'error');
+        showAlert('?ㅽ듃?뚰겕 ?ㅻ쪟媛 諛쒖깮?덉뒿?덈떎. ?좎떆 ???ㅼ떆 ?쒕룄?댁＜?몄슂.', 'error');
       } finally {
         setLoading(false);
       }
     });
 
-    // ── Resend ────────────────────────────────────────────────────────────────
+    // ?? Resend ????????????????????????????????????????????????????????????????
 
     function startResendCooldown(seconds) {
       resendCooldown = seconds;
@@ -192,7 +193,7 @@
       timerEl.classList.remove('hidden');
       resendTimer = setInterval(() => {
         resendCooldown--;
-        timerEl.textContent = `${resendCooldown}초 후 재발송 가능`;
+        timerEl.textContent = `${resendCooldown}珥????щ컻??媛??;
         if (resendCooldown <= 0) {
           clearInterval(resendTimer);
           btn.disabled = false;
@@ -203,7 +204,7 @@
 
     document.getElementById('resendBtn').addEventListener('click', async () => {
       const email = document.getElementById('emailInput').value.trim();
-      if (!email) { showAlert('이메일 주소를 먼저 입력해주세요.', 'error'); return; }
+      if (!email) { showAlert('?대찓??二쇱냼瑜?癒쇱? ?낅젰?댁＜?몄슂.', 'error'); return; }
 
       try {
         const res = await fetch(`${API_BASE}/auth/resend-verification`, {
@@ -212,10 +213,10 @@
           body: JSON.stringify({ email }),
         });
         const data = await res.json();
-        showAlert(data.message || '인증 이메일을 재발송했습니다.', 'info');
+        showAlert(data.message || '?몄쬆 ?대찓?쇱쓣 ?щ컻?≫뻽?듬땲??', 'info');
         startResendCooldown(60);
       } catch (err) {
-        showAlert('재발송 중 오류가 발생했습니다.', 'error');
+        showAlert('?щ컻??以??ㅻ쪟媛 諛쒖깮?덉뒿?덈떎.', 'error');
       }
     });
 
@@ -227,3 +228,4 @@
 
 </body>
 </html>
+

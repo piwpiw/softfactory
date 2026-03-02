@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>결제 완료 — SoftFactory</title>
+  <title>寃곗젣 ?꾨즺 ??SoftFactory</title>
   <style>
     body { margin: 0; padding: 0; background-color: #f3f4f6; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; }
     .wrapper { max-width: 600px; margin: 40px auto; padding: 0 16px; }
@@ -39,6 +39,7 @@
     .receipt-table tr.total .col-label { font-size: 16px; color: #111827; font-weight: 700; }
     .receipt-table tr.total .col-value { font-size: 22px; color: #059669; font-weight: 800; }
   </style>
+    <script src="../mobile-optimization.js" defer></script>
 </head>
 <body>
   <div class="wrapper">
@@ -48,33 +49,33 @@
         <div class="checkmark">
           <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
         </div>
-        <h1>결제 완료</h1>
-        <p>결제가 성공적으로 처리되었습니다</p>
+        <h1>寃곗젣 ?꾨즺</h1>
+        <p>寃곗젣媛 ?깃났?곸쑝濡?泥섎━?섏뿀?듬땲??/p>
       </div>
 
       <!-- Body -->
       <div class="body">
-        <p class="greeting">안녕하세요, <strong>{{ user_name }}</strong>님!</p>
+        <p class="greeting">?덈뀞?섏꽭?? <strong>{{ user_name }}</strong>??</p>
 
         <!-- Receipt -->
         <div class="receipt-box">
-          <h3>결제 영수증</h3>
+          <h3>寃곗젣 ?곸닔利?/h3>
           <table class="receipt-table">
             <tr>
-              <td class="col-label">플랜</td>
+              <td class="col-label">?뚮옖</td>
               <td class="col-value">{{ plan_name }}</td>
             </tr>
             <tr>
-              <td class="col-label">결제 일시</td>
+              <td class="col-label">寃곗젣 ?쇱떆</td>
               <td class="col-value">{{ paid_at }}</td>
             </tr>
             <tr>
-              <td class="col-label">다음 결제일</td>
+              <td class="col-label">?ㅼ쓬 寃곗젣??/td>
               <td class="col-value">{{ next_billing_date }}</td>
             </tr>
             <tr class="total">
-              <td class="col-label">결제 금액</td>
-              <td class="col-value">{{ amount }}원</td>
+              <td class="col-label">寃곗젣 湲덉븸</td>
+              <td class="col-value">{{ amount }}??/td>
             </tr>
           </table>
         </div>
@@ -82,14 +83,14 @@
         <!-- Thank you message -->
         <div class="thank-you">
           <p>
-            SoftFactory를 선택해 주셔서 <strong>진심으로 감사드립니다</strong>.<br />
-            최고의 서비스로 보답하겠습니다.
+            SoftFactory瑜??좏깮??二쇱뀛??<strong>吏꾩떖?쇰줈 媛먯궗?쒕┰?덈떎</strong>.<br />
+            理쒓퀬???쒕퉬?ㅻ줈 蹂대떟?섍쿋?듬땲??
           </p>
         </div>
 
         <p class="info-note">
-          결제 관련 문의 사항이 있으신 경우 고객 지원팀에 문의해주세요.
-          이 이메일은 자동 발송된 영수증입니다.
+          寃곗젣 愿??臾몄쓽 ?ы빆???덉쑝??寃쎌슦 怨좉컼 吏?먰???臾몄쓽?댁＜?몄슂.
+          ???대찓?쇱? ?먮룞 諛쒖넚???곸닔利앹엯?덈떎.
         </p>
       </div>
 
@@ -98,11 +99,12 @@
         <p>&copy; {{ year }} SoftFactory. All rights reserved.</p>
         <p>
           <a href="https://softfactory.kr">softfactory.kr</a> &nbsp;|&nbsp;
-          <a href="https://softfactory.kr/support">고객 지원</a> &nbsp;|&nbsp;
-          <a href="https://softfactory.kr/billing">청구 관리</a>
+          <a href="https://softfactory.kr/support">怨좉컼 吏??/a> &nbsp;|&nbsp;
+          <a href="https://softfactory.kr/billing">泥?뎄 愿由?/a>
         </p>
       </div>
     </div>
   </div>
 </body>
 </html>
+

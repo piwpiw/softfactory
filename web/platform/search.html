@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
@@ -425,6 +425,7 @@
             }
         }
     </style>
+    <script src="../mobile-optimization.js" defer></script>
 </head>
 <body>
     <div class="search-container">
@@ -484,7 +485,7 @@
             <div class="results-area">
                 <div id="resultsContent">
                     <div class="no-results">
-                        <div class="no-results-icon">🔍</div>
+                        <div class="no-results-icon">?뵇</div>
                         <p>Enter a search query to get started</p>
                     </div>
                 </div>
@@ -606,7 +607,7 @@
             if (data.results.length === 0) {
                 resultsDiv.innerHTML = `
                     <div class="no-results">
-                        <div class="no-results-icon">😕</div>
+                        <div class="no-results-icon">?삎</div>
                         <p>No results found for "${escapeHtml(data.query)}"</p>
                         <p style="font-size: 12px;">Try different keywords or filters</p>
                     </div>
@@ -628,12 +629,12 @@
                     <div class="result-meta">
                         ${result.data.rating ? `<div class="result-meta-item">
                             <span class="rating">
-                                <span class="stars">${'★'.repeat(Math.round(result.data.rating))}</span>
+                                <span class="stars">${'??.repeat(Math.round(result.data.rating))}</span>
                                 ${result.data.rating.toFixed(1)}
                             </span>
                         </div>` : ''}
-                        ${result.data.cooking_time ? `<div class="result-meta-item">⏱️ ${result.data.cooking_time} min</div>` : ''}
-                        ${result.data.calories ? `<div class="result-meta-item">🔥 ${result.data.calories} cal</div>` : ''}
+                        ${result.data.cooking_time ? `<div class="result-meta-item">?깍툘 ${result.data.cooking_time} min</div>` : ''}
+                        ${result.data.calories ? `<div class="result-meta-item">?뵦 ${result.data.calories} cal</div>` : ''}
                         ${result.data.platform ? `<div class="result-meta-item">${result.data.platform}</div>` : ''}
                     </div>
                     ${result.data.description ? `<div class="result-description">${escapeHtml(result.data.description)}</div>` : ''}
@@ -650,13 +651,13 @@
             if (totalPages > 1) {
                 html += '<div class="pagination">';
                 if (currentPage > 1) {
-                    html += `<button onclick="goToPage(${currentPage - 1})">← Previous</button>`;
+                    html += `<button onclick="goToPage(${currentPage - 1})">??Previous</button>`;
                 }
                 for (let i = Math.max(1, currentPage - 2); i <= Math.min(totalPages, currentPage + 2); i++) {
                     html += `<button onclick="goToPage(${i})" class="${i === currentPage ? 'active' : ''}">${i}</button>`;
                 }
                 if (currentPage < totalPages) {
-                    html += `<button onclick="goToPage(${currentPage + 1})">Next →</button>`;
+                    html += `<button onclick="goToPage(${currentPage + 1})">Next ??/button>`;
                 }
                 html += '</div>';
             }
@@ -732,3 +733,4 @@
     </script>
 </body>
 </html>
+

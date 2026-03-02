@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -402,6 +402,7 @@
             }
         }
     </style>
+    <script src="../mobile-optimization.js" defer></script>
 </head>
 <body>
     <div class="container">
@@ -415,7 +416,7 @@
                 <div class="form-group">
                     <label for="videoFile">Video File</label>
                     <div class="drop-zone" id="dropZone">
-                        <div class="drop-zone-icon">📹</div>
+                        <div class="drop-zone-icon">?벞</div>
                         <div class="drop-zone-text">
                             <strong>Click to upload or drag and drop</strong>
                             <span class="small">MP4, WebM (Max 1GB)</span>
@@ -690,7 +691,7 @@
             container.style.display = 'block';
             grid.innerHTML = videos.map(video => `
                 <div class="video-card">
-                    <div class="video-thumbnail">🎬</div>
+                    <div class="video-thumbnail">?렗</div>
                     <div class="video-info">
                         <div class="video-title" title="${video.title}">${video.title}</div>
                         <div class="video-meta">
@@ -712,3 +713,4 @@
     </script>
 </body>
 </html>
+
