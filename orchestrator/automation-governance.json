@@ -1,0 +1,33 @@
+{
+  "version": "2026-03-02",
+  "parallel_agents": 10,
+  "repeat_failure_block_threshold": 2,
+  "failure_policy": {
+    "cooldown_minutes": 120
+  },
+  "task_queue": {
+    "dispatch_mode": "team_round_robin",
+    "max_pending_tasks_per_cycle": 30,
+    "max_total_tasks_per_cycle": 30,
+    "default_fallback_all_agents": false
+  },
+  "subproject_autopilot": {
+    "enabled": true,
+    "generation_cooldown_sec": 600,
+    "max_new_tasks_per_cycle": 40,
+    "max_pending_tasks": 300,
+    "include_subprojects": []
+  },
+  "token_budget": {
+    "daily_cap_tokens": 200000,
+    "warning_percent": 0.75,
+    "hard_stop_percent": 0.9,
+    "emergency_reserve_tokens": 15000,
+    "team_allocations": {}
+  },
+  "context_policy": {
+    "max_local_docs_per_cycle": 8,
+    "max_external_docs_per_cycle": 2,
+    "prefer_cached_brief": true
+  }
+}

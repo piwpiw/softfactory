@@ -41,6 +41,7 @@ from .rbac import init_rbac
 from .services.search_routes import search_bp
 from .services.video_processor import video_bp
 from .services.admin_routes import admin_bp
+from .services.bohemian_marketing import bohemian_marketing_bp
 from . import oauth
 from .config import Config
 from .config_validator import validate_config
@@ -257,6 +258,7 @@ def create_app():
     app.register_blueprint(rbac_bp)
     app.register_blueprint(video_bp)
     app.register_blueprint(admin_bp)
+    app.register_blueprint(bohemian_marketing_bp)
 
     # Initialize Elasticsearch service
     from .services.elasticsearch_service import init_elasticsearch

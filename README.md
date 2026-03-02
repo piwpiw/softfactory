@@ -161,3 +161,15 @@ Core MCP: fetch, filesystem, sqlite
 Optional MCP: claude, github, google-search, postgres, puppeteer
 
 As of 2026-02-28, MCP is used for automation workflows and test tooling only.
+
+## Autonomous Subproject Orchestration
+
+This repository now supports autonomous subproject execution:
+
+- Discovery: `subproject_autopilot.py` scans `web/*/index.html` subprojects.
+- Planning: it auto-generates 10-stream tasks per subproject into `orchestrator/task-queue.json`.
+- Execution: `python run_all_agents.py` consumes queue tasks by owner team and runs agents in parallel.
+- Loop guard: generation is cooldown-gated and deduplicated by deterministic task IDs.
+- Recurrence control: failure memory in `agent_workspaces/_memory/failure_registry.json` blocks repeated failing agents by signature.
+
+Control all behavior in `orchestrator/automation-governance.json`.

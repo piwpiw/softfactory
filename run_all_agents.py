@@ -14,6 +14,7 @@ import subprocess
 import threading
 from pathlib import Path
 from datetime import datetime, timezone, timedelta
+from subproject_autopilot import autopopulate_task_queue
 
 # Add project to path
 PROJECT_ROOT = Path(__file__).resolve().parent
@@ -254,7 +255,26 @@ def load_governance(root: Path) -> dict:
     path = root / "orchestrator" / "automation-governance.json"
     default_policy = {
         "version": "2026-02-26",
+        "parallel_agents": 10,
         "repeat_failure_block_threshold": 2,
+        "queue_only_mode": True,
+        "failure_policy": {
+            "cooldown_minutes": 120,
+            "max_consecutive_cycle_failures": 3,
+        },
+        "task_queue": {
+            "dispatch_mode": "team_round_robin",
+            "max_pending_tasks_per_cycle": 50,
+            "max_total_tasks_per_cycle": 50,
+            "default_fallback_all_agents": False,
+        },
+        "subproject_autopilot": {
+            "enabled": True,
+            "generation_cooldown_sec": 600,
+            "max_new_tasks_per_cycle": 40,
+            "max_pending_tasks": 300,
+            "include_subprojects": [],
+        },
         "token_budget": {
             "daily_cap_tokens": 200000,
             "team_allocations": {},
@@ -263,6 +283,11 @@ def load_governance(root: Path) -> dict:
             "max_local_docs_per_cycle": 8,
             "max_external_docs_per_cycle": 2,
             "prefer_cached_brief": True,
+        },
+        "autonomous_executor": {
+            "max_cycles": 0,
+            "cycle_interval_sec": 600,
+            "no_progress_stop": 8,
         },
     }
     if not path.exists():
@@ -321,14 +346,23 @@ def select_tasks_for_cycle(task_queue: list[dict], max_tasks: int) -> list[dict]
     return pending[:limit]
 
 
-def build_task_driven_agents(governance: dict, raw_tasks: list[dict]) -> tuple[list[dict], list[dict], list[str]]:
+def build_task_driven_agents(
+    governance: dict,
+    raw_tasks: list[dict],
+    queue_only_mode: bool = False,
+) -> tuple[list[dict], list[dict], list[str]]:
     fallback = bool(governance.get("task_queue", {}).get("default_fallback_all_agents", True))
     parallel_agents = int(governance.get("parallel_agents", len(AGENTS)))
-    max_tasks = int(governance.get("task_queue", {}).get("max_pending_tasks_per_cycle", 10))
+    queue_cfg = governance.get("task_queue", {})
+    max_tasks = int(queue_cfg.get("max_pending_tasks_per_cycle", 10))
+    max_total = int(queue_cfg.get("max_total_tasks_per_cycle", max_tasks))
+    max_tasks = min(max_tasks, max_total)
     dispatch_mode = str(governance.get("task_queue", {}).get("dispatch_mode", "team_round_robin"))
     selected_tasks = select_tasks_for_cycle(raw_tasks, max_tasks)
 
     if not selected_tasks:
+        if queue_only_mode and not fallback:
+            return [], [], []
         if fallback:
             base = [dict(agent) for agent in AGENTS]
             return base, [], []
@@ -558,6 +592,10 @@ def _run_batches(executors: list[AgentExecutor], parallel_limit: int) -> None:
             thread.join(timeout=180)
 
 def main():
+    governance = load_governance(PROJECT_ROOT)
+    queue_only = str(os.getenv("SOFTFACTORY_QUEUE_ONLY", str(governance.get("queue_only_mode", False)))).lower() in ("1", "true", "yes", "y")
+    if queue_only:
+        print("Queue-only mode enabled. Falling back is disabled unless no tasks exist.")
     print("\n")
     print("=" * 70)
     print("SOFTFACTORY MULTI-AGENT SYSTEM")
@@ -566,7 +604,15 @@ def main():
     print()
 
     memory = load_failure_memory(PROJECT_ROOT)
-    governance = load_governance(PROJECT_ROOT)
+    autopilot_result = autopopulate_task_queue(
+        PROJECT_ROOT,
+        policy=governance.get("subproject_autopilot", {}),
+    )
+    if autopilot_result.get("generated", 0):
+        print(
+            f"[AUTO] Subproject autopilot generated {autopilot_result.get('generated')} tasks "
+            f"(subprojects={autopilot_result.get('subprojects_seen', 0)})."
+        )
     raw_tasks = load_task_queue(PROJECT_ROOT)
     token_ledger = load_token_ledger(PROJECT_ROOT)
     repeat_threshold = int(governance.get("repeat_failure_block_threshold", 2))
@@ -609,7 +655,9 @@ def main():
         print(f"[WARN] Token budget above warning threshold. warn>={warning} hard_stop>={hard_stop}.")
 
     parallel_agents = governance.get("parallel_agents", len(AGENTS))
-    agent_configs, task_updates, claimed_task_ids = build_task_driven_agents(governance, raw_tasks)
+    agent_configs, task_updates, claimed_task_ids = build_task_driven_agents(
+        governance, raw_tasks, queue_only_mode=queue_only
+    )
     if task_updates:
         task_map = {str(task.get("task_id")): task for task in task_updates}
         raw_tasks = [
@@ -627,6 +675,7 @@ def main():
             "errors": 0,
             "task_mode": "no_work",
             "claimed_task_ids": claimed_task_ids,
+            "queue_only": queue_only,
             "results": {},
         }
         summary_path = PROJECT_ROOT / "agent_workspaces" / "_memory" / "latest_cycle_summary.json"
@@ -721,6 +770,7 @@ def main():
             "token_budget": governance.get("token_budget", {}),
             "context_policy": governance.get("context_policy", {}),
         },
+        "subproject_autopilot": autopilot_result,
         "team_summary": team_summary,
         "results": {f"{e.config['number']}": {"team": e.config.get("team", "unknown"), "status": e.status, "task_count": len(e.tasks)} for e in executors},
         "task_distribution": {e.config['number']: len(e.tasks) for e in executors},

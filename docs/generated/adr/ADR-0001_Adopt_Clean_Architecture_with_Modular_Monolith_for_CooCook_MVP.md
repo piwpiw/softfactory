@@ -1,6 +1,6 @@
-# 🏗️ ADR-0001: Adopt Clean Architecture with Modular Monolith for CooCook MVP
+# 📝 ADR-0001: Adopt Clean Architecture with Modular Monolith for CooCook MVP
 
-> **Purpose**: **Date:** 2026-02-28
+> **Purpose**: **Date:** 2026-03-02
 > **Status**: 🟢 ACTIVE (관리 중)
 > **Impact**: [Engineering / Operations]
 
@@ -13,7 +13,7 @@
 
 ---
 
-**Date:** 2026-02-28
+**Date:** 2026-03-02
 **Status:** PROPOSED | ACCEPTED | DEPRECATED | SUPERSEDED BY ADR-XXXX
 **Author:** Agent 04 / Solution-Architect
 
