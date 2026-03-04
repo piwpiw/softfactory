@@ -3,8 +3,11 @@
 import sys
 import os
 from pathlib import Path
+from backend.config import Config
 
-# Load .env file manually
+# Load .env file manually.
+# Keep runtime control flags owned by process env to avoid accidental
+# production-mode boot when local .env contains placeholders.
 env_file = Path(__file__).parent / '.env'
 if env_file.exists():
     with open(env_file, 'r', encoding='utf-8') as f:
@@ -12,7 +15,24 @@ if env_file.exists():
             line = line.strip()
             if line and not line.startswith('#') and '=' in line:
                 key, value = line.split('=', 1)
-                os.environ[key.strip()] = value.strip().strip('"\'')
+                env_key = key.strip()
+                env_val = value.strip().strip('"\'')
+                if env_key in {'FLASK_ENV', 'ENVIRONMENT', 'DEBUG', 'TESTING'}:
+                    continue
+                if env_key == 'DATABASE_URL':
+                    lowered = env_val.lower()
+                    if '<' in env_val or 'placeholder' in lowered or 'change_me' in lowered:
+                        continue
+                os.environ.setdefault(env_key, env_val)
+
+# Safe local defaults (do not override CI/production-injected settings).
+os.environ.setdefault('FLASK_ENV', 'development')
+os.environ.setdefault('ENVIRONMENT', 'development')
+os.environ.setdefault('DEBUG', 'false')
+os.environ.setdefault('TESTING', 'false')
+
+_env_db_url = Config.get_database_url()
+os.environ['DATABASE_URL'] = _env_db_url or ''
 
 from backend.app import create_app
 
@@ -46,4 +66,5 @@ if __name__ == '__main__':
     print("\nDocumentation:")
     print("  Demo Guide:  D:/Project/DEMO_GUIDE.md")
     print("="*70 + "\n")
-    app.run(host='0.0.0.0', port=9000, debug=False)
+    port = int(os.getenv("PORT", os.getenv("APP_PORT", "9000")))
+    app.run(host='0.0.0.0', port=port, debug=False)
