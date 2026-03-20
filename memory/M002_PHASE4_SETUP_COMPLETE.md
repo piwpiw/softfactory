@@ -55,7 +55,7 @@ All system components verified:
 
 **4 Primary Documentation Files:**
 
-1. **DEPLOYMENT_CHECKLIST.md** (12 KB, 400+ lines)
+1. **docs/checklists/DEPLOYMENT_CHECKLIST.md** (12 KB, 400+ lines)
    - 16 comprehensive sections
    - Docker Desktop startup guide (GUI + CLI methods)
    - Step-by-step PostgreSQL initialization
@@ -65,7 +65,7 @@ All system components verified:
    - Success criteria checklist
    - Production deployment timeline
 
-2. **DOCKER_QUICK_START.md** (2.8 KB, beginner-friendly)
+2. **docs/runbooks/DOCKER_QUICK_START.md** (2.8 KB, beginner-friendly)
    - 5-minute quick reference
    - TL;DR section
    - Essential steps only
@@ -136,8 +136,8 @@ All system components verified:
 ## Key Deliverables
 
 ### Documentation
-- [x] DEPLOYMENT_CHECKLIST.md (400+ lines, 16 sections)
-- [x] DOCKER_QUICK_START.md (5-minute reference)
+- [x] docs/checklists/DEPLOYMENT_CHECKLIST.md (400+ lines, 16 sections)
+- [x] docs/runbooks/DOCKER_QUICK_START.md (5-minute reference)
 - [x] M-002_PHASE4_SUMMARY.md (executive overview)
 - [x] PHASE4_EXECUTION_GUIDE.md (step-by-step guide)
 - [x] verify_m002_phase4_setup.sh (verification script)
@@ -218,8 +218,8 @@ All system components verified:
 ## File Locations (Absolute Paths)
 
 ### Documentation
-- D:/Project/DEPLOYMENT_CHECKLIST.md
-- D:/Project/DOCKER_QUICK_START.md
+- D:/Project/docs/checklists/DEPLOYMENT_CHECKLIST.md
+- D:/Project/docs/runbooks/DOCKER_QUICK_START.md
 - D:/Project/M-002_PHASE4_SUMMARY.md
 - D:/Project/PHASE4_EXECUTION_GUIDE.md
 
@@ -280,17 +280,17 @@ docker-compose down
 ## Support References
 
 ### Quick Lookup
-1. **5-minute guide:** DOCKER_QUICK_START.md
+1. **5-minute guide:** docs/runbooks/DOCKER_QUICK_START.md
 2. **Step-by-step:** PHASE4_EXECUTION_GUIDE.md
-3. **Detailed:** DEPLOYMENT_CHECKLIST.md Part 1-10
-4. **Troubleshooting:** DEPLOYMENT_CHECKLIST.md Part 8
+3. **Detailed:** docs/checklists/DEPLOYMENT_CHECKLIST.md Part 1-10
+4. **Troubleshooting:** docs/checklists/DEPLOYMENT_CHECKLIST.md Part 8
 5. **Common issues:** shared-intelligence/pitfalls.md PF-012 to PF-016
 
 ### If Stuck
 1. Check Docker Desktop is running: `docker ps`
 2. Check logs: `docker-compose logs -f db` or `docker logs project_db_1`
 3. Verify prerequisites: `bash verify_m002_phase4_setup.sh` or `verify_m002_phase4_setup.bat`
-4. Review troubleshooting section in DEPLOYMENT_CHECKLIST.md
+4. Review troubleshooting section in docs/checklists/DEPLOYMENT_CHECKLIST.md
 
 ---
 

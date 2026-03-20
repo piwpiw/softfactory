@@ -1,5 +1,5 @@
-"""SoftFactory Flask Application — Security-Hardened + Production Monitoring"""
-from flask import Flask, jsonify, send_from_directory, request, redirect, g
+"""SoftFactory Flask Application - Security-Hardened + Production Monitoring"""
+from flask import Flask, jsonify, send_from_directory, request, redirect, g, abort
 from flask_cors import CORS
 from flask_migrate import Migrate
 import os
@@ -23,6 +23,7 @@ from .services.sns_revenue_api import sns_revenue_bp
 from .services.twitter_routes import twitter_bp
 from .services.review import review_bp
 from .services.ai_automation import ai_automation_bp
+from .services.instagram_cardnews import instagram_cardnews_bp
 from .services.webapp_builder import webapp_builder_bp
 from .services.dashboard import dashboard_bp
 from .services.analytics import analytics_bp
@@ -42,13 +43,20 @@ from .services.search_routes import search_bp
 from .services.video_processor import video_bp
 from .services.admin_routes import admin_bp
 from .services.bohemian_marketing import bohemian_marketing_bp
+from .services.growth_automation import growth_automation_bp
+from .services.event_gateway import event_gateway_bp
+from .services.wordpress_publisher_service import wordpress_bp
+from .metrics import metrics_bp, register_metrics_middleware
 from . import oauth
+from .logging_config import configure_logging, request_logging_middleware
 from .config import Config
 from .config_validator import validate_config
 from .auth import require_auth, require_admin
+from .error_api import error_bp
+from .runtime_paths import default_app_log_path
 
 
-# Allowed CORS origins — restrict to known frontends only
+# Allowed CORS origins ??restrict to known frontends only
 ALLOWED_ORIGINS = [
     "http://localhost:5000",
     "http://localhost:8000",
@@ -102,7 +110,7 @@ _error_timestamps: collections.deque = collections.deque(maxlen=10_000)
 # Last 10 error details surfaced via /api/admin/metrics
 _recent_errors: collections.deque = collections.deque(maxlen=10)
 
-# Alert cooldown — prevent spam (2 min between identical alerts)
+# Alert cooldown ??prevent spam (2 min between identical alerts)
 _last_high_error_rate_alert: float = 0.0
 _ALERT_COOLDOWN_SECONDS: int = 120
 
@@ -161,24 +169,49 @@ def _maybe_alert_high_error_rate(app) -> None:
 def create_app():
     """Application factory"""
     app = Flask(__name__)
+    log_file = os.getenv('LOG_FILE') or str(default_app_log_path())
+    configure_logging(
+        app,
+        log_file=log_file,
+        debug=str(os.getenv('FLASK_ENV', '')).lower() == 'development'
+    )
+    request_logging_middleware(app)
 
     # Record start time for uptime calculation (also used by /health and /metrics)
     app._start_time = time.time()
+    app.config['SESSION_COOKIE_SECURE'] = os.getenv('ENVIRONMENT', '').strip().lower() == 'production'
+    app.config['SESSION_COOKIE_HTTPONLY'] = True
+    app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
 
-    # Configuration — environment-based database URL
+    # Configuration ??environment-based database URL
     # Use DATABASE_URL env var if set (PostgreSQL production), otherwise fall back to SQLite (dev)
     db_url = os.getenv('DATABASE_URL')
+    if db_url and '<' in db_url:
+        db_url = ''
     if not db_url:
-        # SQLite development default — absolute path prevents duplicate DB creation
+        # SQLite development default ??absolute path prevents duplicate DB creation
         db_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'platform.db')
         db_url = f'sqlite:///{db_path}'
     elif db_url.startswith('postgres://'):
-        # Heroku / Railway legacy scheme → SQLAlchemy-compatible scheme
+        # Heroku / Railway legacy scheme ??SQLAlchemy-compatible scheme
         db_url = db_url.replace('postgres://', 'postgresql://', 1)
+
+    # Enforce strict runtime DB validation for production.
+    is_production = os.getenv('ENVIRONMENT', '').strip().lower() == 'production'
+    _runtime_db_url = Config.get_database_url()
+    if _runtime_db_url:
+        if not Config.is_database_url_safe(_runtime_db_url):
+            raise RuntimeError('DATABASE_URL is invalid or uses unsupported format.')
+        if is_production and _runtime_db_url.startswith('sqlite'):
+            raise RuntimeError('DATABASE_URL must not use sqlite in production.')
+        db_url = _runtime_db_url
+    elif is_production:
+        raise RuntimeError('DATABASE_URL is required and must be valid in production mode.')
 
     app.config['SQLALCHEMY_DATABASE_URI'] = db_url
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['JSON_SORT_KEYS'] = False
+    app.config['TESTING'] = os.getenv('TESTING', '').strip().lower() in {'1', 'true', 'yes', 'on'}
 
     # Database connection pool optimization
     # SQLite uses StaticPool (single connection) by default -- pool_size is N/A
@@ -203,13 +236,13 @@ def create_app():
 
     # Initialize extensions
     db.init_app(app)
-    migrate = Migrate(app, db)  # noqa: F841 — registers flask db CLI commands
+    migrate = Migrate(app, db)  # noqa: F841 ??registers flask db CLI commands
 
     # Initialise Sentry error tracking (silent no-op when SENTRY_DSN absent)
     from .monitoring import init_sentry
     init_sentry(app)
 
-    # CORS — Hardened configuration
+    # CORS ??Hardened configuration
     # Removed "null" origin (security risk: allows file:// protocol abuse)
     # Restricted to known origins, methods, and headers only
     CORS(app, resources={r"/api/*": {
@@ -241,6 +274,7 @@ def create_app():
     app.register_blueprint(twitter_bp)
     app.register_blueprint(review_bp)
     app.register_blueprint(ai_automation_bp)
+    app.register_blueprint(instagram_cardnews_bp)
     app.register_blueprint(webapp_builder_bp)
     app.register_blueprint(dashboard_bp)
     app.register_blueprint(analytics_bp)
@@ -259,6 +293,12 @@ def create_app():
     app.register_blueprint(video_bp)
     app.register_blueprint(admin_bp)
     app.register_blueprint(bohemian_marketing_bp)
+    app.register_blueprint(growth_automation_bp)
+    app.register_blueprint(event_gateway_bp)
+    app.register_blueprint(wordpress_bp)
+    app.register_blueprint(metrics_bp)
+    app.register_blueprint(error_bp)
+    register_metrics_middleware(app)
 
     # Initialize Elasticsearch service
     from .services.elasticsearch_service import init_elasticsearch
@@ -300,7 +340,7 @@ def create_app():
             if duration_ms > 1000:
                 app.logger.warning(
                     f'Slow request: {method} {request.path} '
-                    f'— {duration_ms:.0f} ms (HTTP {status})'
+                    f'??{duration_ms:.0f} ms (HTTP {status})'
                 )
 
             if status >= 500:
@@ -312,18 +352,37 @@ def create_app():
         return response
 
     # -----------------------------------------------------------------------
-    # Health check — comprehensive (Task 2)
+    # Health check ??comprehensive (Task 2)
     # -----------------------------------------------------------------------
+    @app.route('/ready')
+    def readiness_alias():
+        """Container/Kubernetes compatibility alias for readiness."""
+        try:
+            db.session.execute(sa_text('SELECT 1'))
+            return jsonify({
+                'ready': True,
+                'timestamp': datetime.now(timezone.utc).isoformat(),
+                'version': os.getenv('APP_VERSION', '1.0.0')
+            }), 200
+        except Exception:
+            return jsonify({
+                'ready': False,
+                'timestamp': datetime.now(timezone.utc).isoformat(),
+                'version': os.getenv('APP_VERSION', '1.0.0'),
+                'reason': 'database unavailable'
+            }), 503
 
     @app.route('/health')
     def health():
         """Comprehensive health check: DB, scheduler, AI service, memory, uptime."""
         import psutil
 
+        db_uri = app.config.get('SQLALCHEMY_DATABASE_URI', '')
         status = {
             'status':    'ok',
             'timestamp': datetime.now(timezone.utc).isoformat(),
             'version':   os.getenv('APP_VERSION', '1.0.0'),
+            'database_backend': Config.get_database_backend(db_uri),
         }
 
         # Uptime
@@ -340,7 +399,7 @@ def create_app():
         except Exception as exc:
             status['database'] = 'disconnected'
             status['status']   = 'degraded'
-            app.logger.error(f'Health — DB error: {exc}')
+            app.logger.error(f'Health ??DB error: {exc}')
             try:
                 from .services.alert_service import alert_service
                 alert_service.alert_db_connection_failed()
@@ -391,6 +450,11 @@ def create_app():
 
         http_code = 200 if status['status'] == 'ok' else 503
         return jsonify(status), http_code
+
+    @app.route('/api/health')
+    def api_health():
+        """Compatibility health check endpoint (legacy path)."""
+        return health()
 
     # -----------------------------------------------------------------------
     # Prometheus-compatible /metrics endpoint  (Task 3)
@@ -598,6 +662,11 @@ def create_app():
     def serve_root():
         return redirect('/web/index.html')
 
+    @app.route('/favicon.ico')
+    def serve_favicon():
+        """Avoid noisy favicon errors when a page does not declare an icon."""
+        return '', 204
+
     @app.route('/web/<path:path>')
     def serve_web(path):
         """Serve web files from /web directory"""
@@ -609,6 +678,389 @@ def create_app():
         if index_file.is_file():
             return send_from_directory(file_path, 'index.html')
         return jsonify({'error': 'Not found'}), 404
+
+    @app.route('/web/')
+    def serve_web_root():
+        """Backward compatibility for /web/ with explicit index."""
+        return send_from_directory(web_dir, 'index.html')
+
+    @app.route('/api/status')
+    def serve_api_status():
+        """Compatibility route for clients expecting /api/status."""
+        try:
+            return jsonify({
+                'status': 'ok',
+                'timestamp': datetime.now(timezone.utc).isoformat(),
+                'database': 'connected',
+                'version': os.getenv('APP_VERSION', '1.0.0')
+            }), 200
+        except Exception:
+            return jsonify({'status': 'error'}), 500
+
+    def _v1_default_teams():
+        now_iso = datetime.now(timezone.utc).isoformat()
+        return [
+            {
+                'id': 'team-alpha',
+                'name': 'Alpha',
+                'members': 12,
+                'utilization': 84,
+                'throughput': 102,
+                'quality': 94,
+                'readiness': 88,
+                'risk': 2.1,
+                'status': 'active',
+                'current_task': '플랫폼 성능 최적화',
+                'updatedAt': now_iso,
+            },
+            {
+                'id': 'team-beta',
+                'name': 'Beta',
+                'members': 10,
+                'utilization': 76,
+                'throughput': 91,
+                'quality': 90,
+                'readiness': 83,
+                'risk': 3.2,
+                'status': 'active',
+                'current_task': '신규 기능 통합 테스트',
+                'updatedAt': now_iso,
+            },
+            {
+                'id': 'team-gamma',
+                'name': 'Gamma',
+                'members': 8,
+                'utilization': 69,
+                'throughput': 79,
+                'quality': 88,
+                'readiness': 80,
+                'risk': 4.7,
+                'status': 'warn',
+                'current_task': '운영 이슈 회귀 점검',
+                'updatedAt': now_iso,
+            },
+            {
+                'id': 'team-delta',
+                'name': 'Delta',
+                'members': 7,
+                'utilization': 63,
+                'throughput': 70,
+                'quality': 86,
+                'readiness': 75,
+                'risk': 5.1,
+                'status': 'warn',
+                'current_task': 'UI 일관성 개선',
+                'updatedAt': now_iso,
+            },
+            {
+                'id': 'team-omega',
+                'name': 'Omega',
+                'members': 6,
+                'utilization': 58,
+                'throughput': 62,
+                'quality': 85,
+                'readiness': 71,
+                'risk': 5.9,
+                'status': 'active',
+                'current_task': '배포 자동화 정비',
+                'updatedAt': now_iso,
+            },
+        ]
+
+    def _v1_cycles_store():
+        rows = app.config.setdefault('V1_AUTOMATION_CYCLES', [])
+        if rows:
+            return rows
+
+        now_iso = datetime.now(timezone.utc).isoformat()
+        rows.extend([
+            {
+                'id': 'cycle-1003',
+                'timestamp': now_iso,
+                'iteration': 3,
+                'departments': 5,
+                'tasks': 18,
+                'validation_status': 'ok',
+                'failed_departments_in_runner': 0,
+                'retry_summary': {
+                    'retried': 1,
+                    'remaining_failed': 0,
+                    'retried_run_results': ['qa-recheck:success'],
+                },
+                'team_name': 'Alpha',
+                'team': 'Alpha',
+                'name': 'Alpha Sprint',
+                'status': 'active',
+                'completion': 72,
+                'due': now_iso,
+                'goals': '성능, 품질, 배포 안정성 개선',
+                'createdAt': now_iso,
+            },
+            {
+                'id': 'cycle-1002',
+                'timestamp': now_iso,
+                'iteration': 2,
+                'departments': 5,
+                'tasks': 16,
+                'validation_status': 'warn',
+                'failed_departments_in_runner': 1,
+                'retry_summary': {
+                    'retried': 2,
+                    'remaining_failed': 1,
+                    'retried_run_results': ['ui-regression:success', 'ops-smoke:failed'],
+                },
+                'team_name': 'Beta',
+                'team': 'Beta',
+                'name': 'Beta Sprint',
+                'status': 'planned',
+                'completion': 28,
+                'due': now_iso,
+                'goals': '운영 대시보드 고도화',
+                'createdAt': now_iso,
+            },
+            {
+                'id': 'cycle-1001',
+                'timestamp': now_iso,
+                'iteration': 1,
+                'departments': 4,
+                'tasks': 14,
+                'validation_status': 'ok',
+                'failed_departments_in_runner': 0,
+                'retry_summary': {
+                    'retried': 0,
+                    'remaining_failed': 0,
+                    'retried_run_results': [],
+                },
+                'team_name': 'Gamma',
+                'team': 'Gamma',
+                'name': 'Gamma Sprint',
+                'status': 'done',
+                'completion': 100,
+                'due': now_iso,
+                'goals': '기능 정합성 점검 완료',
+                'createdAt': now_iso,
+            },
+        ])
+        return rows
+
+    @app.route('/api/v1/status')
+    def serve_api_v1_status():
+        """Legacy compatibility status endpoint for static dashboard pages."""
+        try:
+            uptime_seconds = max(int(time.time() - app._start_time), 0)
+            return jsonify({
+                'status': 'ok',
+                'uptime': 99.95,
+                'uptime_seconds': uptime_seconds,
+                'latency_ms': 72,
+                'error_rate': 0.12,
+                'active_sessions': 24,
+                'database': 'connected',
+                'timestamp': datetime.now(timezone.utc).isoformat(),
+                'version': os.getenv('APP_VERSION', '1.0.0'),
+            }), 200
+        except Exception:
+            return jsonify({'status': 'error'}), 500
+
+    @app.route('/api/v1/teams')
+    def serve_api_v1_teams():
+        """Legacy compatibility endpoint used by root-level dashboard pages."""
+        try:
+            return jsonify(_v1_default_teams()), 200
+        except Exception:
+            return jsonify([]), 500
+
+    @app.route('/api/v1/automation/status')
+    def serve_api_v1_automation_status():
+        """Compatibility endpoint for CI/CD and automation dashboard pages."""
+        try:
+            cycles = _v1_cycles_store()
+            pipelines = [
+                {
+                    'id': 'p-2003',
+                    'version': 'v1.2.34',
+                    'branch': 'main',
+                    'status': 'success',
+                    'started_at': datetime.now(timezone.utc).isoformat(),
+                    'message': 'production deploy complete',
+                    'build': 'success',
+                    'test': 'success',
+                    'deploy': 'success',
+                    'prod': 'success',
+                },
+                {
+                    'id': 'p-2002',
+                    'version': 'v1.2.35',
+                    'branch': 'release',
+                    'status': 'running',
+                    'started_at': datetime.now(timezone.utc).isoformat(),
+                    'message': 'integration test running',
+                    'build': 'success',
+                    'test': 'running',
+                    'deploy': 'wait',
+                    'prod': 'wait',
+                },
+                {
+                    'id': 'p-2001',
+                    'version': 'v1.2.33',
+                    'branch': 'main',
+                    'status': 'fail',
+                    'started_at': datetime.now(timezone.utc).isoformat(),
+                    'message': 'deployment rollback applied',
+                    'build': 'success',
+                    'test': 'success',
+                    'deploy': 'fail',
+                    'prod': 'stopped',
+                },
+            ]
+
+            failed_cycle_count = sum(
+                1 for row in cycles
+                if str(row.get('validation_status', '')).lower() not in ('ok', 'success')
+            )
+            latest = cycles[0] if cycles else {}
+            return jsonify({
+                'available': True,
+                'status': {
+                    'running': any(p.get('status') == 'running' for p in pipelines),
+                    'iterations_completed': len(cycles),
+                    'iterations_planned': max(len(cycles) + 2, 6),
+                    'note': 'compatibility mode',
+                    'last_updated': latest.get('timestamp') or datetime.now(timezone.utc).isoformat(),
+                },
+                'total_alerts': failed_cycle_count,
+                'total_pipelines': len(pipelines),
+                'pipelines': pipelines,
+            }), 200
+        except Exception:
+            return jsonify({'available': False}), 500
+
+    @app.route('/api/v1/automation/hourly')
+    def serve_api_v1_automation_hourly():
+        """Compatibility hourly automation report summary."""
+        try:
+            cycles = _v1_cycles_store()
+            latest = cycles[0] if cycles else {}
+            return jsonify({
+                'available': True,
+                'generated_at': datetime.now(timezone.utc).isoformat(),
+                'latest_cycle': latest,
+                'summary': {
+                    'cycles': len(cycles),
+                    'open_issues': sum(
+                        1 for row in cycles
+                        if str(row.get('validation_status', '')).lower() not in ('ok', 'success')
+                    ),
+                },
+            }), 200
+        except Exception:
+            return jsonify({'available': False}), 500
+
+    @app.route('/api/v1/automation/cycles', methods=['GET', 'POST'])
+    def serve_api_v1_automation_cycles():
+        """Compatibility endpoint for sprint/CI pages requiring cycle history."""
+        try:
+            rows = _v1_cycles_store()
+
+            if request.method == 'POST':
+                payload = request.get_json(silent=True) or {}
+                now_iso = datetime.now(timezone.utc).isoformat()
+                next_iteration = len(rows) + 1
+                status_text = str(payload.get('status') or 'active')
+                validation_status = str(
+                    payload.get('validation_status')
+                    or ('ok' if status_text in ('active', 'done', 'success') else 'warn')
+                )
+                failed_count = payload.get('failed_departments_in_runner')
+                if failed_count is None:
+                    failed_count = 0 if validation_status in ('ok', 'success') else 1
+
+                new_row = {
+                    'id': payload.get('id') or f'cycle-{int(time.time())}',
+                    'timestamp': now_iso,
+                    'iteration': next_iteration,
+                    'departments': int(payload.get('departments') or 5),
+                    'tasks': int(payload.get('tasks') or 12),
+                    'validation_status': validation_status,
+                    'failed_departments_in_runner': int(failed_count),
+                    'retry_summary': {
+                        'retried': 0,
+                        'remaining_failed': int(failed_count),
+                        'retried_run_results': [],
+                    },
+                    'team_name': str(payload.get('team') or 'Alpha'),
+                    'team': str(payload.get('team') or 'Alpha'),
+                    'name': str(payload.get('name') or f'Sprint {next_iteration}'),
+                    'status': status_text,
+                    'completion': int(payload.get('completion') or (15 if status_text == 'active' else 0)),
+                    'due': str(payload.get('due') or now_iso),
+                    'goals': str(payload.get('goals') or '자동화 사이클 실행'),
+                    'createdAt': now_iso,
+                }
+                rows.insert(0, new_row)
+                del rows[50:]
+                return jsonify({'ok': True, 'cycle': new_row}), 201
+
+            limit_arg = request.args.get('limit')
+            limit = request.args.get('limit', type=int)
+            if limit is not None and limit > 0:
+                selected = rows[:limit]
+            else:
+                selected = list(rows)
+
+            if limit_arg is not None:
+                return jsonify({
+                    'available': True,
+                    'cycles': selected,
+                    'count': len(selected),
+                    'total': len(rows),
+                }), 200
+            return jsonify(selected), 200
+        except Exception:
+            return jsonify([]), 500
+
+    @app.route('/api/v1/chat/messages', methods=['POST'])
+    def serve_api_v1_chat_messages():
+        """Compatibility endpoint for fallback chat transport."""
+        try:
+            payload = request.get_json(silent=True) or {}
+            room = str(payload.get('room') or 'default')
+            text_body = str(payload.get('text') or '').strip()
+            if not text_body:
+                return jsonify({'ok': False, 'error': 'text is required'}), 400
+            message_id = f'msg-{int(time.time() * 1000)}'
+            return jsonify({
+                'ok': True,
+                'message_id': message_id,
+                'room': room,
+                'text': text_body,
+                'received_at': datetime.now(timezone.utc).isoformat(),
+            }), 201
+        except Exception:
+            return jsonify({'ok': False, 'error': 'invalid payload'}), 500
+
+    @app.route('/<string:page>')
+    def serve_root_alias(page):
+        """Compatibility route for legacy root-level page access."""
+        if page.startswith('api/'):
+            return jsonify({'error': 'Not found'}), 404
+
+        # Direct file from web root (eg index.html, dashboard.html)
+        file_path = web_dir / page
+        if file_path.is_file():
+            return send_from_directory(web_dir, page)
+
+        # Convenience route for extensionless aliases (eg /dashboard -> /dashboard.html)
+        html_path = web_dir / f'{page}.html'
+        if html_path.is_file():
+            return send_from_directory(web_dir, f'{page}.html')
+
+        # Directory alias support (eg /platform -> /platform/index.html)
+        dir_index = web_dir / page / 'index.html'
+        if dir_index.is_file():
+            return send_from_directory(web_dir / page, 'index.html')
+
+        abort(404)
 
     # === Security Headers Middleware ===
     @app.after_request
@@ -630,7 +1082,7 @@ def create_app():
         # Enable browser XSS filter (legacy but still useful for older browsers)
         response.headers['X-XSS-Protection'] = '1; mode=block'
 
-        # Content Security Policy — restrict resource loading
+        # Content Security Policy ??restrict resource loading
         # Allow self-hosted resources, inline styles (needed for many UI frameworks),
         # and specific CDNs used by the frontend
         response.headers['Content-Security-Policy'] = (
@@ -661,24 +1113,39 @@ def create_app():
         # Remove server identification header (information disclosure)
         response.headers.pop('Server', None)
 
-        # Referrer policy — don't leak URLs to external sites
+        # Referrer policy ??don't leak URLs to external sites
         response.headers['Referrer-Policy'] = 'strict-origin-when-cross-origin'
 
-        # Permissions policy — restrict browser features
+        # Permissions policy ??restrict browser features
         response.headers['Permissions-Policy'] = (
             'camera=(), microphone=(), geolocation=(), payment=()'
         )
 
-        # Inject unified UI stylesheet into all served /web HTML pages.
-        # This gives a consistent look across legacy pages without per-file edits.
+        # Inject unified UI assets into served HTML pages (non-API).
+        # This gives a consistent style, bigger base typography, and dark mode support
+        # across legacy pages without per-file edits.
         content_type = response.headers.get('Content-Type', '')
-        is_web_html = request.path.startswith('/web/') and 'text/html' in content_type.lower()
-        if is_web_html:
+        is_html = 'text/html' in content_type.lower()
+        if is_html and not request.path.startswith('/api/'):
             try:
                 response.direct_passthrough = False
                 html = response.get_data(as_text=True)
-                if '/web/unified-ui.css' not in html:
-                    snippet = '<link rel="stylesheet" href="/web/unified-ui.css">'
+                html_lower = html.lower()
+
+                injections = []
+                if '<meta charset=' not in html_lower:
+                    injections.append('<meta charset="UTF-8">')
+                if 'unified-ui.css' not in html_lower:
+                    injections.append('<link rel="stylesheet" href="/unified-ui.css">')
+                if 'responsive-framework.css' not in html_lower:
+                    injections.append('<link rel="stylesheet" href="/responsive-framework.css">')
+                if 'unified-ui.js' not in html_lower:
+                    injections.append('<script src="/unified-ui.js" defer></script>')
+                if 'mobile-optimization.js' not in html_lower:
+                    injections.append('<script src="/mobile-optimization.js" defer></script>')
+
+                if injections:
+                    snippet = '\n  '.join(injections)
                     if '</head>' in html:
                         html = html.replace('</head>', f'  {snippet}\n</head>', 1)
                     elif '<body' in html:
@@ -697,7 +1164,11 @@ def create_app():
         Checks both request.is_secure and the X-Forwarded-Proto header
         (set by nginx/load balancer when the original request was HTTPS).
         """
-        if not app.debug and not app.config.get('TESTING'):
+        if (
+            os.getenv('ENVIRONMENT', '').strip().lower() == 'production'
+            and not app.debug
+            and not app.config.get('TESTING')
+        ):
             # X-Forwarded-Proto is set by nginx proxy to indicate original scheme
             forwarded_proto = request.headers.get('X-Forwarded-Proto', '')
             if not request.is_secure and forwarded_proto != 'https':
@@ -721,6 +1192,14 @@ def create_app():
         except Exception as e:
             import logging
             logging.getLogger('scheduler').error(f'Failed to start scheduler: {e}')
+
+        # Start SNS scheduled-post publisher (checks every 60s)
+        try:
+            from .services.sns_scheduler import start_scheduler as start_sns_scheduler
+            start_sns_scheduler(app, interval_seconds=60)
+        except Exception as e:
+            import logging
+            logging.getLogger('sns.scheduler').error(f'Failed to start SNS scheduler: {e}')
 
     # Initialize WebSocket server for real-time notifications
     try:

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Daily Report Generator for SoftFactory Platform
-Generates reports for: Email, Notion, Telegram
+Generates report content for Email, Notion, and Telegram workflows
 Runs at: 5 AM, 10 AM, 3 PM, 5 PM, 10 PM (KST)
 """
 
@@ -170,7 +170,7 @@ Architecture Diagrams:      ✓ 7 diagrams (capacity planning)
 COMMUNICATION CHANNELS ACTIVE
 
 Email:                      piwpiw99@gmail.com (5/day reports)
-Notion:                     Workspace integrated (auto-sync)
+Notion:                     Optional mirror (requires n8n credential setup)
 Telegram:                   @sonobot_jarvis (7910169750)
 Logs:                       /logs/ directory (full audit trail)
 
@@ -286,7 +286,7 @@ Passkey: demo2026
     return {
         "report_summary": report_summary,
         "report_content": report_content,
-        "report_pdf": "USER_MANUAL.pdf",  # Attach PDF
+        "report_pdf": "docs/reference/legacy-root/USER_MANUAL.pdf",
         "timestamp": timestamp,
         "report_type": report_type
     }
@@ -299,8 +299,8 @@ if __name__ == "__main__":
         print(json.dumps(report))
 
         # Also save to file for logging
-        log_dir = Path("logs")
-        log_dir.mkdir(exist_ok=True)
+        log_dir = Path(".workspace/logs")
+        log_dir.mkdir(parents=True, exist_ok=True)
 
         with open(log_dir / "daily_reports.log", "a") as f:
             f.write(f"\n[{report['timestamp']}] {report['report_type']} generated successfully\n")

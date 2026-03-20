@@ -1,9 +1,9 @@
 ﻿<!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>2FA Verification - SoftFactory</title>
+    <title>2단계 인증 - SoftFactory</title>
     <style>
         * {
             margin: 0;
@@ -246,27 +246,27 @@
 </head>
 <body>
     <div class="container">
-        <h1>?뵍 2FA Verification</h1>
-        <p class="subtitle">Verify your identity to continue</p>
+        <h1>🚪 2단계 인증</h1>
+        <p class="subtitle">인증을 완료하고 계속 진행하세요</p>
 
         <div class="email-display" id="emailDisplay"></div>
 
         <div class="tabs">
-            <button class="tab active" onclick="switchTab('totp')">Authenticator</button>
-            <button class="tab" onclick="switchTab('backup')">Backup Code</button>
+            <button class="tab active" onclick="switchTab('totp')">인증 앱</button>
+            <button class="tab" onclick="switchTab('backup')">백업 코드</button>
         </div>
 
         <!-- TOTP Tab -->
         <div class="content active" id="totp-tab">
             <div class="info-box">
-                ?벑 Enter the 6-digit code from your authenticator app
+                📱 인증 앱에 표시되는 6자리 코드를 입력하세요
             </div>
 
             <div id="totpError" class="error" style="display: none;"></div>
 
             <form id="totpForm" onsubmit="verifyTOTP(event)">
                 <div class="form-group">
-                    <label>Authentication Code</label>
+                    <label>인증 코드</label>
                     <div class="totp-input-group">
                         <input type="text" class="totp-digit" id="digit1" maxlength="1" inputmode="numeric" />
                         <input type="text" class="totp-digit" id="digit2" maxlength="1" inputmode="numeric" />
@@ -277,33 +277,33 @@
                     </div>
                 </div>
 
-                <button type="submit" id="totpBtn">Verify & Login</button>
+                <button type="submit" id="totpBtn">인증 후 로그인</button>
             </form>
 
             <div class="help-text">
-                Lost your authenticator? <a onclick="switchTab('backup')">Use a backup code instead</a>
+                인증기를 분실했나요? <a onclick="switchTab('backup')">백업 코드로 인증하세요</a>
             </div>
         </div>
 
-        <!-- Backup Code Tab -->
+        <!-- 백업 코드 Tab -->
         <div class="content" id="backup-tab">
             <div class="info-box">
-                ?뵎 Enter one of your backup codes
+                사용 가능한 백업 코드 하나를 입력하세요
             </div>
 
             <div id="backupError" class="error" style="display: none;"></div>
 
             <form id="backupForm" onsubmit="verifyBackupCode(event)">
                 <div class="form-group">
-                    <label>Backup Code</label>
+                    <label>백업 코드</label>
                     <input type="text" id="backupCode" placeholder="XXXXXXXX" maxlength="8" inputmode="text" />
                 </div>
 
-                <button type="submit" id="backupBtn">Verify & Login</button>
+                <button type="submit" id="backupBtn">인증 후 로그인</button>
             </form>
 
             <div class="help-text">
-                Don't have a backup code? <a onclick="switchTab('totp')">Use authenticator app instead</a>
+                백업 코드가 없다면 <a onclick="switchTab('totp')">인증 앱으로 다시 진행하세요</a>
             </div>
         </div>
     </div>
@@ -375,7 +375,7 @@
             ].join('');
 
             if (code.length !== 6) {
-                showTOTPError('Please enter a complete 6-digit code');
+                showTOTPError('6자리 코드를 모두 입력해주세요.');
                 return;
             }
 
@@ -388,7 +388,7 @@
             const code = document.getElementById('backupCode').value.trim();
 
             if (!code) {
-                showBackupError('Please enter a backup code');
+                showBackupError('백업 코드를 입력하세요');
                 return;
             }
 
@@ -401,7 +401,7 @@
                 document.getElementById('backupBtn');
 
             btn.disabled = true;
-            btn.innerHTML = '<span class="loading"></span>Verifying...';
+                    btn.innerHTML = '<span class="loading"></span>인증 중...';
 
             try {
                 const response = await fetch('/api/auth/2fa/verify', {
@@ -417,12 +417,12 @@
                 if (!response.ok) {
                     const error = await response.json();
                     if (currentTab === 'totp') {
-                        showTOTPError(error.error || 'Invalid TOTP code');
+                        showTOTPError(error.error || '잘못된 TOTP 코드입니다.');
                     } else {
-                        showBackupError(error.error || 'Invalid backup code');
+                        showBackupError(error.error || '유효하지 않은 백업 코드');
                     }
                     btn.disabled = false;
-                    btn.innerHTML = currentTab === 'totp' ? 'Verify & Login' : 'Verify & Login';
+                    btn.innerHTML = currentTab === 'totp' ? '인증 후 로그인' : '인증 후 로그인';
                     return;
                 }
 
@@ -441,14 +441,14 @@
                 }, 500);
 
             } catch (error) {
-                console.error('Verification error:', error);
+                console.error('인증 오류:', error);
                 if (currentTab === 'totp') {
-                    showTOTPError('Failed to verify code');
+                    showTOTPError('코드 확인에 실패했습니다.');
                 } else {
-                    showBackupError('Failed to verify code');
+                showBackupError('코드 확인에 실패했습니다.');
                 }
                 btn.disabled = false;
-                btn.innerHTML = currentTab === 'totp' ? 'Verify & Login' : 'Verify & Login';
+                btn.innerHTML = currentTab === 'totp' ? '인증 후 로그인' : '인증 후 로그인';
             }
         }
 
@@ -471,4 +471,3 @@
     </script>
 </body>
 </html>
-

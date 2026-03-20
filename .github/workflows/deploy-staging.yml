@@ -10,8 +10,10 @@ on:
 
 env:
   REGISTRY: docker.io
-  IMAGE_NAME: softfactory
+  IMAGE_NAME: piwpiw99/softfactory
   DEFAULT_DOCKER_NAMESPACE: piwpiw99
+  APP_PORT: "8000"
+  STAGING_PORT: "9001"
 
 # Prevent concurrent staging deploys
 concurrency:
@@ -39,6 +41,7 @@ jobs:
           DOCKER_USERNAME='${{ secrets.DOCKER_USERNAME }}'
           DOCKER_PASSWORD='${{ secrets.DOCKER_PASSWORD }}'
           DOCKER_NAMESPACE='${{ vars.DOCKER_NAMESPACE }}'
+          REQUESTED_TAG='${{ github.event.inputs.image_tag }}'
           if [[ -z "$DOCKER_NAMESPACE" ]]; then
             DOCKER_NAMESPACE='${{ env.DEFAULT_DOCKER_NAMESPACE }}'
           fi
@@ -55,7 +58,11 @@ jobs:
             echo "::notice::Missing DOCKER_PASSWORD. Staging deploy will be skipped."
           fi
 
-          IMAGE_TAG="staging-${GITHUB_SHA::8}"
+          if [[ -n "$REQUESTED_TAG" ]]; then
+            IMAGE_TAG="$REQUESTED_TAG"
+          else
+            IMAGE_TAG="staging-${GITHUB_SHA::8}"
+          fi
           IMAGE_FULL="${{ env.REGISTRY }}/${IMAGE_NAME}:${IMAGE_TAG}"
           IMAGE_LATEST="${{ env.REGISTRY }}/${IMAGE_NAME}:staging-latest"
 
@@ -125,7 +132,7 @@ jobs:
     name: Deploy to Staging
     runs-on: ubuntu-latest
     needs: build-and-push
-    if: ${{ needs.build-and-push.result == 'success' }}
+    if: ${{ needs.build-and-push.result == 'success' && secrets.STAGING_HOST != '' && secrets.STAGING_USER != '' && secrets.STAGING_SSH_KEY != '' }}
     environment: staging
 
     steps:
@@ -140,26 +147,25 @@ jobs:
           DOCKER_USERNAME: ${{ needs.prepare.outputs.docker_username }}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
           GIT_SHA: ${{ github.sha }}
+          APP_PORT: ${{ env.APP_PORT }}
+          STAGING_PORT: ${{ env.STAGING_PORT }}
         with:
           host: ${{ secrets.STAGING_HOST }}
           username: ${{ secrets.STAGING_USER }}
           key: ${{ secrets.STAGING_SSH_KEY }}
           port: 22
-          envs: IMAGE_FULL,IMAGE_TAG,DOCKER_USERNAME,DOCKER_PASSWORD,GIT_SHA
+          envs: IMAGE_FULL,IMAGE_TAG,DOCKER_USERNAME,DOCKER_PASSWORD,GIT_SHA,APP_PORT,STAGING_PORT
           script: |
             if [[ -z "${{ secrets.STAGING_HOST }}" || -z "${{ secrets.STAGING_SSH_KEY }}" ]]; then
               echo "Staging deploy skipped: host or SSH key not configured."
               exit 0
             fi
 
-            set -e
+            set -euo pipefail
 
             echo "[deploy] Pulling image: $IMAGE_FULL"
             echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
             docker pull "$IMAGE_FULL"
-
-            echo "[deploy] Tagging as current"
-            docker tag "$IMAGE_FULL" softfactory:current
 
             echo "[deploy] Stopping old container (if any)"
             docker stop softfactory-staging 2>/dev/null || true
@@ -169,18 +175,30 @@ jobs:
             docker run -d \
               --name softfactory-staging \
               --restart unless-stopped \
-              -p 9001:8000 \
+              -p "${STAGING_PORT}:${APP_PORT}" \
               --env-file /opt/softfactory/staging/.env \
               -e GIT_SHA="$GIT_SHA" \
               -e IMAGE_TAG="$IMAGE_TAG" \
               -v /opt/softfactory/staging/logs:/app/logs \
-              softfactory:current
+              "$IMAGE_FULL"
 
-            echo "[deploy] Waiting for health check (30s)..."
-            sleep 30
+            echo "[deploy] Waiting for staging health check up to 45s..."
+            RETRY=0
+            HEALTHY=false
+            while [[ $RETRY -lt 9 ]]; do
+              if curl -sf "http://localhost:${STAGING_PORT}/health" >/dev/null; then
+                HEALTHY=true
+                break
+              fi
+              RETRY=$((RETRY + 1))
+              sleep 5
+            done
 
             echo "[deploy] Verifying health"
-            curl -sf http://localhost:9001/health || (docker logs softfactory-staging --tail=50 && exit 1)
+            if [[ "$HEALTHY" != "true" ]]; then
+              docker logs softfactory-staging --tail=80
+              exit 1
+            fi
 
             echo "[deploy] Staging deployment complete: $IMAGE_TAG"
 
@@ -192,6 +210,10 @@ jobs:
     runs-on: ubuntu-latest
     needs: deploy
     if: ${{ needs.deploy.result == 'success' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        suite: [pytest, smoke]
 
     steps:
       - name: Checkout code
@@ -202,47 +224,62 @@ jobs:
         with:
           python-version: '3.11'
           cache: 'pip'
+        if: matrix.suite == 'pytest'
 
       - name: Install test dependencies
+        if: matrix.suite == 'pytest'
         run: |
           pip install requests pytest pytest-timeout
 
       - name: Wait for staging to warm up
         env:
           STAGING_HOST: ${{ secrets.STAGING_HOST }}
+          STAGING_PORT: ${{ env.STAGING_PORT }}
         run: |
           if [[ -z "$STAGING_HOST" ]]; then
             echo "STAGING_HOST missing, skip integration tests."
             exit 0
           fi
-          echo "Waiting 15 seconds for staging to stabilise..."
-          sleep 15
+          URL="http://${STAGING_HOST}:${STAGING_PORT}/health"
+          echo "Polling staging health: ${URL}"
+          RETRY=0
+          while [[ $RETRY -lt 12 ]]; do
+            CODE=$(curl -sf --max-time 5 "${URL}" -o /dev/null -w "%{http_code}" 2>/dev/null || echo "000")
+            if [[ "$CODE" == "200" ]]; then
+              echo "Staging is healthy."
+              exit 0
+            fi
+            RETRY=$((RETRY + 1))
+            echo "Attempt ${RETRY}/12 failed [${CODE}], wait 5s..."
+            sleep 5
+          done
+          echo "Staging health endpoint not ready after poll timeout."
+          exit 0
 
-      - name: Run smoke tests against staging
+      - name: Run tests
         env:
-          STAGING_URL: http://${{ secrets.STAGING_HOST }}:9001
+          STAGING_HOST: ${{ secrets.STAGING_HOST }}
+          BASE_URL: http://${{ secrets.STAGING_HOST }}:${{ env.STAGING_PORT }}
           STAGING_DEMO_TOKEN: demo_token
         run: |
-          python -m pytest tests/integration/ \
-            -v \
-            --tb=short \
-            --timeout=60 \
-            -m "smoke or integration" \
-            --ignore=tests/integration/test_cross_validation.py \
-            -k "not slow" \
-            || true
+          BASE_URL="${BASE_URL}"
+          if [[ -z "$STAGING_HOST" ]]; then
+            echo "STAGING_HOST missing. skip checks."
+            exit 0
+          fi
 
-      - name: Run API smoke test (inline)
-        env:
-          BASE_URL: http://${{ secrets.STAGING_HOST }}:9001
-        run: |
-          python - <<'EOF'
-          import sys, os, urllib.request, json
+          if [[ "${{ matrix.suite }}" == "smoke" ]]; then
+            echo "Running smoke endpoint checks..."
+            python - <<'EOF'
+          import os
+          import urllib.parse
+          import urllib.request
 
           base = os.environ["BASE_URL"]
-          if base == 'http://:9001':
-            print('BASE_URL missing. skipping smoke test')
-            sys.exit(0)
+          parsed = urllib.parse.urlparse(base)
+          if not (parsed.scheme in {"http", "https"} and parsed.hostname):
+              print("No valid BASE_URL configured. Skip smoke verification.")
+              raise SystemExit(0)
 
           def check(label, url, expect_status=200):
               try:
@@ -263,8 +300,22 @@ jobs:
 
           failed = results.count(False)
           print(f"\n{len(results) - failed}/{len(results)} checks passed")
-          sys.exit(1 if failed > 0 else 0)
+          raise SystemExit(1 if failed > 0 else 0)
           EOF
+          fi
+
+          if [[ "${{ matrix.suite }}" == "pytest" ]]; then
+            echo "Running integration suite..."
+            python -m pytest tests/integration/ \
+              -v \
+              --tb=short \
+              --timeout=60 \
+              -m "smoke or integration" \
+              --ignore=tests/integration/test_cross_validation.py \
+              -k "not slow"
+            exit $?
+          fi
+
 
   # ---------------------------------------------------------------------------
   # STAGE 5: Telegram notification

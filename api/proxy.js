@@ -70,6 +70,46 @@ const parseApiPath = (req) => {
   };
 };
 
+const STRICT_REAL_PREFIXES = [
+  "/auth/",
+  "/platform/",
+  "/coocook/",
+  "/sns/",
+  "/ai-automation/",
+  "/instagram-cardnews/",
+  "/review/",
+  "/videos/",
+  "/files/",
+  "/search/",
+  "/notifications",
+];
+
+const requiresStrictRealApi = (path) => STRICT_REAL_PREFIXES.some((prefix) => path.startsWith(prefix));
+
+const readRequestBody = async (req) => {
+  if (req.body) {
+    if (typeof req.body === "string" || Buffer.isBuffer(req.body)) return req.body;
+    return JSON.stringify(req.body);
+  }
+
+  if (req.method === "GET" || req.method === "HEAD") {
+    return null;
+  }
+
+  return await new Promise((resolve, reject) => {
+    const chunks = [];
+    req.on("data", (chunk) => chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk)));
+    req.on("end", () => {
+      if (chunks.length === 0) {
+        resolve(null);
+        return;
+      }
+      resolve(Buffer.concat(chunks));
+    });
+    req.on("error", reject);
+  });
+};
+
 const sendFallback = (res, req, parsedPath) => {
   const method = req.method?.toUpperCase() || "GET";
   const path = parsedPath.path;
@@ -199,21 +239,42 @@ const sendFallback = (res, req, parsedPath) => {
 };
 
 const passToBackend = async (req, parsedPath) => {
-  const backend = process.env.API_UPSTREAM_URL || process.env.VERCEL_API_UPSTREAM_URL;
+  const backend =
+    process.env.API_UPSTREAM_URL ||
+    process.env.VERCEL_API_UPSTREAM_URL ||
+    process.env.SOFTFACTORY_API_UPSTREAM_URL;
   if (!backend) return null;
 
-  const target = `${backend.replace(/\/$/, "")}${parsedPath.path}${parsedPath.search}`;
+  const normalizedBackend = String(backend).replace(/\\r\\n/g, "").trim().replace(/\/$/, "");
+  if (!normalizedBackend) return null;
+
+  const target = `${normalizedBackend}${parsedPath.path}${parsedPath.search}`;
+  const body = await readRequestBody(req);
   const fetchOptions = {
     method: req.method,
-    headers: { "Accept": "application/json" }
+    headers: {
+      "Accept": req.headers["accept"] || "application/json",
+      "User-Agent": req.headers["user-agent"] || "softfactory-vercel-proxy",
+      "X-Forwarded-Host": req.headers["host"] || "",
+      "X-Forwarded-Proto": "https",
+    }
   };
 
   if (req.headers["content-type"]) {
     fetchOptions.headers["Content-Type"] = req.headers["content-type"];
   }
+  if (req.headers["authorization"]) {
+    fetchOptions.headers["Authorization"] = req.headers["authorization"];
+  }
+  if (req.headers["cookie"]) {
+    fetchOptions.headers["Cookie"] = req.headers["cookie"];
+  }
+  if (req.headers["x-requested-with"]) {
+    fetchOptions.headers["X-Requested-With"] = req.headers["x-requested-with"];
+  }
 
-  if (req.body && (req.method === "POST" || req.method === "PUT" || req.method === "PATCH")) {
-    fetchOptions.body = req.body;
+  if (body && !["GET", "HEAD"].includes((req.method || "GET").toUpperCase())) {
+    fetchOptions.body = body;
   }
 
   const response = await fetch(target, fetchOptions);
@@ -228,7 +289,7 @@ module.exports = async (req, res) => {
     }
 
     const response = await passToBackend(req, parsedPath).catch(() => null);
-    if (response && response.ok) {
+    if (response) {
       const body = await response.text();
       res.statusCode = response.status;
       response.headers.forEach((value, key) => {
@@ -241,8 +302,26 @@ module.exports = async (req, res) => {
       return;
     }
 
+    if (requiresStrictRealApi(parsedPath.path)) {
+      return toJson(res, {
+        ok: false,
+        status: "upstream-required",
+        path: parsedPath.path,
+        message: "Real backend upstream is not configured for this deployment.",
+      }, 503);
+    }
+
     return sendFallback(res, req, parsedPath);
   } catch (error) {
+    const parsedPath = parseApiPath(req);
+    if (requiresStrictRealApi(parsedPath.path)) {
+      return toJson(res, {
+        ok: false,
+        status: "upstream-error",
+        path: parsedPath.path,
+        message: error?.message || "proxy failed",
+      }, 502);
+    }
     return toJson(res, {
       ok: false,
       status: "mock-fallback",

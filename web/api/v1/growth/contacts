@@ -1,0 +1,32 @@
+{
+  "items": [
+    {
+      "contact_uid": "contact_1001",
+      "email": "mina@example.com",
+      "phone": "01010001001",
+      "status": "active",
+      "lifecycle_stage": "active",
+      "created_at": "2026-03-07T02:10:00Z"
+    },
+    {
+      "contact_uid": "contact_1002",
+      "email": "june@example.com",
+      "phone": "01010001002",
+      "status": "lead",
+      "lifecycle_stage": "lead",
+      "created_at": "2026-03-07T01:40:00Z"
+    },
+    {
+      "contact_uid": "contact_1003",
+      "email": "rio@example.com",
+      "phone": "01010001003",
+      "status": "at_risk",
+      "lifecycle_stage": "at_risk",
+      "created_at": "2026-03-06T23:20:00Z"
+    }
+  ],
+  "total": 3,
+  "page": 1,
+  "per_page": 50,
+  "pages": 1
+}

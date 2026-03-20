@@ -5,6 +5,7 @@ from flask import request, jsonify, g
 from functools import wraps
 from typing import Optional
 from .models import db, LoginAttempt, User
+from .runtime_paths import default_app_log_path
 
 logger = logging.getLogger(__name__)
 
@@ -18,7 +19,7 @@ ACCOUNT_LOCKOUT_DURATION = 15  # minutes
 class SecurityEventLogger:
     """Logs security-relevant events for audit trail"""
 
-    SECURITY_LOG_FILE = 'logs/security_audit.log'
+    SECURITY_LOG_FILE = str(default_app_log_path().parent / 'security_audit.log')
 
     @staticmethod
     def log_event(event_type: str, user_id: Optional[int] = None, email: Optional[str] = None,

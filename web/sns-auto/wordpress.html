@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="theme-color" content="#0b1320">
+    <title>WordPress Auto — Bohemian Studio | SoftFactory</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="../platform/api.js"></script>
+    <link rel="stylesheet" href="../responsive-framework.css">
+    <style>
+        :root {
+            --ink: #0b1320;
+            --paper: #f6f1e8;
+            --teal: #0f766e;
+            --amber: #c58a2a;
+        }
+        body { font-family: "SUIT Variable", "Apple SD Gothic Neo", sans-serif; }
+        .headline { font-family: "MaruBuri", "AppleMyungjo", serif; }
+        .glass { background: rgba(11, 19, 32, 0.78); backdrop-filter: blur(18px); }
+        .card-border { border: 1px solid rgba(197, 138, 42, 0.18); }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 antialiased">
+    <div class="flex min-h-screen overflow-hidden">
+        <aside class="w-72 bg-slate-900 border-r border-slate-800 flex flex-col shrink-0">
+            <div class="p-6 border-b border-slate-800">
+                <a href="../platform/dashboard.html" class="flex items-center gap-3">
+                    <span class="text-2xl">🏭</span>
+                    <div>
+                        <h1 class="font-bold text-white text-sm">SoftFactory</h1>
+                        <p class="text-xs text-slate-400">Bohemian Studio 운영</p>
+                    </div>
+                </a>
+            </div>
+            <nav class="soft-nav-tree flex-1 p-6 space-y-2 overflow-y-auto">
+                <a href="index.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">📊 SNS 대시보드</a>
+                <a href="wordpress.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg bg-amber-500/20 text-white border-l-2 border-amber-400">📰 WordPress Auto</a>
+                <a href="accounts.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">🔗 계정 연동</a>
+                <a href="create.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">✍️ 포스트 작성</a>
+                <a href="schedule.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">📅 스케줄 관리</a>
+                <a href="analytics.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">📈 분석</a>
+                <a href="templates.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">🎨 템플릿</a>
+            </nav>
+        </aside>
+
+        <div class="flex-1 flex flex-col overflow-hidden bg-[radial-gradient(circle_at_top_left,_rgba(15,118,110,.14),_transparent_24%),radial-gradient(circle_at_top_right,_rgba(197,138,42,.14),_transparent_28%),linear-gradient(180deg,#020617_0%,#0f172a_100%)]">
+            <header class="border-b border-slate-800 bg-slate-950/70 px-6 py-5">
+                <p class="text-xs uppercase tracking-[0.24em] text-amber-300">Bohemian Studio</p>
+                <div class="mt-2 flex flex-wrap items-end justify-between gap-4">
+                    <div>
+                        <h2 class="headline text-3xl font-semibold text-white">WordPress Auto Publishing Desk</h2>
+                        <p class="mt-2 max-w-3xl text-sm leading-7 text-slate-300">
+                            공식 출처 기반 리서치, 94점 품질 게이트, 10분 후보 생성, 제한된 공개 발행까지 한 화면에서 운영합니다.
+                        </p>
+                    </div>
+                    <button id="refreshButton" class="rounded-xl border border-slate-700 px-4 py-2 text-sm font-semibold text-slate-100 hover:bg-slate-800">새로고침</button>
+                </div>
+            </header>
+
+            <main class="flex-1 overflow-y-auto p-6">
+                <section class="grid gap-4 xl:grid-cols-4">
+                    <article class="glass card-border rounded-3xl p-5"><p class="text-xs uppercase tracking-[0.22em] text-amber-300">Brand</p><h3 class="headline mt-3 text-2xl text-white">Bohemian Studio</h3><p class="mt-3 text-sm leading-7 text-slate-300">팩트로 정리하고 실행으로 연결하는 디지털 매거진</p></article>
+                    <article class="glass card-border rounded-3xl p-5"><p class="text-xs uppercase tracking-[0.22em] text-amber-300">Cadence</p><h3 class="mt-3 text-2xl font-black text-white">10분 후보 생성</h3><p class="mt-3 text-sm leading-7 text-slate-300">공개는 72시간 12개/일, 이후 6개/일로 제한합니다.</p></article>
+                    <article class="glass card-border rounded-3xl p-5"><p class="text-xs uppercase tracking-[0.22em] text-amber-300">Quality</p><h3 class="mt-3 text-2xl font-black text-white">94 / 100</h3><p class="mt-3 text-sm leading-7 text-slate-300">출처 부족, 얇은 본문, 고지 누락은 하드 블로커입니다.</p></article>
+                    <article class="glass card-border rounded-3xl p-5"><p class="text-xs uppercase tracking-[0.22em] text-amber-300">Focus</p><h3 class="mt-3 text-2xl font-black text-white">AI + WordPress</h3><p class="mt-3 text-sm leading-7 text-slate-300">초기 공개 주제군은 두 축으로 좁혀 내부링크와 품질을 밀어 올립니다.</p></article>
+                </section>
+
+                <section class="mt-6 grid gap-6 xl:grid-cols-[1.08fr,0.92fr]">
+                    <article class="glass card-border rounded-3xl p-6">
+                        <div class="flex items-center justify-between gap-3">
+                            <div>
+                                <p class="text-xs uppercase tracking-[0.2em] text-amber-300">Connection</p>
+                                <h3 class="mt-2 text-xl font-bold text-white">WordPress 사이트 연결</h3>
+                            </div>
+                            <span class="rounded-full bg-teal-500/10 px-3 py-1 text-xs font-semibold text-teal-200">REST + Application Password</span>
+                        </div>
+                        <form id="siteForm" class="mt-5 grid gap-4 md:grid-cols-2">
+                            <label class="block"><span class="mb-2 block text-sm text-slate-300">사이트명</span><input id="accountName" class="w-full rounded-2xl border border-slate-700 bg-slate-950/70 px-4 py-3 text-white focus:border-amber-400 focus:outline-none" value="Bohemian Studio"></label>
+                            <label class="block"><span class="mb-2 block text-sm text-slate-300">WordPress URL</span><input id="siteUrl" class="w-full rounded-2xl border border-slate-700 bg-slate-950/70 px-4 py-3 text-white focus:border-amber-400 focus:outline-none" placeholder="https://example.com"></label>
+                            <label class="block"><span class="mb-2 block text-sm text-slate-300">WordPress 사용자명</span><input id="wpUsername" class="w-full rounded-2xl border border-slate-700 bg-slate-950/70 px-4 py-3 text-white focus:border-amber-400 focus:outline-none" placeholder="admin"></label>
+                            <label class="block"><span class="mb-2 block text-sm text-slate-300">Application Password</span><input id="wpPassword" type="password" class="w-full rounded-2xl border border-slate-700 bg-slate-950/70 px-4 py-3 text-white focus:border-amber-400 focus:outline-none" placeholder="xxxx xxxx xxxx xxxx xxxx xxxx"></label>
+                            <div class="md:col-span-2 flex flex-wrap gap-3">
+                                <button class="rounded-2xl bg-amber-500 px-5 py-3 text-sm font-semibold text-slate-950 hover:bg-amber-400" type="submit">사이트 저장</button>
+                                <button id="testSiteButton" class="rounded-2xl border border-slate-700 px-5 py-3 text-sm font-semibold text-slate-100 hover:bg-slate-800" type="button">최근 사이트 테스트</button>
+                            </div>
+                        </form>
+                        <div id="sitesPanel" class="mt-6 grid gap-3"></div>
+                    </article>
+
+                    <article class="glass card-border rounded-3xl p-6">
+                        <p class="text-xs uppercase tracking-[0.2em] text-amber-300">Templates</p>
+                        <h3 class="mt-2 text-xl font-bold text-white">콘텐츠 템플릿과 운영 규칙</h3>
+                        <div id="templatePanel" class="mt-5 grid gap-3"></div>
+                    </article>
+                </section>
+
+                <section class="mt-6 grid gap-6 xl:grid-cols-[1.08fr,0.92fr]">
+                    <article class="glass card-border rounded-3xl p-6">
+                        <p class="text-xs uppercase tracking-[0.2em] text-amber-300">Publishing</p>
+                        <h3 class="mt-2 text-xl font-bold text-white">실전 파이프라인 실행</h3>
+                        <p class="mt-2 text-sm leading-7 text-slate-300">공식 출처 URL을 한 줄씩 넣으면 리서치, 품질 감사, 이미지 생성, WordPress 드래프트/공개까지 이어집니다.</p>
+                        <form id="publishForm" class="mt-5 grid gap-4">
+                            <div class="grid gap-4 md:grid-cols-2">
+                                <label class="block"><span class="mb-2 block text-sm text-slate-300">연결된 사이트</span><select id="siteSelect" class="w-full rounded-2xl border border-slate-700 bg-slate-950/70 px-4 py-3 text-white focus:border-amber-400 focus:outline-none"></select></label>
+                                <label class="block"><span class="mb-2 block text-sm text-slate-300">템플릿</span><select id="templateSelect" class="w-full rounded-2xl border border-slate-700 bg-slate-950/70 px-4 py-3 text-white focus:border-amber-400 focus:outline-none"></select></label>
+                            </div>
+                            <div class="grid gap-4 md:grid-cols-3">
+                                <label class="block md:col-span-2"><span class="mb-2 block text-sm text-slate-300">제목</span><input id="postTitle" class="w-full rounded-2xl border border-slate-700 bg-slate-950/70 px-4 py-3 text-white focus:border-amber-400 focus:outline-none" placeholder="예: 2026년 워드프레스 자동화 운영 가이드"></label>
+                                <label class="block"><span class="mb-2 block text-sm text-slate-300">상태</span><select id="postStatus" class="w-full rounded-2xl border border-slate-700 bg-slate-950/70 px-4 py-3 text-white focus:border-amber-400 focus:outline-none"><option value="draft">WordPress 드래프트</option><option value="publish">즉시 공개</option></select></label>
+                            </div>
+                            <div class="grid gap-4 md:grid-cols-2">
+                                <label class="block"><span class="mb-2 block text-sm text-slate-300">카테고리 라벨</span><input id="categoryLabel" class="w-full rounded-2xl border border-slate-700 bg-slate-950/70 px-4 py-3 text-white focus:border-amber-400 focus:outline-none" value="AI & Automation"></label>
+                                <label class="block"><span class="mb-2 block text-sm text-slate-300">카테고리 슬러그</span><input id="categorySlug" class="w-full rounded-2xl border border-slate-700 bg-slate-950/70 px-4 py-3 text-white focus:border-amber-400 focus:outline-none" value="ai-automation"></label>
+                            </div>
+                            <label class="block"><span class="mb-2 block text-sm text-slate-300">공식 출처 URL 목록</span><textarea id="sourcesInput" rows="8" class="w-full rounded-3xl border border-slate-700 bg-slate-950/70 px-4 py-4 text-white focus:border-amber-400 focus:outline-none" placeholder="https://developers.google.com/...&#10;https://developer.wordpress.org/..."></textarea></label>
+                            <div class="flex flex-wrap gap-3">
+                                <button class="rounded-2xl bg-teal-600 px-5 py-3 text-sm font-semibold text-white hover:bg-teal-500" type="button" id="auditButton">품질 감사만 실행</button>
+                                <button class="rounded-2xl bg-amber-500 px-5 py-3 text-sm font-semibold text-slate-950 hover:bg-amber-400" type="submit">리서치 후 WordPress 전송</button>
+                            </div>
+                        </form>
+                        <div id="resultPanel" class="mt-6 rounded-3xl border border-slate-800 bg-slate-950/60 p-5 text-sm text-slate-300">아직 실행 결과가 없습니다.</div>
+                    </article>
+                    <article class="glass card-border rounded-3xl p-6">
+                        <p class="text-xs uppercase tracking-[0.2em] text-amber-300">Recent Runs</p>
+                        <h3 class="mt-2 text-xl font-bold text-white">최근 WordPress 실행 이력</h3>
+                        <div id="runsPanel" class="mt-5 grid gap-3"></div>
+                    </article>
+                </section>
+            </main>
+        </div>
+    </div>
+    <script>
+        requireAuth();
+        const state = { sites: [], templates: [], runs: [] };
+        function toLines(value) { return value.split(/\r?\n/).map((item) => item.trim()).filter(Boolean); }
+        function paintSites() {
+            const select = document.getElementById('siteSelect');
+            const panel = document.getElementById('sitesPanel');
+            select.innerHTML = state.sites.map((site) => `<option value="${site.id}">${site.account_name} · ${site.site_url}</option>`).join('');
+            panel.innerHTML = state.sites.length ? state.sites.map((site) => `<article class="rounded-3xl border border-slate-800 bg-slate-950/60 p-4"><div class="flex items-start justify-between gap-4"><div><p class="text-base font-semibold text-white">${site.account_name}</p><p class="mt-1 text-xs text-slate-400">${site.site_url}</p><p class="mt-2 text-xs text-slate-500">${site.wp_username}</p></div><span class="rounded-full bg-teal-500/10 px-3 py-1 text-xs font-semibold text-teal-200">${site.is_active ? '연결됨' : '비활성'}</span></div></article>`).join('') : '<div class="rounded-3xl border border-dashed border-slate-700 bg-slate-950/40 p-5 text-sm text-slate-400">연결된 WordPress 사이트가 아직 없습니다.</div>';
+        }
+        function paintTemplates() {
+            const select = document.getElementById('templateSelect');
+            const panel = document.getElementById('templatePanel');
+            select.innerHTML = state.templates.map((template) => `<option value="${template.slug}">${template.name}</option>`).join('');
+            panel.innerHTML = state.templates.map((template) => `<article class="rounded-3xl border border-slate-800 bg-slate-950/60 p-4"><div class="flex items-start justify-between gap-3"><div><p class="text-sm font-semibold text-white">${template.name}</p><p class="mt-2 text-xs leading-6 text-slate-400">${template.summary}</p></div><span class="rounded-full bg-amber-500/10 px-3 py-1 text-xs font-semibold text-amber-200">${template.slug}</span></div></article>`).join('');
+        }
+        function paintRuns() {
+            const panel = document.getElementById('runsPanel');
+            panel.innerHTML = state.runs.length ? state.runs.map((run) => `<article class="rounded-3xl border border-slate-800 bg-slate-950/60 p-4"><div class="flex items-start justify-between gap-3"><div><p class="text-sm font-semibold text-white">${(run.content || '').split('\n')[0]}</p><p class="mt-2 text-xs text-slate-400">${run.template_type || 'trend-brief'} · ${run.created_at || ''}</p></div><span class="rounded-full px-3 py-1 text-xs font-semibold ${run.status === 'published' ? 'bg-emerald-500/10 text-emerald-200' : run.status === 'draft' ? 'bg-slate-700 text-slate-200' : 'bg-amber-500/10 text-amber-200'}">${run.status}</span></div>${run.link_url ? `<a href="${run.link_url}" target="_blank" rel="noopener noreferrer" class="mt-3 inline-flex text-xs font-semibold text-amber-300 hover:text-amber-200">공개 글 보기</a>` : ''}</article>`).join('') : '<div class="rounded-3xl border border-dashed border-slate-700 bg-slate-950/40 p-5 text-sm text-slate-400">WordPress 실행 이력이 아직 없습니다.</div>';
+        }
+        function showResult(html) { document.getElementById('resultPanel').innerHTML = html; }
+        async function refreshAll() {
+            const [sites, templatePayload, runs] = await Promise.all([getWordPressSites().catch(() => ({ sites: [] })), getWordPressTemplates().catch(() => ({ templates: [] })), getWordPressRuns().catch(() => ({ runs: [] }))]);
+            state.sites = sites.sites || [];
+            state.templates = templatePayload.templates || [];
+            state.runs = runs.runs || [];
+            paintSites(); paintTemplates(); paintRuns();
+        }
+        document.getElementById('siteForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            try {
+                const result = await saveWordPressSite({ account_name: document.getElementById('accountName').value.trim(), site_url: document.getElementById('siteUrl').value.trim(), wp_username: document.getElementById('wpUsername').value.trim(), access_token: document.getElementById('wpPassword').value.trim() });
+                showSuccess('WordPress 사이트를 저장했습니다.');
+                showResult(`<pre class="whitespace-pre-wrap text-xs leading-6 text-slate-300">${JSON.stringify(result, null, 2)}</pre>`);
+                await refreshAll();
+            } catch (error) { showError(error.message || 'WordPress 저장 실패'); }
+        });
+        document.getElementById('testSiteButton').addEventListener('click', async () => {
+            if (!state.sites.length) { showError('테스트할 사이트가 없습니다.'); return; }
+            try {
+                const result = await testWordPressSite(state.sites[0].id);
+                showSuccess('WordPress 연결 테스트를 통과했습니다.');
+                showResult(`<pre class="whitespace-pre-wrap text-xs leading-6 text-slate-300">${JSON.stringify(result, null, 2)}</pre>`);
+            } catch (error) { showError(error.message || 'WordPress 테스트 실패'); }
+        });
+        document.getElementById('auditButton').addEventListener('click', async () => {
+            try {
+                const brief = {
+                    title: document.getElementById('postTitle').value.trim() || 'Bohemian Studio Audit Draft',
+                    category_label: document.getElementById('categoryLabel').value.trim(),
+                    category_slug: document.getElementById('categorySlug').value.trim(),
+                    updated_at: new Date().toISOString().slice(0, 10),
+                    excerpt: '공식 출처 기반 감사를 위한 임시 브리프입니다.',
+                    status: document.getElementById('postStatus').value,
+                    summary_cards: [{ title: '핵심 변화', body: '공식 출처를 기준으로 핵심 변화를 요약합니다.' }, { title: '실행 의미', body: '사용자가 바로 이해할 수 있게 운영 의미를 정리합니다.' }, { title: '다음 단계', body: '실행 가이드를 분명한 문장으로 제공합니다.' }],
+                    sections: [{ id: 'what-changed', heading: '무엇이 바뀌었나', body: '공식 출처를 바탕으로 핵심 변화와 범위를 설명합니다.' }, { id: 'why-it-matters', heading: '왜 중요한가', body: '사용자와 운영자 관점에서 실제 영향을 정리합니다.' }, { id: 'what-to-do-now', heading: '지금 무엇을 해야 하나', body: '실행 체크포인트와 다음 단계를 제시합니다.' }],
+                    faq: [{ question: '이 글은 어떤 기준으로 작성되나요?', answer: '공식 출처와 사용자 가치를 기준으로 작성됩니다.' }],
+                    featured_image: { path: 'featured-image.png', alt_text: 'Bohemian Studio 대표 이미지' },
+                    official_sources: toLines(document.getElementById('sourcesInput').value).map((url) => ({ url, title: url, publisher: 'Official', published_at: new Date().toISOString().slice(0, 10) }))
+                };
+                const result = await auditWordPressBrief(brief);
+                showSuccess('품질 감사가 완료되었습니다.');
+                showResult(`<pre class="whitespace-pre-wrap text-xs leading-6 text-slate-300">${JSON.stringify(result, null, 2)}</pre>`);
+            } catch (error) { showError(error.message || '품질 감사 실패'); }
+        });
+        document.getElementById('publishForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            try {
+                if (!state.sites.length) { showError('먼저 WordPress 사이트를 연결하세요.'); return; }
+                const result = await createWordPressPost({
+                    account_id: Number(document.getElementById('siteSelect').value),
+                    template_type: document.getElementById('templateSelect').value,
+                    title: document.getElementById('postTitle').value.trim(),
+                    status: document.getElementById('postStatus').value,
+                    category_label: document.getElementById('categoryLabel').value.trim(),
+                    category_slug: document.getElementById('categorySlug').value.trim(),
+                    push_to_wordpress: true,
+                    sources: toLines(document.getElementById('sourcesInput').value).map((url) => ({ url })),
+                    provider: 'deterministic'
+                });
+                showSuccess('WordPress 파이프라인이 완료되었습니다.');
+                showResult(`<pre class="whitespace-pre-wrap text-xs leading-6 text-slate-300">${JSON.stringify(result, null, 2)}</pre>`);
+                await refreshAll();
+            } catch (error) { showError(error.message || 'WordPress 실행 실패'); }
+        });
+        document.getElementById('refreshButton').addEventListener('click', refreshAll);
+        document.addEventListener('DOMContentLoaded', refreshAll);
+    </script>
+    <script src="../mobile-optimization.js" defer></script>
+</body>
+</html>

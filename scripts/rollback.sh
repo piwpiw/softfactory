@@ -15,7 +15,7 @@
 #   /opt/softfactory/<env>/rollback_image.txt
 #
 # To override the target image explicitly:
-#   ROLLBACK_IMAGE=softfactory/softfactory:v1.4.0 ./scripts/rollback.sh production
+#   ROLLBACK_IMAGE=piwpiw99/softfactory:v1.4.0 ./scripts/rollback.sh production
 # =============================================================================
 
 set -euo pipefail
@@ -36,19 +36,21 @@ ENVIRONMENT="${1:-production}"
 DEPLOY_DIR="${DEPLOY_DIR:-/opt/softfactory}"
 HEALTH_RETRIES="${HEALTH_RETRIES:-8}"
 HEALTH_INTERVAL="${HEALTH_INTERVAL:-5}"
+HOST_PORT=""
+APP_PORT="${APP_PORT:-8000}"
 
 case "$ENVIRONMENT" in
   staging)
-    APP_PORT=9001
     CONTAINER_NAME="softfactory-staging"
     ENV_FILE="$DEPLOY_DIR/staging/.env"
     ROLLBACK_FILE="$DEPLOY_DIR/staging/rollback_image.txt"
+    HOST_PORT="${HOST_PORT:-9001}"
     ;;
   production)
-    APP_PORT=9000
     CONTAINER_NAME="softfactory-prod"
     ENV_FILE="$DEPLOY_DIR/production/.env"
     ROLLBACK_FILE="$DEPLOY_DIR/production/rollback_image.txt"
+    HOST_PORT="${HOST_PORT:-9000}"
     ;;
   *)
     log_error "Unknown environment: $ENVIRONMENT (use: staging | production)"
@@ -56,7 +58,7 @@ case "$ENVIRONMENT" in
     ;;
 esac
 
-HEALTH_URL="http://localhost:${APP_PORT}/health"
+HEALTH_URL="http://localhost:${HOST_PORT}/health"
 LOG_FILE="$DEPLOY_DIR/$ENVIRONMENT/rollback_$(date +%Y%m%d_%H%M%S).log"
 mkdir -p "$DEPLOY_DIR/$ENVIRONMENT/logs"
 exec > >(tee -a "$LOG_FILE") 2>&1
@@ -125,7 +127,7 @@ log_step "Starting Previous Version"
 docker run -d \
   --name "$CONTAINER_NAME" \
   --restart unless-stopped \
-  -p "${APP_PORT}:9000" \
+  -p "${HOST_PORT}:${APP_PORT}" \
   --env-file "$ENV_FILE" \
   -e ROLLBACK=true \
   -v "$DEPLOY_DIR/$ENVIRONMENT/logs:/app/logs" \

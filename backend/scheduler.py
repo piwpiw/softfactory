@@ -599,21 +599,28 @@ def execute_scheduled_posts(app: Flask):
                         continue
 
                     # Create a mock post (in production, use AI generation)
+                    is_wordpress = account.platform in {'wordpress', 'blog'}
                     post = SNSPost(
                         user_id=rule.user_id,
                         account_id=account.id,
-                        content=f'[Auto] {rule.topic or "Update"} — {rule.purpose or "engagement"}',
-                        platform=account.platform,
-                        template_type='auto_generated',
-                        status='published',
-                        published_at=now,
+                        content=(
+                            f'[Candidate] {rule.topic or "WordPress update"}'
+                            if is_wordpress
+                            else f'[Auto] {rule.topic or "Update"} - {rule.purpose or "engagement"}'
+                        ),
+                        platform='wordpress' if is_wordpress else account.platform,
+                        template_type='trend-brief' if is_wordpress else 'auto_generated',
+                        status='draft' if is_wordpress else 'published',
+                        published_at=None if is_wordpress else now,
                         scheduled_at=now,
                     )
                     db.session.add(post)
 
                     # Advance next_run
                     freq = rule.frequency or 'daily'
-                    if freq == 'daily':
+                    if is_wordpress:
+                        rule.next_run = now + timedelta(minutes=10)
+                    elif freq == 'daily':
                         rule.next_run = now + timedelta(days=1)
                     elif freq == 'weekly':
                         rule.next_run = now + timedelta(weeks=1)

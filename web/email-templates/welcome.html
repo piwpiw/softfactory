@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>?섏쁺?⑸땲????SoftFactory</title>
+  <title>환영합니다 | SoftFactory</title>
   <style>
     body { margin: 0; padding: 0; background-color: #f3f4f6; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; }
     .wrapper { max-width: 600px; margin: 40px auto; padding: 0 16px; }
@@ -27,72 +27,69 @@
     .footer { padding: 32px 48px 40px; text-align: center; border-top: 1px solid #E5E7EB; }
     .footer p { font-size: 12px; color: #9CA3AF; margin: 4px 0; }
     .footer a { color: #7C3AED; text-decoration: none; }
+    @media (max-width: 640px) {
+      .body { padding: 32px 24px; }
+      .header { padding: 40px 24px 32px; }
+    }
   </style>
     <script src="../mobile-optimization.js" defer></script>
 </head>
 <body>
   <div class="wrapper">
     <div class="card">
-      <!-- Header -->
       <div class="header">
-        <span class="header-emoji">?럦</span>
-        <h1>?섏쁺?⑸땲?? {{ user_name }}??</h1>
-        <p>SoftFactory 媛?낆쓣 吏꾩떖?쇰줈 異뺥븯?쒕┰?덈떎</p>
+        <span class="header-emoji">🎉</span>
+        <h1>환영합니다, {{ user_name }}님.</h1>
+        <p>SoftFactory에 오신 것을 진심으로 환영합니다.</p>
       </div>
 
-      <!-- Body -->
       <div class="body">
         <p class="intro">
-          SoftFactory? ?④퍡 鍮꾩쫰?덉뒪 ?깆옣???덈줈???ъ젙???쒖옉?섏꽭??
-          SNS ?먮룞?? 由щ럭 愿由? AI 吏곸썝 ??媛뺣젰???꾧뎄濡??낅Т ?⑥쑉???믪씠?몄슂.
+          이제부터 AI와 소셜 운영을 한 번에 처리할 수 있습니다.
+          SNS 연동부터 콘텐츠 제작, 자동 배포, 응대, 성과 분석까지
+          SoftFactory가 통합 워크플로우로 안내합니다.
         </p>
 
-        <p class="features-title">二쇱슂 湲곕뒫 ?뚭컻</p>
+        <p class="features-title">주요 기능</p>
 
-        <!-- Feature 1 -->
         <div class="feature-card">
-          <div class="feature-icon purple">?쨼</div>
+          <div class="feature-icon purple">🧩</div>
           <div class="feature-text">
-            <h3>SNS ?먮룞??/h3>
-            <p>Instagram, Facebook, Twitter ??硫?곗콈??寃뚯떆臾쇱쓣 ??怨녹뿉???덉빟쨌?먮룞 諛쒗뻾?섏꽭??</p>
+            <h3>SNS 계정 연동</h3>
+            <p>Instagram, Facebook, X(트위터) 등 주요 채널을 하나의 화면에서 관리합니다.</p>
           </div>
         </div>
 
-        <!-- Feature 2 -->
         <div class="feature-card">
-          <div class="feature-icon blue">狩?/div>
+          <div class="feature-icon blue">🤖</div>
           <div class="feature-text">
-            <h3>由щ럭 愿由?/h3>
-            <p>AI媛 怨좉컼 由щ럭???먮룞?쇰줈 ?듦????ш퀬, 遺?뺤쟻 由щ럭瑜??ㅼ떆媛꾩쑝濡?紐⑤땲?곕쭅?⑸땲??</p>
+            <h3>AI 콘텐츠 제작</h3>
+            <p>브랜드 톤앤매너를 반영해 기획-작성-캘린더 예약까지 자동으로 진행합니다.</p>
           </div>
         </div>
 
-        <!-- Feature 3 -->
         <div class="feature-card">
-          <div class="feature-icon green">??/div>
+          <div class="feature-icon green">📈</div>
           <div class="feature-text">
-            <h3>AI 吏곸썝</h3>
-            <p>24?쒓컙 怨좉컼 ?묐?, 肄섑뀗痢??앹꽦, ?곗씠??遺꾩꽍??泥섎━?섎뒗 ?섎쭔??AI ???援ъ꽦?섏꽭??</p>
+            <h3>실시간 분석 리포트</h3>
+            <p>24시간 활동 현황, 성과 지표, 캠페인 개선 포인트를 인사이트로 제공합니다.</p>
           </div>
         </div>
 
-        <!-- CTA -->
         <div class="cta-wrap">
-          <a href="{{ dashboard_url }}" class="cta-btn">吏湲??쒖옉?섍린</a>
+          <a href="{{ dashboard_url }}" class="cta-btn">대시보드 시작하기</a>
         </div>
       </div>
 
-      <!-- Footer -->
       <div class="footer">
         <p>&copy; {{ year }} SoftFactory. All rights reserved.</p>
         <p>
           <a href="https://softfactory.kr">softfactory.kr</a> &nbsp;|&nbsp;
-          <a href="https://softfactory.kr/support">怨좉컼 吏??/a> &nbsp;|&nbsp;
-          <a href="https://softfactory.kr/privacy">媛쒖씤?뺣낫泥섎━諛⑹묠</a>
+          <a href="https://softfactory.kr/support">고객지원</a> &nbsp;|&nbsp;
+          <a href="https://softfactory.kr/privacy">개인정보보호정책</a>
         </p>
       </div>
     </div>
   </div>
 </body>
 </html>
-

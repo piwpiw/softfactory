@@ -1,0 +1,31 @@
+/*
+Theme Name: Bohemian Studio Theme
+Theme URI: https://piwpiwwp.mycafe24.com
+Author: SoftFactory
+Description: Child block theme package for the Bohemian Studio editorial magazine layout.
+Version: 0.1.0
+Requires at least: 6.6
+Tested up to: 6.9
+Requires PHP: 8.1
+Template: twentytwentyfive
+Text Domain: bohemian-studio-theme
+*/
+
+:root {
+  --bs-ink: #0b1320;
+  --bs-paper: #f6f1e8;
+  --bs-teal: #0f766e;
+  --bs-amber: #c58a2a;
+  --bs-moss: #2f6b4f;
+}
+
+body {
+  background:
+    radial-gradient(circle at top left, rgba(15, 118, 110, 0.14), transparent 28%),
+    radial-gradient(circle at top right, rgba(197, 138, 42, 0.16), transparent 32%),
+    linear-gradient(180deg, #07101d 0%, #0b1320 100%);
+}
+
+.wp-site-blocks {
+  min-height: 100vh;
+}

@@ -25,7 +25,7 @@
       "host": "0.0.0.0",
       "cors": {
         "enabled": true,
-        "origin": "*"
+        "origin": "http://localhost:9000"
       }
     },
     "ui": {
@@ -101,6 +101,13 @@
       "nodeType": "n8n-nodes-base.telegram",
       "credentialsName": "Telegram Bot",
       "botToken": "ENV:TELEGRAM_BOT_TOKEN"
+    },
+    "growthAutomation": {
+      "enabled": true,
+      "apiBaseUrl": "ENV:GROWTH_API_BASE_URL",
+      "queueToken": "ENV:GROWTH_QUEUE_TOKEN",
+      "eventIngestToken": "ENV:EVENT_INGEST_TOKEN",
+      "workflowsPath": "D:/Project/n8n/workflows/growth"
     }
   },
   "schedules": {

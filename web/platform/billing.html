@@ -38,7 +38,7 @@
                     <span class="text-2xl" aria-hidden="true">🏭</span>
                     <div>
                         <h1 class="font-bold text-white">SoftFactory</h1>
-                        <p class="text-xs text-slate-400">Premium SaaS</p>
+                        <p class="text-xs text-slate-400">프리미엄 SaaS</p>
                     </div>
                 </div>
             </div>
@@ -52,16 +52,16 @@
 
                 <div class="my-6 border-t border-slate-800"></div>
                 <p class="section-title text-xs font-semibold text-slate-400 uppercase px-4 mb-3">서비스</p>
-                <a href="../sns-auto/index.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-slate-800 transition">📱 SNS Auto</a>
-                <a href="../review/index.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-slate-800 transition">⭐ Review</a>
+                <a href="../sns-auto/index.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-slate-800 transition">📱 SNS 자동화</a>
+                <a href="../review/index.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-slate-800 transition">⭐ 리뷰</a>
                 <a href="../coocook/index.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-slate-800 transition">🍳 CooCook</a>
-                <a href="../ai-automation/index.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-slate-800 transition">🤖 AI Automation</a>
-                <a href="../webapp-builder/index.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-slate-800 transition">💻 WebApp Builder</a>
+                <a href="../ai-automation/index.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-slate-800 transition">🤖 AI 자동화</a>
+                <a href="../webapp-builder/index.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-slate-800 transition">💻 웹앱 빌더</a>
             </nav>
             <div class="p-6 border-t border-slate-800 soft-user-panel">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-sm font-medium text-white" id="userName">Demo User</p>
+                        <p class="text-sm font-medium text-white" id="userName">사용자</p>
                         <p class="text-xs text-slate-400" id="userEmail">demo@softfactory.com</p>
                     </div>
                     <button onclick="logout()" class="p-2 hover:bg-slate-800 rounded-lg transition" title="로그아웃" type="button">🚪</button>
@@ -135,15 +135,15 @@
             services: [
                 {
                     id: 'svc-sns',
-                    name: 'SNS Auto',
+                    name: 'SNS 자동화',
                     type: '구독형',
                     status: 'active',
                     price: 39000,
                     next_charge: '2026-03-01'
                 },
                 {
-                    id: 'svc-review',
-                    name: 'Review',
+                    id: 'svc-리뷰',
+                    name: '리뷰',
                     type: '건수제',
                     status: 'inactive',
                     price: 19800,
@@ -151,8 +151,8 @@
                 }
             ],
             invoices: [
-                { id: 'inv-2026-01', date: '2026-01-01', product: 'SNS Auto', amount: 39000, status: 'paid' },
-                { id: 'inv-2025-12', date: '2025-12-01', product: 'Review', amount: 12000, status: 'paid' }
+                { id: 'inv-2026-01', date: '2026-01-01', product: 'SNS 자동화', amount: 39000, status: 'paid' },
+                { id: 'inv-2025-12', date: '2025-12-01', product: '리뷰', amount: 12000, status: 'paid' }
             ]
         };
 
@@ -191,7 +191,7 @@
         function setUserInfo() {
             const user = getUser ? getUser() : null;
             if (user) {
-                safeText('userName', user.name || 'Demo User');
+                safeText('userName', user.name || '사용자');
                 safeText('userEmail', user.email || 'demo@softfactory.com');
             }
         }

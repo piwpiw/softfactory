@@ -4,6 +4,7 @@ import sys
 import os
 from pathlib import Path
 from backend.config import Config
+from backend.runtime_paths import default_app_log_path
 
 # Load .env file manually.
 # Keep runtime control flags owned by process env to avoid accidental
@@ -29,10 +30,11 @@ if env_file.exists():
 os.environ.setdefault('FLASK_ENV', 'development')
 os.environ.setdefault('ENVIRONMENT', 'development')
 os.environ.setdefault('DEBUG', 'false')
-os.environ.setdefault('TESTING', 'false')
+os.environ.setdefault('TESTING', 'true')
 
 _env_db_url = Config.get_database_url()
 os.environ['DATABASE_URL'] = _env_db_url or ''
+os.environ.setdefault('LOG_FILE', str(default_app_log_path()))
 
 from backend.app import create_app
 
@@ -41,6 +43,15 @@ from backend.app import create_app
 #   gunicorn "start_platform:app"
 # The __main__ block below is only executed for local development.
 app = create_app()
+
+
+def _log_startup(port: int) -> None:
+    env = os.getenv("ENVIRONMENT", "development")
+    print(f"[start_platform] environment={env} debug=false port={port}")
+    print(f"[start_platform] health=http://127.0.0.1:{port}/health")
+    print(f"[start_platform] api_health=http://127.0.0.1:{port}/api/health")
+    print(f"[start_platform] dashboard=http://127.0.0.1:{port}/web/platform/index.html")
+    print(f"[start_platform] log_file={os.environ.get('LOG_FILE')}")
 
 if __name__ == '__main__':
     # `app` is already created above (module-level) — reuse it for dev server
@@ -64,7 +75,8 @@ if __name__ == '__main__':
     print("  Admin:  admin@softfactory.com / admin123")
     print("  Demo:   demo@softfactory.com / demo123")
     print("\nDocumentation:")
-    print("  Demo Guide:  D:/Project/DEMO_GUIDE.md")
+    print("  Demo Guide:  D:/Project/docs/runbooks/DEMO_GUIDE.md")
     print("="*70 + "\n")
     port = int(os.getenv("PORT", os.getenv("APP_PORT", "9000")))
+    _log_startup(port)
     app.run(host='0.0.0.0', port=port, debug=False)

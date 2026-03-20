@@ -1,0 +1,32 @@
+{
+  "items": [
+    {
+      "contact_id": "contact_1001",
+      "journey_id": "onboarding",
+      "state": "active",
+      "entered_at": "2026-03-07T02:12:00Z",
+      "last_action_at": "2026-03-07T02:20:00Z",
+      "cooldown_until": null
+    },
+    {
+      "contact_id": "contact_1002",
+      "journey_id": "onboarding",
+      "state": "lead",
+      "entered_at": "2026-03-07T01:42:00Z",
+      "last_action_at": "2026-03-07T01:42:00Z",
+      "cooldown_until": null
+    },
+    {
+      "contact_id": "contact_1003",
+      "journey_id": "recovery",
+      "state": "at_risk",
+      "entered_at": "2026-03-06T23:30:00Z",
+      "last_action_at": "2026-03-07T00:15:00Z",
+      "cooldown_until": "2026-03-07T06:00:00Z"
+    }
+  ],
+  "total": 3,
+  "page": 1,
+  "per_page": 100,
+  "pages": 1
+}

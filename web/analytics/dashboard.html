@@ -1,72 +1,66 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ko">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#111827">
-<title>분석 대시보드 — SoftFactory</title>
+    <title>분석 대시보드 — SoftFactory</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="../platform/api.js"></script>
+    <link rel="stylesheet" href="../responsive-framework.css">
     <style>
         body { font-family: 'Inter', sans-serif; }
         .metric-card { background: linear-gradient(135deg, var(--color-from) 0%, var(--color-to) 100%); }
         .chart-container { position: relative; height: 300px; margin: 20px 0; }
     </style>
-    <link rel="stylesheet" href="../responsive-framework.css">
-  </head>
+</head>
+
 <body class="bg-slate-950 text-slate-100">
     <div class="flex h-screen overflow-hidden">
-        <!-- Sidebar -->
-        <aside class="w-64 bg-slate-900 border-r border-slate-800 flex flex-col shrink-0">
+        <aside class="w-64 soft-sidebar border-r border-slate-800 flex flex-col shrink-0">
             <div class="p-6 border-b border-slate-800">
-                <a href="../platform/dashboard.html" class="flex items-center gap-3">
-                    <span class="text-2xl">🏭</span>
-                    <div><h1 class="font-bold text-white text-sm">SoftFactory</h1><p class="text-xs text-slate-400">← Back</p></div>
+                <a href="dashboard.html" class="flex items-center gap-3">
+                    <span class="text-2xl">📊</span>
+                    <div>
+                        <h1 class="font-bold text-white text-sm">SoftFactory 분석</h1>
+                        <p class="text-xs text-slate-400">실시간 인사이트</p>
+                    </div>
                 </a>
             </div>
-            <nav class="flex-1 p-6 space-y-2 overflow-y-auto">
-    <button class="hamburger" aria-label="Toggle navigation menu">
-      <span></span>
-      <span></span>
-      <span></span>
-    </button>
-                <p class="text-xs font-semibold text-slate-400 uppercase px-4 mb-3">📊 Analytics</p>
-                <a href="dashboard.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg bg-cyan-600 text-white font-medium">📊 대시보드</a>
-                <a href="reports.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">📋 리포트</a>
-                <a href="custom.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">🔧 커스텀 분석</a>
+
+            <nav class="soft-nav-tree flex-1 p-6 space-y-1.5 overflow-y-auto" aria-label="분석 네비게이션">
+                <button class="hamburger" aria-label="메뉴 열기/닫기" type="button">
+                    <span></span><span></span><span></span>
+                </button>
+                <a href="dashboard.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg bg-cyan-600 text-white font-medium border-l-2 border-cyan-400" aria-current="page">📈 대시보드</a>
+                <a href="../platform/dashboard.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 transition">🏭 플랫폼 대시보드</a>
+                <a href="../platform/performance.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 transition">📋 성능 모니터링</a>
+                <a href="../platform/analytics.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 transition">🧭 분석</a>
             </nav>
-            <div class="p-6 border-t border-slate-800">
-                <button onclick="logout()" class="p-2 hover:bg-slate-800 rounded-lg">🚪</button>
-            </div>
         </aside>
 
-        <!-- Main Content -->
         <div class="flex-1 flex flex-col overflow-hidden">
-            <!-- Header -->
             <header class="h-16 bg-slate-900 border-b border-slate-800 px-6 flex items-center justify-between shrink-0">
-                <h2 class="text-xl font-bold text-white">📊 실시간 분석 대시보드</h2>
+                <h2 class="text-xl font-bold text-white">실행 상태 대시보드</h2>
                 <div class="flex gap-3">
                     <select class="bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:border-cyan-500">
-                        <option>지난 7일</option>
-                        <option>지난 30일</option>
-                        <option>지난 90일</option>
-                        <option>이번 연도</option>
+                        <option>최근 7일</option>
+                        <option>최근 30일</option>
+                        <option>최근 90일</option>
+                        <option>전체 기간</option>
                     </select>
-                    <button class="px-4 py-2 bg-cyan-600 hover:bg-cyan-700 text-white rounded-lg font-medium text-sm transition">
-                        📥 내보내기
-                    </button>
+                    <button class="px-4 py-2 bg-cyan-600 hover:bg-cyan-700 text-white rounded-lg font-medium text-sm transition">데이터 새로고침</button>
                 </div>
             </header>
 
-            <!-- Main Area -->
             <main class="flex-1 overflow-y-auto p-6 space-y-6">
-                <!-- Status Bar -->
-                <div class="bg-slate-800 p-4 rounded-lg border border-slate-700">
-                    <div class="text-sm text-slate-400 mb-2">시스템 상태</div>
+                <section class="bg-slate-800 p-4 rounded-lg border border-slate-700">
+                    <div class="text-sm text-slate-400 mb-2">서비스 안정성</div>
                     <div class="flex items-center gap-4">
                         <div class="flex-1">
                             <div class="bg-slate-700 rounded-full h-3 overflow-hidden">
@@ -75,61 +69,55 @@
                         </div>
                         <span class="text-sm font-bold">92%</span>
                     </div>
-                    <div class="text-xs text-slate-500 mt-2">가동률: 99.98% | 지연시간: 145ms | 에러율: 0.02%</div>
-                </div>
+                    <div class="text-xs text-slate-500 mt-2">가용성: 99.98% | 응답시간: 145ms | 에러율: 0.02%</div>
+                </section>
 
-                <!-- KPI Cards -->
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                     <div class="metric-card p-6 rounded-lg text-white" style="--color-from: #7c3aed; --color-to: #6d28d9;">
-                        <div class="text-sm opacity-90">월간 활성 사용자</div>
+                        <div class="text-sm opacity-90">총 가입자</div>
                         <div class="text-4xl font-bold mt-2">10.2K</div>
-                        <div class="text-sm mt-2">↑ 23% vs 지난달</div>
+                        <div class="text-sm mt-2">전월 대비 +23%</div>
                     </div>
                     <div class="metric-card p-6 rounded-lg text-white" style="--color-from: #f97316; --color-to: #ea580c;">
-                        <div class="text-sm opacity-90">예약 전환율</div>
+                        <div class="text-sm opacity-90">전환율</div>
                         <div class="text-4xl font-bold mt-2">16.8%</div>
-                        <div class="text-sm mt-2">↑ 2.1% 목표 달성</div>
+                        <div class="text-sm mt-2">전월 대비 +2.1%</div>
                     </div>
                     <div class="metric-card p-6 rounded-lg text-white" style="--color-from: #10b981; --color-to: #059669;">
-                        <div class="text-sm opacity-90">7일 유지율</div>
+                        <div class="text-sm opacity-90">재구매율</div>
                         <div class="text-4xl font-bold mt-2">42.3%</div>
-                        <div class="text-sm mt-2">↑ 1.2% 목표 초과</div>
+                        <div class="text-sm mt-2">전월 대비 +1.2%</div>
                     </div>
                     <div class="metric-card p-6 rounded-lg text-white" style="--color-from: #06b6d4; --color-to: #0891b2;">
-                        <div class="text-sm opacity-90">Net Promoter</div>
+                        <div class="text-sm opacity-90">NPS</div>
                         <div class="text-4xl font-bold mt-2">54</div>
-                        <div class="text-sm mt-2">↑ 4점 향상</div>
+                        <div class="text-sm mt-2">전월 대비 +4.2</div>
                     </div>
                 </div>
 
-                <!-- Charts Row 1 -->
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <!-- User Growth Chart -->
-                    <div class="bg-slate-800 p-6 rounded-lg border border-slate-700">
-                        <h3 class="text-lg font-bold mb-4">📈 사용자 증가 추세 (Q1 2026)</h3>
+                    <section class="bg-slate-800 p-6 rounded-lg border border-slate-700">
+                        <h3 class="text-lg font-bold mb-4">월간 MAU 증가 추이</h3>
                         <div class="chart-container">
                             <canvas id="userGrowthChart"></canvas>
                         </div>
-                    </div>
+                    </section>
 
-                    <!-- Revenue Breakdown -->
-                    <div class="bg-slate-800 p-6 rounded-lg border border-slate-700">
-                        <h3 class="text-lg font-bold mb-4">💰 서비스별 매출</h3>
+                    <section class="bg-slate-800 p-6 rounded-lg border border-slate-700">
+                        <h3 class="text-lg font-bold mb-4">매출 구성</h3>
                         <div class="chart-container">
                             <canvas id="revenueChart"></canvas>
                         </div>
-                    </div>
+                    </section>
                 </div>
 
-                <!-- Charts Row 2 -->
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <!-- Retention Cohort -->
-                    <div class="bg-slate-800 p-6 rounded-lg border border-slate-700">
-                        <h3 class="text-lg font-bold mb-4">👥 코호트 유지율</h3>
+                    <section class="bg-slate-800 p-6 rounded-lg border border-slate-700">
+                        <h3 class="text-lg font-bold mb-4">코호트 이탈율</h3>
                         <div class="space-y-4">
                             <div>
                                 <div class="flex justify-between text-sm mb-2">
-                                    <span>1월 2026</span>
+                                    <span>1개월차</span>
                                     <span class="font-bold">78%</span>
                                 </div>
                                 <div class="w-full bg-slate-700 rounded-full h-2">
@@ -138,7 +126,7 @@
                             </div>
                             <div>
                                 <div class="flex justify-between text-sm mb-2">
-                                    <span>2월 2026</span>
+                                    <span>2개월차</span>
                                     <span class="font-bold">65%</span>
                                 </div>
                                 <div class="w-full bg-slate-700 rounded-full h-2">
@@ -147,7 +135,7 @@
                             </div>
                             <div>
                                 <div class="flex justify-between text-sm mb-2">
-                                    <span>3월 2026</span>
+                                    <span>3개월차</span>
                                     <span class="font-bold">71%</span>
                                 </div>
                                 <div class="w-full bg-slate-700 rounded-full h-2">
@@ -155,14 +143,13 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </section>
 
-                    <!-- Feature Adoption -->
-                    <div class="bg-slate-800 p-6 rounded-lg border border-slate-700">
-                        <h3 class="text-lg font-bold mb-4">🎯 기능 채택률</h3>
+                    <section class="bg-slate-800 p-6 rounded-lg border border-slate-700">
+                        <h3 class="text-lg font-bold mb-4">기능별 성과</h3>
                         <div class="space-y-4">
                             <div class="flex justify-between items-center">
-                                <span class="text-sm">레시피 발견</span>
+                                <span class="text-sm">주요 기능</span>
                                 <div class="flex items-center gap-2">
                                     <div class="w-24 bg-slate-700 rounded-full h-2">
                                         <div class="bg-orange-500 h-2 rounded-full" style="width:92%"></div>
@@ -171,7 +158,7 @@
                                 </div>
                             </div>
                             <div class="flex justify-between items-center">
-                                <span class="text-sm">셰프 예약</span>
+                                <span class="text-sm">광고 성과</span>
                                 <div class="flex items-center gap-2">
                                     <div class="w-24 bg-slate-700 rounded-full h-2">
                                         <div class="bg-orange-500 h-2 rounded-full" style="width:68%"></div>
@@ -180,7 +167,7 @@
                                 </div>
                             </div>
                             <div class="flex justify-between items-center">
-                                <span class="text-sm">AI 추천</span>
+                                <span class="text-sm">AI 자동화</span>
                                 <div class="flex items-center gap-2">
                                     <div class="w-24 bg-slate-700 rounded-full h-2">
                                         <div class="bg-orange-500 h-2 rounded-full" style="width:54%"></div>
@@ -189,7 +176,7 @@
                                 </div>
                             </div>
                             <div class="flex justify-between items-center">
-                                <span class="text-sm">소셜 공유</span>
+                                <span class="text-sm">유입 채널</span>
                                 <div class="flex items-center gap-2">
                                     <div class="w-24 bg-slate-700 rounded-full h-2">
                                         <div class="bg-orange-500 h-2 rounded-full" style="width:41%"></div>
@@ -198,31 +185,30 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </section>
                 </div>
 
-                <!-- Recent Activities -->
-                <div class="bg-slate-800 p-6 rounded-lg border border-slate-700">
-                    <h3 class="text-lg font-bold mb-4">⚡ 최근 활동</h3>
+                <section class="bg-slate-800 p-6 rounded-lg border border-slate-700">
+                    <h3 class="text-lg font-bold mb-4">최근 활동</h3>
                     <div class="space-y-3 text-sm">
                         <div class="flex justify-between py-3 border-b border-slate-700">
-                            <span>🎉 100명의 새 셰프 등록</span>
-                            <span class="text-slate-500">2시간 전</span>
+                            <span>사용자 100명 결제 전환</span>
+                            <span class="text-slate-500">2분 전</span>
                         </div>
                         <div class="flex justify-between py-3 border-b border-slate-700">
-                            <span>🚀 레시피 발견 API 배포</span>
-                            <span class="text-slate-500">5시간 전</span>
+                            <span>AI API 호출 지연 감지</span>
+                            <span class="text-slate-500">5분 전</span>
                         </div>
                         <div class="flex justify-between py-3 border-b border-slate-700">
-                            <span>🔐 보안 감사 통과 (위험 0개)</span>
-                            <span class="text-slate-500">8시간 전</span>
+                            <span>리포트 생성 배치 완료</span>
+                            <span class="text-slate-500">8분 전</span>
                         </div>
                         <div class="flex justify-between py-3">
-                            <span>📊 Q1 OKR 검토: 95% 진행 중</span>
-                            <span class="text-slate-500">1일 전</span>
+                            <span>이번 분기 OKR 달성률 95%</span>
+                            <span class="text-slate-500">1시간 전</span>
                         </div>
                     </div>
-                </div>
+                </section>
             </main>
         </div>
     </div>
@@ -230,14 +216,13 @@
     <script>
         requireAuth();
 
-        // User Growth Chart
         new Chart(document.getElementById('userGrowthChart'), {
             type: 'line',
             data: {
-                labels: ['1주', '2주', '3주', '4주', '5주', '6주', '7주', '8주', '9주', '10주', '11주', '12주'],
+                labels: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
                 datasets: [{
                     label: 'MAU',
-                    data: [8200, 8900, 9400, 9800, 10200, 10450, 10620, 10800, 10950, 11100, 11250, 10200],
+                    data: [8200, 8900, 9400, 9800, 10200, 10450, 10620, 10800, 10950, 11100, 11250, 11500, 11800],
                     borderColor: '#06b6d4',
                     backgroundColor: 'rgba(6, 182, 212, 0.1)',
                     borderWidth: 2,
@@ -249,15 +234,16 @@
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: { legend: { display: false } },
-                scales: { y: { grid: { color: '#374151' }, ticks: { color: '#9CA3AF' } } }
+                scales: {
+                    y: { grid: { color: '#374151' }, ticks: { color: '#9CA3AF' } }
+                }
             }
         });
 
-        // Revenue Chart
         new Chart(document.getElementById('revenueChart'), {
             type: 'doughnut',
             data: {
-                labels: ['셰프 예약', '구독료', '프리미엄 레시피', '파트너십'],
+                labels: ['신규 구독', '업셀', '광고 수익', '기타'],
                 datasets: [{
                     data: [42, 31, 18, 9],
                     backgroundColor: ['#f97316', '#ea580c', '#d97706', '#b45309'],
@@ -270,6 +256,8 @@
             }
         });
     </script>
+
     <script src="../mobile-optimization.js" defer></script>
 </body>
+
 </html>

@@ -1,242 +1,210 @@
 ﻿<!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-    <meta name="theme-color" content="#1e293b">
-    <title>?ㅽ봽?쇱씤 - SoftFactory</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
-    <style>
-        * {
-            font-family: 'Inter', sans-serif;
-        }
-
-        h1, h2, h3, h4, h5, h6 {
-            font-family: 'Poppins', sans-serif;
-        }
-
-        body {
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 25%, #0f172a 50%, #1a1f35 75%, #0f172a 100%);
-            background-attachment: fixed;
-            min-height: 100vh;
-        }
-
-        .pulse-ring {
-            animation: pulse-ring 2s infinite;
-        }
-
-        @keyframes pulse-ring {
-            0% {
-                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
-            }
-            70% {
-                box-shadow: 0 0 0 10px rgba(239, 68, 68, 0);
-            }
-            100% {
-                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
-            }
-        }
-
-        .offline-icon {
-            width: 120px;
-            height: 120px;
-            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 2rem;
-        }
-
-        .connection-status {
-            display: inline-block;
-            padding: 0.75rem 1.5rem;
-            background: rgba(239, 68, 68, 0.1);
-            border: 1px solid rgba(239, 68, 68, 0.3);
-            border-radius: 0.5rem;
-            color: #fecaca;
-            font-weight: 500;
-            margin-top: 2rem;
-        }
-
-        .connection-status.online {
-            background: rgba(34, 197, 94, 0.1);
-            border-color: rgba(34, 197, 94, 0.3);
-            color: #bbf7d0;
-        }
-
-        .cached-pages {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-            margin-top: 2rem;
-        }
-
-        .cached-page-link {
-            display: block;
-            padding: 1rem;
-            background: rgba(30, 41, 59, 0.8);
-            border: 1px solid rgba(71, 85, 105, 0.5);
-            border-radius: 0.5rem;
-            color: #cbd5e1;
-            text-decoration: none;
-            transition: all 0.3s ease;
-        }
-
-        .cached-page-link:hover {
-            background: rgba(30, 41, 59, 1);
-            border-color: rgba(100, 116, 139, 0.8);
-            color: #e2e8f0;
-            transform: translateY(-2px);
-        }
-
-        .cached-page-link-title {
-            font-weight: 600;
-            color: #f1f5f9;
-            margin-bottom: 0.5rem;
-        }
-
-        .cached-page-link-description {
-            font-size: 0.875rem;
-            color: #94a3b8;
-        }
-    </style>
-    <script src="mobile-optimization.js" defer></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#1e293b" />
+  <title>?ㅽ봽?쇱씤 ?덈궡</title>
+  <style>
+    :root { --line: #e2e8f0; --muted: #64748b; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Inter", "Segoe UI", system-ui, sans-serif;
+      color: #e2e8f0;
+      background:
+        radial-gradient(90rem 90rem at 0% 0%, #0f172a 0%, #1e293b 40%, #0f172a 100%);
+    }
+    .container {
+      max-width: 680px;
+      margin: 0 auto;
+      min-height: 100vh;
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .card {
+      width: 100%;
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid rgba(71, 85, 105, 0.6);
+      border-radius: 16px;
+      padding: 22px;
+    }
+    .status {
+      display: inline-block;
+      border-radius: 999px;
+      padding: 8px 14px;
+      margin-top: 10px;
+      background: rgba(239, 68, 68, 0.12);
+      border: 1px solid rgba(248, 113, 113, 0.4);
+      color: #fecaca;
+      font-weight: 600;
+    }
+    .status.online {
+      background: rgba(34, 197, 94, 0.12);
+      border: 1px solid rgba(74, 222, 128, 0.45);
+      color: #bbf7d0;
+    }
+    .grid {
+      margin-top: 18px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .link {
+      display: block;
+      border: 1px solid rgba(71, 85, 105, 0.5);
+      border-radius: 10px;
+      padding: 12px;
+      color: #cbd5e1;
+      text-decoration: none;
+    }
+    .link h3 { margin: 0; color: #f8fafc; }
+    .link p { margin: 6px 0 0; color: #94a3b8; font-size: .87rem; }
+    .actions {
+      margin-top: 16px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    button, .btn {
+      border: 1px solid rgba(71, 85, 105, 0.5);
+      border-radius: 10px;
+      background: #0f172a;
+      color: #fff;
+      padding: 9px 12px;
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .check {
+      background: #1d4ed8;
+      border-color: #1d4ed8;
+    }
+    ul { margin-top: 12px; padding-left: 16px; color: #94a3b8; font-size: .9rem; }
+    .muted { color: #94a3b8; }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
+    @media (max-width: 600px) {
+      .grid { grid-template-columns: 1fr; }
+    }
+  </style>
+    <link rel="stylesheet" href="/unified-ui.css">
+    <script src="/unified-ui.js" defer></script>
 </head>
-<body class="text-slate-300">
-    <div class="min-h-screen flex flex-col items-center justify-center px-6 py-12">
-        <div class="max-w-md w-full text-center">
-            <!-- Offline Icon -->
-            <div class="offline-icon pulse-ring">
-                <svg class="w-16 h-16 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071l3.534-3.534a1 1 0 011.414 0l3.534 3.534M5 13a8 8 0 0116 0m-16-5a8 8 0 0116 0"></path>
-                </svg>
-            </div>
+<body>
+  <div class="container">
+    <div class="card">
+      <h1>?ㅽ봽?쇱씤 ?곹깭</h1>
+      <p class="muted">?ㅽ듃?뚰겕媛 遺덉븞?뺥빐 ?붾㈃??利됱떆 ?꾩넚/濡쒕뵫?????놁뒿?덈떎. 罹먯떆??吏꾩엯?먯쓣 ?뺤씤?섍퀬 蹂듦뎄 ???먮룞 ?꾪솚?⑸땲??</p>
+      <div class="status" id="statusText">?ㅽ듃?뚰겕 ?곹깭: ?먭?以?/div>
 
-            <!-- Title -->
-            <h1 class="text-3xl md:text-4xl font-bold text-slate-100 mb-2">
-                ?ㅽ봽?쇱씤 ?곹깭?낅땲??
-            </h1>
+      <div class="actions">
+        <button id="retryBtn" class="check">?ㅼ떆 ?곌껐</button>
+        <button id="clearBtn">罹먯떆 吏꾨떒</button>
+        <a class="btn" href="index.html">?덉쑝濡??대룞</a>
+      </div>
 
-            <!-- Status -->
-            <div class="connection-status" id="statusIndicator">
-                <span id="statusText">?ㅽ듃?뚰겕 ?곌껐 ?딄?</span>
-            </div>
+      <div class="grid">
+        <a class="link" href="dashboard.html">
+          <h3>?댁쁺 ??쒕낫??/h3>
+          <p>理쒓렐 ?대깽?? ? ?곹깭</p>
+        </a>
+        <a class="link" href="analytics.html">
+          <h3>遺꾩꽍</h3>
+          <p>KPI, ?ㅼ떆媛?吏??/p>
+        </a>
+        <a class="link" href="operations.html">
+          <h3>?댁쁺 ?쒖뼱</h3>
+          <p>?뚮┝, 誘몄뀡, ?먮룞???곹깭</p>
+        </a>
+        <a class="link" href="ci-cd.html">
+          <h3>CI/CD</h3>
+          <p>?뚯씠?꾨씪???ㅽ뻾 ?곹깭</p>
+        </a>
+      </div>
 
-            <!-- Description -->
-            <p class="text-slate-400 text-center mt-6">
-                ?꾩옱 ?명꽣???곌껐???놁뒿?덈떎. ?꾨옒?먯꽌 罹먯떆???섏씠吏瑜?諛⑸Ц?섍굅???곌껐??蹂듦뎄???뚭퉴吏 湲곕떎?ㅼ＜?몄슂.
-            </p>
-
-            <!-- Cached Pages -->
-            <div class="cached-pages">
-                <a href="/web/platform/index.html" class="cached-page-link">
-                    <div class="cached-page-link-title">?뱤 ??쒕낫??/div>
-                    <div class="cached-page-link-description">CEO ??쒕낫??(罹먯떆??</div>
-                </a>
-
-                <a href="/web/dashboard.html" class="cached-page-link">
-                    <div class="cached-page-link-title">?뱢 遺꾩꽍</div>
-                    <div class="cached-page-link-description">遺꾩꽍 ?곗씠??(罹먯떆??</div>
-                </a>
-
-                <a href="/web/analytics.html" class="cached-page-link">
-                    <div class="cached-page-link-title">?뮰 蹂닿퀬??/div>
-                    <div class="cached-page-link-description">遺꾩꽍 蹂닿퀬??(罹먯떆??</div>
-                </a>
-
-                <a href="/web/operations.html" class="cached-page-link">
-                    <div class="cached-page-link-title">?숋툘 ?댁쁺</div>
-                    <div class="cached-page-link-description">?댁쁺 愿由?(罹먯떆??</div>
-                </a>
-            </div>
-
-            <!-- Help Section -->
-            <div class="mt-8 p-4 bg-slate-800/50 rounded-lg border border-slate-700/50">
-                <h3 class="text-sm font-semibold text-slate-200 mb-2">?곌껐 ?뺤씤 ??</h3>
-                <ul class="text-xs text-slate-400 space-y-1 text-left">
-                    <li>??WiFi ?곌껐 ?곹깭 ?뺤씤</li>
-                    <li>??紐⑤컮???곗씠???쒖꽦???뺤씤</li>
-                    <li>????났湲?紐⑤뱶 鍮꾪솢?깊솕</li>
-                    <li>???쇱슦???ъ떆??/li>
-                </ul>
-            </div>
-
-            <!-- Retry Button -->
-            <button
-                id="retryBtn"
-                class="mt-6 w-full px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-all duration-300 active:scale-95"
-                onclick="retryConnection()"
-            >
-                ?곌껐 ?ㅼ떆 ?쒕룄
-            </button>
-        </div>
+      <h3 style="margin-bottom: 8px;">?ㅽ봽?쇱씤 ?먭? 泥댄겕由ъ뒪??/h3>
+      <ul id="checklist">
+        <li>Wi-Fi ?먮뒗 ?좎꽑 LAN ?곌껐 ?곹깭 ?뺤씤</li>
+        <li>VPN ?몄뀡 ?뺤긽 ?щ? ?뺤씤</li>
+        <li>釉뚮씪?곗? 罹먯떆/?ㅽ넗由ъ?瑜??ъ떆??/li>
+      </ul>
+      <p class="mono muted" id="lastAttempt"></p>
     </div>
+  </div>
 
-    <script>
-        /**
-         * Retry connection and return to previous page
-         */
-        function retryConnection() {
-            const btn = document.getElementById('retryBtn');
-            btn.disabled = true;
-            btn.textContent = '?뺤씤 以?..';
+  <script src="shared-runtime.js"></script>
+  <script>
+    const attempts = [];
+    const endpointList = ["/api/v1/status", "/api/v1/teams"];
+    let retryHandle;
 
-            // Test connection
-            fetch('/health', { method: 'HEAD' })
-                .then(() => {
-                    // Connection restored
-                    updateStatus(true);
-                    setTimeout(() => {
-                        window.location.href = document.referrer || '/web/platform/index.html';
-                    }, 1000);
-                })
-                .catch(() => {
-                    // Still offline
-                    btn.disabled = false;
-                    btn.textContent = '?곌껐 ?ㅼ떆 ?쒕룄';
-                    updateStatus(false);
-                });
-        }
+    function setStatus(online) {
+      const el = document.getElementById("statusText");
+      if (online) {
+        el.classList.add("online");
+        el.textContent = "?ㅽ듃?뚰겕 ?곹깭: ?⑤씪??;
+        setTimeout(() => {
+          window.location.href = "index.html";
+        }, 1200);
+      } else {
+        el.classList.remove("online");
+        el.textContent = "?ㅽ듃?뚰겕 ?곹깭: ?ㅽ봽?쇱씤";
+      }
+    }
 
-        /**
-         * Update connection status display
-         */
-        function updateStatus(isOnline) {
-            const indicator = document.getElementById('statusIndicator');
-            const statusText = document.getElementById('statusText');
+    async function healthCheck() {
+      let ok = 0;
+      const now = new Date().toLocaleString("ko-KR", { hour12: false });
+      attempts.unshift(`[${now}] reconnect check`);
+      attempts.length = Math.min(5, attempts.length + 1);
+      for (const ep of endpointList) {
+        try {
+          const r = await sfRuntime.apiFetch(ep, { method: "HEAD" });
+          if (r.ok) ok += 1;
+        } catch {}
+      }
+      setStatus(ok > 0);
+      document.getElementById("lastAttempt").textContent = attempts.join(" | ");
+    }
 
-            if (isOnline) {
-                indicator.classList.add('online');
-                statusText.textContent = '?ㅽ듃?뚰겕 ?곌껐??;
-            } else {
-                indicator.classList.remove('online');
-                statusText.textContent = '?ㅽ듃?뚰겕 ?곌껐 ?딄?';
-            }
-        }
-
-        /**
-         * Listen for online/offline events
-         */
-        window.addEventListener('online', () => {
-            console.log('[Offline Page] Back online');
-            updateStatus(true);
-            setTimeout(() => {
-                window.location.href = document.referrer || '/web/platform/index.html';
-            }, 1500);
+    function clearCacheNotice() {
+      if ("caches" in window) {
+        caches.keys().then((keys) => {
+          if (keys.length === 0) {
+            attempts.unshift("罹먯떆 ?놁쓬");
+          } else {
+            attempts.unshift(`罹먯떆 踰꾪궥 ${keys.length}媛?);
+          }
+          attempts.length = Math.min(5, attempts.length);
+          document.getElementById("lastAttempt").textContent = attempts.join(" | ");
         });
+      }
+    }
 
-        window.addEventListener('offline', () => {
-            console.log('[Offline Page] Went offline');
-            updateStatus(false);
-        });
+    document.getElementById("retryBtn").addEventListener("click", () => {
+      healthCheck();
+      const btn = document.getElementById("retryBtn");
+      btn.disabled = true;
+      btn.textContent = "?ъ떆??以?..";
+      setTimeout(() => {
+        btn.disabled = false;
+        btn.textContent = "?ㅼ떆 ?곌껐";
+      }, 1200);
+    });
 
-        // Check initial status
-        updateStatus(navigator.onLine);
+    document.getElementById("clearBtn").addEventListener("click", clearCacheNotice);
+    document.addEventListener("online", () => setStatus(true));
+    document.addEventListener("offline", () => setStatus(false));
 
-        console.log('[Offline Page] Loaded');
-    </script>
+    clearCacheNotice();
+    if (navigator.onLine) healthCheck();
+    else setStatus(false);
+    retryHandle = setInterval(() => {
+      if (navigator.onLine) healthCheck();
+    }, 5000);
+  </script>
 </body>
 </html>
 

@@ -1,8 +1,9 @@
 ﻿<!DOCTYPE html>
-<html lang="ja">
+<html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SoftFactory 가입 안내</title>
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; }
         .container { max-width: 600px; margin: 0 auto; padding: 20px; }
@@ -11,48 +12,43 @@
         .content { background: #f9fafb; padding: 30px; border-radius: 0 0 8px 8px; }
         .button { display: inline-block; background: #F97316; color: #fff; padding: 10px 20px; text-decoration: none; border-radius: 4px; margin: 20px 0; }
         .footer { text-align: center; color: #666; font-size: 12px; margin-top: 20px; }
+        @media (max-width: 600px) {
+            .container { padding: 12px; }
+            .content { padding: 20px; }
+        }
     </style>
     <script src="../../mobile-optimization.js" defer></script>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>?쨼 JARVIS</h1>
-            <p>?곥꺖?좈걢?뜰궥?밤깇?졼겦?덀걝?볝걹</p>
+            <h1>🤖 SoftFactory</h1>
+            <p>환영합니다.</p>
         </div>
         <div class="content">
-            <p>{{name}}礪섅겦</p>
-
-            <p>JARVIS?멥굠?녴걪?앾펯?㏂궖?╉꺍?덀걣閭ｅ만?ヤ퐳?먦걬?뚣겲?쀣걼??/p>
-
-            <p>餓δ툔??찣?썬겓?㏂궚?삠궧?㎯걤?뗣굠?녴겓?ゃ굤?얇걮??</p>
+            <p>{{name}}님, 안녕하세요.</p>
+            <p>SoftFactory를 시작하면 SNS 운영 자동화 환경을 바로 구성할 수 있습니다.</p>
+            <p>주요 기능:</p>
             <ul>
-                <li>?곥꺖?좈걢?뜰겏嶸←릤</li>
-                <li>?묆깢?⒲꺖?욁꺍?밧늽?먦겏?с깮?쇈깉</li>
-                <li>?녈꺀?쒌꺃?쇈궥?㎯꺍?꾠꺖?ャ겏?싦에</li>
-                <li>?ゅ땿?뽧걬?뚣걼??꺖??깢??꺖</li>
+                <li>계정 연동</li>
+                <li>캠페인 관리</li>
+                <li>알림 및 보안 가이드</li>
+                <li>로그인·결제·보안 설정</li>
             </ul>
-
-            <p>?뗥쭓?쇻굥?ャ겘?곦빳訝뗣겗?쒌궭?녈굮??꺁?껁궚?쀣겍?뤵걽?뺛걚:</p>
-            <a href="{{login_url}}" class="button">?㏂궖?╉꺍?덀굮閻븃첀</a>
-
-            <p><strong>??궛?ㅳ꺍?끻젿:</strong></p>
+            <p>로그인 후 빠른 시작 가이드를 확인해 보세요.</p>
+            <a href="{{login_url}}" class="button">로그인 보기</a>
+            <p><strong>참고 정보:</strong></p>
             <ul>
-                <li>?▲꺖?ャ궋?됥꺃?? {{email}}</li>
-                <li>訝?귙깙?밤꺈?쇈깋: {{temporary_password}}</li>
+                <li>이메일: {{email}}</li>
+                <li>임시 비밀번호: {{temporary_password}}</li>
             </ul>
-
-            <p>?삠궘?γ꺁?녴궍??걼?곥곩닜?욁꺆?겹궎?녔셽?ャ깙?밤꺈?쇈깋?믣쨯?담걮?╉걦?졼걬?꾠?/p>
-
-            <p>?붶툖?롢겒?밤걣?귙굤?얇걮?잆굢??a href="mailto:support@jarvis.com">support@jarvis.com</a>?ャ걡?뤵걚?덀굩?쎼걦?졼걬?꾠?/p>
-
-            <p>?귙굤?뚣겏?녴걫?뽧걚?얇걲,<br>JARVIS?곥꺖??/p>
+            <p>문제가 있으면 <a href="mailto:support@softfactory.kr">support@softfactory.kr</a>로 요청해 주세요.</p>
+            <p>감사합니다.<br>SoftFactory</p>
         </div>
         <div class="footer">
-            <p>&copy; 2026 JARVIS. ?쇻겧?╉겗與⒴닶?믢퓷?됥걮?╉걚?얇걲??/p>
-            <p><a href="{{unsubscribe_url}}">蘊쇠き鰲ｉ솮</a></p>
+            <p>&copy; 2026 SoftFactory. All rights reserved.</p>
+            <p><a href="{{unsubscribe_url}}">수신 거부</a></p>
         </div>
     </div>
 </body>
 </html>
-

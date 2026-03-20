@@ -113,8 +113,15 @@ class InstagramAPI:
             if not access_token or not user_id:
                 raise InstagramAPIError("Failed to obtain access token")
 
-            # Get user info
-            user_info = self.get_account_info()
+            # Subsequent account lookups should use the freshly issued token.
+            self.access_token = access_token
+
+            # Get user info if available, but don't fail the token exchange on a
+            # follow-up profile lookup.
+            try:
+                user_info = self.get_account_info()
+            except InstagramAPIError:
+                user_info = {}
             user_info['user_id'] = user_id
 
             return access_token, user_info

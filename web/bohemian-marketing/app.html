@@ -1,48 +1,70 @@
 ﻿<!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>App Workspace | Bohemian Marketing AI</title>
+  <title>작업공간 | 보헤미안 마케팅 AI</title>
   <script src="https://cdn.tailwindcss.com"></script>
-    <script src="../mobile-optimization.js" defer></script>
+  <script src="../mobile-optimization.js" defer></script>
+  <script src="../platform/api.js"></script>
+  <link rel="stylesheet" href="../responsive-framework.css">
 </head>
 <body class="bg-slate-950 text-slate-100">
   <div class="min-h-screen md:grid md:grid-cols-[250px_1fr]">
-    <aside class="border-b border-slate-800 bg-slate-900 p-5 md:border-b-0 md:border-r">
-      <a href="index.html" class="text-sm text-cyan-300 hover:text-cyan-200">??Service Home</a>
-      <h1 class="mt-4 text-xl font-black">Workspace</h1>
-      <nav class="mt-4 space-y-2 text-sm">
-        <a class="block rounded-lg border border-slate-700 bg-slate-800 px-3 py-2" href="#">Dashboard</a>
-        <a class="block rounded-lg border border-slate-800 px-3 py-2 hover:border-slate-600" href="#">Content Studio</a>
-        <a class="block rounded-lg border border-slate-800 px-3 py-2 hover:border-slate-600" href="#">Calendar</a>
-        <a class="block rounded-lg border border-slate-800 px-3 py-2 hover:border-slate-600" href="#">Inbox</a>
-        <a class="block rounded-lg border border-slate-800 px-3 py-2 hover:border-slate-600" href="#">Analytics</a>
+    <aside class="w-64 soft-sidebar border-r border-slate-800 bg-slate-900 p-5 md:border-b-0">
+      <a href="index.html" class="soft-nav-link mb-2 inline-flex items-center gap-2 text-sm text-cyan-300 hover:text-cyan-200">
+        <span>🚀</span> 보헤미안 마케팅 AI
+      </a>
+      <h1 class="mt-4 text-xl font-black text-slate-100">작업공간</h1>
+      <nav class="soft-nav-tree mt-4">
+                <button class="hamburger" aria-label="메뉴 열기/닫기"><span></span><span></span><span></span></button>
+        <details class="soft-nav-group" open>
+          <summary class="soft-nav-summary"><span>보헤미안 워크스페이스</span></summary>
+          <div class="soft-nav-sub">
+            <a class="soft-nav-link" href="index.html"><span>📊</span>대시보드</a>
+            <a class="soft-nav-link" href="autopilot.html"><span>⚡</span>오토파일럿</a>
+            <a class="soft-nav-link" href="persona.html"><span>🎭</span>페르소나</a>
+            <a class="soft-nav-link" href="pricing.html"><span>💳</span>요금제</a>
+          </div>
+        </details>
+        <details class="soft-nav-group">
+          <summary class="soft-nav-summary"><span>운영 서비스</span></summary>
+          <div class="soft-nav-sub">
+            <a class="soft-nav-link" href="../platform/index.html"><span>🏭</span>플랫폼 홈</a>
+            <a class="soft-nav-link" href="../sns-auto/index.html"><span>📱</span>SNS 자동화</a>
+            <a class="soft-nav-link" href="../review/index.html"><span>⭐</span>리뷰</a>
+            <a class="soft-nav-link" href="../coocook/index.html"><span>🍳</span>CooCook</a>
+            <a class="soft-nav-link" href="../ai-automation/index.html"><span>🤖</span>AI 자동화</a>
+            <a class="soft-nav-link" href="../bohemian-marketing/index.html"><span>🚀</span>보헤미안 마케팅 AI</a>
+            <a class="soft-nav-link" href="../webapp-builder/index.html"><span>💻</span>웹앱 빌더</a>
+            <a class="soft-nav-link" href="../instagram-cardnews/index.html"><span>📸</span>카드뉴스 자동화</a>
+          </div>
+        </details>
       </nav>
     </aside>
 
     <main class="p-6">
       <header class="mb-6 rounded-2xl border border-slate-800 bg-slate-900 p-6">
-        <p class="text-xs uppercase tracking-[0.18em] text-cyan-300">Bohemian Marketing AI</p>
-        <h2 class="mt-2 text-3xl font-black">Unified App Shell</h2>
-        <p class="mt-2 text-slate-300">This shell is ready for API bindings from persona, publish, inbox, and analytics modules.</p>
+        <p class="text-xs uppercase tracking-[0.18em] text-cyan-300">보헤미안 마케팅 AI</p>
+        <h2 class="mt-2 text-3xl font-black">통합 앱 셸</h2>
+        <p class="mt-2 text-slate-300">이 앱은 persona, 퍼블리시, 인박스, 분석 모듈 API 바인딩에 바로 연결됩니다.</p>
       </header>
 
       <section class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <article class="rounded-xl border border-slate-800 bg-slate-900 p-5">
-          <p class="text-xs text-slate-400">Draft Queue</p>
+          <p class="text-xs text-slate-400">초안 큐</p>
           <p class="mt-2 text-3xl font-black">18</p>
         </article>
         <article class="rounded-xl border border-slate-800 bg-slate-900 p-5">
-          <p class="text-xs text-slate-400">Scheduled</p>
+          <p class="text-xs text-slate-400">예약됨</p>
           <p class="mt-2 text-3xl font-black">26</p>
         </article>
         <article class="rounded-xl border border-slate-800 bg-slate-900 p-5">
-          <p class="text-xs text-slate-400">Inbox Pending</p>
+          <p class="text-xs text-slate-400">인박스 대기</p>
           <p class="mt-2 text-3xl font-black">9</p>
         </article>
         <article class="rounded-xl border border-slate-800 bg-slate-900 p-5">
-          <p class="text-xs text-slate-400">Autopilot Status</p>
+          <p class="text-xs text-slate-400">오토파일럿 상태</p>
           <p class="mt-2 text-3xl font-black text-emerald-300">ON</p>
         </article>
       </section>
@@ -50,4 +72,3 @@
   </div>
 </body>
 </html>
-

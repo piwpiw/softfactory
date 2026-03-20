@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+  <rect width="1280" height="720" fill="#0f172a"/>
+  <rect x="48" y="48" width="1184" height="624" rx="32" fill="#111827" stroke="#334155"/>
+  <rect x="84" y="84" width="240" height="552" rx="24" fill="#1e293b"/>
+  <rect x="356" y="84" width="840" height="148" rx="24" fill="#1d4ed8"/>
+  <rect x="356" y="260" width="256" height="176" rx="24" fill="#0ea5e9"/>
+  <rect x="636" y="260" width="256" height="176" rx="24" fill="#14b8a6"/>
+  <rect x="916" y="260" width="280" height="176" rx="24" fill="#f59e0b"/>
+  <rect x="356" y="460" width="840" height="176" rx="24" fill="#1e293b"/>
+  <text x="84" y="38" font-family="Arial, sans-serif" font-size="40" fill="#f8fafc">SoftFactory Platform</text>
+</svg>

@@ -1,78 +1,399 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="theme-color" content="#111827">
-<title>Chat - JARVIS</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="responsive-framework.css">
-  </head>
-<body class="bg-gray-900 text-white">
-    <nav class="bg-gray-800 border-b border-gray-700 px-6 py-4 flex justify-between items-center">
-    <button class="hamburger" aria-label="Toggle navigation menu">
-      <span></span>
-      <span></span>
-      <span></span>
-    </button>
-        <h1 class="text-2xl font-bold">06 Frontend: 팀 협업 채팅</h1>
-        <a href="index.html" class="text-gray-400 hover:text-white">← 홈</a>
-    </nav>
-
-    <main class="p-6 max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-6 h-screen">
-        <!-- 팀 목록 -->
-        <div class="bg-gray-800 rounded-lg p-4 overflow-y-auto">
-            <h3 class="font-bold mb-4">팀</h3>
-            <div id="teams-list" class="space-y-2">
-                <div class="bg-gray-700 p-2 rounded cursor-pointer hover:bg-gray-600">Backend Core</div>
-                <div class="bg-gray-700 p-2 rounded cursor-pointer hover:bg-gray-600">Frontend UI</div>
-                <div class="bg-gray-700 p-2 rounded cursor-pointer hover:bg-gray-600">DevOps</div>
-                <div class="bg-gray-700 p-2 rounded cursor-pointer hover:bg-gray-600">QA Team</div>
-            </div>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>?ㅼ떆媛?梨꾪똿 ?댁쁺</title>
+  <style>
+    :root {
+      --line: #e2e8f0;
+      --muted: #64748b;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: #020617;
+      color: #e2e8f0;
+      font-family: "Inter", "Segoe UI", system-ui, sans-serif;
+      min-height: 100vh;
+    }
+    .app {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 16px;
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 12px;
+      height: 100vh;
+    }
+    .sidebar {
+      border: 1px solid #1e293b;
+      border-radius: 12px;
+      background: #0f172a;
+      padding: 12px;
+    }
+    .main {
+      border: 1px solid #1e293b;
+      border-radius: 12px;
+      background: #0f172a;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+    h1, h2, h3 { margin: 0; }
+    .subtitle { color: var(--muted); font-size: .86rem; margin-top: 4px; }
+    .list {
+      display: grid;
+      gap: 8px;
+      margin-top: 10px;
+      max-height: calc(100vh - 220px);
+      overflow: auto;
+    }
+    .chat-item {
+      border: 1px solid #1e293b;
+      background: #0b1220;
+      padding: 8px 10px;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+    .chat-item.active { border-color: #3b82f6; background: #172554; }
+    .chat-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: flex-start;
+      margin-bottom: 12px;
+    }
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 8px 0 10px;
+    }
+    button, input, select {
+      border: 1px solid #334155;
+      border-radius: 8px;
+      background: #0b1220;
+      color: #e2e8f0;
+      padding: 8px 10px;
+      font-size: .92rem;
+    }
+    button { cursor: pointer; }
+    button.primary { background: #1d4ed8; border-color: #1d4ed8; }
+    .log-wrap {
+      border-top: 1px solid #1e293b;
+      padding-top: 10px;
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+    }
+    .log {
+      flex: 1;
+      min-height: 0;
+      overflow: auto;
+      border: 1px solid #1e293b;
+      border-radius: 10px;
+      padding: 10px;
+      background: #020617;
+      display: grid;
+      gap: 8px;
+    }
+    .bubble {
+      max-width: 72%;
+      padding: 8px 10px;
+      border-radius: 12px;
+      border: 1px solid #1e293b;
+      white-space: pre-wrap;
+    }
+    .mine { margin-left: auto; background: #1e3a8a; }
+    .sys { background: #0b1220; }
+    .meta { color: var(--muted); font-size: .74rem; margin-top: 4px; }
+    .input-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .input-wrap { display: grid; gap: 6px; }
+    .statusline { color: #94a3b8; font-size: .85rem; }
+    .row-meta { color: var(--muted); font-size: .8rem; display: flex; gap: 8px; flex-wrap: wrap; }
+    @media (max-width: 980px) {
+      .app { grid-template-columns: 1fr; height: auto; }
+      .sidebar { height: 220px; }
+      .main { height: calc(100vh - 250px); }
+    }
+  </style>
+    <link rel="stylesheet" href="/unified-ui.css">
+    <script src="/unified-ui.js" defer></script>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <h2>梨꾪똿 ?댁쁺</h2>
+      <div class="subtitle">? ?묐떟 吏??理쒖냼?붾? ?꾪븳 梨꾨꼸???댁쁺</div>
+      <div class="toolbar">
+        <button class="primary" id="newBtn">??梨꾨꼸 ?앹꽦</button>
+        <button id="refreshBtn">?덈줈怨좎묠</button>
+        <button id="toggleModeBtn">?대쭅 紐⑤뱶</button>
+      </div>
+      <div class="row-meta" id="connState">?곌껐: 以鍮꾩쨷</div>
+      <div id="roomList" class="list"></div>
+    </aside>
+    <main class="main">
+      <div class="chat-header">
+        <div>
+          <h1 id="roomTitle">梨꾨꼸 誘몄꽑??/h1>
+          <p class="subtitle" id="roomDesc">硫붿떆吏瑜?諛쏄린 ?꾪빐 梨꾨꼸???좏깮?섏꽭??</p>
         </div>
-
-        <!-- 채팅 창 -->
-        <div class="md:col-span-3 bg-gray-800 rounded-lg flex flex-col">
-            <div class="p-4 border-b border-gray-700 font-bold">Backend Core 팀</div>
-
-            <div id="messages" class="flex-1 overflow-y-auto p-4 space-y-3">
-                <div class="bg-gray-700 p-3 rounded-lg max-w-xs">
-                    <p class="text-sm font-bold">Alice (PM)</p>
-                    <p class="text-sm">API 최적화 준비됐어?</p>
-                </div>
-                <div class="bg-blue-600 p-3 rounded-lg max-w-xs ml-auto">
-                    <p class="text-sm font-bold">나</p>
-                    <p class="text-sm">네, 준비 완료!</p>
-                </div>
-                <div class="bg-gray-700 p-3 rounded-lg max-w-xs">
-                    <p class="text-sm font-bold">Bob (Backend)</p>
-                    <p class="text-sm">배포는 언제?</p>
-                </div>
-            </div>
-
-            <!-- 입력창 -->
-            <div class="p-4 border-t border-gray-700 flex gap-2">
-                <input id="message-input" type="text" placeholder="메시지 입력..." class="flex-1 bg-gray-700 p-2 rounded border border-gray-600">
-                <button onclick="sendMessage()" class="bg-orange-600 hover:bg-orange-700 px-4 py-2 rounded font-bold">전송</button>
-            </div>
+        <div class="row-meta">
+          <span id="connBadge">?곹깭: -</span>
+          <span id="countBadge">硫붿떆吏: 0</span>
         </div>
+      </div>
+
+      <div class="toolbar">
+        <input id="templateInput" placeholder="?쒗뵆由?硫붿떆吏" />
+        <button id="sendTemplate">?쒗뵆由??꾩넚</button>
+        <button id="exportBtn">????대낫?닿린</button>
+      </div>
+
+      <div class="log-wrap">
+        <div id="chatLog" class="log"></div>
+        <div class="input-row">
+          <div class="input-wrap">
+            <input id="messageInput" placeholder="硫붿떆吏 ?낅젰" />
+            <label class="row-meta">理쒕? 140???댄븯 沅뚯옣</label>
+          </div>
+          <button id="sendBtn" class="primary">?꾩넚</button>
+        </div>
+      </div>
     </main>
+  </div>
 
-    <script>
-        function sendMessage() {
-            const input = document.getElementById('message-input');
-            if (!input.value) return;
+  <script src="shared-runtime.js"></script>
+  <script>
+    const state = {
+      mode: "poll",
+      rooms: [
+        { id: "backend", name: "Backend", unread: 0, online: true, messages: [] },
+        { id: "frontend", name: "Frontend", unread: 0, online: true, messages: [] },
+        { id: "ops", name: "Ops", unread: 0, online: true, messages: [] },
+        { id: "qa", name: "QA", unread: 1, online: true, messages: [] }
+      ],
+      selected: "backend",
+      ws: null,
+      timer: null,
+      logs: []
+    };
 
-            const msgDiv = document.createElement('div');
-            msgDiv.className = 'bg-blue-600 p-3 rounded-lg max-w-xs ml-auto';
-            msgDiv.innerHTML = `<p class="text-sm font-bold">나</p><p class="text-sm">${input.value}</p>`;
-            document.getElementById('messages').appendChild(msgDiv);
-            document.getElementById('messages').scrollTop = document.getElementById('messages').scrollHeight;
-            input.value = '';
+    const seedMessages = {
+      backend: [
+        { id: "s1", user: "시스템", text: "이번 배포 로그에서 실패 코드 1건을 확인했습니다.", mine: false, at: Date.now() - 120000 },
+        { id: "s2", user: "PM", text: "?ъ떆???ㅽ겕由쏀듃 10??30遺??ㅽ뻾?댁＜?몄슂.", mine: false, at: Date.now() - 100000 }
+      ],
+      ops: [
+        { id: "o1", user: "?댁쁺", text: "?곹깭 ?먭? ?뚮┝: API ?묐떟?쒓컙 ?곸듅", mine: false, at: Date.now() - 90000 }
+      ]
+    };
+
+    function initSeedMessages() {
+      for (const room of state.rooms) {
+        room.messages = seedMessages[room.id] ? seedMessages[room.id].slice() : [];
+      }
+    }
+
+    function renderRoomList() {
+      const wrap = document.getElementById("roomList");
+      wrap.innerHTML = "";
+      for (const room of state.rooms) {
+        const item = document.createElement("div");
+        item.className = `chat-item ${state.selected === room.id ? "active" : ""}`;
+        item.innerHTML = `<strong>${room.name}</strong> <span style=\"color:#64748b\">(${room.unread})</span>`;
+        item.addEventListener("click", () => selectRoom(room.id));
+        wrap.appendChild(item);
+      }
+    }
+
+    function roomById(id) {
+      return state.rooms.find((r) => r.id === id);
+    }
+
+    function setText(id, value) {
+      const el = document.getElementById(id);
+      if (el) el.textContent = value;
+    }
+
+    function selectRoom(roomId) {
+      state.selected = roomId;
+      roomById(roomId).unread = 0;
+      renderRoomList();
+      renderChat();
+      updateHeader();
+    }
+
+    function appendMessage(roomId, user, text, mine = false, kind = "msg") {
+      const room = roomById(roomId);
+      if (!room) return;
+      const msg = { id: `m-${Date.now()}-${Math.random()}`, user, text, mine, at: Date.now(), kind };
+      room.messages.push(msg);
+      if (state.selected !== roomId && !mine) room.unread += 1;
+      if (room.messages.length > 120) room.messages = room.messages.slice(-120);
+      renderChat();
+      renderRoomList();
+      state.logs.unshift(`[${new Date(msg.at).toLocaleString("ko-KR", { hour12: false })}] [${roomId}] ${user}: ${text}`);
+      state.logs = state.logs.slice(0, 200);
+    }
+
+    function renderChat() {
+      const room = roomById(state.selected);
+      const log = document.getElementById("chatLog");
+      log.innerHTML = "";
+      if (!room) return;
+      for (const msg of room.messages) {
+        const b = document.createElement("div");
+        b.className = `bubble ${msg.mine ? "mine" : "sys"}`;
+        b.innerHTML = `<div>${msg.text}</div><div class="meta">${msg.user} 쨌 ${new Date(msg.at).toLocaleString("ko-KR", { hour12: false })}</div>`;
+        log.appendChild(b);
+      }
+      if (room.messages.length === 0) {
+        const p = document.createElement("div");
+        p.className = "subtitle";
+        p.textContent = "硫붿떆吏媛 ?놁뒿?덈떎.";
+        log.appendChild(p);
+      }
+      log.scrollTop = log.scrollHeight;
+      setText("countBadge", `硫붿떆吏: ${room.messages.length}`);
+    }
+
+    function updateHeader() {
+      const room = roomById(state.selected);
+      setText("roomTitle", room ? room.name : "채널 미선택");
+      setText("roomDesc", room
+        ? `${room.online ? "online" : "offline"} 쨌 ?꾩쟻 硫붿떆吏 ${room.messages.length}`
+        : "硫붿떆吏瑜?諛쏄린 ?꾪빐 梨꾨꼸???좏깮?섏꽭??");
+      setText("connBadge", `?곌껐: ${state.mode === "ws" ? "WebSocket" : "Polling"}`);
+    }
+
+    function setMode(next) {
+      state.mode = next;
+      setText("toggleModeBtn", next === "ws" ? "?대쭅 紐⑤뱶" : "?뱀냼耳?紐⑤뱶");
+      if (state.timer) clearInterval(state.timer);
+      if (next === "poll") {
+        state.timer = setInterval(fakeIncoming, 5000);
+      } else {
+        // ?대갚: 釉뚮씪?곗??먯꽌 ?ъ슜 遺덇? ??polling ?꾪솚
+        state.timer = setInterval(fakeIncoming, 5000);
+      }
+      setText("connState", `?곌껐: ${next === "ws" ? "?뱀냼耳??대갚 ?덉슜)" : "?대쭅"}`);
+      updateHeader();
+    }
+
+    function fakeIncoming() {
+      const active = ["backend", "ops", "qa", "frontend"];
+      const room = roomById(active[Math.floor(Math.random() * active.length)]);
+      if (!room) return;
+      const templates = [
+        "배포 진행률 80% 도달",
+        "테스트 실패 건수 감소",
+        "권한 이슈 알림이 확인되었습니다",
+        "분할 임계치 미만으로 회복됨",
+        "운영 알림: 확인 및 종료"
+      ];
+      appendMessage(room.id, "시스템", templates[Math.floor(Math.random() * templates.length)], false, "notify");
+    }
+
+    async function sendMessage() {
+      const input = document.getElementById("messageInput");
+      const text = input.value.trim();
+      if (!text) return;
+      appendMessage(state.selected, "나", text, true);
+      input.value = "";
+      try {
+        if (state.mode === "ws" && state.ws && state.ws.readyState === WebSocket.OPEN) {
+          state.ws.send(JSON.stringify({ room: state.selected, text }));
+        } else {
+          await sfRuntime.apiFetch("/api/v1/chat/messages", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ room: state.selected, text })
+          });
         }
-    </script>
-    <script src="mobile-optimization.js" defer></script>
+      } catch {}
+    }
+
+    async function sendTemplate() {
+      const tpl = document.getElementById("templateInput").value.trim() || "?먭? 醫낅즺 ???뺤긽 ?숈옉 濡쒓렇瑜??뺤씤??二쇱꽭??";
+      appendMessage(state.selected, "템플릿", tpl, true);
+      document.getElementById("templateInput").value = "";
+    }
+
+    function exportLog() {
+      const room = roomById(state.selected);
+      if (!room) return;
+      const lines = room.messages.map((m) => `[${new Date(m.at).toLocaleString("ko-KR", { hour12: false })}] ${m.user}: ${m.text}`);
+      sfRuntime.downloadText(`${room.id}-chat-${Date.now()}.txt`, lines.join("\n"), "text/plain;charset=utf-8;");
+    }
+
+    function createRoom() {
+      const id = `room-${Date.now()}`;
+      const name = `team-${state.rooms.length + 1}`;
+      state.rooms.push({ id, name, unread: 0, online: true, messages: [] });
+      renderRoomList();
+      selectRoom(id);
+    }
+
+    function toggleMode() {
+      setMode(state.mode === "poll" ? "ws" : "poll");
+    }
+
+    function connectWs() {
+      try {
+        const ws = new WebSocket((location.protocol === "https:" ? "wss://" : "ws://") + location.host + "/ws/chat");
+        state.ws = ws;
+        ws.addEventListener("open", () => {
+          setText("connState", "연결: ws 연결됨");
+          setMode("ws");
+        });
+        ws.addEventListener("message", (ev) => {
+          try {
+            const payload = JSON.parse(ev.data);
+            if (!payload.room || !payload.message) return;
+            appendMessage(payload.room, payload.user || "system", payload.message, false);
+          } catch {}
+        });
+        ws.addEventListener("close", () => {
+          setMode("poll");
+        });
+        ws.addEventListener("error", () => {
+          setMode("poll");
+        });
+      } catch {
+        setMode("poll");
+      }
+    }
+
+    document.getElementById("refreshBtn").addEventListener("click", () => {
+      fakeIncoming();
+      renderChat();
+      renderRoomList();
+    });
+    document.getElementById("sendBtn").addEventListener("click", sendMessage);
+    document.getElementById("sendTemplate").addEventListener("click", sendTemplate);
+    document.getElementById("exportBtn").addEventListener("click", exportLog);
+    document.getElementById("newBtn").addEventListener("click", createRoom);
+    document.getElementById("toggleModeBtn").addEventListener("click", toggleMode);
+    document.getElementById("messageInput").addEventListener("keydown", (ev) => {
+      if (ev.key === "Enter") sendMessage();
+    });
+
+    initSeedMessages();
+    selectRoom("backend");
+    setMode("poll");
+    renderRoomList();
+    connectWs();
+    setInterval(fakeIncoming, 7000);
+  </script>
 </body>
 </html>

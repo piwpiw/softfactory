@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>문제 해결 - SoftFactory</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../responsive-framework.css">
+    <style>
+        body { font-family: "Inter", sans-serif; background: #0d1422; color: #ecf3ff; }
+        .panel { background: rgba(18, 29, 49, 0.9); border: 1px solid rgba(148, 169, 201, 0.2); }
+    </style>
+</head>
+<body class="min-h-screen p-6 lg:p-10">
+    <div class="mx-auto max-w-4xl space-y-6">
+        <a href="/infrastructure/monitor.html" class="inline-flex text-sm text-indigo-300 hover:text-indigo-200">← 인프라 모니터로 돌아가기</a>
+        <div class="panel rounded-3xl p-8">
+            <p class="text-xs uppercase tracking-[0.2em] text-slate-500">Docs</p>
+            <h1 class="mt-3 text-3xl font-extrabold text-white">문제 해결</h1>
+            <p class="mt-4 text-sm leading-7 text-slate-300">배포 후 가장 먼저 확인할 것은 404, 잘못된 상대경로, 그리고 클라이언트 스크립트의 DOM 참조 오류입니다. 이번 정리에서는 실제 배포 링크 크롤링으로 누락 경로를 찾고, 정적 문서 링크와 비디오 라이브러리 누락을 수정했습니다.</p>
+        </div>
+        <div class="space-y-4">
+            <div class="panel rounded-2xl p-5"><h2 class="font-semibold text-white">404가 날 때</h2><p class="mt-2 text-sm text-slate-400">정적 파일이 실제로 존재하는지, 경로가 절대/상대 기준에 맞는지, Vercel rewrite와 충돌하지 않는지 확인합니다.</p></div>
+            <div class="panel rounded-2xl p-5"><h2 class="font-semibold text-white">화면이 비어 보일 때</h2><p class="mt-2 text-sm text-slate-400">`getElementById` 대상이 실제 DOM에 있는지 확인합니다. DOM ID 불일치는 404처럼 보이는 고장을 만들 수 있습니다.</p></div>
+            <div class="panel rounded-2xl p-5"><h2 class="font-semibold text-white">CooCook이 느려질 때</h2><p class="mt-2 text-sm text-slate-400">국가/메뉴/식재료/카테고리 조합이 늘면 단순 배열 순회 대신 taxonomy 인덱스와 캐시 조회를 사용해야 합니다.</p></div>
+        </div>
+    </div>
+</body>
+</html>

@@ -15,6 +15,7 @@ services:
       - DATABASE_URL=postgresql://softfactory:password123@postgres:5432/softfactory_dev
       - REDIS_URL=redis://redis:6379/0
       - ELASTICSEARCH_HOST=elasticsearch:9200
+      - APP_PORT=8000
       - JWT_SECRET=dev-secret-key-change-in-prod
       - ENCRYPTION_KEY=dev-encryption-key-change-in-prod
       - DEBUG=true
@@ -25,11 +26,10 @@ services:
     depends_on:
       - postgres
       - redis
-      - elasticsearch
     networks:
       - softfactory-network
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      test: ["CMD-SHELL", "curl -f \"http://localhost:${APP_PORT:-8000}/health\" || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -77,6 +77,7 @@ services:
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.10.2
     container_name: softfactory-elasticsearch
+    profiles: ["search"]
     environment:
       - discovery.type=single-node
       - ES_JAVA_OPTS=-Xms256m -Xmx256m
@@ -98,6 +99,7 @@ services:
   pgadmin:
     image: dpage/pgadmin4:latest
     container_name: softfactory-pgadmin
+    profiles: ["ops"]
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@softfactory.local
       PGADMIN_DEFAULT_PASSWORD: admin123
@@ -114,6 +116,7 @@ services:
   redis-commander:
     image: rediscommander/redis-commander:latest
     container_name: softfactory-redis-commander
+    profiles: ["ops"]
     environment:
       REDIS_HOSTS: local:redis:6379
     ports:
@@ -127,6 +130,7 @@ services:
   prometheus:
     image: prom/prometheus:latest
     container_name: softfactory-prometheus
+    profiles: ["monitoring"]
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--storage.tsdb.path=/prometheus'
@@ -150,6 +154,7 @@ services:
   alertmanager:
     image: prom/alertmanager:latest
     container_name: softfactory-alertmanager
+    profiles: ["monitoring"]
     volumes:
       - ./monitoring/alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
       - alertmanager_data:/alertmanager
@@ -171,6 +176,7 @@ services:
   grafana:
     image: grafana/grafana:latest
     container_name: softfactory-grafana
+    profiles: ["monitoring"]
     environment:
       - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=admin

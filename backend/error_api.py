@@ -8,15 +8,22 @@ from flask import Blueprint, request, jsonify, g
 from datetime import datetime
 from .error_tracker import ErrorTracker
 from .auth import require_auth
+from .auth import require_admin
 
 # Initialize error tracker instance (singleton)
 error_tracker = ErrorTracker()
+
+
+def _require_admin(f):
+    """Route guard requiring authenticated admin users."""
+    return require_admin(require_auth(f))
 
 # Create blueprint
 error_bp = Blueprint('errors', __name__, url_prefix='/api/errors')
 
 
 @error_bp.route('/log', methods=['POST'])
+@_require_admin
 def log_error():
     """
     Log a new error with full context.
@@ -69,6 +76,7 @@ def log_error():
 
 
 @error_bp.route('/recent', methods=['GET'])
+@_require_admin
 def get_recent_errors():
     """
     Get recent errors with optional filtering.
@@ -109,6 +117,7 @@ def get_recent_errors():
 
 
 @error_bp.route('/patterns', methods=['GET'])
+@_require_admin
 def get_error_patterns():
     """
     Get detected error patterns.
@@ -142,6 +151,7 @@ def get_error_patterns():
 
 
 @error_bp.route('/patterns/<pattern_id>/prevention', methods=['GET'])
+@_require_admin
 def get_pattern_prevention(pattern_id: str):
     """
     Get prevention suggestions for a specific pattern.
@@ -180,6 +190,7 @@ def get_pattern_prevention(pattern_id: str):
 
 
 @error_bp.route('/patterns/<pattern_id>/resolve', methods=['POST'])
+@_require_admin
 def resolve_pattern(pattern_id: str):
     """
     Mark an error pattern as resolved.
@@ -222,6 +233,7 @@ def resolve_pattern(pattern_id: str):
 
 
 @error_bp.route('/health', methods=['GET'])
+@_require_admin
 def error_health_check():
     """
     Get error tracking system health and statistics.

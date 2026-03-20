@@ -1,11 +1,13 @@
 import os
 from pathlib import Path
+from backend.config import Config
+from backend.runtime_paths import default_app_log_path
 
-# Local run always starts in development mode regardless of .env defaults.
-os.environ['FLASK_ENV'] = 'development'
-os.environ['ENVIRONMENT'] = 'development'
-os.environ['DEBUG'] = 'true'
-os.environ['TESTING'] = 'false'
+# Local run defaults (do not override environment-provided settings).
+os.environ.setdefault('FLASK_ENV', 'development')
+os.environ.setdefault('ENVIRONMENT', 'development')
+os.environ.setdefault('DEBUG', 'true')
+os.environ.setdefault('TESTING', 'false')
 
 # Load .env for local/dev execution (keeps service keys/urls while
 # preserving environment override above)
@@ -23,18 +25,39 @@ if env_file.exists():
                 continue
             os.environ.setdefault(env_key, env_val)
 
-# Normalize placeholders in .env before app creation
-_db_url = os.getenv('DATABASE_URL', '')
-if _db_url and '<' in _db_url:
+_db_url = Config.get_database_url()
+if _db_url:
+    os.environ['DATABASE_URL'] = _db_url
+else:
     os.environ['DATABASE_URL'] = ''
 
 _enc_key = os.getenv('ENCRYPTION_KEY', '')
 if _enc_key and '<' in _enc_key:
     os.environ.pop('ENCRYPTION_KEY', None)
 
+os.environ.setdefault('LOG_FILE', str(default_app_log_path()))
+
 from backend.app import create_app
 
 app = create_app()
 
+
+def _log_startup(port: int, debug: bool) -> None:
+    env = os.getenv("ENVIRONMENT", "development")
+    print(f"[start_server] environment={env} debug={str(debug).lower()} port={port}")
+    print(f"[start_server] health=http://127.0.0.1:{port}/health")
+    print(f"[start_server] api_health=http://127.0.0.1:{port}/api/health")
+    print(f"[start_server] platform_index=http://127.0.0.1:{port}/web/platform/index.html")
+    print(f"[start_server] log_file={os.environ.get('LOG_FILE')}")
+
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8000, debug=True, threaded=True)
+    port = int(os.getenv("PORT", os.getenv("APP_PORT", "8000")))
+    debug = os.getenv("DEBUG", "false").lower() in {"1", "true", "yes", "on"}
+    _log_startup(port, debug)
+    app.run(
+        host='0.0.0.0',
+        port=port,
+        debug=debug,
+        threaded=True,
+        use_reloader=debug
+    )

@@ -107,6 +107,12 @@ def create_tokens(user_id, user_role):
     return access_token, refresh_token
 
 
+def create_jwt_token(user_id, email=None, user_role='user'):
+    """Backward-compatible helper returning only the access token."""
+    access_token, _ = create_tokens(user_id, user_role)
+    return access_token
+
+
 def verify_token(token):
     """Verify and decode JWT token, checking blacklist"""
     try:

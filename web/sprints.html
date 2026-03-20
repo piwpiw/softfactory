@@ -1,73 +1,369 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="theme-color" content="#111827">
-<title>Sprints - JARVIS</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="responsive-framework.css">
-  </head>
-<body class="bg-gray-900 text-white">
-    <nav class="bg-gray-800 border-b border-gray-700 px-6 py-4 flex justify-between items-center">
-    <button class="hamburger" aria-label="Toggle navigation menu">
-      <span></span>
-      <span></span>
-      <span></span>
-    </button>
-        <h1 class="text-2xl font-bold">02 PM: Sprint Management</h1>
-        <a href="index.html" class="text-gray-400 hover:text-white">← 홈</a>
-    </nav>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>?ㅽ봽由고듃 ?댁쁺</title>
+  <style>
+    :root { --line: #e2e8f0; --muted: #64748b; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Inter", "Segoe UI", system-ui, sans-serif;
+      background:
+        radial-gradient(70rem 70rem at 5% -20%, #e0f2fe 0%, transparent 42%),
+        radial-gradient(70rem 70rem at 96% -15%, #dcfce7 0%, transparent 35%),
+        #f8fafc;
+      color: #0f172a;
+    }
+    .container { max-width: 1280px; margin: 0 auto; padding: 24px; }
+    .head { display:flex; justify-content:space-between; align-items:center; gap:10px; }
+    .head h1 { margin: 0; font-size: 1.9rem; }
+    .subtitle { color: var(--muted); margin-top:4px; }
+    .toolbar {
+      margin-top: 14px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 12px;
+      box-shadow: 0 8px 16px rgba(15,23,42,.05);
+    }
+    .toolbar select, .toolbar button, .toolbar input {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 8px 10px;
+      background: #fff;
+      font-size: .95rem;
+    }
+    .toolbar button {
+      color: #fff;
+      background: #0f172a;
+      border-color: #0f172a;
+      cursor: pointer;
+    }
+    .toolbar .meta { color: var(--muted); margin-left:auto; font-size:.9rem; }
+    .panel {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      margin-top: 12px;
+      padding: 14px;
+      box-shadow: 0 8px 16px rgba(15,23,42,.05);
+    }
+    .grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 12px; }
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0,1fr));
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .metric {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #fff;
+      padding: 12px;
+    }
+    .metric b { display:block; margin-top: 6px; font-size: 1.5rem; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { text-align: left; padding: 10px 8px; border-top: 1px solid #f1f5f9; font-size: .93rem; }
+    th { background: #f8fafc; color: #334155; font-size: .85rem; }
+    .status {
+      display: inline-block;
+      border-radius: 999px;
+      padding: 2px 8px;
+      font-size: .76rem;
+      color: #fff;
+    }
+    .status.active { background: #2563eb; }
+    .status.done { background: #16a34a; }
+    .status.planned { background: #6b7280; }
+    .bar-wrap { background: #e2e8f0; height: 10px; border-radius: 999px; overflow: hidden; width: 140px; }
+    .bar { height: 10px; background: linear-gradient(90deg,#3b82f6,#22c55e); }
+    .row-actions button {
+      border: 1px solid var(--line);
+      background: #eff6ff;
+      color: #1d4ed8;
+      padding: 6px 8px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .row-actions button:hover { background: #dbeafe; }
+    ul { margin: 4px 0; padding-left: 18px; }
+    li { padding: 4px 0; color: #334155; }
+    @media (max-width: 1120px) {
+      .grid { grid-template-columns: 1fr; }
+      .metrics { grid-template-columns: repeat(2, minmax(0,1fr)); }
+    }
+    @media (max-width: 700px) { .metrics { grid-template-columns: 1fr; } }
+  </style>
+    <link rel="stylesheet" href="/unified-ui.css">
+    <script src="/unified-ui.js" defer></script>
+</head>
+<body>
+  <div class="container">
+    <div class="head">
+      <div>
+        <h1>?ㅽ봽由고듃 ?댁쁺</h1>
+        <div class="subtitle">?ㅽ봽由고듃 ?쒖옉/吏꾪뻾/?꾨즺 ?곹깭瑜?媛?쒗솕?섍퀬 ?섎룞 ?≪뀡源뚯? ?쒓났</div>
+      </div>
+      <div class="subtitle" id="sync"></div>
+    </div>
 
-    <main class="p-6 max-w-6xl mx-auto">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <div class="bg-orange-600 p-6 rounded-lg">
-                <h3 class="text-2xl font-bold">Sprint 24</h3>
-                <p class="text-sm mt-2">진행: 65%</p>
-                <div class="bg-gray-700 rounded-full h-3 mt-2">
-                    <div class="bg-white h-3 rounded-full" style="width: 65%"></div>
-                </div>
-            </div>
-            <div class="bg-blue-600 p-6 rounded-lg">
-                <h3 class="text-xl font-bold">12 Tasks</h3>
-                <p class="text-sm mt-2">8 완료 / 4 진행</p>
-            </div>
-            <div class="bg-green-600 p-6 rounded-lg">
-                <h3 class="text-xl font-bold">Velocity</h3>
-                <p class="text-sm mt-2">42 Story Points</p>
-            </div>
-        </div>
+    <section class="metrics">
+      <article class="metric">珥??ㅽ봽由고듃 <b id="total">0</b></article>
+      <article class="metric">吏꾪뻾以?<b id="active">0</b></article>
+      <article class="metric">?꾨즺??<b id="completion">0%</b></article>
+      <article class="metric">?쇱씪 ?꾨즺 紐⑺몴 <b id="velocity">0</b></article>
+    </section>
 
-        <div class="bg-gray-800 p-6 rounded-lg">
-            <h3 class="text-xl font-bold mb-4">진행 중인 작업</h3>
-            <div class="space-y-3">
-                <div class="flex justify-between items-center bg-gray-700 p-3 rounded">
-                    <span>API 최적화</span>
-                    <span class="bg-orange-500 px-3 py-1 rounded text-sm">진행 중</span>
-                </div>
-                <div class="flex justify-between items-center bg-gray-700 p-3 rounded">
-                    <span>UI 개선</span>
-                    <span class="bg-blue-500 px-3 py-1 rounded text-sm">준비</span>
-                </div>
-                <div class="flex justify-between items-center bg-gray-700 p-3 rounded">
-                    <span>테스트 자동화</span>
-                    <span class="bg-green-500 px-3 py-1 rounded text-sm">완료</span>
-                </div>
+    <section class="toolbar">
+      <select id="teamFilter"><option value="">?꾩껜 ?</option></select>
+      <select id="statusFilter">
+        <option value="">?곹깭 ?꾩껜</option>
+        <option value="planned">Planned</option>
+        <option value="active">Active</option>
+        <option value="done">Done</option>
+      </select>
+      <input id="search" placeholder="?ㅽ봽由고듃紐?? 寃?? />
+      <button id="refresh">?덈줈怨좎묠</button>
+      <button id="seed">?덉떆 ?곗씠???앹꽦</button>
+      <button id="start">?ㅽ봽由고듃 ?쒖옉</button>
+      <span class="meta" id="statusLine"></span>
+    </section>
+
+    <section class="grid">
+      <div class="panel">
+        <h2>?ㅽ봽由고듃 紐⑸줉</h2>
+        <table>
+          <thead>
+            <tr><th>?대쫫</th><th>?</th><th>?곹깭</th><th>?꾨즺??/th><th>留덇컧??/th><th>二쇱슂 紐⑺몴</th><th>?≪뀡</th></tr>
+          </thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+      <div class="panel">
+        <h2>?대깽??濡쒓렇</h2>
+        <ul id="events"></ul>
+      </div>
+    </section>
+  </div>
+
+  <script src="shared-runtime.js"></script>
+  <script>
+    const state = {
+      sprints: [],
+      events: []
+    };
+
+    const seedTeams = ["Alpha", "Beta", "Gamma", "Delta", "Omega"];
+
+    function randomSprint(team, idx = 0) {
+      const statuses = ["planned", "active", "done"];
+      const chosenStatus = statuses[Math.floor(Math.random() * statuses.length)];
+      const done = chosenStatus === "done" ? 100 : chosenStatus === "active" ? Math.floor(Math.random() * 80) + 10 : 0;
+      const created = new Date(Date.now() - idx * 3600 * 1000 - Math.random() * 5 * 24 * 3600 * 1000);
+      const endDate = new Date(created.getTime() + (14 * 24 * 3600 * 1000));
+      return {
+        id: `sp-${Math.random().toString(36).slice(2, 10)}`,
+        name: `${team} Sprint ${new Date().toISOString().slice(0, 10)}`,
+        team,
+        status: chosenStatus,
+        completion: done,
+        due: endDate.toISOString(),
+        goals: `${team} 湲곕컲 諛고룷 ?덉젙?? 媛먯궗 ?댁뒋 20% 媛먯냼`,
+        createdAt: created.toISOString()
+      };
+    }
+
+    function statusLabel(s) {
+      if (s === "active") return "<span class=\"status active\">Active</span>";
+      if (s === "done") return "<span class=\"status done\">Done</span>";
+      return "<span class=\"status planned\">Planned</span>";
+    }
+
+    function pushEvent(msg) {
+      state.events.unshift({ at: new Date().toLocaleString("ko-KR", { hour12: false }), msg });
+      state.events = state.events.slice(0, 8);
+      renderEvents();
+    }
+
+    function renderEvents() {
+      const ul = document.getElementById("events");
+      ul.innerHTML = "";
+      for (const e of state.events) {
+        const li = document.createElement("li");
+        li.textContent = `${e.at} - ${e.msg}`;
+        ul.appendChild(li);
+      }
+      if (state.events.length === 0) {
+        const li = document.createElement("li");
+        li.textContent = "?대깽???놁쓬";
+        ul.appendChild(li);
+      }
+    }
+
+    function renderTeamOptions(list) {
+      const set = new Set(seedTeams);
+      for (const s of list) set.add(s.team);
+      const sel = document.getElementById("teamFilter");
+      const selected = sel.value;
+      sel.innerHTML = `<option value="">?꾩껜 ?</option>` + [...set].sort().map((team) => `<option value="${team}">${team}</option>`).join("");
+      sel.value = selected;
+    }
+
+    function renderRows() {
+      const teamFilter = document.getElementById("teamFilter").value;
+      const statusFilter = document.getElementById("statusFilter").value;
+      const q = (document.getElementById("search").value || "").trim().toLowerCase();
+      const filtered = state.sprints.filter((s) => {
+        if (teamFilter && s.team !== teamFilter) return false;
+        if (statusFilter && s.status !== statusFilter) return false;
+        if (q && !(s.name.toLowerCase().includes(q) || s.team.toLowerCase().includes(q))) return false;
+        return true;
+      });
+
+      const tbody = document.getElementById("rows");
+      tbody.innerHTML = "";
+      for (const sprint of filtered) {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${sprint.name}</td>
+          <td>${sprint.team}</td>
+          <td>${statusLabel(sprint.status)}</td>
+          <td>
+            <div class="bar-wrap">
+              <div class="bar" style="width:${sprint.completion}%;"></div>
             </div>
-        </div>
+            <span class="meta">${sprint.completion}%</span>
+          </td>
+          <td>${new Date(sprint.due).toLocaleDateString("ko-KR")}</td>
+          <td>${sprint.goals}</td>
+          <td class="row-actions">
+            <button data-id="${sprint.id}" data-action="complete">?꾨즺 泥섎━</button>
+            <button data-id="${sprint.id}" data-action="activate">?쒖옉</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      }
+      const active = state.sprints.filter((s) => s.status === "active").length;
+      const done = state.sprints.filter((s) => s.status === "done").length;
+      const avg = state.sprints.length ? Math.round(state.sprints.reduce((a, s) => a + s.completion, 0) / state.sprints.length) : 0;
+      document.getElementById("total").textContent = String(state.sprints.length);
+      document.getElementById("active").textContent = String(active);
+      document.getElementById("completion").textContent = `${avg}%`;
+      document.getElementById("velocity").textContent = `${Math.round((done + active) * 2.7)}`;
+      document.getElementById("statusLine").textContent = `조회 ${filtered.length}건`;
+      document.getElementById("sync").textContent = `?숆린?? ${new Date().toLocaleString("ko-KR", { hour12: false })}`;
+    }
 
-        <button onclick="startSprint()" class="mt-6 bg-orange-600 hover:bg-orange-700 px-6 py-3 rounded font-bold">
-            Sprint 시작
-        </button>
-    </main>
-
-    <script>
-        function startSprint() {
-            alert('Sprint 25 시작! 목표: 45 Story Points');
+    async function loadSprints() {
+      try {
+      const r = await sfRuntime.apiFetch("/api/v1/automation/cycles");
+        if (!r.ok) throw new Error("automation cycles unavailable");
+        const data = await r.json();
+        if (Array.isArray(data) && data.length) {
+          const mapped = data.map((d, idx) => {
+            const team = d.team_name || d.team || seedTeams[idx % seedTeams.length];
+            return {
+              id: d.id || `api-${idx}-${Math.random().toString(36).slice(2, 8)}`,
+              name: d.name || `${team} Sprint`,
+              team,
+              status: d.status || ["planned", "active", "done"][idx % 3],
+              completion: Number(d.completion) || (d.status === "done" ? 100 : d.status === "active" ? Math.round(Math.random() * 80 + 10) : 0),
+              due: d.due || new Date(Date.now() + Math.random() * 8 * 24 * 3600 * 1000).toISOString(),
+              goals: d.goals || `${team} 기능 일정 및 배포 준비`,
+              createdAt: d.createdAt || new Date().toISOString()
+            };
+          });
+          state.sprints = mapped;
+          pushEvent("?먮룞??API 湲곕컲 ?ㅽ봽由고듃 濡쒕뵫 ?꾨즺");
+        } else {
+          throw new Error("no data");
         }
-    </script>
-    <script src="mobile-optimization.js" defer></script>
+      } catch {
+        const fallback = [];
+        for (const team of seedTeams) {
+          for (let i = 0; i < 2; i++) fallback.push(randomSprint(team, i));
+        }
+        state.sprints = fallback;
+        pushEvent("API ?ъ슜 遺덇?濡??곕え ?곗씠?곕줈 ?숈옉");
+      }
+
+      renderTeamOptions(state.sprints);
+      renderRows();
+    }
+
+    function updateSprintStatus(id, status) {
+      const target = state.sprints.find((s) => s.id === id);
+      if (!target) return;
+      target.status = status;
+      if (status === "done") target.completion = 100;
+      if (status === "active" && target.completion < 10) target.completion = 15;
+      pushEvent(`${target.name} ?곹깭 蹂寃? ${status}`);
+      renderRows();
+    }
+
+    function createFromTeam() {
+      const seed = seedTeams[Math.floor(Math.random() * seedTeams.length)];
+      const item = randomSprint(seed, Date.now());
+      state.sprints.unshift(item);
+      pushEvent(`${item.name} ?앹꽦`);
+      renderRows();
+    }
+
+    async function startSprint() {
+      const toStart = state.sprints.find((s) => s.status === "planned");
+      if (!toStart) {
+        alert("?쒖옉 媛?ν븳 ?ㅽ봽由고듃媛 ?놁뒿?덈떎.");
+        return;
+      }
+      const payload = { name: toStart.name, team: toStart.team, status: "active", startedAt: new Date().toISOString() };
+      try {
+        const r = await sfRuntime.apiFetch("/api/v1/automation/cycles", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        pushEvent(`?쒕쾭 API濡?${toStart.name} ?쒖옉 ?붿껌`);
+      } catch {
+        pushEvent(`濡쒖뺄?먯꽌 ${toStart.name} ?쒖옉 泥섎━`);
+      }
+      toStart.status = "active";
+      if (toStart.completion < 10) toStart.completion = 15;
+      renderRows();
+    }
+
+    function onRowAction(ev) {
+      const btn = ev.target;
+      if (!(btn instanceof HTMLButtonElement)) return;
+      const id = btn.getAttribute("data-id");
+      const action = btn.getAttribute("data-action");
+      if (!id || !action) return;
+      if (action === "complete") updateSprintStatus(id, "done");
+      if (action === "activate") updateSprintStatus(id, "active");
+    }
+
+    function setupFilterEvents() {
+      const bind = (id, eventName, handler) => {
+        const el = document.getElementById(id);
+        if (el) el.addEventListener(eventName, handler);
+      };
+
+      bind("teamFilter", "change", renderRows);
+      bind("statusFilter", "change", renderRows);
+      bind("search", "input", renderRows);
+      bind("refresh", "click", loadSprints);
+      bind("seed", "click", createFromTeam);
+      bind("start", "click", startSprint);
+      bind("rows", "click", onRowAction);
+    }
+
+    setupFilterEvents();
+    loadSprints();
+  </script>
 </body>
 </html>

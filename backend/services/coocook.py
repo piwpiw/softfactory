@@ -10,6 +10,49 @@ import random
 coocook_bp = Blueprint('coocook', __name__, url_prefix='/api/coocook')
 
 
+CUISINE_AVATARS = {
+    'korean': '🍲',
+    'italian': '🍝',
+    'japanese': '🍣',
+    'french': '🥘',
+    'mexican': '🌮',
+}
+
+
+def _booking_to_dict(booking):
+    cuisine = booking.chef.cuisine_type if booking.chef else ''
+    return {
+        'id': booking.id,
+        'chef_id': booking.chef_id,
+        'chef_name': booking.chef.name if booking.chef else 'Unknown Chef',
+        'chef_avatar': CUISINE_AVATARS.get(str(cuisine or '').lower(), '🍽️'),
+        'chef_cuisine': cuisine,
+        'cuisine': cuisine,
+        'location': booking.chef.location if booking.chef else '',
+        'booking_date': booking.booking_date.isoformat(),
+        'duration_hours': booking.duration_hours,
+        'total_price': booking.total_price,
+        'status': booking.status,
+        'special_requests': booking.special_requests,
+        'payment_status': 'paid' if booking.status in {'confirmed', 'completed'} else 'pending',
+        'created_at': booking.created_at.isoformat(),
+    }
+
+
+def _parse_booking_date(raw_value):
+    if raw_value in (None, ''):
+        raise ValueError('Booking date is required')
+
+    if isinstance(raw_value, str):
+        normalized = raw_value.strip()
+        try:
+            return datetime.fromisoformat(normalized.replace('Z', '+00:00')).date()
+        except ValueError:
+            return date.fromisoformat(normalized)
+
+    raise ValueError('Invalid booking date')
+
+
 # ============ MOCK DATA ============
 
 # Nutrition data per ingredient (per 100g)
@@ -186,22 +229,7 @@ def register_chef():
 def get_my_bookings():
     """Get user's bookings"""
     bookings = Booking.query.filter_by(user_id=g.user_id).all()
-
-    bookings_data = []
-    for booking in bookings:
-        bookings_data.append({
-            'id': booking.id,
-            'chef_name': booking.chef.name,
-            'chef_cuisine': booking.chef.cuisine_type,
-            'booking_date': booking.booking_date.isoformat(),
-            'duration_hours': booking.duration_hours,
-            'total_price': booking.total_price,
-            'status': booking.status,
-            'special_requests': booking.special_requests,
-            'created_at': booking.created_at.isoformat(),
-        })
-
-    return jsonify(bookings_data), 200
+    return jsonify([_booking_to_dict(booking) for booking in bookings]), 200
 
 
 @coocook_bp.route('/bookings', methods=['POST'])
@@ -221,7 +249,7 @@ def create_booking():
         return jsonify({'error': 'Chef not found'}), 404
 
     try:
-        booking_date = datetime.fromisoformat(data['booking_date']).date()
+        booking_date = _parse_booking_date(data['booking_date'])
     except (ValueError, TypeError):
         return jsonify({'error': 'Invalid booking date'}), 400
 
@@ -257,44 +285,85 @@ def create_booking():
 @require_subscription('coocook')
 def get_booking(booking_id):
     """Get booking details"""
-    booking = Booking.query.get(booking_id)
+    booking = db.session.get(Booking, booking_id)
 
     if not booking or booking.user_id != g.user_id:
         return jsonify({'error': 'Booking not found'}), 404
 
-    return jsonify({
-        'id': booking.id,
-        'chef_id': booking.chef_id,
-        'chef_name': booking.chef.name,
-        'booking_date': booking.booking_date.isoformat(),
-        'duration_hours': booking.duration_hours,
-        'total_price': booking.total_price,
-        'status': booking.status,
-        'special_requests': booking.special_requests,
-        'created_at': booking.created_at.isoformat(),
-    }), 200
+    return jsonify(_booking_to_dict(booking)), 200
 
 
 @coocook_bp.route('/bookings/<int:booking_id>', methods=['PUT'])
 @require_auth
 @require_subscription('coocook')
 def update_booking(booking_id):
-    """Update booking status (by chef user)"""
-    booking = Booking.query.get(booking_id)
+    """Update booking details for the booking owner or status for the chef."""
+    booking = db.session.get(Booking, booking_id)
 
     if not booking:
         return jsonify({'error': 'Booking not found'}), 404
 
-    # Only chef can update
-    if booking.chef.user_id != g.user_id:
+    data = request.get_json() or {}
+    if not data:
+        return jsonify({'error': 'Request body is required'}), 400
+
+    is_booking_owner = booking.user_id == g.user_id
+    is_chef_owner = booking.chef and booking.chef.user_id == g.user_id
+
+    if not is_booking_owner and not is_chef_owner:
         return jsonify({'error': 'Not authorized'}), 403
 
-    data = request.get_json()
-    if 'status' in data:
-        booking.status = data['status']
-        db.session.commit()
+    if is_booking_owner:
+        if booking.status in {'completed', 'cancelled', 'canceled'}:
+            return jsonify({'error': 'Completed or cancelled bookings cannot be changed'}), 400
 
-    return jsonify({'message': 'Booking updated'}), 200
+        allowed_customer_fields = {'booking_date', 'duration_hours', 'special_requests', 'status'}
+        if not any(field in data for field in allowed_customer_fields):
+            return jsonify({'error': 'No supported booking fields provided'}), 400
+
+        if 'booking_date' in data:
+            try:
+                next_booking_date = _parse_booking_date(data.get('booking_date'))
+            except (TypeError, ValueError):
+                return jsonify({'error': 'Invalid booking date'}), 400
+
+            if next_booking_date < date.today():
+                return jsonify({'error': 'Booking date must be in the future'}), 400
+            booking.booking_date = next_booking_date
+
+        if 'duration_hours' in data:
+            try:
+                duration_hours = int(data.get('duration_hours'))
+            except (TypeError, ValueError):
+                return jsonify({'error': 'Duration hours must be a number'}), 400
+
+            if duration_hours <= 0:
+                return jsonify({'error': 'Duration hours must be greater than zero'}), 400
+            booking.duration_hours = duration_hours
+            booking.total_price = float(duration_hours) * booking.chef.price_per_session
+
+        if 'special_requests' in data:
+            booking.special_requests = str(data.get('special_requests') or '').strip()
+
+        if 'status' in data:
+            next_status = str(data.get('status') or '').strip().lower()
+            if next_status not in {'cancelled', 'canceled'}:
+                return jsonify({'error': 'Customers can only cancel bookings'}), 400
+            booking.status = 'cancelled'
+
+    if is_chef_owner and 'status' in data and not is_booking_owner:
+        next_status = str(data.get('status') or '').strip().lower()
+        allowed_statuses = {'pending', 'confirmed', 'completed', 'cancelled', 'canceled'}
+        if next_status not in allowed_statuses:
+            return jsonify({'error': 'Invalid booking status'}), 400
+        booking.status = 'cancelled' if next_status in {'cancelled', 'canceled'} else next_status
+
+    db.session.commit()
+
+    return jsonify({
+        'message': 'Booking updated',
+        'booking': _booking_to_dict(booking),
+    }), 200
 
 
 # ============ PHASE 2: SEARCH & FILTER ============

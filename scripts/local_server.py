@@ -5,14 +5,28 @@ JARVIS Local Server - Team Access
 로컬 + 로컬네트워크 팀 접근 가능
 """
 
-from flask import Flask, send_from_directory, jsonify, request
+from flask import Flask, Response, send_from_directory, jsonify, request
 import socket
 import subprocess
 import json
 from datetime import datetime, timedelta
 from team_data import get_teams, get_team_summary, get_team_skills_matrix
+from pathlib import Path
 
 app = Flask(__name__, static_folder='../web')
+
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+AUTO_EXECUTION_ROOT = PROJECT_ROOT / "docs" / "plans" / "execution"
+AUTO_FILE_WHITELIST = {
+    "status.json",
+    "status.md",
+    "hourly_report.json",
+    "hourly_report.md",
+    "cycle_manifest.jsonl",
+    "agent_5h_loop.log",
+    "morning_check_brief.json",
+    "morning_check_brief.md",
+}
 
 # 간단한 Rate Limiter
 class SimpleRateLimiter:
@@ -60,6 +74,104 @@ def get_local_ip():
         return '127.0.0.1'
 
 # Rate Limiting Middleware
+def _safe_json_load(path: Path, default):
+    if not path.exists():
+        return default
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return default
+
+
+def _safe_int(value, default=0):
+    try:
+        return int(value)
+    except Exception:
+        return default
+
+
+def _find_latest_auto_run_dir():
+    if not AUTO_EXECUTION_ROOT.exists():
+        return None
+
+    date_dirs = [
+        p
+        for p in AUTO_EXECUTION_ROOT.iterdir()
+        if p.is_dir() and p.name and p.name[0].isdigit()
+    ]
+    if not date_dirs:
+        return None
+
+    date_dirs = sorted(date_dirs, key=lambda d: d.name, reverse=True)
+    candidates = []
+    for date_dir in date_dirs:
+        for run_dir in sorted(date_dir.iterdir(), reverse=True):
+            if not run_dir.is_dir():
+                continue
+            if run_dir.name.lower().startswith("auto-"):
+                candidates.append(run_dir)
+        if candidates:
+            break
+
+    if not candidates:
+        return None
+
+    return max(candidates, key=lambda p: p.stat().st_mtime)
+
+
+def _read_automation_status():
+    run_dir = _find_latest_auto_run_dir()
+    if not run_dir:
+        return {
+            "available": False,
+            "run_dir": None,
+            "status_file": None,
+            "status": None,
+        }
+
+    status_path = run_dir / "status.json"
+    status_payload = _safe_json_load(status_path, None)
+    return {
+        "available": status_payload is not None,
+        "run_dir": str(run_dir),
+        "status_file": str(status_path),
+        "status": status_payload if isinstance(status_payload, dict) else None,
+    }
+
+
+def _read_cycle_manifest(limit: int = 10):
+    run_dir = _find_latest_auto_run_dir()
+    if not run_dir:
+        return []
+
+    manifest = run_dir / "cycle_manifest.jsonl"
+    if not manifest.exists():
+        return []
+
+    lines = manifest.read_text(encoding="utf-8").splitlines()
+    parsed = []
+    for line in reversed(lines[-max(limit * 3, limit):]):
+        if not line.strip():
+            continue
+        try:
+            parsed.append(json.loads(line))
+        except Exception:
+            continue
+
+    parsed = sorted(
+        parsed,
+        key=lambda item: _safe_int(item.get("iteration", 0), 0),
+        reverse=True,
+    )
+    return parsed[:limit]
+
+
+def _read_hourly_report():
+    run_dir = _find_latest_auto_run_dir()
+    if not run_dir:
+        return None
+    return _safe_json_load(run_dir / "hourly_report.json", None)
+
 @app.before_request
 def before_request():
     """모든 요청에 대해 Rate Limiting 체크"""
@@ -117,7 +229,8 @@ def team_access():
             "operations": "/operations.html",
             "analytics": "/analytics.html",
             "teams": "/teams.html",
-            "dashboard": "/dashboard.html"
+            "dashboard": "/dashboard.html",
+            "automation_dashboard": "/automation-dashboard.html"
         }
     })
 
@@ -149,6 +262,53 @@ def api_skills():
         "skills_matrix": get_team_skills_matrix(),
         "timestamp": datetime.now().isoformat()
     })
+
+# Automation status APIs
+@app.route('/api/v1/automation/status')
+def api_automation_status():
+    return jsonify(_read_automation_status())
+
+
+@app.route('/api/v1/automation/cycles')
+def api_automation_cycles():
+    try:
+        limit = max(1, min(200, int(request.args.get("limit", "10"))))
+    except ValueError:
+        limit = 10
+    run_dir = _find_latest_auto_run_dir()
+    cycles = _read_cycle_manifest(limit)
+    return jsonify({
+        "run_dir": str(run_dir) if run_dir else None,
+        "limit": limit,
+        "count": len(cycles),
+        "cycles": cycles,
+    })
+
+
+@app.route('/api/v1/automation/hourly')
+def api_automation_hourly():
+    payload = _read_hourly_report()
+    return jsonify({
+        "available": payload is not None,
+        "items": payload.get("items", []) if isinstance(payload, dict) else [],
+        "generated_at": payload.get("generated_at") if isinstance(payload, dict) else None,
+    })
+
+
+@app.route('/api/v1/automation/file')
+def api_automation_file():
+    file_name = request.args.get("name", "")
+    if file_name not in AUTO_FILE_WHITELIST:
+        return jsonify({"error": "Invalid file name"}), 400
+
+    run_dir = _find_latest_auto_run_dir()
+    if not run_dir:
+        return jsonify({"error": "No automation run directory"}), 404
+
+    target = run_dir / file_name
+    if not target.exists():
+        return jsonify({"error": "File not found"}), 404
+    return Response(target.read_text(encoding="utf-8"), mimetype="text/plain; charset=utf-8")
 
 # Static file routes - MUST come after all API routes
 @app.route('/')

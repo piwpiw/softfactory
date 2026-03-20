@@ -1,94 +1,399 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="theme-color" content="#111827">
-<title>Audit Log - JARVIS</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="responsive-framework.css">
-  </head>
-<body class="bg-gray-900 text-white">
-    <nav class="bg-gray-800 border-b border-gray-700 px-6 py-4 flex justify-between items-center">
-    <button class="hamburger" aria-label="Toggle navigation menu">
-      <span></span>
-      <span></span>
-      <span></span>
-    </button>
-        <h1 class="text-2xl font-bold">08 Security: 감사 로그</h1>
-        <a href="index.html" class="text-gray-400 hover:text-white">← 홈</a>
-    </nav>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>媛먯궗 異붿쟻</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --line: #e2e8f0;
+      --muted: #64748b;
+      --good: #16a34a;
+      --warn: #d97706;
+      --bad: #dc2626;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Inter", "Segoe UI", system-ui, sans-serif;
+      background:
+        radial-gradient(70rem 70rem at 0% -10%, #e0f2fe 0%, transparent 35%),
+        radial-gradient(50rem 50rem at 100% -10%, #dcfce7 0%, transparent 30%),
+        #f8fafc;
+      color: #0f172a;
+    }
+    .container { max-width: 1280px; margin: 0 auto; padding: 24px; }
+    .head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .head h1 { margin: 0; font-size: 1.9rem; }
+    .subtitle { color: var(--muted); margin-top: 4px; }
+    .toolbar {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin: 12px 0 14px;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 12px;
+      box-shadow: 0 10px 18px rgba(15,23,42,.06);
+    }
+    .toolbar select,
+    .toolbar input,
+    .toolbar button {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 8px 10px;
+      background: #fff;
+    }
+    .toolbar button {
+      color: #fff;
+      background: #0f172a;
+      border-color: #0f172a;
+      cursor: pointer;
+    }
+    .panel {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 14px;
+      margin-bottom: 12px;
+      box-shadow: 0 10px 20px rgba(15,23,42,.05);
+    }
+    .panel h2 { margin: 0 0 10px; font-size: 1.05rem; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { text-align: left; padding: 10px 8px; border-top: 1px solid #f1f5f9; font-size: .92rem; }
+    th { font-size: .85rem; background: #f8fafc; color: #334155; }
+    tr:first-child td { border-top: 1px solid var(--line); }
+    .status {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 999px;
+      font-size: .75rem;
+      color: #fff;
+    }
+    .status.open { background: #dc2626; }
+    .status.in_progress { background: #d97706; }
+    .status.resolved { background: #16a34a; }
+    .status.closed { background: #334155; }
+    .severity {
+      display: inline-block;
+      font-weight: 700;
+    }
+    .severity.critical { color: #b91c1c; }
+    .severity.high { color: #c2410c; }
+    .severity.medium { color: #1d4ed8; }
+    .severity.low { color: #15803d; }
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0,1fr));
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .metric {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 12px;
+      box-shadow: 0 10px 18px rgba(15,23,42,.05);
+    }
+    .metric b { display:block; font-size: 1.6rem; margin-top: 8px; }
+    .row-action button {
+      border: 0;
+      border-radius: 7px;
+      padding: 6px 8px;
+      background: #eff6ff;
+      color: #1d4ed8;
+      cursor: pointer;
+    }
+    .row-action button:hover { background: #dbeafe; }
+    .detail { margin-top: 8px; color: #334155; font-size: .87rem; white-space: pre-wrap; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 8px; }
+    .hidden { display: none; }
+    .meta { color: var(--muted); font-size: .9rem; }
+    @media (max-width: 1024px) { .summary-grid { grid-template-columns: repeat(2, minmax(0,1fr)); } }
+    @media (max-width: 760px) { .summary-grid { grid-template-columns: 1fr; } }
+  </style>
+    <link rel="stylesheet" href="/unified-ui.css">
+    <script src="/unified-ui.js" defer></script>
+</head>
+<body>
+  <div class="container">
+    <div class="head">
+      <div>
+        <h1>媛먯궗 異붿쟻</h1>
+        <div class="subtitle">痍⑥빟??洹쒖젙 ?꾨컲/?댁쁺 ?댁뒋瑜?異붿쟻?섍퀬 利됱떆 ?곹깭瑜??뺣━?⑸땲??</div>
+      </div>
+      <div class="meta" id="meta"></div>
+    </div>
 
-    <main class="p-6 max-w-6xl mx-auto">
-        <!-- 보안 메트릭 -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-            <div class="bg-green-600 p-4 rounded-lg">
-                <p class="text-sm">보안 점수</p>
-                <p class="text-3xl font-bold">95/100</p>
-            </div>
-            <div class="bg-blue-600 p-4 rounded-lg">
-                <p class="text-sm">활성 사용자</p>
-                <p class="text-3xl font-bold">34</p>
-            </div>
-            <div class="bg-orange-600 p-4 rounded-lg">
-                <p class="text-sm">의심 활동</p>
-                <p class="text-3xl font-bold">2</p>
-            </div>
-        </div>
+    <section class="summary-grid">
+      <article class="metric">
+        ?꾩껜 ?댁뒋
+        <b id="metricTotal">0</b>
+      </article>
+      <article class="metric">
+        Critical
+        <b id="metricCritical">0</b>
+      </article>
+      <article class="metric">
+        ?닿껐以?        <b id="metricOpen">0</b>
+      </article>
+      <article class="metric">
+        24h ?꾩쟻
+        <b id="metric24">0</b>
+      </article>
+    </section>
 
-        <!-- 감사 로그 -->
-        <div class="bg-gray-800 p-6 rounded-lg overflow-x-auto">
-            <h3 class="text-xl font-bold mb-4">최근 활동</h3>
-            <table class="w-full text-sm">
-                <thead class="border-b border-gray-700">
-                    <tr>
-                        <th class="text-left py-2">시간</th>
-                        <th class="text-left py-2">사용자</th>
-                        <th class="text-left py-2">활동</th>
-                        <th class="text-left py-2">상태</th>
-                    </tr>
-                </thead>
-                <tbody class="space-y-2">
-                    <tr>
-                        <td class="py-2">14:32</td>
-                        <td>alice@team.io</td>
-                        <td>배포 승인</td>
-                        <td><span class="bg-green-500 px-2 py-1 rounded text-xs">성공</span></td>
-                    </tr>
-                    <tr>
-                        <td class="py-2">14:15</td>
-                        <td>bob@team.io</td>
-                        <td>코드 리뷰</td>
-                        <td><span class="bg-green-500 px-2 py-1 rounded text-xs">성공</span></td>
-                    </tr>
-                    <tr>
-                        <td class="py-2">13:45</td>
-                        <td>unknown@suspicious.com</td>
-                        <td>로그인 시도</td>
-                        <td><span class="bg-red-500 px-2 py-1 rounded text-xs">차단</span></td>
-                    </tr>
-                    <tr>
-                        <td class="py-2">13:20</td>
-                        <td>charlie@team.io</td>
-                        <td>데이터 액세스</td>
-                        <td><span class="bg-green-500 px-2 py-1 rounded text-xs">성공</span></td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+    <section class="toolbar">
+      <label for="teamFilter">?</label>
+      <select id="teamFilter">
+        <option value="">?꾩껜</option>
+      </select>
+      <label for="severityFilter">?ш컖??/label>
+      <select id="severityFilter">
+        <option value="">?꾩껜</option>
+        <option value="critical">Critical</option>
+        <option value="high">High</option>
+        <option value="medium">Medium</option>
+        <option value="low">Low</option>
+      </select>
+      <label for="statusFilter">?곹깭</label>
+      <select id="statusFilter">
+        <option value="">?꾩껜</option>
+        <option value="open">Open</option>
+        <option value="in_progress">In Progress</option>
+        <option value="resolved">Resolved</option>
+        <option value="closed">Closed</option>
+      </select>
+      <input type="text" id="search" placeholder="?댁슜 寃?? />
+      <button type="button" id="refreshBtn">?덈줈怨좎묠</button>
+      <button type="button" id="exportBtn">CSV ???/button>
+      <span class="meta" id="statusLine"></span>
+    </section>
 
-        <button onclick="downloadAudit()" class="mt-6 bg-orange-600 hover:bg-orange-700 px-6 py-3 rounded font-bold">
-            감사 보고서 다운로드
-        </button>
-    </main>
+    <section class="panel">
+      <h2>媛먯궗 濡쒓렇</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>諛쒖깮?쒓컙</th>
+            <th>?</th>
+            <th>?좏삎</th>
+            <th>?ш컖??/th>
+            <th>?곹깭</th>
+            <th>?붿빟</th>
+            <th>議곗튂</th>
+          </tr>
+        </thead>
+        <tbody id="logRows"></tbody>
+      </table>
+    </section>
+  </div>
 
-    <script>
-        function downloadAudit() {
-            alert('보안 감사 보고서 다운로드 시작');
-        }
-    </script>
-    <script src="mobile-optimization.js" defer></script>
+  <script src="shared-runtime.js"></script>
+  <script>
+    const state = {
+      logs: [],
+      openDetailId: null
+    };
+
+    const seeds = ["점검 미준수", "권한 오남용", "로그 누락", "보호 정책 위반", "미검증 배포"];
+    const teams = ["Alpha", "Beta", "Gamma", "Delta", "Omega"];
+
+    const fmtDate = (d) => {
+      const date = new Date(d);
+      return date.toLocaleString("ko-KR", { hour12: false });
+    };
+
+    function randomSince(hours) {
+      const now = Date.now();
+      return new Date(now - Math.random() * hours * 3600 * 1000);
+    }
+
+    function normalizeLog(raw) {
+      return {
+        id: raw.id || `log-${Math.random().toString(36).slice(2, 10)}`,
+        team: raw.team || raw.team_name || teams[Math.floor(Math.random() * teams.length)],
+        type: raw.type || seeds[Math.floor(Math.random() * seeds.length)],
+        severity: raw.severity || ["low","medium","high","critical"][Math.floor(Math.random() * 4)],
+        status: raw.status || ["open", "in_progress", "resolved"][Math.floor(Math.random() * 3)],
+        summary: raw.summary || "감사 트리거 조건 충족 항목이 반복적으로 감지됨",
+        detail: raw.detail || "원인 조사와 임시 조치 로그를 확인해 주세요.",
+        createdAt: raw.createdAt || randomSince(72).toISOString()
+      };
+    }
+
+    function randomLogs() {
+      return Array.from({ length: 22 }, (_, i) => normalizeLog({
+        id: `seed-${i}`,
+        severity: ["low","low","medium","medium","high","critical"][i % 6],
+        status: ["open","in_progress","resolved","closed"][i % 4],
+      }));
+    }
+
+    function renderSummary(list) {
+      const total = list.length;
+      const critical = list.filter((x) => x.severity === "critical").length;
+      const open = list.filter((x) => x.status === "open" || x.status === "in_progress").length;
+      const now = Date.now();
+      const since24 = list.filter((x) => new Date(x.createdAt).getTime() >= now - 24 * 3600 * 1000).length;
+      document.getElementById("metricTotal").textContent = String(total);
+      document.getElementById("metricCritical").textContent = String(critical);
+      document.getElementById("metricOpen").textContent = String(open);
+      document.getElementById("metric24").textContent = String(since24);
+    }
+
+    function renderTeamOptions(list) {
+      const set = new Set(teams);
+      for (const item of list) set.add(item.team);
+      const options = [...set].sort().map((name) => `<option value="${name}">${name}</option>`).join("");
+      document.getElementById("teamFilter").innerHTML = `<option value="">?꾩껜</option>${options}`;
+    }
+
+    function rowStatusCls(status) {
+      return status === "open" ? "open" : status === "in_progress" ? "in_progress" : status === "resolved" ? "resolved" : "closed";
+    }
+
+    function rowSeverityCls(sev) {
+      return `severity ${sev}`;
+    }
+
+    function actionButton(log) {
+      return `<button data-id="${log.id}" data-status="resolved">?닿껐 泥섎━</button>`;
+    }
+
+    function renderRows(logs) {
+      const tbody = document.getElementById("logRows");
+      const teamFilter = document.getElementById("teamFilter").value;
+      const severityFilter = document.getElementById("severityFilter").value;
+      const statusFilter = document.getElementById("statusFilter").value;
+      const search = document.getElementById("search").value.trim().toLowerCase();
+
+      const filtered = logs.filter((log) => {
+        if (teamFilter && log.team !== teamFilter) return false;
+        if (severityFilter && log.severity !== severityFilter) return false;
+        if (statusFilter && log.status !== statusFilter) return false;
+        if (search && !(log.summary.toLowerCase().includes(search) || log.type.toLowerCase().includes(search) || log.team.toLowerCase().includes(search))) return false;
+        return true;
+      });
+
+      tbody.innerHTML = "";
+      for (const log of filtered) {
+        const isOpen = state.openDetailId === log.id;
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${fmtDate(log.createdAt)}</td>
+          <td>${log.team}</td>
+          <td>${log.type}</td>
+          <td><span class="${rowSeverityCls(log.severity)}">${log.severity}</span></td>
+          <td><span class="status ${rowStatusCls(log.status)}">${log.status}</span></td>
+          <td>
+            <div>${log.summary}</div>
+            <div class="detail ${isOpen ? "" : "hidden"}" id="detail-${log.id}">${log.detail}</div>
+          </td>
+          <td class="row-action"><button data-id="${log.id}" data-detail>${isOpen ? "?リ린" : "?곸꽭蹂닿린"}</button> ${actionButton(log)}</td>
+        `;
+        tbody.appendChild(tr);
+      }
+      document.getElementById("statusLine").textContent = `조회 ${filtered.length}건`;
+    }
+
+    async function load() {
+      try {
+        const res = await fetch("/api/v1/teams");
+        if (!res.ok) throw new Error("teams API unavailable");
+        const teamsData = await res.json();
+        const generated = Array.isArray(teamsData) && teamsData.length
+          ? teamsData.map((t) => normalizeLog({
+              team: t.name || "Unknown",
+              type: seeds[Math.floor(Math.random() * seeds.length)],
+              status: ["open","in_progress","resolved","closed"][Math.floor(Math.random() * 4)],
+              severity: ["low","medium","high","critical"][Math.floor(Math.random() * 4)],
+              summary: `${(t.name || "팀")} 점검 로그 이벤트 생성`,
+              detail: `?: ${(t.name || "Unknown")}?먯꽌 ?먮룞 媛먯궗 濡쒓렇 ??ぉ???섏쭛?섏뿀?듬땲??`
+            }))
+          : [];
+        state.logs = generated.length ? generated : randomLogs();
+      } catch {
+        state.logs = randomLogs();
+      }
+      renderTeamOptions(state.logs);
+      renderSummary(state.logs);
+      renderRows(state.logs);
+      document.getElementById("meta").textContent = `?숆린?? ${new Date().toLocaleString("ko-KR")}`;
+    }
+
+    function updateLogStatus(id) {
+      const found = state.logs.find((l) => l.id === id);
+      if (!found) return;
+      found.status = found.status === "resolved" || found.status === "closed" ? "open" : "resolved";
+      if (found.status === "resolved") found.detail = `[?먮룞 議곗튂] ?곹깭瑜?resolved濡?蹂寃쏀뻽?듬땲??`;
+      renderSummary(state.logs);
+      renderRows(state.logs);
+    }
+
+    function exportCSV() {
+      const teamFilter = document.getElementById("teamFilter").value;
+      const severityFilter = document.getElementById("severityFilter").value;
+      const statusFilter = document.getElementById("statusFilter").value;
+      const search = document.getElementById("search").value.trim().toLowerCase();
+      const filtered = state.logs.filter((log) => {
+        if (teamFilter && log.team !== teamFilter) return false;
+        if (severityFilter && log.severity !== severityFilter) return false;
+        if (statusFilter && log.status !== statusFilter) return false;
+        if (search && !(log.summary.toLowerCase().includes(search) || log.type.toLowerCase().includes(search) || log.team.toLowerCase().includes(search))) return false;
+        return true;
+      });
+      const csv = sfRuntime.toCSV(
+        filtered.map((log) => [
+          log.id,
+          log.createdAt,
+          log.team,
+          log.type,
+          log.severity,
+          log.status,
+          log.summary,
+          log.detail
+        ]),
+        ["id","occurred_at","team","type","severity","status","summary","detail"]
+      );
+      sfRuntime.downloadText(`audit-${Date.now()}.csv`, csv, "text/csv;charset=utf-8;");
+    }
+
+    document.addEventListener("click", (ev) => {
+      const target = ev.target;
+      if (!(target instanceof HTMLElement)) return;
+      const detailBtn = target.closest("button[data-detail]");
+      const resolveBtn = target.closest("button[data-status]");
+      if (detailBtn) {
+        const id = detailBtn.getAttribute("data-id");
+        if (state.openDetailId === id) state.openDetailId = null;
+        else state.openDetailId = id;
+        renderRows(state.logs);
+      }
+      if (resolveBtn) {
+        const id = resolveBtn.getAttribute("data-id");
+        updateLogStatus(id);
+      }
+    });
+    const bind = (id, eventName, handler) => {
+      const el = document.getElementById(id);
+      if (el) el.addEventListener(eventName, handler);
+    };
+    bind("teamFilter", "change", () => renderRows(state.logs));
+    bind("severityFilter", "change", () => renderRows(state.logs));
+    bind("statusFilter", "change", () => renderRows(state.logs));
+    bind("search", "input", () => renderRows(state.logs));
+    bind("refreshBtn", "click", load);
+    bind("exportBtn", "click", exportCSV);
+
+    load();
+  </script>
 </body>
 </html>

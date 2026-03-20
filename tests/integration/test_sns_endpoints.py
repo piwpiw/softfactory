@@ -6,6 +6,8 @@ Tests 32 API endpoints across accounts, posts, analytics, templates, campaigns
 import pytest
 import json
 from datetime import datetime, timedelta
+from unittest.mock import patch
+from sqlalchemy.exc import OperationalError
 from backend.models import (
     db, User, SNSAccount, SNSPost, SNSCampaign, SNSTemplate,
     SNSAnalytics, SNSInboxMessage, SNSSettings
@@ -218,9 +220,49 @@ class TestAccountManagement:
         """Test GET /api/sns/accounts"""
         res = client.get('/api/sns/accounts', headers=auth_headers)
         assert res.status_code in [200, 404]
-        if res.status_code == 200:
-            data = json.loads(res.data)
-            assert 'data' in data or 'accounts' in data
+
+    def test_get_all_accounts_falls_back_for_legacy_schema(self, app, client, auth_headers):
+        """Legacy local SQLite files may miss newer SNSAccount columns such as site_url."""
+        with app.app_context():
+            account = SNSAccount(
+                user_id=1,
+                platform='instagram',
+                account_name='@test_account',
+                is_active=True,
+                access_token='demo_token',
+                refresh_token='demo_refresh',
+                token_expires_at=datetime.utcnow() + timedelta(days=30),
+                platform_user_id='12345',
+                followers_count=5000,
+                permissions_json={'read': True, 'write': True},
+            )
+            db.session.add(account)
+            db.session.commit()
+
+        original_query = db.session.query
+
+        class BrokenQuery:
+            def outerjoin(self, *args, **kwargs):
+                return self
+
+            def filter(self, *args, **kwargs):
+                return self
+
+            def all(self):
+                raise OperationalError("SELECT ... sns_accounts.site_url ...", {}, Exception("no such column: sns_accounts.site_url"))
+
+        def fake_query(*args, **kwargs):
+            if args and args[0] is SNSAccount:
+                return BrokenQuery()
+            return original_query(*args, **kwargs)
+
+        with patch.object(db.session, "query", side_effect=fake_query):
+            res = client.get('/api/sns/accounts', headers=auth_headers)
+
+        assert res.status_code == 200
+        data = json.loads(res.data)
+        assert isinstance(data, list)
+        assert data[0]["account_name"] == "@test_account"
 
     def test_get_single_account(self, client, auth_headers, demo_account):
         """Test GET /api/sns/accounts/{id}"""

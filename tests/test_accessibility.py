@@ -5,13 +5,16 @@ Last updated: 2026-02-26
 """
 
 import pytest
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.chrome.options import Options
-from webdriver_manager.chrome import ChromeDriverManager
-from selenium.webdriver.chrome.service import Service
 import time
+
+pytestmark = pytest.mark.e2e
+
+webdriver = pytest.importorskip("selenium.webdriver")
+By = pytest.importorskip("selenium.webdriver.common.by").By
+Keys = pytest.importorskip("selenium.webdriver.common.keys").Keys
+Options = pytest.importorskip("selenium.webdriver.chrome.options").Options
+Service = pytest.importorskip("selenium.webdriver.chrome.service").Service
+ChromeDriverManager = pytest.importorskip("webdriver_manager.chrome").ChromeDriverManager
 
 
 @pytest.fixture

@@ -32,13 +32,13 @@
                     <span class="text-2xl" aria-hidden="true">🏭</span>
                     <div>
                         <h1 class="font-bold text-white">SoftFactory</h1>
-                <p class="text-xs text-slate-400">Management</p>
+                <p class="text-xs text-slate-400">관리</p>
                     </div>
                 </div>
             </div>
 
             <nav class="flex-1 p-6 space-y-2 overflow-y-auto" aria-label="관리자 네비게이션">
-                <button class="hamburger" aria-label="Toggle navigation" type="button">
+                <button class="hamburger" aria-label="네비게이션 메뉴 열기" type="button">
                     <span></span>
                     <span></span>
                     <span></span>
@@ -51,7 +51,7 @@
             <div class="p-6 border-t border-slate-800 soft-user-panel">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-sm font-medium text-white" id="userName">Demo User</p>
+                        <p class="text-sm font-medium text-white" id="userName">사용자</p>
                         <p class="text-xs text-slate-400" id="userEmail">demo@softfactory.com</p>
                     </div>
                 <button onclick="logout()" class="p-2 hover:bg-slate-800 rounded-lg transition" title="로그아웃" type="button">🚪</button>
@@ -89,6 +89,9 @@
                         <p class="font-mono text-white" id="health-version">-</p>
                     </div>
                 </div>
+
+                <div id="error-critical-alert" class="hidden rounded-xl p-3 border border-red-700 bg-red-900/40 text-red-200 text-sm"></div>
+                <div id="admin-feedback" class="hidden fixed top-4 right-4 z-50 px-4 py-2 rounded-lg text-sm border"></div>
 
                 <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
                     <article class="soft-card p-5">
@@ -152,6 +155,42 @@
                     <h3 class="text-base font-semibold text-white mb-4">최근 오류</h3>
                     <div id="recent-errors" class="space-y-2">로딩 중...</div>
                 </article>
+
+                <article class="soft-card p-6">
+                    <h3 class="text-base font-semibold text-white mb-4">에러 트래커 상태</h3>
+                    <div id="error-tracker-health" class="space-y-2">
+                        <p class="text-slate-500 text-sm">에러 트래킹 상태 로딩 중...</p>
+                    </div>
+                </article>
+
+                <article class="soft-card p-6">
+                    <h3 class="text-base font-semibold text-white mb-4">반복 에러 패턴 (상위 5)</h3>
+                    <div id="error-patterns" class="space-y-2">로딩 중...</div>
+                </article>
+                <article class="soft-card p-6">
+                    <h3 class="text-base font-semibold text-white mb-4">패턴 예방 가이드</h3>
+                    <div id="pattern-prevention-panel" class="space-y-2">
+                        <p class="text-slate-500 text-sm">패턴을 선택하면 상세 가이드를 표시합니다.</p>
+                    </div>
+                </article>
+
+                <article class="soft-card p-6">
+                    <h3 class="text-base font-semibold text-white mb-4">최근 에러 로그</h3>
+                    <div class="mb-3 flex flex-wrap items-center gap-2 text-xs">
+                        <label class="sr-only" for="error-log-limit">조회 개수</label>
+                        <select id="error-log-limit" class="text-slate-900 rounded px-2 py-1">
+                            <option value="5">최근 5개</option>
+                            <option value="10">최근 10개</option>
+                            <option value="20">최근 20개</option>
+                        </select>
+                        <label class="sr-only" for="error-log-type-filter">에러 타입</label>
+                        <input id="error-log-type-filter" class="text-slate-900 rounded px-2 py-1" type="text" placeholder="에러 타입 필터">
+                        <label class="sr-only" for="error-log-project-filter">프로젝트 필터</label>
+                        <input id="error-log-project-filter" class="text-slate-900 rounded px-2 py-1" type="text" placeholder="프로젝트 ID">
+                        <button id="error-log-refresh" type="button" class="soft-btn px-3 py-1 rounded">조회</button>
+                    </div>
+                    <div id="error-logs-panel" class="space-y-2">로딩 중...</div>
+                </article>
             </main>
         </div>
     </div>
@@ -165,6 +204,7 @@
         const MAX_POINTS = 20;
         const errorRateHistory = [];
         const timeLabels = [];
+        let errorLogLimit = 5;
         let errorRateChart = null;
         let responseChart = null;
 
@@ -193,6 +233,18 @@
                     jobs: []
                 },
                 recent_errors: []
+            },
+            errorTracking: {
+                health: {
+                    status: 'healthy',
+                    total_errors_tracked: 0,
+                    active_patterns: 0,
+                    resolved_patterns: 0,
+                    critical_patterns: 0,
+                    critical_pattern_ids: []
+                },
+                patterns: [],
+                recent: []
             }
         };
 
@@ -263,6 +315,40 @@
             return null;
         }
 
+        async function fetchErrorTrackerHealth() {
+            const data = await fetchJson('/api/errors/health');
+            return data && !data.error ? data : null;
+        }
+
+        async function fetchErrorPatterns() {
+            const data = await fetchJson('/api/errors/patterns');
+            if (data && Array.isArray(data.patterns)) return data.patterns;
+            if (data && Array.isArray(data)) return data;
+            return null;
+        }
+
+        function getErrorLogFilters() {
+            const limitInput = document.getElementById('error-log-limit');
+            const typeInput = document.getElementById('error-log-type-filter');
+            const projectInput = document.getElementById('error-log-project-filter');
+            return {
+                limit: parseInt(limitInput?.value || errorLogLimit, 10) || 5,
+                errorType: typeInput?.value?.trim() || '',
+                projectId: projectInput?.value?.trim() || ''
+            };
+        }
+
+        async function fetchErrorRecent(limit = 5, errorType = '', projectId = '') {
+            const params = new URLSearchParams();
+            params.set('limit', String(limit));
+            if (errorType) params.set('error_type', errorType);
+            if (projectId) params.set('project_id', projectId);
+            const data = await fetchJson('/api/errors/recent?' + params.toString());
+            if (data && Array.isArray(data.errors)) return data.errors;
+            if (Array.isArray(data)) return data;
+            return [];
+        }
+
         function serviceCard(name, statusStr) {
             const ok = String(statusStr).toLowerCase() === 'ok' || String(statusStr).toLowerCase() === 'running';
             const klass = ok ? 'dot-ok' : 'dot-error';
@@ -275,6 +361,18 @@
             return '<tr class="border-t border-slate-700">' + cells.map((c, i) =>
                 '<td class="px-4 py-2 text-sm ' + (i === 0 ? 'text-slate-300 font-mono' : 'text-slate-400') + '">' + (c == null ? '-' : c) + '</td>'
             ).join('') + '</tr>';
+        }
+
+        function severityBadge(severity) {
+            const level = String(severity || 'low').toLowerCase();
+            const map = {
+                low: { bg: 'bg-slate-700', text: 'text-slate-200', label: 'LOW' },
+                medium: { bg: 'bg-amber-500/20', text: 'text-amber-300', label: 'MED' },
+                high: { bg: 'bg-red-500/20', text: 'text-red-300', label: 'HIGH' },
+                critical: { bg: 'bg-red-700/30', text: 'text-red-200', label: 'CRIT' }
+            };
+            const style = map[level] || map.low;
+            return '<span class="px-2 py-0.5 rounded text-[10px] font-bold tracking-wide ' + style.bg + ' ' + style.text + '">' + style.label + '</span>';
         }
 
         function wrapTable(header, rows) {
@@ -297,6 +395,30 @@
         function formatWon(v) {
             const n = Number(v || 0);
             return '₩' + n.toLocaleString('ko-KR');
+        }
+
+        function escapeHtml(value) {
+            return String(value || '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        function showToast(message, level = 'error') {
+            const toast = document.getElementById('admin-feedback');
+            if (!toast) return;
+            const isError = level === 'error';
+            toast.className = 'fixed top-4 right-4 z-50 px-4 py-2 rounded-lg text-sm border';
+            toast.classList.add('bg-slate-900');
+            toast.classList.add(isError ? 'border-red-500/40' : 'border-green-500/40');
+            toast.classList.add(isError ? 'text-red-200' : 'text-green-200');
+            toast.textContent = message;
+            toast.classList.remove('hidden');
+            setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 2500);
         }
 
         function renderHealth(data) {
@@ -409,22 +531,240 @@
                 : '<p class="text-green-400 text-sm">최근 오류 없음</p>';
         }
 
+        function renderErrorTracking(data) {
+            if (!data) {
+                data = MONITOR_FALLBACK.errorTracking.health;
+            }
+
+            const status = data.status || 'unknown';
+            const badge = status === 'healthy'
+                ? '<span class="px-2 py-1 rounded-full bg-green-500/20 text-green-300 text-xs font-semibold">HEALTHY</span>'
+                : '<span class="px-2 py-1 rounded-full bg-red-500/20 text-red-300 text-xs font-semibold">CRITICAL</span>';
+            const list = [];
+            list.push('<div class="flex items-center justify-between text-sm"><span class="text-slate-400">상태</span>' + badge + '</div>');
+            list.push('<div class="flex items-center justify-between text-sm"><span class="text-slate-400">누적 에러</span><span class="text-white">' + (data.total_errors_tracked || 0) + '</span></div>');
+            list.push('<div class="flex items-center justify-between text-sm"><span class="text-slate-400">활성 패턴</span><span class="text-white">' + (data.active_patterns || 0) + '</span></div>');
+            list.push('<div class="flex items-center justify-between text-sm"><span class="text-slate-400">해결 패턴</span><span class="text-white">' + (data.resolved_patterns || 0) + '</span></div>');
+            list.push('<div class="flex items-center justify-between text-sm"><span class="text-slate-400">치명적 패턴</span><span class="text-red-300 font-semibold">' + (data.critical_patterns || 0) + '</span></div>');
+            const ids = Array.isArray(data.critical_pattern_ids) ? data.critical_pattern_ids : [];
+            if (ids.length) {
+                list.push('<div class="text-xs text-slate-400 pt-1">Critical IDs: <span class="text-slate-300 break-all">' + ids.join(', ') + '</span></div>');
+            }
+            document.getElementById('error-tracker-health').innerHTML = list.join('');
+        }
+
+        function renderErrorCriticalAlert(data) {
+            const panel = document.getElementById('error-critical-alert');
+            if (!panel) return;
+
+            const critical = Number(data && data.critical_patterns ? data.critical_patterns : 0);
+            if (critical <= 0) {
+                panel.classList.add('hidden');
+                panel.innerHTML = '';
+                return;
+            }
+
+            const ids = Array.isArray(data.critical_pattern_ids) ? data.critical_pattern_ids : [];
+            panel.className = 'rounded-xl p-3 border border-red-700 bg-red-900/40 text-red-200 text-sm';
+            panel.innerHTML = '<strong>Critical 패턴 감지</strong>: ' +
+                critical + '개. ' +
+                (ids.length ? ('패턴: ' + ids.join(', ')) : '패턴 목록을 확인하세요.');
+            panel.classList.remove('hidden');
+        }
+
+        function renderErrorPatterns(patterns) {
+            const rows = Array.isArray(patterns) ? patterns.slice(0, 5) : [];
+            const container = document.getElementById('error-patterns');
+            if (!rows.length) {
+                container.innerHTML = '<p class="text-green-400 text-sm">반복 패턴 없음</p>';
+                return;
+            }
+            container.innerHTML = rows.map((p) => {
+                const message = (p.message_pattern || '').length > 100
+                    ? p.message_pattern.slice(0, 100) + '...'
+                    : (p.message_pattern || '-');
+                const statusText = p.status === 'resolved' ? '해결됨' : '활성';
+                const statusClass = p.status === 'resolved' ? 'text-green-300' : 'text-red-300';
+                const files = Array.isArray(p.affected_files) ? p.affected_files.join(', ') : '-';
+                const patternId = p.pattern_id || '';
+                return '<div class="border border-slate-700 rounded-lg px-4 py-3 bg-slate-900/50">' +
+                    '<div class="flex items-center justify-between gap-2 mb-1">' +
+                    '<span class="text-sm font-semibold text-white">' + (p.error_type || '-') + '</span>' +
+                    '<span class="text-xs ' + statusClass + '">' + statusText + '</span>' +
+                    '</div>' +
+                    '<div class="text-sm text-slate-300">' + severityBadge(p.severity) + ' ' +
+                    '<span class="ml-2">발생 ' + (p.frequency || 0) + '회</span>' +
+                    '</div>' +
+                    '<div class="mt-2 text-xs text-slate-400">패턴: ' + message + '</div>' +
+                    '<div class="mt-1 text-xs text-slate-500">파일: ' + files + '</div>' +
+                    '<div class="mt-2">' +
+                    '<button class="text-xs soft-btn px-3 py-1 rounded" type="button" onclick="loadPreventionGuide(\'' + patternId + '\', \'' + String(p.error_type || '') + '\')">' +
+                    '예방 가이드 보기</button>' +
+                    (p.status === 'resolved' ? '' :
+                        '<button class="text-xs soft-btn px-3 py-1 rounded ml-2" type="button" onclick="resolvePattern(\'' + patternId + '\', this)">' +
+                        '해결 처리</button>'
+                    ) +
+                    '</div>' +
+                    '</div>';
+            }).join('');
+        }
+
+        function renderErrorRecent(logs) {
+            const rows = Array.isArray(logs) ? logs : [];
+            const container = document.getElementById('error-logs-panel');
+            if (!rows.length) {
+                container.innerHTML = '<p class="text-green-400 text-sm">최근 에러 로그 없음</p>';
+                return;
+            }
+            container.innerHTML = rows.map((e) => {
+                let at = '-';
+                if (e && e.timestamp) {
+                    const dt = new Date(e.timestamp);
+                    at = Number.isNaN(dt.getTime()) ? e.timestamp : dt.toLocaleString('ko-KR');
+                }
+                return '<div class="border border-slate-700 rounded-lg px-4 py-2 bg-slate-900/50">' +
+                    '<div class="flex items-center justify-between gap-2">' +
+                    '<span class="text-sm text-slate-300 font-semibold">' + escapeHtml(e.error_type || '-') + '</span>' +
+                    '<span class="text-xs text-slate-400">' + escapeHtml(at) + '</span>' +
+                    '</div>' +
+                    '<div class="text-xs text-slate-400 mt-1">' + escapeHtml((e.file || 'unknown') + (e.line ? ':' + e.line : '')) + '</div>' +
+                    '<div class="text-xs text-slate-300 mt-1">' + escapeHtml(e.message || '-') + '</div>' +
+                    '<div class="text-xs text-slate-500 mt-1">project: ' + escapeHtml(e.project_id || '-') + '</div>' +
+                    '</div>';
+            }).join('');
+        }
+
+        async function refreshErrorLogs() {
+            const filters = getErrorLogFilters();
+            errorLogLimit = filters.limit;
+            const logs = await fetchErrorRecent(filters.limit, filters.errorType, filters.projectId);
+            renderErrorRecent(logs);
+        }
+
+        async function resolvePattern(patternId, btn) {
+            if (!patternId) return;
+            const resolution = window.prompt('해결 내역(요약)을 입력하세요.');
+            if (!resolution) return;
+            if (btn) btn.disabled = true;
+            try {
+                const r = await apiFetch(`/api/errors/patterns/${encodeURIComponent(patternId)}/resolve`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ resolution })
+                });
+                if (r && r.ok) {
+                    const body = await r.json().catch(() => null);
+                    if (body && body.success) {
+                        showToast('패턴 해결이 반영되었습니다.', 'success');
+                        await refresh();
+                        return;
+                    }
+                }
+                if (btn) btn.disabled = false;
+                showToast('패턴 해결 처리 실패', 'error');
+            } catch {
+                if (btn) btn.disabled = false;
+                showToast('네트워크 오류로 처리 실패', 'error');
+            }
+        }
+
+        async function loadPreventionGuide(patternId, errorType) {
+            const panel = document.getElementById('pattern-prevention-panel');
+            if (!panel) return;
+
+            if (!patternId) {
+                panel.innerHTML = '<p class="text-amber-300 text-sm">패턴 ID가 없어 가이드를 불러올 수 없습니다.</p>';
+                return;
+            }
+
+            panel.innerHTML = '<p class="text-slate-400 text-sm">예방 가이드 로딩 중...</p>';
+
+            try {
+                let data = await fetchJson(`/api/errors/patterns/${encodeURIComponent(patternId)}/prevention`);
+                if (!data || !data.suggestions) {
+                    data = {
+                        pattern_id: patternId,
+                        suggestions: {
+                            error_type: errorType || '-',
+                            root_cause: '요약 데이터가 없습니다.',
+                            prevention_rules: [
+                                '패턴 재확인 후 관련 코드에 방어 코드 추가',
+                                '재발 방지를 위한 입력 검증, 널 체크, 예외 처리 강화',
+                                '핵심 지점 단위 테스트 추가'
+                            ],
+                            code_example: ''
+                        }
+                    };
+                }
+
+                const sugg = data.suggestions || {};
+                const rules = Array.isArray(sugg.prevention_rules) ? sugg.prevention_rules : [];
+                const example = sugg.code_example || '';
+
+                panel.innerHTML =
+                    '<div class="border border-slate-700 rounded-lg p-3 bg-slate-900/50">' +
+                    '<div class="text-sm text-white font-semibold mb-2">패턴 ID: ' + (patternId || '-') + '</div>' +
+                    '<div class="text-xs text-slate-300 mb-2">루트원인: ' + (sugg.root_cause || '-') + '</div>' +
+                    '<div class="text-xs text-slate-400 mb-1">권장 조치</div>' +
+                    '<ul class="list-disc pl-5 text-xs text-slate-300 space-y-1">' +
+                    (rules.length ? rules.map((r) => '<li>' + r + '</li>').join('') : '<li>데이터가 없습니다.</li>') +
+                    '</ul>' +
+                    (example ? '<div class="mt-2 text-xs text-slate-400">코드 예시</div><pre class="text-[11px] mt-1 text-slate-200 bg-slate-800 rounded p-2 overflow-auto">' +
+                        example.replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</pre>' : '') +
+                    '</div>';
+            } catch {
+                panel.innerHTML = '<p class="text-red-300 text-sm">예방 가이드를 불러오지 못했습니다.</p>';
+            }
+        }
+
         function updateIdentity() {
             const user = typeof getUser === 'function' ? getUser() : null;
             if (!user) return;
-            setText('userName', user.name || 'Demo User');
+            setText('userName', user.name || '사용자');
             setText('userEmail', user.email || 'demo@softfactory.com');
         }
 
         async function refresh() {
-            const [healthData, metricsData] = await Promise.all([ fetchHealth(), fetchAdminMetrics() ]);
+            const [healthData, metricsData, errorHealthData, errorPatternsData, errorRecentData] = await Promise.all([
+                fetchHealth(),
+                fetchAdminMetrics(),
+                fetchErrorTrackerHealth(),
+                fetchErrorPatterns(),
+                (async () => {
+                    const filters = getErrorLogFilters();
+                    errorLogLimit = filters.limit;
+                    return await fetchErrorRecent(filters.limit, filters.errorType, filters.projectId);
+                })()
+            ]);
             renderHealth(healthData || MONITOR_FALLBACK.health);
             renderAdminMetrics(metricsData || MONITOR_FALLBACK.metrics);
+            renderErrorTracking(errorHealthData || MONITOR_FALLBACK.errorTracking.health);
+            renderErrorPatterns(Array.isArray(errorPatternsData) ? errorPatternsData : []);
+            renderErrorRecent(Array.isArray(errorRecentData) ? errorRecentData : (MONITOR_FALLBACK.errorTracking.recent || []));
+            renderErrorCriticalAlert(errorHealthData || MONITOR_FALLBACK.errorTracking.health);
         }
 
         function bind() {
             initCharts();
             updateIdentity();
+            const logRefreshBtn = document.getElementById('error-log-refresh');
+            if (logRefreshBtn) {
+                logRefreshBtn.addEventListener('click', refreshErrorLogs);
+            }
+            const typeInput = document.getElementById('error-log-type-filter');
+            const projectInput = document.getElementById('error-log-project-filter');
+            if (typeInput) {
+                typeInput.addEventListener('keydown', (ev) => {
+                    if (ev.key === 'Enter') refreshErrorLogs();
+                });
+            }
+            if (projectInput) {
+                projectInput.addEventListener('keydown', (ev) => {
+                    if (ev.key === 'Enter') refreshErrorLogs();
+                });
+            }
             refresh();
             setInterval(refresh, 10000);
             document.getElementById('refreshAdminMetrics').addEventListener('click', refresh);

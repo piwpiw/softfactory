@@ -7,7 +7,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#020617">
-    <title>Social Master Hub ??ReviewEverything Platinum</title>
+    <title>리뷰 허브 | 리뷰 플랫폼</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap"
         rel="stylesheet">
@@ -60,37 +60,38 @@
                 <div class="flex items-center gap-4">
                     <div
                         class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-amber-600 to-amber-400 p-0.5 shadow-lg shadow-amber-900/20">
-                        <div class="w-full h-full bg-slate-950 rounded-2xl flex items-center justify-center text-2xl">??
+                    <div class="w-full h-full bg-slate-950 rounded-2xl flex items-center justify-center text-2xl">🎯
                         </div>
                     </div>
                     <div>
-                        <h1 class="font-black text-white text-lg tracking-tight uppercase">ReviewEngine</h1>
+                        <h1 class="font-black text-white text-lg tracking-tight uppercase">리뷰Engine</h1>
                         <p class="text-[10px] text-amber-500 font-bold tracking-[0.2em]">PLATINUM EDITION</p>
                     </div>
                 </div>
             </div>
 
-            <nav class="flex-1 p-6 space-y-1.5 overflow-y-auto scroll-hide">
-                <p class="text-[10px] font-black text-slate-500 uppercase px-4 mb-4 tracking-widest text-slate-400">Main
-                    Assets</p>
-                <a href="index.html"
+            <nav class="soft-nav-tree flex-1 p-6 space-y-1.5 overflow-y-auto scroll-hide">
+                <button class="hamburger" aria-label="메뉴 열기/닫기"><span></span><span></span><span></span></button>
+                <p class="text-[10px] font-black text-slate-500 uppercase px-4 mb-4 tracking-widest text-slate-400">메인
+                    메뉴</p>
+                <a class="soft-nav-link" href="index.html"
                     class="flex items-center gap-4 px-5 py-3.5 rounded-xl text-slate-400 font-medium hover:bg-slate-800/50 hover:text-white transition-all">
-                    <span>?렞</span><span class="text-sm">AI ?먯깋</span>
+                    <span>🧠</span><span class="text-sm">AI 전략</span>
                 </a>
-                <a href="aggregator.html"
+                <a class="soft-nav-link" href="aggregator.html"
                     class="flex items-center gap-4 px-5 py-3.5 rounded-xl text-slate-400 font-medium hover:bg-slate-800/50 hover:text-white transition-all">
-                    <span>?뵕</span><span class="text-sm">?뚰뙆 ?꾩뭅?대툕</span>
+                    <span>📥</span><span class="text-sm">통합 집계</span>
                 </a>
-                <a href="auto-apply.html"
+                <a class="soft-nav-link" href="auto-apply.html"
                     class="flex items-center gap-4 px-5 py-3.5 rounded-xl text-slate-400 font-medium hover:bg-slate-800/50 hover:text-white transition-all">
-                    <span>?쨼</span><span class="text-sm">?ㅽ넗?뚯씪??/span>
+                    <span>🤖</span><span class="text-sm">자동 배포 봇</span>
                 </a>
                 <div class="pt-8">
                     <p class="text-[10px] font-black text-slate-500 uppercase px-4 mb-4 tracking-widest text-slate-400">
-                        Settings</p>
-                    <a href="accounts.html"
+                        설정</p>
+                    <a class="soft-nav-link" href="accounts.html"
                         class="flex items-center gap-4 px-5 py-3.5 rounded-xl bg-amber-500/10 text-amber-500 font-bold border-l-2 border-amber-500 transition-all">
-                        <span>?뫀</span><span class="text-sm">留덉뒪??怨꾩젙 愿由?/span>
+                        <span>🔐</span><span class="text-sm">계정 관리</span>
                     </a>
                 </div>
             </nav>
@@ -99,13 +100,12 @@
         <div class="flex-1 flex flex-col overflow-hidden relative">
             <header class="h-24 px-10 flex items-center justify-between shrink-0 z-40">
                 <div>
-                    <h2 class="text-3xl font-black text-white tracking-tight">Social Master Hub</h2>
-                    <p class="text-xs text-slate-400 mt-1 font-medium">Manage your integrated social IDs for automated
-                        applications</p>
+                    <h2 class="text-3xl font-black text-white tracking-tight">소셜 마스터 허브</h2>
+                    <p class="text-xs text-slate-400 mt-1 font-medium">자동화된 신청을 위해 연동된 소셜 계정을 관리하세요</p>
                 </div>
-                <button onclick="openAddAccountModal()"
-                    class="px-8 py-3 bg-amber-500 text-black font-black text-sm rounded-2xl shadow-xl shadow-amber-900/30 active:scale-95 transition-all">
-                    + CONNECT NEW ID
+                    <button onclick="openAddAccountModal()"
+                        class="px-8 py-3 bg-amber-500 text-black font-black text-sm rounded-2xl shadow-xl shadow-amber-900/30 active:scale-95 transition-all">
+                    + 새 계정 연결
                 </button>
             </header>
 
@@ -113,19 +113,19 @@
                 <!-- Status Cards -->
                 <div class="grid grid-cols-4 gap-6 mb-12">
                     <div class="glass-panel p-6 rounded-[2rem] border-slate-800/50">
-                        <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Total Nodes</p>
+                        <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">총 계정 수</p>
                         <p id="stat-total" class="text-2xl font-black text-white">0</p>
                     </div>
                     <div class="glass-panel p-6 rounded-[2rem] border-slate-800/50">
-                        <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Sync Health</p>
+                        <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">동기화 상태</p>
                         <p class="text-2xl font-black text-green-500">100%</p>
                     </div>
                     <div class="glass-panel p-6 rounded-[2rem] border-slate-800/50">
-                        <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Success Rate</p>
+                        <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">성공률</p>
                         <p class="text-2xl font-black text-amber-500">84.2%</p>
                     </div>
                     <div class="glass-panel p-6 rounded-[2rem] border-slate-800/50">
-                        <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Total Reach</p>
+                        <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">총 도달 수</p>
                         <p class="text-2xl font-black text-white">~12.5k</p>
                     </div>
                 </div>
@@ -170,9 +170,9 @@
                 </div>
                 <div class="flex gap-4 pt-4">
                     <button type="button" onclick="document.getElementById('add-account-modal').classList.add('hidden')"
-                        class="flex-1 py-4 glass-panel text-slate-400 font-bold rounded-2xl hover:text-white transition-all">CANCEL</button>
+                        class="flex-1 py-4 glass-panel text-slate-400 font-bold rounded-2xl hover:text-white transition-all">취소</button>
                     <button type="submit"
-                        class="flex-1 py-4 bg-amber-500 text-black font-black rounded-2xl shadow-xl shadow-amber-900/20">AUTHORIZE</button>
+                        class="flex-1 py-4 bg-amber-500 text-black font-black rounded-2xl shadow-xl shadow-amber-900/20">연결 승인</button>
                 </div>
             </form>
         </div>
@@ -209,22 +209,22 @@
                         <div class="flex-1">
                             <h4 class="text-xl font-black text-white mb-2">${acc.account_name}</h4>
                             <p class="text-xs text-slate-500 font-bold uppercase tracking-wider mb-8">${acc.platform}</p>
-                            
+
                             <div class="space-y-4 mb-8">
                                 <div class="flex items-center justify-between">
-                                    <span class="text-xs text-slate-500 font-bold uppercase">Follower Node</span>
+                                <span class="text-xs text-slate-500 font-bold uppercase">팔로워 노드</span>
                                     <span class="text-sm font-black text-white">${(acc.follower_count || 0).toLocaleString()}</span>
                                 </div>
                                 <div class="flex items-center justify-between">
-                                    <span class="text-xs text-slate-500 font-bold uppercase">Approval Rate</span>
+                                    <span class="text-xs text-slate-500 font-bold uppercase">승인 비율</span>
                                     <span class="text-sm font-black text-amber-500">A++ Class</span>
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div class="flex gap-3 pt-6 border-t border-slate-800/50">
-                             <button class="flex-1 py-3 glass-panel rounded-xl text-xs font-black hover:bg-slate-800 transition-all">EDIT</button>
-                             <button class="w-12 h-12 glass-panel rounded-xl flex items-center justify-center text-slate-500 hover:text-red-500 transition-all">?뿊截?/button>
+                             <button class="flex-1 py-3 glass-panel rounded-xl text-xs font-black hover:bg-slate-800 transition-all">수정</button>
+                             <button class="w-12 h-12 glass-panel rounded-xl flex items-center justify-center text-slate-500 hover:text-red-500 transition-all">삭제</button>
                         </div>
                     </div>
                 `;
@@ -233,8 +233,8 @@
         }
 
         function getIcon(p) {
-            const icons = { 'naver-blog': '?뱷', 'instagram': '?벝', 'youtube': '?렏' };
-            return icons[p] || '??;
+            const icons = { 'naver-blog': '📝', 'instagram': '📸', 'youtube': '▶️' };
+            return icons[p] || '🌐';
         }
 
         function openAddAccountModal() { document.getElementById('add-account-modal').classList.remove('hidden'); }

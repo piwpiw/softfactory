@@ -6,7 +6,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#111827">
-<title>수익화 — SNS Auto | SoftFactory</title>
+<title>수익화 — SNS 자동화 | SoftFactory</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <script src="../platform/api.js"></script>
@@ -21,24 +21,24 @@
                     <div><h1 class="font-bold text-white text-sm">SoftFactory</h1></div>
                 </a>
             </div>
-            <nav class="flex-1 p-6 space-y-2">
+            <nav class="soft-nav-tree flex-1 p-6 space-y-2">
                 <button class="hamburger" aria-label="Toggle navigation menu">
       <span></span>
       <span></span>
       <span></span>
     </button>
-<p class="text-xs font-semibold text-slate-400 uppercase px-4 mb-3">📱 SNS Auto</p>
-                <a href="index.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">📊 대시보드</a>
-                <a href="accounts.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">🔗 계정 연동</a>
-                <a href="create.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">✍️ 블로그 자동포스팅</a>
-                <a href="schedule.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">📅 스케줄 관리</a>
-                <a href="analytics.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">📈 분석</a>
-                <a href="templates.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">🎨 템플릿</a>
-                <a href="settings.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">⚙️ 설정</a>
-                <a href="monetize.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg bg-pink-600 text-white font-medium">💰 수익화</a>
-                <a href="link-in-bio.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">🔗 Link in Bio</a>
-                <a href="viral.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">🚀 바이럴</a>
-                <a href="competitor.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">👁️ 경쟁사 분석</a>
+<p class="text-xs font-semibold text-slate-400 uppercase px-4 mb-3">📱 SNS 자동화</p>
+                <a href="index.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">📊 대시보드</a>
+                <a href="accounts.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">🔗 계정 연동</a>
+                <a href="create.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">✍️ 블로그 자동포스팅</a>
+                <a href="schedule.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">📅 스케줄 관리</a>
+                <a href="analytics.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">📈 분석</a>
+                <a href="templates.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">🎨 템플릿</a>
+                <a href="settings.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">⚙️ 설정</a>
+                <a href="monetize.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg bg-pink-600 text-white font-medium">💰 수익화</a>
+                <a href="link-in-bio.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">🔗 링크 바이오</a>
+                <a href="viral.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">🚀 바이럴</a>
+                <a href="competitor.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">👁️ 경쟁사 분석</a>
             </nav>
         </aside>
 
@@ -48,7 +48,14 @@
                     <h2 class="text-xl font-bold text-white">💰 수익화 대시보드</h2>
                     <p class="text-xs text-slate-400">ROI 추적 및 어필리에이트</p>
                 </div>
+                <div class="flex gap-2 items-center text-xs">
+                    <select id="monetizeCountryFilter" class="bg-slate-700 border border-slate-600 rounded-lg px-2 py-2 text-white"></select>
+                    <select id="monetizeCategoryFilter" class="bg-slate-700 border border-slate-600 rounded-lg px-2 py-2 text-white"></select>
+                    <input id="monetizeKeyword" type="search" placeholder="주제 키워드" class="bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-white" />
+                    <button id="monetizeRefreshBtn" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-medium">적용</button>
+                </div>
             </header>
+            <div id="monetizeQuickMenu" class="px-6 pt-3 pb-1 border-b border-slate-800 bg-slate-900/80 text-xs flex flex-wrap gap-2"></div>
 
             <main class="flex-1 overflow-y-auto p-6">
                 <div class="grid grid-cols-4 gap-4 mb-6">
@@ -84,52 +91,15 @@
 
                     <div class="bg-slate-800 rounded-lg p-6 border border-slate-700">
                         <h3 class="text-lg font-bold text-white mb-4">🎯 상위 수익원</h3>
-                        <div class="space-y-3">
-                            <div class="flex items-center justify-between p-3 bg-slate-700 rounded-lg">
-                                <span class="text-sm text-white">Google Ads</span>
-                                <span class="text-sm font-bold text-green-400">₩450,000</span>
-                            </div>
-                            <div class="flex items-center justify-between p-3 bg-slate-700 rounded-lg">
-                                <span class="text-sm text-white">Amazon Affiliate</span>
-                                <span class="text-sm font-bold text-green-400">₩320,000</span>
-                            </div>
-                            <div class="flex items-center justify-between p-3 bg-slate-700 rounded-lg">
-                                <span class="text-sm text-white">Sponsored Posts</span>
-                                <span class="text-sm font-bold text-green-400">₩280,000</span>
-                            </div>
-                            <div class="flex items-center justify-between p-3 bg-slate-700 rounded-lg">
-                                <span class="text-sm text-white">Link in Bio</span>
-                                <span class="text-sm font-bold text-green-400">₩150,000</span>
-                            </div>
-                        </div>
+                        <div id="topRevenueList" class="space-y-3"></div>
                     </div>
                 </div>
 
                 <div class="mt-6 bg-slate-800 rounded-lg p-6 border border-slate-700">
-                    <h3 class="text-lg font-bold text-white mb-4">🔗 어플리에이트 프로그램</h3>
-                    <div class="space-y-3">
-                        <div class="flex items-center justify-between p-4 bg-slate-700 rounded-lg">
-                            <div>
-                                <p class="font-medium text-white">Amazon Associates</p>
-                                <p class="text-xs text-slate-400">가입율 2.5% | 수수료 4%</p>
-                            </div>
-                            <button onclick="connectAffiliate('amazon')" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium">연결</button>
-                        </div>
-                        <div class="flex items-center justify-between p-4 bg-slate-700 rounded-lg">
-                            <div>
-                                <p class="font-medium text-white">CJ One Mall</p>
-                                <p class="text-xs text-slate-400">가입율 3.2% | 수수료 5%</p>
-                            </div>
-                            <button onclick="connectAffiliate('cjon')" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium">연결</button>
-                        </div>
-                        <div class="flex items-center justify-between p-4 bg-slate-700 rounded-lg">
-                            <div>
-                                <p class="font-medium text-white">Google AdSense</p>
-                                <p class="text-xs text-slate-400">평균 수익 ₩50-100/1K노출</p>
-                            </div>
-                            <button onclick="connectAffiliate('adsense')" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm font-medium">✓ 연결됨</button>
-                        </div>
-                    </div>
+                    <h3 class="text-lg font-bold text-white mb-4">🔗 어필리에이트 프로그램</h3>
+                    <p class="text-xs text-slate-400 mb-2">주제/국가/카테고리에 맞춰 쿠팡 키워드형 링크 템플릿을 미리 생성합니다.</p>
+                    <div id="coupangCategoryBoard" class="mb-4 p-3 rounded-lg bg-slate-900 border border-slate-700"></div>
+                    <div id="affiliateProgramList" class="space-y-3"></div>
                 </div>
             </main>
         </div>
@@ -137,167 +107,641 @@
 
     <script>
         requireAuth();
+        const MONETIZE_STORAGE_KEY = 'sf_monetize_affiliates';
+        const MONETIZE_COUNTRIES = [
+            { key: 'KR', label: '🇰🇷 대한민국', regionTag: 'KR' },
+            { key: 'US', label: '🇺🇸 미국', regionTag: 'US' },
+            { key: 'JP', label: '🇯🇵 일본', regionTag: 'JP' },
+            { key: 'SG', label: '🇸🇬 싱가포르', regionTag: 'SG' },
+            { key: 'GB', label: '🇬🇧 영국', regionTag: 'GB' },
+            { key: 'DE', label: '🇩🇪 독일', regionTag: 'DE' }
+        ];
+        const MONETIZE_CATEGORIES = [
+            { key: '', label: '전체', emoji: '🌐' },
+            { key: '마케팅', label: '마케팅', emoji: '🚀' },
+            { key: '리뷰', label: '리뷰', emoji: '📝' },
+            { key: '브랜딩', label: '브랜딩', emoji: '🎯' },
+            { key: '라이프', label: '라이프스타일', emoji: '🌿' },
+            { key: 'beauty', label: '뷰티', emoji: '💄' },
+            { key: 'food', label: '푸드', emoji: '🍽' },
+            { key: 'tech', label: '테크', emoji: '🛠' }
+        ];
+        const COUPANG_CATEGORY_MENU = {
+            KR: [
+                { key: 'beauty', label: '뷰티', emoji: '💄', keywordHint: '뷰티', menuHint: '뷰티케어' },
+                { key: 'food', label: '푸드', emoji: '🍽', keywordHint: '식품', menuHint: '식품/푸드' },
+                { key: 'tech', label: '테크', emoji: '🛠', keywordHint: '가전', menuHint: 'IT/가전' },
+                { key: '리뷰', label: '리뷰', emoji: '📝', keywordHint: '리뷰', menuHint: '베스트셀러' },
+                { key: '라이프', label: '라이프', emoji: '🌿', keywordHint: '라이프스타일', menuHint: '리빙/라이프' }
+            ],
+            US: [
+                { key: 'beauty', label: 'Beauty', emoji: '🧴', keywordHint: 'beauty', menuHint: 'Beauty & Wellness' },
+                { key: 'food', label: 'Food', emoji: '🍱', keywordHint: 'food', menuHint: 'Food & Grocery' },
+                { key: 'tech', label: 'Tech', emoji: '💻', keywordHint: 'tech', menuHint: 'Electronics' },
+                { key: '리뷰', label: 'Review', emoji: '📝', keywordHint: 'review', menuHint: 'Trending Picks' }
+            ],
+            JP: [
+                { key: 'beauty', label: 'ビューティー', emoji: '💄', keywordHint: '美容', menuHint: 'Beauty' },
+                { key: 'food', label: 'フード', emoji: '🍱', keywordHint: '食', menuHint: 'Food' },
+                { key: 'tech', label: 'テック', emoji: '📱', keywordHint: 'ガジェット', menuHint: 'Electronics' },
+                { key: '라이프', label: 'ライフ', emoji: '🌿', keywordHint: '生活', menuHint: 'Lifestyle' }
+            ],
+            SG: [
+                { key: 'beauty', label: 'Beauty', emoji: '✨', keywordHint: 'beauty', menuHint: 'Beauty' },
+                { key: 'food', label: 'Food', emoji: '🍜', keywordHint: 'food', menuHint: 'Food' },
+                { key: '라이프', label: 'Lifestyle', emoji: '🌿', keywordHint: 'lifestyle', menuHint: 'Home & Life' }
+            ],
+            GB: [
+                { key: 'beauty', label: 'Beauty', emoji: '💄', keywordHint: 'beauty', menuHint: 'Beauty' },
+                { key: 'tech', label: 'Tech', emoji: '🧰', keywordHint: 'tech', menuHint: 'Tech' },
+                { key: '라이프', label: 'Lifestyle', emoji: '🌿', keywordHint: 'lifestyle', menuHint: 'Lifestyle' }
+            ],
+            DE: [
+                { key: 'food', label: 'Essen', emoji: '🍞', keywordHint: 'essen', menuHint: 'Food' },
+                { key: 'tech', label: 'Technik', emoji: '🛠', keywordHint: 'technik', menuHint: 'Electronics' },
+                { key: '리뷰', label: 'Review', emoji: '📝', keywordHint: 'review', menuHint: 'Top Rated' }
+            ]
+        };
+        const COUPANG_CATEGORY_LABELS = {
+            '': '전체',
+            '브랜딩': '브랜딩',
+            '마케팅': '마케팅',
+            '콘텐츠': '콘텐츠',
+            '리뷰': '리뷰',
+            '라이프': '라이프스타일',
+            'beauty': '뷰티',
+            'food': '푸드',
+            'tech': '테크'
+        };
+        const AFFILIATE_PROGRAMS = [
+            {
+                key: 'coupang_kr',
+                title: '쿠팡파트너스',
+                emoji: '🛒',
+                commission: '최대 11%',
+                urlTemplate: 'https://link.coupang.com/recommend/search?keyword={{keyword}}&category={{category}}&country={{country}}&utm_source=softfactory&utm_medium=viral&utm_content={{topic}}&channel={{platform}}',
+                hasCoupang: true,
+                utmSource: 'softfactory',
+                categoryHint: ['리뷰', '라이프', 'food', 'beauty', 'tech', '브랜딩', '마케팅'],
+                countryHint: ['KR'],
+                baseRate: 0.5
+            },
+            {
+                key: 'amazon',
+                title: 'Amazon Associates',
+                emoji: '📘',
+                commission: '평균 4%',
+                urlTemplate: 'https://www.amazon.com/s?k={{keyword}}&tag={{tag}}&source=viral&utm_source=softfactory&utm_campaign={{topic}}&country={{country}}',
+                hasCoupang: false,
+                affiliateTag: 'softfactory-20',
+                categoryHint: ['tech', '브랜딩'],
+                countryHint: ['US', 'KR'],
+                baseRate: 0.3
+            },
+            {
+                key: 'ad_sense',
+                title: 'Google AdSense',
+                emoji: '📈',
+                commission: '노출형 수익형',
+                urlTemplate: 'https://www.example.com/ad-sense?topic={{topic}}&keyword={{keyword}}&country={{country}}&ref=softfactory',
+                hasCoupang: false,
+                categoryHint: ['라이프', '마케팅', '브랜딩'],
+                countryHint: ['KR', 'US', 'JP', 'SG'],
+                baseRate: 0.2
+            },
+            {
+                key: 'naver_partner',
+                title: 'Naver Partner',
+                emoji: '🔗',
+                commission: '상품 연동형',
+                urlTemplate: 'https://search.shopping.naver.com/search/all?query={{keyword}}&cat_id={{category}}&frm=NVSHATC',
+                hasCoupang: false,
+                categoryHint: ['리뷰', 'beauty', 'food'],
+                countryHint: ['KR'],
+                baseRate: 0.25
+            }
+        ];
+
         let revenueData = [];
-        let affiliateStatus = {
-            amazon: true,
-            cjon: false,
-            adsense: true
+        let revenueChart = null;
+        let affiliateState = {};
+        let contextState = {
+            country: 'KR',
+            category: '',
+            keyword: '',
+            platform: ''
         };
 
-        // 매출 데이터 생성
-        function generateRevenueData() {
-            const data = [];
+        const contextLabelMap = {
+            '': '전체',
+            '마케팅': '마케팅',
+            '리뷰': '리뷰',
+            '브랜딩': '브랜딩',
+            '라이프': '라이프스타일',
+            'beauty': '뷰티',
+            'food': '푸드',
+            'tech': '테크'
+        };
+
+        function getCategoryLabel(categoryKey) {
+            return contextLabelMap[categoryKey || ''] || categoryKey || '전체';
+        }
+        let analyticsData = null;
+        let dashboardRefreshTimer = null;
+
+        function getMonetizeContext() {
+            const params = new URLSearchParams(window.location.search);
+            return {
+                country: String(params.get('country') || '').toUpperCase().trim(),
+                category: String(params.get('category') || params.get('sourceCategory') || '').trim().toLowerCase(),
+                keyword: String(params.get('query') || params.get('topic') || '').trim(),
+                platform: String(params.get('platform') || '').trim()
+            };
+        }
+
+        function normalizeCountry(value) {
+            const upper = String(value || '').toUpperCase().trim();
+            if (!upper) return 'KR';
+            const exact = MONETIZE_COUNTRIES.find((item) => item.key === upper);
+            if (exact) return exact.key;
+            const labelMatch = MONETIZE_COUNTRIES.find((item) =>
+                item.label === value ||
+                item.label.toLowerCase() === String(value || '').toLowerCase()
+            );
+            if (labelMatch) return labelMatch.key;
+            if (upper.length >= 2) {
+                const emojiMatch = MONETIZE_COUNTRIES.find((item) => item.label.includes(upper));
+                if (emojiMatch) return emojiMatch.key;
+            }
+            return 'KR';
+        }
+
+        function normalizeCategoryValue(value) {
+            const normalized = String(value || '').trim();
+            if (!normalized) return '';
+            const key = normalized.toLowerCase();
+            const byKey = MONETIZE_CATEGORIES.find((item) => item.key === key);
+            if (byKey) return byKey.key;
+            const byLabel = MONETIZE_CATEGORIES.find((item) => item.label === normalized || String(item.label || '').toLowerCase() === String(normalized).toLowerCase());
+            return byLabel ? byLabel.key : key;
+        }
+
+        function getCountryCoupangMenus(country) {
+            return COUPANG_CATEGORY_MENU[String(country || 'KR').toUpperCase()] || COUPANG_CATEGORY_MENU.KR;
+        }
+
+        function getCoupangMenuByContext(country, category) {
+            const countryMenus = getCountryCoupangMenus(country);
+            if (!countryMenus?.length) return null;
+            const target = String(category || '').trim();
+            return countryMenus.find((menu) => menu.key === target) || countryMenus[0] || null;
+        }
+
+        function loadAffiliateState() {
+            try {
+                const raw = localStorage.getItem(MONETIZE_STORAGE_KEY);
+                const parsed = raw ? JSON.parse(raw) : null;
+                const defaultState = {};
+                AFFILIATE_PROGRAMS.forEach((program) => {
+                    defaultState[program.key] = false;
+                });
+                affiliateState = Object.assign(defaultState, parsed || {});
+            } catch (_) {
+                affiliateState = {};
+                AFFILIATE_PROGRAMS.forEach((program) => {
+                    affiliateState[program.key] = false;
+                });
+            }
+        }
+
+        function saveAffiliateState() {
+            localStorage.setItem(MONETIZE_STORAGE_KEY, JSON.stringify(affiliateState));
+        }
+
+        function getAffiliateFitRate(program) {
+            let fit = 1;
+            if (!contextState.category || !program.categoryHint.length) return fit;
+            if (program.categoryHint.includes(contextState.category)) {
+                fit += 0.2;
+            }
+            if (contextState.country && program.countryHint.includes(contextState.country)) {
+                fit += 0.25;
+            }
+            return fit;
+        }
+
+        function sanitizeForAffiliate(value, fallback = '') {
+            return encodeURIComponent(String(value || fallback).trim());
+        }
+
+        function resolveContextCategoryForLink() {
+            if (!contextState.category) return 'general';
+            const mapped = contextState.category.toLowerCase();
+            const menu = getCoupangMenuByContext(contextState.country, mapped);
+            if (menu?.keywordHint) return menu.keywordHint;
+            if (mapped === 'tech') return 'tech';
+            if (mapped === 'beauty') return 'beauty';
+            if (mapped === 'food') return 'food';
+            if (mapped === '리뷰') return 'review';
+            if (mapped === '브랜딩') return 'branding';
+            if (mapped === '라이프') return 'lifestyle';
+            if (mapped === '마케팅') return 'marketing';
+            return mapped;
+        }
+
+        function fillAffiliateTemplate(program, keyword, category) {
+            const topicValue = sanitizeForAffiliate(contextState.keyword || contextState.category || '주제');
+            const template = String(program.urlTemplate || '');
+            const replacements = {
+                '{{keyword}}': sanitizeForAffiliate(keyword),
+                '{{topic}}': topicValue,
+                '{{category}}': sanitizeForAffiliate(category),
+                '{{country}}': sanitizeForAffiliate(contextState.country || 'KR'),
+                '{{platform}}': sanitizeForAffiliate(contextState.platform || 'social'),
+                '{{tag}}': sanitizeForAffiliate(program.hasCoupang ? 'softfactory' : 'softfactory-20')
+            };
+            let result = template;
+            Object.entries(replacements).forEach(([token, value]) => {
+                result = result.replaceAll(token, value);
+            });
+            return result;
+        }
+
+        function buildAffiliateLink(program, keyword) {
+            const safeKeyword = keyword || contextState.keyword || contextState.category || '추천상품';
+            const resolvedCategory = resolveContextCategoryForLink();
+            return fillAffiliateTemplate(program, safeKeyword, resolvedCategory);
+        }
+
+        function renderFilters() {
+            const countryFilter = document.getElementById('monetizeCountryFilter');
+            const categoryFilter = document.getElementById('monetizeCategoryFilter');
+            if (!countryFilter || !categoryFilter) return;
+            countryFilter.innerHTML = MONETIZE_COUNTRIES
+                .map((item) => `<option value="${item.key}">${item.label}</option>`)
+                .join('');
+            categoryFilter.innerHTML = MONETIZE_CATEGORIES
+                .map((item) => `<option value="${item.key}">${item.emoji ? `${item.emoji} ` : ''}${item.label}</option>`)
+                .join('');
+
+            countryFilter.value = contextState.country || 'KR';
+            if (contextState.category) {
+                const exists = MONETIZE_CATEGORIES.some((item) => item.key === contextState.category);
+                if (exists) {
+                    categoryFilter.value = contextState.category;
+                } else {
+                    const optionValue = `${contextState.category}`.trim();
+                    const label = COUPANG_CATEGORY_LABELS[optionValue] || optionValue;
+                    const escapedValue = optionValue.replace(/"/g, '\\"');
+                    const existingOption = categoryFilter.querySelector(`option[value="${escapedValue}"]`);
+                    if (!existingOption) {
+                        categoryFilter.insertAdjacentHTML(
+                            'beforeend',
+                            `<option value="${escapedValue}">${label}</option>`
+                        );
+                    }
+                    categoryFilter.value = contextState.category;
+                }
+            } else {
+                categoryFilter.value = '';
+            }
+            const keywordInput = document.getElementById('monetizeKeyword');
+            if (keywordInput) keywordInput.value = contextState.keyword || '';
+        }
+
+        function renderQuickMenu() {
+            const menu = document.getElementById('monetizeQuickMenu');
+            if (!menu) return;
+            const countryChips = MONETIZE_COUNTRIES
+                .map((item) => `<button type="button" class="px-2 py-1 rounded-full ${contextState.country === item.key ? 'bg-blue-600' : 'bg-slate-700'} text-white" data-quick-country="${item.key}">${item.label}</button>`)
+                .join('');
+            const categoryChips = MONETIZE_CATEGORIES
+                .map((item) => `<button type="button" class="px-2 py-1 rounded-full ${contextState.category === item.key ? 'bg-emerald-600' : 'bg-slate-700'} text-white" data-quick-category="${item.key}">${item.emoji || '🏷️'} ${item.label}</button>`)
+                .join('');
+            menu.innerHTML = `
+                <div class="flex flex-wrap gap-2">
+                    <span class="text-slate-400 self-center mr-1">국가:</span>
+                    ${countryChips}
+                </div>
+                <div class="flex flex-wrap gap-2">
+                    <span class="text-slate-400 self-center mr-1">카테고리:</span>
+                    ${categoryChips}
+                </div>
+            `;
+        }
+
+        function applyQuickSelection(type, value) {
+            if (type === 'country') contextState.country = normalizeCountry(value);
+            if (type === 'category') contextState.category = normalizeCategoryValue(value);
+            renderFilters();
+            renderQuickMenu();
+            loadDashboardData().then(() => {
+                updateDashboardMetrics();
+                renderAffiliatePrograms();
+                renderCoupangMenuBoard();
+            });
+        }
+
+        function renderCoupangMenuBoard() {
+            const container = document.getElementById('coupangCategoryBoard');
+            if (!container) return;
+            const currentCategory = getCoupangMenuByContext(contextState.country, contextState.category);
+            const menus = getCountryCoupangMenus(contextState.country);
+            container.innerHTML = `
+                <p class="text-xs text-slate-400 mb-2">🌍 ${contextState.country} · 쿠팡 메뉴 관점</p>
+                <div class="flex flex-wrap gap-2">
+                    ${menus.map((menu) => `
+                        <button
+                            type="button"
+                            onclick="setMonetizeCategory('${menu.key}')"
+                            class="px-3 py-1 rounded-full text-xs ${currentCategory?.key === menu.key ? 'bg-emerald-600 text-white' : 'bg-slate-700 text-slate-200'}"
+                            title="${menu.menuHint}"
+                        >
+                            ${menu.emoji} ${menu.label}
+                        </button>
+                    `).join('')}
+                </div>
+                <p class="text-xs text-slate-500 mt-2">추천 링크 카테고리: ${currentCategory ? `${currentCategory.menuHint} (${currentCategory.label})` : '미지정'}</p>
+            `;
+        }
+
+        function setMonetizeCategory(categoryKey) {
+            contextState.category = normalizeCategoryValue(categoryKey);
+            renderFilters();
+            renderQuickMenu();
+            renderCoupangMenuBoard();
+            updateDashboardMetrics();
+            renderAffiliatePrograms();
+        }
+
+        function toKrw(value) {
+            return '₩' + Math.max(0, Math.round(value)).toLocaleString('ko-KR');
+        }
+
+        function normalizeTrendData(payload) {
+            const fallback = [];
             for (let i = 29; i >= 0; i--) {
                 const date = new Date();
                 date.setDate(date.getDate() - i);
-                const revenue = Math.floor(Math.random() * 80000) + 20000;
-                data.push({
-                    x: date.toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' }),
-                    y: revenue
+                fallback.push({
+                    day: date.toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' }),
+                    posts: 0,
+                    engagement: 0
                 });
             }
-            return data;
+            const source = Array.isArray(payload?.trend_30days) && payload.trend_30days.length ? payload.trend_30days : fallback;
+            return source.map((item) => ({
+                label: String(item.day || item.date || '').trim() || 'n/a',
+                posts: Number(item.posts || 0),
+                engagement: Number(item.engagement || 0)
+            })).slice(0, 30).reverse();
         }
 
-        function initChart() {
-            revenueData = generateRevenueData();
+        function normalizeAnalytics(payload) {
+            const safePayload = payload || {};
+            return {
+                totalPosts: Number(safePayload.total_posts || 0),
+                totalEngagement: Number(safePayload.total_engagement || 0),
+                avgEngagement: Number(safePayload.average_engagement || 0),
+                trends: normalizeTrendData(safePayload),
+                platformData: Array.isArray(safePayload.platform_breakdown) ? safePayload.platform_breakdown : []
+            };
+        }
+
+        function buildRevenueTimeline() {
+            const metrics = normalizeAnalytics(analyticsData);
+            return metrics.trends.map((entry) => {
+                const base = (entry.posts * 7000) + (entry.engagement * 15);
+                const spread = base > 0 ? base : 12000 + Math.floor(Math.random() * 45000);
+                const categoryBoost = contextState.category ? 1 + (contextState.category.length % 3) * 0.02 : 1;
+                return {
+                    x: entry.label,
+                    y: Math.round(Math.max(12000, spread * categoryBoost))
+                };
+            });
+        }
+
+        function updateRevenueChart() {
+            const chartData = buildRevenueTimeline();
+            const categories = chartData.map((d) => d.x);
+            const values = chartData.map((d) => d.y);
 
             const options = {
                 chart: {
                     type: 'line',
                     toolbar: { show: false },
                     background: 'transparent',
-                    fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
+                    fontFamily: 'Inter, system-ui'
                 },
                 colors: ['#22c55e'],
                 stroke: {
                     curve: 'smooth',
                     width: 2
                 },
-                series: [{
-                    name: '매출',
-                    data: revenueData.map(d => d.y)
-                }],
+                series: [{ name: '매출', data: values }],
                 xaxis: {
-                    categories: revenueData.map(d => d.x),
+                    categories,
                     axisBorder: { show: false },
                     axisTicks: { show: false },
-                    labels: {
-                        style: {
-                            colors: '#94a3b8',
-                            fontSize: '12px'
-                        }
-                    }
+                    labels: { style: { colors: '#94a3b8', fontSize: '12px' } }
                 },
                 yaxis: {
                     labels: {
-                        style: {
-                            colors: '#94a3b8',
-                            fontSize: '12px'
-                        },
-                        formatter: function(val) {
-                            return '₩' + Math.round(val / 1000) + 'K';
-                        }
+                        colors: '#94a3b8',
+                        fontSize: '12px',
+                        formatter: (val) => '₩' + Math.round(val / 1000) + 'K'
                     }
                 },
-                grid: {
-                    borderColor: '#334155',
-                    xaxis: { lines: { show: false } }
-                },
+                grid: { borderColor: '#334155', xaxis: { lines: { show: false } } },
                 tooltip: {
                     theme: 'dark',
-                    style: {
-                        fontSize: '12px',
-                        fontFamily: 'inherit'
-                    },
-                    y: {
-                        formatter: function(val) {
-                            return '₩' + val.toLocaleString('ko-KR');
-                        }
-                    }
+                    y: { formatter: (val) => toKrw(val) }
                 }
             };
 
-            new ApexCharts(document.getElementById('revenueChart'), options).render();
+            if (revenueChart) {
+                revenueChart.updateOptions({ series: [{ data: values }], xaxis: { categories } });
+                return;
+            }
+            revenueChart = new ApexCharts(document.getElementById('revenueChart'), options);
+            revenueChart.render();
         }
 
-        async function connectAffiliate(program) {
-            const programNames = {
-                amazon: 'Amazon Associates',
-                cjon: 'CJ One Mall',
-                adsense: 'Google AdSense'
-            };
+        function renderTopRevenueList(totalRevenue) {
+            const container = document.getElementById('topRevenueList');
+            if (!container) return;
+            const active = AFFILIATE_PROGRAMS.filter((program) => affiliateState[program.key]);
+            const baseRevenue = Math.max(120000, Number(totalRevenue || 0));
+            const list = active.length
+                ? active
+                : AFFILIATE_PROGRAMS.slice(0, 2);
+            container.innerHTML = list
+                .map((program, index) => {
+                    const ratio = (active.length + 1);
+                    const channelRevenue = Math.round(baseRevenue * (program.baseRate * 0.9 / ratio) * getAffiliateFitRate(program));
+                    const isCoupang = program.key.includes('coupang');
+                    const tag = isCoupang ? '쿠팡 제휴' : '일반 제휴';
+                    return `
+                        <div class="flex items-center justify-between p-3 bg-slate-700 rounded-lg">
+                            <div>
+                                <p class="font-medium text-white">${program.emoji} ${program.title}</p>
+                                <p class="text-xs text-slate-400">${tag} ${program.commission}</p>
+                            </div>
+                            <p class="text-sm font-bold text-green-400">${toKrw(channelRevenue)}</p>
+                        </div>
+                    `;
+                }).join('');
+        }
+
+        function renderAffiliatePrograms() {
+            const container = document.getElementById('affiliateProgramList');
+            if (!container) return;
+            const coupangMenu = getCoupangMenuByContext(contextState.country, contextState.category);
+            container.innerHTML = AFFILIATE_PROGRAMS.map((program) => {
+                const isConnected = Boolean(affiliateState[program.key]);
+                const fitRate = getAffiliateFitRate(program);
+                const fitLabel = fitRate > 1 ? '🎯 컨텍스트 적합' : '⚪ 보편형';
+                const safeCategory = resolveContextCategoryForLink();
+                const linkPreview = buildAffiliateLink(program, contextState.keyword || contextState.category || '추천상품');
+                return `
+                    <div class="p-4 bg-slate-700 rounded-lg">
+                        <div class="flex items-start justify-between gap-3">
+                            <div>
+                                <p class="font-medium text-white">${program.emoji} ${program.title}</p>
+                                <p class="text-xs text-slate-400">수수료: ${program.commission} · ${fitLabel}</p>
+                                <p class="text-xs text-slate-500 mt-1">적용 카테고리: ${getCategoryLabel(contextState.category)} · ${safeCategory}</p>
+                                <p class="text-xs text-slate-500 mt-1 truncate">링크 예시: ${linkPreview}</p>
+                                ${program.hasCoupang && coupangMenu ? `<p class=\"text-xs text-emerald-300 mt-1\">쿠팡 메뉴 매칭: ${coupangMenu.emoji} ${coupangMenu.menuHint}</p>` : ''}
+                            </div>
+                            <button onclick="toggleAffiliate('${program.key}', this)" class="px-3 py-2 rounded-lg text-xs font-medium ${isConnected ? 'bg-green-600 hover:bg-green-700' : 'bg-blue-600 hover:bg-blue-700'} text-white">
+                                ${isConnected ? '✓ 연결됨' : '연결'}
+                            </button>
+                        </div>
+                        <div class="mt-2 text-xs">
+                            <button onclick="copyAffiliateLink('${program.key}')" class="text-slate-300 hover:text-white underline">링크 복사</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function copyAffiliateLink(programKey) {
+            const program = AFFILIATE_PROGRAMS.find((item) => item.key === programKey);
+            if (!program) return;
+            const link = buildAffiliateLink(program, contextState.keyword || contextState.category || '추천상품');
+            navigator.clipboard.writeText(link);
+            showSuccess(`${program.title} 링크 템플릿을 복사했습니다`);
+        }
+
+        function toggleAffiliate(programKey) {
+            affiliateState[programKey] = !Boolean(affiliateState[programKey]);
+            saveAffiliateState();
+            renderAffiliatePrograms();
+            updateDashboardMetrics();
+        }
+
+        function updateDashboardMetrics() {
+            const normalized = normalizeAnalytics(analyticsData || {});
+            const connectedPrograms = AFFILIATE_PROGRAMS.filter((p) => affiliateState[p.key]);
+            const connectedCount = connectedPrograms.length;
+            const programBoost = connectedPrograms.reduce((acc, program) => acc + program.baseRate * getAffiliateFitRate(program), 0);
+
+            const totalRevenue = Math.max(
+                120000,
+                Math.round(
+                    (normalized.totalPosts * 3500) +
+                    (normalized.totalEngagement * 12) +
+                    (normalized.avgEngagement * 180) +
+                    (programBoost * 180000) +
+                    (contextState.keyword ? contextState.keyword.length * 5000 : 0)
+                )
+            );
+            const totalClicks = Math.max(1000, Math.round((normalized.totalPosts * 120) + (normalized.totalEngagement * 3) + (connectedCount * 1200)));
+            const activeRate = 80 + Math.min(connectedCount * 12, 120) + Math.round(programBoost * 40);
+            const affiliateRevenue = Math.round(totalRevenue * (0.22 + connectedCount * 0.09));
+
+            document.getElementById('totalRevenue').textContent = toKrw(totalRevenue);
+            document.getElementById('avgROI').textContent = `${Math.min(activeRate, 240)}%`;
+            document.getElementById('affiliateRevenue').textContent = toKrw(affiliateRevenue);
+            document.getElementById('totalClicks').textContent = totalClicks.toLocaleString('ko-KR');
+            renderTopRevenueList(totalRevenue);
+            revenueData = buildRevenueTimeline();
+            updateRevenueChart();
+            return { totalRevenue, totalClicks, roi: Math.min(activeRate, 240), affiliateRevenue };
+        }
+
+        async function loadDashboardData() {
+            const today = new Date();
+            const thirtyDaysAgo = new Date(today.getTime() - 29 * 24 * 60 * 60 * 1000);
+            const startDate = thirtyDaysAgo.toISOString().split('T')[0];
+            const endDate = today.toISOString().split('T')[0];
 
             try {
-                showInfo(`${programNames[program]} 연결 중...`);
-
-                // API 호출 시뮬레이션
-                await new Promise(resolve => setTimeout(resolve, 1500));
-
-                affiliateStatus[program] = true;
-
-                // 버튼 상태 업데이트
-                const button = event.target;
-                button.classList.remove('bg-blue-600', 'hover:bg-blue-700');
-                button.classList.add('bg-green-600', 'hover:bg-green-700');
-                button.textContent = '✓ 연결됨';
-                button.disabled = true;
-
-                showSuccess(`${programNames[program]}가 연결되었습니다!`);
-
-                // 매출 재계산
-                updateMetrics();
+                const payload = await getSNSAnalytics(startDate, endDate, contextState.platform || null);
+                analyticsData = payload || {};
+                const platformCount = Array.isArray(payload?.platform_breakdown) ? payload.platform_breakdown.length : 0;
+                if (!platformCount && contextState.platform) {
+                    // Keep response deterministic across backends without platform filtering
+                    analyticsData = payload || {};
+                }
             } catch (error) {
-                showError('연결 실패: ' + error.message);
+                analyticsData = {};
             }
         }
 
-        function updateMetrics() {
-            // 실시간 메트릭 업데이트
-            const baseRevenue = 1200000;
-            const connectedPrograms = Object.values(affiliateStatus).filter(v => v).length;
-            const multiplier = 1 + (connectedPrograms * 0.25);
+        async function initMonetize() {
+            const initialContext = getMonetizeContext();
+            contextState = {
+                ...contextState,
+                ...initialContext,
+                country: normalizeCountry(initialContext.country),
+                category: normalizeCategoryValue(initialContext.category),
+            };
+            loadAffiliateState();
+            renderFilters();
+            renderQuickMenu();
+            renderCoupangMenuBoard();
+            await loadDashboardData();
+            updateDashboardMetrics();
+            renderAffiliatePrograms();
 
-            const totalRevenue = Math.floor(baseRevenue * multiplier);
-            const avgROI = Math.floor(200 + connectedPrograms * 15);
-            const affiliateRevenue = Math.floor(totalRevenue * 0.45);
-            const totalClicks = Math.floor(12450 + connectedPrograms * 2000);
-
-            document.getElementById('totalRevenue').textContent = '₩' + totalRevenue.toLocaleString('ko-KR');
-            document.getElementById('avgROI').textContent = avgROI + '%';
-            document.getElementById('affiliateRevenue').textContent = '₩' + affiliateRevenue.toLocaleString('ko-KR');
-            document.getElementById('totalClicks').textContent = totalClicks.toLocaleString('ko-KR');
-        }
-
-        function initDashboard() {
-            // 초기 메트릭 설정
-            updateMetrics();
-
-            // 차트 초기화
-            initChart();
-
-            // 연결된 프로그램 표시
-            Object.keys(affiliateStatus).forEach(program => {
-                if (affiliateStatus[program]) {
-                    const btn = document.querySelector(`button[onclick*="'${program}'"]`);
-                    if (btn) {
-                        btn.classList.remove('bg-blue-600', 'hover:bg-blue-700');
-                        btn.classList.add('bg-green-600', 'hover:bg-green-700');
-                        btn.textContent = '✓ 연결됨';
-                        btn.disabled = true;
-                    }
+            const refreshBtn = document.getElementById('monetizeRefreshBtn');
+            refreshBtn?.addEventListener('click', () => {
+                const countryFilter = document.getElementById('monetizeCountryFilter');
+                const categoryFilter = document.getElementById('monetizeCategoryFilter');
+                const keywordFilter = document.getElementById('monetizeKeyword');
+                contextState.country = normalizeCountry(countryFilter?.value);
+                contextState.category = normalizeCategoryValue(categoryFilter?.value);
+                contextState.keyword = String(keywordFilter?.value || '').trim();
+                renderFilters();
+                renderQuickMenu();
+                loadDashboardData().then(() => {
+                    renderCoupangMenuBoard();
+                    updateDashboardMetrics();
+                    renderAffiliatePrograms();
+                });
+            });
+            document.getElementById('monetizeQuickMenu')?.addEventListener('click', (event) => {
+                const countryBtn = event.target.closest('[data-quick-country]');
+                const categoryBtn = event.target.closest('[data-quick-category]');
+                if (countryBtn) {
+                    applyQuickSelection('country', countryBtn.getAttribute('data-quick-country'));
+                } else if (categoryBtn) {
+                    applyQuickSelection('category', categoryBtn.getAttribute('data-quick-category'));
                 }
             });
+            if (dashboardRefreshTimer) clearInterval(dashboardRefreshTimer);
+            dashboardRefreshTimer = setInterval(() => {
+                loadDashboardData().then(() => updateDashboardMetrics());
+            }, 120000);
         }
 
-        // 주기적으로 메트릭 업데이트 (실시간 효과)
-        setInterval(updateMetrics, 5000);
+        function initMonetizePage() {
+            initMonetize();
+        }
 
-        document.addEventListener('DOMContentLoaded', initDashboard);
+        document.addEventListener('DOMContentLoaded', initMonetizePage);
     </script>
     <script src="../mobile-optimization.js" defer></script>
 </body>
 </html>
-
-
-

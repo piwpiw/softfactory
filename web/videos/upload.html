@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Video Upload - SoftFactory</title>
+    <title>동영상 업로드 - SoftFactory</title>
     <style>
         * {
             margin: 0;
@@ -407,7 +407,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>Upload Your Video</h1>
+            <h1>동영상 업로드</h1>
             <p>Share your content with high-quality transcoding</p>
         </div>
 
@@ -446,7 +446,7 @@
                 </div>
 
                 <div class="progress-container" id="progressContainer">
-                    <div class="progress-label">Uploading...</div>
+                    <div class="progress-label">업로드 중...</div>
                     <div class="progress-bar">
                         <div class="progress-fill" id="progressFill"></div>
                     </div>
@@ -459,7 +459,7 @@
                 <div class="status-box" id="statusBox"></div>
 
                 <div class="button-group">
-                    <button type="submit" class="btn-primary" id="submitBtn">Upload Video</button>
+                    <button type="submit" class="btn-primary" id="submitBtn">동영상 업로드</button>
                     <button type="reset" class="btn-secondary">Clear</button>
                 </div>
             </form>
@@ -470,13 +470,13 @@
             <div class="video-grid" id="videoGrid"></div>
             <div class="loading-text">
                 <div class="loader"></div>
-                <span>Loading videos...</span>
+                <span>동영상 목록을 불러오는 중...</span>
             </div>
         </div>
     </div>
 
     <script>
-        const API_BASE = 'http://localhost:8000/api';
+        const API_BASE = `${window.location.origin}/api`;
         const uploadForm = document.getElementById('uploadForm');
         const dropZone = document.getElementById('dropZone');
         const videoFile = document.getElementById('videoFile');
@@ -600,14 +600,14 @@
                         }, 2000);
                     } else {
                         const error = JSON.parse(xhr.responseText);
-                        showStatus('Upload failed: ' + (error.error || 'Unknown error'), 'error');
+                        showStatus('업로드 실패: ' + (error.error || 'Unknown error'), 'error');
                         submitBtn.disabled = false;
                         progressContainer.classList.remove('active');
                     }
                 });
 
                 xhr.addEventListener('error', () => {
-                    showStatus('Upload failed: Network error', 'error');
+                    showStatus('업로드 실패: Network error', 'error');
                     submitBtn.disabled = false;
                     progressContainer.classList.remove('active');
                 });
@@ -617,7 +617,7 @@
                 xhr.send(formData);
 
             } catch (error) {
-                showStatus('Upload error: ' + error.message, 'error');
+                showStatus('업로드 오류: ' + error.message, 'error');
                 submitBtn.disabled = false;
                 progressContainer.classList.remove('active');
             }
@@ -713,4 +713,3 @@
     </script>
 </body>
 </html>
-

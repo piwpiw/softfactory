@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Advanced Search - SoftFactory</title>
-    <link rel="stylesheet" href="/css/base.css">
-    <link rel="stylesheet" href="/css/dashboard.css">
+    <title>통합 검색 — SoftFactory</title>
+    <link rel="stylesheet" href="../unified-ui.css">
+    <link rel="stylesheet" href="../responsive-framework.css">
     <style>
         * {
             box-sizing: border-box;
@@ -431,43 +431,43 @@
     <div class="search-container">
         <!-- Search Header -->
         <div class="search-header">
-            <h1>Advanced Search</h1>
+            <h1>통합 검색</h1>
 
             <!-- Search Bar -->
             <div class="search-bar">
                 <div class="search-input-group">
-                    <input type="text" id="searchQuery" placeholder="Search recipes, posts, users..." autocomplete="off">
+                    <input type="text" id="searchQuery" placeholder="레시피, 게시글, 사용자 검색..." autocomplete="off">
                 </div>
-                <button class="search-btn" onclick="performSearch()">Search</button>
+                <button class="search-btn" onclick="performSearch()">검색</button>
             </div>
 
             <!-- Search History -->
             <div class="history-suggestions" id="historySuggestions" style="display:none;">
-                <div class="history-title">Recent Searches</div>
+                <div class="history-title">최근 검색</div>
                 <div class="history-items" id="historyItems"></div>
             </div>
 
             <!-- Search Controls -->
             <div class="search-controls">
                 <div class="control-group">
-                    <label>Index</label>
+                    <label>검색 대상</label>
                     <select id="indexSelect" onchange="onIndexChange()">
-                        <option value="recipes">Recipes</option>
-                        <option value="sns_posts">SNS Posts</option>
-                        <option value="users">Users</option>
+                        <option value="recipes">레시피</option>
+                        <option value="sns_posts">SNS 게시물</option>
+                        <option value="users">사용자</option>
                     </select>
                 </div>
                 <div class="control-group">
-                    <label>Sort By</label>
+                    <label>정렬</label>
                     <select id="sortSelect">
-                        <option value="relevance">Relevance</option>
-                        <option value="rating">Rating</option>
-                        <option value="popularity">Popularity</option>
-                        <option value="newest">Newest</option>
+                        <option value="relevance">관련도</option>
+                        <option value="rating">평점</option>
+                        <option value="popularity">인기순</option>
+                        <option value="newest">최신순</option>
                     </select>
                 </div>
                 <div class="control-group">
-                    <label>Per Page</label>
+                    <label>페이지당 개수</label>
                     <input type="number" id="perPageInput" value="20" min="5" max="100">
                 </div>
             </div>
@@ -485,8 +485,8 @@
             <div class="results-area">
                 <div id="resultsContent">
                     <div class="no-results">
-                        <div class="no-results-icon">?뵇</div>
-                        <p>Enter a search query to get started</p>
+                        <div class="no-results-icon">🔎</div>
+                        <p>검색어를 입력하면 검색을 시작할 수 있습니다</p>
                     </div>
                 </div>
             </div>
@@ -542,7 +542,7 @@
         async function performSearch() {
             const query = document.getElementById('searchQuery').value.trim();
             if (!query) {
-                alert('Please enter a search query');
+                alert('검색어를 입력해 주세요.');
                 return;
             }
 
@@ -592,10 +592,10 @@
                 loadFacets(query);
 
             } catch (error) {
-                console.error('Search error:', error);
+                console.error('검색 실패:', error);
                 document.getElementById('resultsContent').innerHTML = `
                     <div class="no-results">
-                        <p>Search failed: ${error.message}</p>
+                    <p>검색 실패: ${error.message}</p>
                     </div>
                 `;
             }
@@ -607,9 +607,9 @@
             if (data.results.length === 0) {
                 resultsDiv.innerHTML = `
                     <div class="no-results">
-                        <div class="no-results-icon">?삎</div>
-                        <p>No results found for "${escapeHtml(data.query)}"</p>
-                        <p style="font-size: 12px;">Try different keywords or filters</p>
+                        <div class="no-results-icon">🔎</div>
+                        <p>"${escapeHtml(data.query)}"에 대한 검색 결과가 없습니다.</p>
+                        <p style="font-size: 12px;">다른 검색어 또는 필터를 시도해 보세요</p>
                     </div>
                 `;
                 return;
@@ -618,7 +618,7 @@
             let html = `
                 <div class="results-header">
                     <div class="results-info">
-                        Found <strong>${data.total}</strong> results in <strong>${data.took_ms}ms</strong>
+                        <strong>${data.total}</strong>건의 결과 (응답 ${data.took_ms}ms)
                     </div>
                 </div>
             `;
@@ -629,12 +629,12 @@
                     <div class="result-meta">
                         ${result.data.rating ? `<div class="result-meta-item">
                             <span class="rating">
-                                <span class="stars">${'??.repeat(Math.round(result.data.rating))}</span>
+                                    <span class="stars">${'★'.repeat(Math.round(result.data.rating))}</span>
                                 ${result.data.rating.toFixed(1)}
                             </span>
                         </div>` : ''}
-                        ${result.data.cooking_time ? `<div class="result-meta-item">?깍툘 ${result.data.cooking_time} min</div>` : ''}
-                        ${result.data.calories ? `<div class="result-meta-item">?뵦 ${result.data.calories} cal</div>` : ''}
+                                    ${result.data.cooking_time ? `<div class="result-meta-item">조리시간 ${result.data.cooking_time} 분</div>` : ''}
+                        ${result.data.calories ? `<div class="result-meta-item">열량 ${result.data.calories}kcal</div>` : ''}
                         ${result.data.platform ? `<div class="result-meta-item">${result.data.platform}</div>` : ''}
                     </div>
                     ${result.data.description ? `<div class="result-description">${escapeHtml(result.data.description)}</div>` : ''}
@@ -651,13 +651,13 @@
             if (totalPages > 1) {
                 html += '<div class="pagination">';
                 if (currentPage > 1) {
-                    html += `<button onclick="goToPage(${currentPage - 1})">??Previous</button>`;
+                    html += `<button onclick="goToPage(${currentPage - 1})">이전</button>`;
                 }
                 for (let i = Math.max(1, currentPage - 2); i <= Math.min(totalPages, currentPage + 2); i++) {
                     html += `<button onclick="goToPage(${i})" class="${i === currentPage ? 'active' : ''}">${i}</button>`;
                 }
                 if (currentPage < totalPages) {
-                    html += `<button onclick="goToPage(${currentPage + 1})">Next ??/button>`;
+                    html += `<button onclick="goToPage(${currentPage + 1})">다음</button>`;
                 }
                 html += '</div>';
             }
@@ -669,7 +669,7 @@
             if (result.highlight && result.highlight.title) {
                 return result.highlight.title[0];
             }
-            return escapeHtml(result.data.title || result.data.content || 'Untitled');
+                return escapeHtml(result.data.title || result.data.content || '제목 없음');
         }
 
         async function loadFacets(query) {
@@ -680,7 +680,7 @@
                 const data = await response.json();
 
                 let facetsHtml = '<div class="facet-section">';
-                facetsHtml += '<div class="facet-title">Tags</div>';
+                facetsHtml += '<div class="facet-title">태그</div>';
                 facetsHtml += data.facets.map(facet => `
                     <div class="facet-item">
                         <input type="checkbox" id="facet_${escapeHtml(facet.name)}" onchange="updateFilters()">
@@ -715,7 +715,7 @@
             document.getElementById('resultsContent').innerHTML = `
                 <div class="loading">
                     <div class="spinner"></div>
-                    <p>Searching...</p>
+                    <p>검색 중...</p>
                 </div>
             `;
         }

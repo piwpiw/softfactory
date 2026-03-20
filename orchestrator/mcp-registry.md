@@ -2,7 +2,7 @@
 
 This file is the single source of truth for MCP usage status in this repository.
 
-Updated: 2026-02-28
+Updated: 2026-03-04
 Owner: Orchestrator
 
 ## Classification Rules

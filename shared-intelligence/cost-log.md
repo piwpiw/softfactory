@@ -4128,3 +4128,1189 @@ Measured example — `generate_sns_content` prompt:
 [PRE] 12:33:20 tool=unknown
 [POST] 12:33:21 tool=unknown status=done
 [PRE] 12:33:30 tool=unknown
+[NOTIFY] 2026-03-07T13:14:22+09:00 threshold_breach
+[PRE] 00:38:41 tool=unknown
+[POST] 00:38:42 tool=unknown status=done
+[PRE] 00:38:46 tool=unknown
+[NOTIFY] 2026-03-08T01:03:52+09:00 threshold_breach
+[NOTIFY] 2026-03-08T01:04:23+09:00 threshold_breach
+[STOP] 2026-03-08T01:16:05+09:00 session_end — update shared-intelligence/ before closing
+[NOTIFY] 2026-03-08T01:17:06+09:00 threshold_breach
+[STOP] 2026-03-08T02:11:49+09:00 session_end — update shared-intelligence/ before closing
+[STOP] 2026-03-08T02:12:02+09:00 session_end — update shared-intelligence/ before closing
+[NOTIFY] 2026-03-08T02:13:02+09:00 threshold_breach
+[STOP] 2026-03-08T10:06:07+09:00 session_end — update shared-intelligence/ before closing
+[PRE] 21:58:29 tool=unknown
+[POST] 21:58:29 tool=unknown status=done
+[PRE] 21:58:43 tool=unknown
+[PRE] 21:58:48 tool=unknown
+[PRE] 21:58:48 tool=unknown
+[PRE] 21:58:48 tool=unknown
+[PRE] 21:58:49 tool=unknown
+[PRE] 21:58:51 tool=unknown
+[PRE] 21:58:51 tool=unknown
+[PRE] 21:58:51 tool=unknown
+[POST] 21:58:51 tool=unknown status=done
+[PRE] 21:58:51 tool=unknown
+[PRE] 21:58:52 tool=unknown
+[POST] 21:58:52 tool=unknown status=done
+[POST] 21:58:52 tool=unknown status=done
+[POST] 21:58:52 tool=unknown status=done
+[POST] 21:58:52 tool=unknown status=done
+[POST] 21:58:54 tool=unknown status=done
+[POST] 21:58:54 tool=unknown status=done
+[PRE] 21:58:55 tool=unknown
+[PRE] 21:58:55 tool=unknown
+[PRE] 21:58:55 tool=unknown
+[POST] 21:58:56 tool=unknown status=done
+[PRE] 21:58:58 tool=unknown
+[PRE] 21:58:59 tool=unknown
+[POST] 21:58:59 tool=unknown status=done
+[POST] 21:58:59 tool=unknown status=done
+[PRE] 21:59:02 tool=unknown
+[PRE] 21:59:02 tool=unknown
+[PRE] 21:59:02 tool=unknown
+[POST] 21:59:02 tool=unknown status=done
+[POST] 21:59:03 tool=unknown status=done
+[POST] 21:59:03 tool=unknown status=done
+[POST] 21:59:03 tool=unknown status=done
+[POST] 21:59:03 tool=unknown status=done
+[PRE] 21:59:07 tool=unknown
+[POST] 21:59:07 tool=unknown status=done
+[PRE] 21:59:09 tool=unknown
+[POST] 21:59:09 tool=unknown status=done
+[PRE] 21:59:10 tool=unknown
+[POST] 21:59:10 tool=unknown status=done
+[PRE] 21:59:10 tool=unknown
+[POST] 21:59:10 tool=unknown status=done
+[PRE] 21:59:10 tool=unknown
+[POST] 21:59:10 tool=unknown status=done
+[PRE] 21:59:11 tool=unknown
+[POST] 21:59:11 tool=unknown status=done
+[PRE] 21:59:14 tool=unknown
+[POST] 21:59:14 tool=unknown status=done
+[PRE] 21:59:15 tool=unknown
+[POST] 21:59:15 tool=unknown status=done
+[PRE] 21:59:15 tool=unknown
+[PRE] 21:59:16 tool=unknown
+[POST] 21:59:16 tool=unknown status=done
+[PRE] 21:59:16 tool=unknown
+[POST] 21:59:29 tool=unknown status=done
+[POST] 21:59:29 tool=unknown status=done
+[PRE] 21:59:32 tool=unknown
+[PRE] 21:59:34 tool=unknown
+[POST] 21:59:34 tool=unknown status=done
+[PRE] 21:59:34 tool=unknown
+[POST] 21:59:35 tool=unknown status=done
+[POST] 21:59:37 tool=unknown status=done
+[PRE] 21:59:38 tool=unknown
+[PRE] 21:59:40 tool=unknown
+[POST] 21:59:43 tool=unknown status=done
+[POST] 21:59:45 tool=unknown status=done
+[PRE] 21:59:46 tool=unknown
+[PRE] 21:59:49 tool=unknown
+[POST] 21:59:51 tool=unknown status=done
+[POST] 21:59:54 tool=unknown status=done
+[PRE] 21:59:57 tool=unknown
+[POST] 21:59:57 tool=unknown status=done
+[PRE] 22:00:00 tool=unknown
+[POST] 22:00:00 tool=unknown status=done
+[PRE] 22:00:03 tool=unknown
+[POST] 22:00:08 tool=unknown status=done
+[PRE] 22:00:12 tool=unknown
+[POST] 22:00:17 tool=unknown status=done
+[PRE] 22:00:27 tool=unknown
+[POST] 22:00:32 tool=unknown status=done
+[PRE] 22:00:41 tool=unknown
+[POST] 22:00:46 tool=unknown status=done
+[PRE] 22:00:49 tool=unknown
+[POST] 22:00:55 tool=unknown status=done
+[PRE] 22:00:58 tool=unknown
+[PRE] 22:00:59 tool=unknown
+[POST] 22:00:59 tool=unknown status=done
+[PRE] 22:01:02 tool=unknown
+[POST] 22:01:02 tool=unknown status=done
+[POST] 22:01:03 tool=unknown status=done
+[PRE] 22:01:06 tool=unknown
+[POST] 22:01:06 tool=unknown status=done
+[PRE] 22:01:09 tool=unknown
+[POST] 22:01:11 tool=unknown status=done
+[POST] 22:01:21 tool=unknown status=done
+[PRE] 22:01:25 tool=unknown
+[POST] 22:01:25 tool=unknown status=done
+[PRE] 22:01:28 tool=unknown
+[POST] 22:01:34 tool=unknown status=done
+[PRE] 22:01:41 tool=unknown
+[POST] 22:01:41 tool=unknown status=done
+[PRE] 22:01:44 tool=unknown
+[POST] 22:01:44 tool=unknown status=done
+[POST] 22:02:01 tool=unknown status=done
+[PRE] 22:02:09 tool=unknown
+[POST] 22:02:09 tool=unknown status=done
+[PRE] 22:02:10 tool=unknown
+[POST] 22:02:10 tool=unknown status=done
+[PRE] 22:02:16 tool=unknown
+[POST] 22:02:16 tool=unknown status=done
+[PRE] 22:02:21 tool=unknown
+[POST] 22:02:21 tool=unknown status=done
+[PRE] 22:02:44 tool=unknown
+[PRE] 22:02:48 tool=unknown
+[POST] 22:02:48 tool=unknown status=done
+[PRE] 22:02:48 tool=unknown
+[PRE] 22:02:48 tool=unknown
+[POST] 22:02:48 tool=unknown status=done
+[POST] 22:02:48 tool=unknown status=done
+[PRE] 22:02:52 tool=unknown
+[PRE] 22:02:57 tool=unknown
+[POST] 22:02:57 tool=unknown status=done
+[PRE] 22:02:58 tool=unknown
+[POST] 22:02:58 tool=unknown status=done
+[PRE] 22:03:01 tool=unknown
+[POST] 22:03:02 tool=unknown status=done
+[PRE] 22:03:06 tool=unknown
+[POST] 22:03:06 tool=unknown status=done
+[PRE] 22:03:07 tool=unknown
+[POST] 22:03:07 tool=unknown status=done
+[PRE] 22:03:11 tool=unknown
+[POST] 22:03:12 tool=unknown status=done
+[PRE] 22:03:15 tool=unknown
+[POST] 22:03:15 tool=unknown status=done
+[PRE] 22:03:18 tool=unknown
+[POST] 22:03:19 tool=unknown status=done
+[PRE] 22:03:21 tool=unknown
+[POST] 22:03:22 tool=unknown status=done
+[PRE] 22:03:26 tool=unknown
+[POST] 22:03:26 tool=unknown status=done
+[PRE] 22:03:30 tool=unknown
+[POST] 22:03:31 tool=unknown status=done
+[PRE] 22:03:35 tool=unknown
+[POST] 22:03:35 tool=unknown status=done
+[PRE] 22:03:39 tool=unknown
+[POST] 22:03:39 tool=unknown status=done
+[POST] 22:04:41 tool=unknown status=done
+[PRE] 22:04:47 tool=unknown
+[POST] 22:04:47 tool=unknown status=done
+[PRE] 22:04:47 tool=unknown
+[POST] 22:04:47 tool=unknown status=done
+[PRE] 22:04:48 tool=unknown
+[POST] 22:04:48 tool=unknown status=done
+[PRE] 22:04:53 tool=unknown
+[POST] 22:04:53 tool=unknown status=done
+[PRE] 22:04:53 tool=unknown
+[POST] 22:04:53 tool=unknown status=done
+[PRE] 22:05:22 tool=unknown
+[POST] 22:05:22 tool=unknown status=done
+[PRE] 22:05:27 tool=unknown
+[POST] 22:05:27 tool=unknown status=done
+[PRE] 22:05:33 tool=unknown
+[STOP] 2026-03-15T19:29:14+09:00 session_end — update shared-intelligence/ before closing
+[PRE] 21:40:54 tool=unknown
+[PRE] 21:41:04 tool=unknown
+[PRE] 21:41:04 tool=unknown
+[PRE] 21:41:04 tool=unknown
+[PRE] 21:41:04 tool=unknown
+[POST] 21:41:05 tool=unknown status=done
+[POST] 21:41:05 tool=unknown status=done
+[POST] 21:41:05 tool=unknown status=done
+[POST] 21:41:05 tool=unknown status=done
+[PRE] 21:41:10 tool=unknown
+[POST] 21:41:11 tool=unknown status=done
+[PRE] 21:41:11 tool=unknown
+[PRE] 21:41:11 tool=unknown
+[PRE] 21:41:11 tool=unknown
+[POST] 21:41:11 tool=unknown status=done
+[POST] 21:41:12 tool=unknown status=done
+[POST] 21:41:12 tool=unknown status=done
+[PRE] 21:41:17 tool=unknown
+[PRE] 21:41:17 tool=unknown
+[PRE] 21:41:18 tool=unknown
+[PRE] 21:41:18 tool=unknown
+[POST] 21:41:18 tool=unknown status=done
+[POST] 21:41:18 tool=unknown status=done
+[POST] 21:41:28 tool=unknown status=done
+[POST] 21:41:29 tool=unknown status=done
+[PRE] 21:41:31 tool=unknown
+[PRE] 21:41:31 tool=unknown
+[PRE] 21:41:32 tool=unknown
+[POST] 21:41:32 tool=unknown status=done
+[POST] 21:41:32 tool=unknown status=done
+[PRE] 21:41:34 tool=unknown
+[PRE] 21:41:35 tool=unknown
+[PRE] 21:41:35 tool=unknown
+[POST] 21:41:36 tool=unknown status=done
+[POST] 21:41:36 tool=unknown status=done
+[POST] 21:41:36 tool=unknown status=done
+[PRE] 21:41:39 tool=unknown
+[POST] 21:43:49 tool=unknown status=done
+[PRE] 21:43:50 tool=unknown
+[PRE] 21:43:50 tool=unknown
+[POST] 21:43:50 tool=unknown status=done
+[POST] 21:44:01 tool=unknown status=done
+[PRE] 21:44:10 tool=unknown
+[PRE] 21:44:11 tool=unknown
+[POST] 21:44:11 tool=unknown status=done
+[PRE] 21:44:11 tool=unknown
+[POST] 21:44:12 tool=unknown status=done
+[POST] 21:44:12 tool=unknown status=done
+[PRE] 21:44:17 tool=unknown
+[PRE] 21:44:18 tool=unknown
+[PRE] 21:44:18 tool=unknown
+[POST] 21:44:19 tool=unknown status=done
+[POST] 21:44:19 tool=unknown status=done
+[POST] 21:44:20 tool=unknown status=done
+[PRE] 21:44:25 tool=unknown
+[POST] 21:44:25 tool=unknown status=done
+[PRE] 21:44:25 tool=unknown
+[PRE] 21:44:26 tool=unknown
+[POST] 21:44:26 tool=unknown status=done
+[POST] 21:44:27 tool=unknown status=done
+[PRE] 21:44:30 tool=unknown
+[PRE] 21:44:31 tool=unknown
+[PRE] 21:44:31 tool=unknown
+[POST] 21:44:32 tool=unknown status=done
+[POST] 21:44:32 tool=unknown status=done
+[POST] 21:44:34 tool=unknown status=done
+[PRE] 21:44:37 tool=unknown
+[POST] 21:44:38 tool=unknown status=done
+[PRE] 21:44:39 tool=unknown
+[PRE] 21:44:39 tool=unknown
+[POST] 21:44:40 tool=unknown status=done
+[POST] 21:44:40 tool=unknown status=done
+[PRE] 21:44:45 tool=unknown
+[PRE] 21:44:45 tool=unknown
+[PRE] 21:44:46 tool=unknown
+[POST] 21:44:46 tool=unknown status=done
+[POST] 21:44:47 tool=unknown status=done
+[POST] 21:44:47 tool=unknown status=done
+[PRE] 21:44:50 tool=unknown
+[POST] 21:44:51 tool=unknown status=done
+[PRE] 21:44:51 tool=unknown
+[PRE] 21:44:51 tool=unknown
+[POST] 21:44:53 tool=unknown status=done
+[POST] 21:46:29 tool=unknown status=done
+[PRE] 21:46:37 tool=unknown
+[PRE] 21:46:37 tool=unknown
+[POST] 21:46:39 tool=unknown status=done
+[POST] 21:46:46 tool=unknown status=done
+[POST] 21:47:23 tool=unknown status=done
+[PRE] 21:47:29 tool=unknown
+[PRE] 21:47:30 tool=unknown
+[POST] 21:47:30 tool=unknown status=done
+[POST] 21:47:31 tool=unknown status=done
+[PRE] 21:47:35 tool=unknown
+[POST] 21:47:35 tool=unknown status=done
+[PRE] 21:47:35 tool=unknown
+[PRE] 21:47:35 tool=unknown
+[POST] 21:47:48 tool=unknown status=done
+[POST] 21:47:48 tool=unknown status=done
+[PRE] 21:47:52 tool=unknown
+[POST] 21:47:53 tool=unknown status=done
+[PRE] 21:47:54 tool=unknown
+[POST] 21:47:54 tool=unknown status=done
+[PRE] 21:47:58 tool=unknown
+[POST] 21:47:58 tool=unknown status=done
+[PRE] 21:47:59 tool=unknown
+[POST] 21:47:59 tool=unknown status=done
+[STOP] 2026-03-16T21:48:22+09:00 session_end — update shared-intelligence/ before closing
+[STOP] 2026-03-16T21:48:28+09:00 session_end — update shared-intelligence/ before closing
+[PRE] 21:49:07 tool=unknown
+[POST] 21:49:07 tool=unknown status=done
+[PRE] 21:49:07 tool=unknown
+[POST] 21:49:08 tool=unknown status=done
+[PRE] 21:49:08 tool=unknown
+[POST] 21:49:08 tool=unknown status=done
+[PRE] 21:49:14 tool=unknown
+[POST] 21:49:14 tool=unknown status=done
+[PRE] 21:49:14 tool=unknown
+[POST] 21:49:14 tool=unknown status=done
+[PRE] 21:49:18 tool=unknown
+[POST] 21:49:18 tool=unknown status=done
+[PRE] 21:49:19 tool=unknown
+[POST] 21:49:19 tool=unknown status=done
+[PRE] 21:49:22 tool=unknown
+[POST] 21:49:22 tool=unknown status=done
+[PRE] 21:49:22 tool=unknown
+[POST] 21:49:23 tool=unknown status=done
+[PRE] 21:50:13 tool=unknown
+[POST] 21:50:14 tool=unknown status=done
+[PRE] 21:50:28 tool=unknown
+[POST] 21:50:29 tool=unknown status=done
+[PRE] 21:50:40 tool=unknown
+[POST] 21:50:40 tool=unknown status=done
+[PRE] 21:50:47 tool=unknown
+[POST] 21:50:47 tool=unknown status=done
+[PRE] 21:50:54 tool=unknown
+[POST] 21:50:54 tool=unknown status=done
+[PRE] 21:51:04 tool=unknown
+[POST] 21:51:04 tool=unknown status=done
+[PRE] 21:51:16 tool=unknown
+[POST] 21:51:17 tool=unknown status=done
+[PRE] 21:51:29 tool=unknown
+[POST] 21:51:29 tool=unknown status=done
+[PRE] 21:51:49 tool=unknown
+[POST] 21:51:49 tool=unknown status=done
+[PRE] 21:51:56 tool=unknown
+[POST] 21:51:56 tool=unknown status=done
+[PRE] 21:51:56 tool=unknown
+[POST] 21:51:57 tool=unknown status=done
+[PRE] 21:52:00 tool=unknown
+[POST] 21:52:00 tool=unknown status=done
+[PRE] 21:52:03 tool=unknown
+[POST] 21:52:03 tool=unknown status=done
+[PRE] 21:52:09 tool=unknown
+[POST] 21:52:09 tool=unknown status=done
+[PRE] 21:52:14 tool=unknown
+[POST] 21:52:15 tool=unknown status=done
+[PRE] 21:52:15 tool=unknown
+[POST] 21:52:15 tool=unknown status=done
+[PRE] 21:52:19 tool=unknown
+[POST] 21:52:19 tool=unknown status=done
+[PRE] 21:52:26 tool=unknown
+[POST] 21:52:26 tool=unknown status=done
+[PRE] 21:52:31 tool=unknown
+[POST] 21:52:31 tool=unknown status=done
+[PRE] 21:52:46 tool=unknown
+[POST] 21:52:47 tool=unknown status=done
+[PRE] 21:52:51 tool=unknown
+[POST] 21:52:52 tool=unknown status=done
+[PRE] 21:52:52 tool=unknown
+[POST] 21:52:52 tool=unknown status=done
+[PRE] 21:52:55 tool=unknown
+[POST] 21:52:56 tool=unknown status=done
+[PRE] 21:52:58 tool=unknown
+[POST] 21:53:00 tool=unknown status=done
+[PRE] 21:53:08 tool=unknown
+[POST] 21:53:09 tool=unknown status=done
+[PRE] 21:53:14 tool=unknown
+[POST] 21:53:14 tool=unknown status=done
+[PRE] 21:53:24 tool=unknown
+[POST] 21:53:24 tool=unknown status=done
+[PRE] 21:53:31 tool=unknown
+[PRE] 21:53:38 tool=unknown
+[PRE] 21:53:47 tool=unknown
+[PRE] 21:53:58 tool=unknown
+[PRE] 21:54:07 tool=unknown
+[POST] 21:54:09 tool=unknown status=done
+[STOP] 2026-03-16T21:54:26+09:00 session_end — update shared-intelligence/ before closing
+[PRE] 22:43:45 tool=unknown
+[PRE] 22:43:52 tool=unknown
+[PRE] 22:43:52 tool=unknown
+[POST] 22:43:52 tool=unknown status=done
+[PRE] 22:43:52 tool=unknown
+[PRE] 22:43:52 tool=unknown
+[PRE] 22:43:58 tool=unknown
+[PRE] 22:43:59 tool=unknown
+[PRE] 22:44:00 tool=unknown
+[PRE] 22:44:00 tool=unknown
+[PRE] 22:44:01 tool=unknown
+[PRE] 22:44:01 tool=unknown
+[POST] 22:44:02 tool=unknown status=done
+[POST] 22:44:02 tool=unknown status=done
+[POST] 22:44:11 tool=unknown status=done
+[POST] 22:44:12 tool=unknown status=done
+[POST] 22:44:14 tool=unknown status=done
+[POST] 22:44:14 tool=unknown status=done
+[POST] 22:44:14 tool=unknown status=done
+[POST] 22:44:17 tool=unknown status=done
+[PRE] 22:44:21 tool=unknown
+[PRE] 22:44:21 tool=unknown
+[POST] 22:44:22 tool=unknown status=done
+[POST] 22:44:22 tool=unknown status=done
+[PRE] 22:44:25 tool=unknown
+[PRE] 22:44:25 tool=unknown
+[POST] 22:44:25 tool=unknown status=done
+[POST] 22:44:26 tool=unknown status=done
+[PRE] 22:44:26 tool=unknown
+[POST] 22:44:26 tool=unknown status=done
+[PRE] 22:44:26 tool=unknown
+[POST] 22:44:27 tool=unknown status=done
+[PRE] 22:44:27 tool=unknown
+[POST] 22:44:27 tool=unknown status=done
+[PRE] 22:44:30 tool=unknown
+[POST] 22:44:31 tool=unknown status=done
+[PRE] 22:44:31 tool=unknown
+[POST] 22:44:31 tool=unknown status=done
+[PRE] 22:44:37 tool=unknown
+[POST] 22:44:37 tool=unknown status=done
+[PRE] 22:44:38 tool=unknown
+[POST] 22:44:39 tool=unknown status=done
+[PRE] 22:44:39 tool=unknown
+[POST] 22:44:39 tool=unknown status=done
+[PRE] 22:44:47 tool=unknown
+[POST] 22:44:47 tool=unknown status=done
+[PRE] 22:44:47 tool=unknown
+[POST] 22:44:47 tool=unknown status=done
+[PRE] 22:44:56 tool=unknown
+[POST] 22:44:56 tool=unknown status=done
+[PRE] 22:44:56 tool=unknown
+[POST] 22:44:58 tool=unknown status=done
+[PRE] 22:45:02 tool=unknown
+[POST] 22:45:03 tool=unknown status=done
+[PRE] 22:45:04 tool=unknown
+[POST] 22:45:05 tool=unknown status=done
+[PRE] 22:45:15 tool=unknown
+[POST] 22:45:16 tool=unknown status=done
+[PRE] 22:45:16 tool=unknown
+[POST] 22:45:17 tool=unknown status=done
+[POST] 22:45:26 tool=unknown status=done
+[PRE] 22:45:27 tool=unknown
+[POST] 22:45:27 tool=unknown status=done
+[PRE] 22:45:28 tool=unknown
+[POST] 22:45:28 tool=unknown status=done
+[PRE] 22:45:40 tool=unknown
+[POST] 22:45:40 tool=unknown status=done
+[PRE] 22:45:41 tool=unknown
+[POST] 22:45:42 tool=unknown status=done
+[PRE] 22:45:52 tool=unknown
+[POST] 22:45:52 tool=unknown status=done
+[PRE] 22:45:52 tool=unknown
+[POST] 22:45:53 tool=unknown status=done
+[PRE] 22:46:03 tool=unknown
+[POST] 22:46:03 tool=unknown status=done
+[POST] 22:47:30 tool=unknown status=done
+[PRE] 22:48:10 tool=unknown
+[PRE] 22:48:19 tool=unknown
+[POST] 22:48:19 tool=unknown status=done
+[PRE] 22:48:19 tool=unknown
+[POST] 22:48:19 tool=unknown status=done
+[PRE] 22:48:27 tool=unknown
+[POST] 22:48:27 tool=unknown status=done
+[PRE] 22:48:27 tool=unknown
+[POST] 22:48:27 tool=unknown status=done
+[PRE] 22:48:36 tool=unknown
+[POST] 22:48:36 tool=unknown status=done
+[PRE] 22:48:36 tool=unknown
+[POST] 22:48:37 tool=unknown status=done
+[PRE] 22:48:50 tool=unknown
+[POST] 22:48:50 tool=unknown status=done
+[PRE] 22:48:50 tool=unknown
+[POST] 22:48:51 tool=unknown status=done
+[PRE] 22:49:00 tool=unknown
+[POST] 22:49:00 tool=unknown status=done
+[PRE] 22:49:00 tool=unknown
+[POST] 22:49:00 tool=unknown status=done
+[PRE] 22:49:09 tool=unknown
+[POST] 22:49:09 tool=unknown status=done
+[PRE] 22:49:09 tool=unknown
+[POST] 22:49:09 tool=unknown status=done
+[PRE] 22:49:20 tool=unknown
+[PRE] 22:49:20 tool=unknown
+[POST] 22:49:20 tool=unknown status=done
+[POST] 22:49:20 tool=unknown status=done
+[PRE] 22:49:30 tool=unknown
+[PRE] 22:49:30 tool=unknown
+[POST] 22:49:30 tool=unknown status=done
+[POST] 22:49:30 tool=unknown status=done
+[PRE] 22:49:40 tool=unknown
+[PRE] 22:49:40 tool=unknown
+[POST] 22:49:40 tool=unknown status=done
+[POST] 22:49:40 tool=unknown status=done
+[POST] 22:52:10 tool=unknown status=done
+[PRE] 22:53:14 tool=unknown
+[POST] 22:53:15 tool=unknown status=done
+[PRE] 22:53:22 tool=unknown
+[POST] 02:02:02 tool=unknown status=done
+[STOP] 2026-03-17T02:02:04+09:00 session_end — update shared-intelligence/ before closing
+[STOP] 2026-03-17T10:45:37+09:00 session_end — update shared-intelligence/ before closing
+[STOP] 2026-03-17T10:47:22+09:00 session_end — update shared-intelligence/ before closing
+[STOP] 2026-03-17T10:48:45+09:00 session_end — update shared-intelligence/ before closing
+[STOP] 2026-03-17T11:22:29+09:00 session_end — update shared-intelligence/ before closing
+[PRE] 11:23:17 tool=unknown
+[POST] 11:23:17 tool=unknown status=done
+[PRE] 11:23:17 tool=unknown
+[PRE] 11:23:17 tool=unknown
+[POST] 11:23:18 tool=unknown status=done
+[POST] 11:23:19 tool=unknown status=done
+[PRE] 11:23:57 tool=unknown
+[PRE] 11:23:58 tool=unknown
+[PRE] 11:24:01 tool=unknown
+[PRE] 11:24:01 tool=unknown
+[POST] 11:24:02 tool=unknown status=done
+[POST] 11:24:02 tool=unknown status=done
+[PRE] 11:24:07 tool=unknown
+[PRE] 11:24:07 tool=unknown
+[PRE] 11:24:07 tool=unknown
+[POST] 11:24:07 tool=unknown status=done
+[POST] 11:24:07 tool=unknown status=done
+[PRE] 11:25:10 tool=unknown
+[POST] 11:25:11 tool=unknown status=done
+[PRE] 11:25:56 tool=unknown
+[PRE] 11:25:56 tool=unknown
+[PRE] 11:25:56 tool=unknown
+[POST] 11:25:56 tool=unknown status=done
+[POST] 11:25:57 tool=unknown status=done
+[POST] 11:25:57 tool=unknown status=done
+[PRE] 11:27:00 tool=unknown
+[POST] 11:27:00 tool=unknown status=done
+[PRE] 11:27:41 tool=unknown
+[POST] 11:27:42 tool=unknown status=done
+[PRE] 11:28:38 tool=unknown
+[POST] 11:28:38 tool=unknown status=done
+[PRE] 11:29:27 tool=unknown
+[POST] 11:29:27 tool=unknown status=done
+[PRE] 11:30:23 tool=unknown
+[POST] 11:30:23 tool=unknown status=done
+[PRE] 11:31:19 tool=unknown
+[POST] 11:31:19 tool=unknown status=done
+[PRE] 11:32:22 tool=unknown
+[POST] 11:32:22 tool=unknown status=done
+[PRE] 11:33:08 tool=unknown
+[POST] 11:33:08 tool=unknown status=done
+[STOP] 2026-03-17T11:36:29+09:00 session_end — update shared-intelligence/ before closing
+[PRE] 18:01:52 tool=unknown
+[PRE] 18:01:52 tool=unknown
+[POST] 18:01:52 tool=unknown status=done
+[POST] 18:01:52 tool=unknown status=done
+[PRE] 18:02:19 tool=unknown
+[POST] 18:02:19 tool=unknown status=done
+[PRE] 18:02:19 tool=unknown
+[POST] 18:02:19 tool=unknown status=done
+[PRE] 18:02:56 tool=unknown
+[POST] 18:02:56 tool=unknown status=done
+[PRE] 18:03:42 tool=unknown
+[POST] 18:03:42 tool=unknown status=done
+[PRE] 18:04:27 tool=unknown
+[POST] 18:04:28 tool=unknown status=done
+[PRE] 18:05:16 tool=unknown
+[POST] 18:05:16 tool=unknown status=done
+[PRE] 18:06:04 tool=unknown
+[POST] 18:06:04 tool=unknown status=done
+[PRE] 18:06:56 tool=unknown
+[POST] 18:06:57 tool=unknown status=done
+[PRE] 18:07:44 tool=unknown
+[POST] 18:07:44 tool=unknown status=done
+[PRE] 18:11:31 tool=unknown
+[POST] 18:11:31 tool=unknown status=done
+[PRE] 18:12:27 tool=unknown
+[POST] 18:12:28 tool=unknown status=done
+[PRE] 18:15:29 tool=unknown
+[POST] 18:15:30 tool=unknown status=done
+[PRE] 18:17:10 tool=unknown
+[POST] 18:17:11 tool=unknown status=done
+[PRE] 18:19:08 tool=unknown
+[POST] 18:19:09 tool=unknown status=done
+[PRE] 18:20:56 tool=unknown
+[POST] 18:20:56 tool=unknown status=done
+[PRE] 18:22:41 tool=unknown
+[POST] 18:22:41 tool=unknown status=done
+[PRE] 18:25:44 tool=unknown
+[POST] 18:25:45 tool=unknown status=done
+[STOP] 2026-03-19T18:27:55+09:00 session_end — update shared-intelligence/ before closing
+[PRE] 18:31:39 tool=unknown
+[POST] 18:31:40 tool=unknown status=done
+[STOP] 2026-03-19T18:32:52+09:00 session_end — update shared-intelligence/ before closing
+[PRE] 08:52:12 tool=unknown
+[POST] 08:52:13 tool=unknown status=done
+[PRE] 08:52:35 tool=unknown
+[POST] 08:52:36 tool=unknown status=done
+[PRE] 08:53:04 tool=unknown
+[POST] 08:53:04 tool=unknown status=done
+[PRE] 08:53:12 tool=unknown
+[POST] 08:53:12 tool=unknown status=done
+[PRE] 08:53:41 tool=unknown
+[POST] 08:53:41 tool=unknown status=done
+[PRE] 08:53:48 tool=unknown
+[POST] 08:53:48 tool=unknown status=done
+[PRE] 08:54:00 tool=unknown
+[POST] 08:54:01 tool=unknown status=done
+[STOP] 2026-03-20T08:54:37+09:00 session_end — update shared-intelligence/ before closing
+[STOP] 2026-03-20T09:46:08+09:00 session_end — update shared-intelligence/ before closing
+[PRE] 09:50:13 tool=unknown
+[PRE] 09:50:14 tool=unknown
+[PRE] 09:50:14 tool=unknown
+[POST] 09:50:14 tool=unknown status=done
+[POST] 09:50:15 tool=unknown status=done
+[PRE] 09:50:47 tool=unknown
+[POST] 09:50:47 tool=unknown status=done
+[PRE] 09:51:19 tool=unknown
+[PRE] 09:51:19 tool=unknown
+[POST] 09:51:19 tool=unknown status=done
+[POST] 09:51:19 tool=unknown status=done
+[PRE] 09:51:23 tool=unknown
+[POST] 09:51:23 tool=unknown status=done
+[PRE] 09:52:05 tool=unknown
+[POST] 09:52:06 tool=unknown status=done
+[PRE] 09:52:53 tool=unknown
+[PRE] 09:52:53 tool=unknown
+[POST] 09:52:53 tool=unknown status=done
+[PRE] 09:53:31 tool=unknown
+[POST] 09:53:31 tool=unknown status=done
+[PRE] 09:54:15 tool=unknown
+[POST] 09:54:16 tool=unknown status=done
+[PRE] 09:55:12 tool=unknown
+[PRE] 09:56:09 tool=unknown
+[PRE] 09:57:00 tool=unknown
+[PRE] 09:57:05 tool=unknown
+[POST] 09:57:06 tool=unknown status=done
+[PRE] 09:57:58 tool=unknown
+[PRE] 09:57:58 tool=unknown
+[PRE] 09:57:58 tool=unknown
+[POST] 09:57:58 tool=unknown status=done
+[POST] 09:57:59 tool=unknown status=done
+[POST] 09:57:59 tool=unknown status=done
+[PRE] 09:59:02 tool=unknown
+[PRE] 09:59:02 tool=unknown
+[PRE] 09:59:02 tool=unknown
+[POST] 09:59:02 tool=unknown status=done
+[POST] 09:59:02 tool=unknown status=done
+[POST] 09:59:03 tool=unknown status=done
+[PRE] 10:00:00 tool=unknown
+[POST] 10:00:01 tool=unknown status=done
+[PRE] 10:00:48 tool=unknown
+[POST] 10:00:48 tool=unknown status=done
+[PRE] 10:01:33 tool=unknown
+[POST] 10:01:34 tool=unknown status=done
+[PRE] 10:01:39 tool=unknown
+[POST] 10:01:39 tool=unknown status=done
+[PRE] 10:01:43 tool=unknown
+[POST] 10:01:44 tool=unknown status=done
+[PRE] 10:02:30 tool=unknown
+[PRE] 10:02:30 tool=unknown
+[POST] 10:02:30 tool=unknown status=done
+[POST] 10:02:30 tool=unknown status=done
+[PRE] 10:03:33 tool=unknown
+[PRE] 10:03:34 tool=unknown
+[PRE] 10:03:34 tool=unknown
+[POST] 10:03:34 tool=unknown status=done
+[POST] 10:03:34 tool=unknown status=done
+[POST] 10:03:35 tool=unknown status=done
+[PRE] 10:04:46 tool=unknown
+[PRE] 10:04:47 tool=unknown
+[POST] 10:04:47 tool=unknown status=done
+[POST] 10:04:47 tool=unknown status=done
+[PRE] 10:05:44 tool=unknown
+[PRE] 10:05:44 tool=unknown
+[PRE] 10:05:44 tool=unknown
+[POST] 10:05:45 tool=unknown status=done
+[POST] 10:05:45 tool=unknown status=done
+[POST] 10:05:45 tool=unknown status=done
+[STOP] 2026-03-20T16:52:10+09:00 session_end — update shared-intelligence/ before closing
+[STOP] 2026-03-20T17:03:41+09:00 session_end — update shared-intelligence/ before closing
+[STOP] 2026-03-20T17:04:25+09:00 session_end — update shared-intelligence/ before closing
+[STOP] 2026-03-20T17:05:31+09:00 session_end — update shared-intelligence/ before closing
+[PRE] 17:12:02 tool=unknown
+[POST] 17:12:02 tool=unknown status=done
+[PRE] 17:12:07 tool=unknown
+[PRE] 17:12:08 tool=unknown
+[PRE] 17:12:08 tool=unknown
+[POST] 17:12:19 tool=unknown status=done
+[POST] 17:12:20 tool=unknown status=done
+[POST] 17:12:22 tool=unknown status=done
+[PRE] 17:12:44 tool=unknown
+[PRE] 17:12:44 tool=unknown
+[POST] 17:12:44 tool=unknown status=done
+[POST] 17:12:45 tool=unknown status=done
+[PRE] 17:12:45 tool=unknown
+[POST] 17:12:48 tool=unknown status=done
+[PRE] 17:12:48 tool=unknown
+[POST] 17:12:50 tool=unknown status=done
+[PRE] 17:12:54 tool=unknown
+[PRE] 17:12:55 tool=unknown
+[POST] 17:12:55 tool=unknown status=done
+[POST] 17:13:00 tool=unknown status=done
+[PRE] 17:13:37 tool=unknown
+[POST] 17:13:41 tool=unknown status=done
+[PRE] 17:13:41 tool=unknown
+[PRE] 17:13:41 tool=unknown
+[POST] 17:13:41 tool=unknown status=done
+[POST] 17:13:43 tool=unknown status=done
+[PRE] 17:14:22 tool=unknown
+[PRE] 17:14:23 tool=unknown
+[POST] 17:14:23 tool=unknown status=done
+[POST] 17:14:23 tool=unknown status=done
+[PRE] 17:15:04 tool=unknown
+[POST] 17:15:06 tool=unknown status=done
+[PRE] 17:15:06 tool=unknown
+[POST] 17:15:13 tool=unknown status=done
+[PRE] 17:15:55 tool=unknown
+[POST] 17:15:59 tool=unknown status=done
+[PRE] 17:16:00 tool=unknown
+[PRE] 17:16:00 tool=unknown
+[POST] 17:16:02 tool=unknown status=done
+[POST] 17:16:02 tool=unknown status=done
+[PRE] 17:16:41 tool=unknown
+[POST] 17:16:41 tool=unknown status=done
+[PRE] 17:17:14 tool=unknown
+[PRE] 17:17:57 tool=unknown
+[POST] 17:18:03 tool=unknown status=done
+[PRE] 17:18:03 tool=unknown
+[POST] 17:18:04 tool=unknown status=done
+[PRE] 17:18:39 tool=unknown
+[POST] 17:19:40 tool=unknown status=done
+[PRE] 17:19:40 tool=unknown
+[POST] 17:19:41 tool=unknown status=done
+[PRE] 17:20:16 tool=unknown
+[PRE] 17:21:01 tool=unknown
+[POST] 17:23:02 tool=unknown status=done
+[PRE] 17:23:02 tool=unknown
+[POST] 17:23:05 tool=unknown status=done
+[PRE] 17:23:59 tool=unknown
+[POST] 17:24:09 tool=unknown status=done
+[PRE] 17:24:49 tool=unknown
+[POST] 17:24:59 tool=unknown status=done
+[PRE] 17:25:40 tool=unknown
+[POST] 17:25:55 tool=unknown status=done
+[PRE] 17:26:38 tool=unknown
+[POST] 17:26:48 tool=unknown status=done
+[PRE] 17:27:27 tool=unknown
+[POST] 17:27:57 tool=unknown status=done
+[PRE] 17:28:39 tool=unknown
+[POST] 17:28:49 tool=unknown status=done
+[PRE] 17:29:30 tool=unknown
+[POST] 17:29:45 tool=unknown status=done
+[PRE] 17:30:26 tool=unknown
+[POST] 17:30:57 tool=unknown status=done
+[PRE] 17:31:45 tool=unknown
+[POST] 17:32:45 tool=unknown status=done
+[PRE] 17:33:26 tool=unknown
+[POST] 17:33:26 tool=unknown status=done
+[PRE] 17:34:13 tool=unknown
+[POST] 17:34:16 tool=unknown status=done
+[PRE] 17:34:17 tool=unknown
+[POST] 17:34:19 tool=unknown status=done
+[PRE] 17:34:19 tool=unknown
+[PRE] 17:35:10 tool=unknown
+[POST] 17:35:12 tool=unknown status=done
+[PRE] 17:35:52 tool=unknown
+[POST] 17:35:54 tool=unknown status=done
+[PRE] 17:36:33 tool=unknown
+[PRE] 17:37:20 tool=unknown
+[POST] 17:37:20 tool=unknown status=done
+[PRE] 17:38:08 tool=unknown
+[POST] 17:38:08 tool=unknown status=done
+[PRE] 17:38:56 tool=unknown
+[POST] 17:38:57 tool=unknown status=done
+[PRE] 17:39:39 tool=unknown
+[POST] 17:39:40 tool=unknown status=done
+[PRE] 17:40:25 tool=unknown
+[POST] 17:40:25 tool=unknown status=done
+[PRE] 17:41:09 tool=unknown
+[PRE] 17:42:09 tool=unknown
+[PRE] 17:43:07 tool=unknown
+[POST] 17:43:09 tool=unknown status=done
+[PRE] 17:43:09 tool=unknown
+[PRE] 17:43:56 tool=unknown
+[PRE] 17:43:56 tool=unknown
+[POST] 17:43:57 tool=unknown status=done
+[POST] 17:44:00 tool=unknown status=done
+[PRE] 17:44:51 tool=unknown
+[POST] 17:44:51 tool=unknown status=done
+[PRE] 17:45:53 tool=unknown
+[POST] 17:45:58 tool=unknown status=done
+[PRE] 17:46:49 tool=unknown
+[POST] 17:46:54 tool=unknown status=done
+[PRE] 17:47:45 tool=unknown
+[PRE] 17:47:45 tool=unknown
+[POST] 17:47:45 tool=unknown status=done
+[POST] 17:47:50 tool=unknown status=done
+[PRE] 17:48:41 tool=unknown
+[PRE] 17:48:41 tool=unknown
+[POST] 17:48:41 tool=unknown status=done
+[PRE] 17:49:35 tool=unknown
+[PRE] 17:49:35 tool=unknown
+[POST] 17:49:35 tool=unknown status=done
+[POST] 17:49:36 tool=unknown status=done
+[PRE] 17:50:25 tool=unknown
+[PRE] 17:50:25 tool=unknown
+[POST] 17:50:25 tool=unknown status=done
+[POST] 17:50:26 tool=unknown status=done
+[PRE] 17:51:17 tool=unknown
+[POST] 17:51:18 tool=unknown status=done
+[PRE] 17:52:15 tool=unknown
+[POST] 17:52:16 tool=unknown status=done
+[PRE] 17:53:23 tool=unknown
+[POST] 17:53:24 tool=unknown status=done
+[PRE] 17:54:11 tool=unknown
+[PRE] 17:55:09 tool=unknown
+[POST] 17:55:10 tool=unknown status=done
+[PRE] 17:56:05 tool=unknown
+[POST] 17:56:05 tool=unknown status=done
+[PRE] 17:56:07 tool=unknown
+[POST] 17:56:09 tool=unknown status=done
+[PRE] 17:57:11 tool=unknown
+[PRE] 17:57:57 tool=unknown
+[PRE] 17:58:52 tool=unknown
+[PRE] 17:59:44 tool=unknown
+[POST] 17:59:44 tool=unknown status=done
+[PRE] 17:59:46 tool=unknown
+[PRE] 18:00:23 tool=unknown
+[PRE] 18:01:07 tool=unknown
+[PRE] 18:01:56 tool=unknown
+[PRE] 18:02:39 tool=unknown
+[POST] 18:02:40 tool=unknown status=done
+[PRE] 18:02:40 tool=unknown
+[POST] 18:02:42 tool=unknown status=done
+[PRE] 18:02:42 tool=unknown
+[POST] 18:02:44 tool=unknown status=done
+[PRE] 18:03:37 tool=unknown
+[PRE] 18:03:37 tool=unknown
+[PRE] 18:03:37 tool=unknown
+[PRE] 18:04:46 tool=unknown
+[PRE] 18:04:47 tool=unknown
+[POST] 18:04:47 tool=unknown status=done
+[POST] 18:04:47 tool=unknown status=done
+[PRE] 18:05:38 tool=unknown
+[POST] 18:05:38 tool=unknown status=done
+[PRE] 18:06:39 tool=unknown
+[POST] 18:06:39 tool=unknown status=done
+[PRE] 18:07:33 tool=unknown
+[POST] 18:07:33 tool=unknown status=done
+[PRE] 18:08:24 tool=unknown
+[POST] 18:08:24 tool=unknown status=done
+[PRE] 18:09:23 tool=unknown
+[POST] 18:09:23 tool=unknown status=done
+[PRE] 18:10:15 tool=unknown
+[POST] 18:10:15 tool=unknown status=done
+[PRE] 18:10:56 tool=unknown
+[POST] 18:10:57 tool=unknown status=done
+[PRE] 18:11:51 tool=unknown
+[POST] 18:11:51 tool=unknown status=done
+[PRE] 18:12:36 tool=unknown
+[POST] 18:12:36 tool=unknown status=done
+[PRE] 18:13:19 tool=unknown
+[POST] 18:13:19 tool=unknown status=done
+[PRE] 18:14:07 tool=unknown
+[POST] 18:14:08 tool=unknown status=done
+[PRE] 18:14:52 tool=unknown
+[POST] 18:14:53 tool=unknown status=done
+[PRE] 18:15:32 tool=unknown
+[POST] 18:15:32 tool=unknown status=done
+[PRE] 18:16:13 tool=unknown
+[POST] 18:16:13 tool=unknown status=done
+[PRE] 18:16:54 tool=unknown
+[POST] 18:16:54 tool=unknown status=done
+[PRE] 18:17:36 tool=unknown
+[POST] 18:17:36 tool=unknown status=done
+[PRE] 18:18:15 tool=unknown
+[POST] 18:18:16 tool=unknown status=done
+[PRE] 18:18:53 tool=unknown
+[POST] 18:18:53 tool=unknown status=done
+[PRE] 18:19:28 tool=unknown
+[POST] 18:19:29 tool=unknown status=done
+[PRE] 18:20:12 tool=unknown
+[POST] 18:20:12 tool=unknown status=done
+[PRE] 18:21:32 tool=unknown
+[POST] 18:21:33 tool=unknown status=done
+[PRE] 18:22:09 tool=unknown
+[POST] 18:22:09 tool=unknown status=done
+[PRE] 18:22:42 tool=unknown
+[POST] 18:22:42 tool=unknown status=done
+[PRE] 18:23:12 tool=unknown
+[POST] 18:23:12 tool=unknown status=done
+[PRE] 18:24:18 tool=unknown
+[POST] 18:24:18 tool=unknown status=done
+[PRE] 18:25:21 tool=unknown
+[POST] 18:25:21 tool=unknown status=done
+[PRE] 18:26:37 tool=unknown
+[POST] 18:26:37 tool=unknown status=done
+[PRE] 18:28:00 tool=unknown
+[POST] 18:28:00 tool=unknown status=done
+[PRE] 18:29:21 tool=unknown
+[POST] 18:29:21 tool=unknown status=done
+[PRE] 18:30:34 tool=unknown
+[POST] 18:30:35 tool=unknown status=done
+[PRE] 18:31:54 tool=unknown
+[POST] 18:31:54 tool=unknown status=done
+[PRE] 18:33:47 tool=unknown
+[POST] 18:33:48 tool=unknown status=done
+[PRE] 18:35:06 tool=unknown
+[POST] 18:35:07 tool=unknown status=done
+[PRE] 18:36:29 tool=unknown
+[POST] 18:36:29 tool=unknown status=done
+[PRE] 18:37:58 tool=unknown
+[POST] 18:37:58 tool=unknown status=done
+[PRE] 18:39:30 tool=unknown
+[POST] 18:39:30 tool=unknown status=done
+[PRE] 18:41:16 tool=unknown
+[POST] 18:41:16 tool=unknown status=done
+[PRE] 18:42:41 tool=unknown
+[POST] 18:42:41 tool=unknown status=done
+[PRE] 18:44:14 tool=unknown
+[POST] 18:44:14 tool=unknown status=done
+[PRE] 18:45:28 tool=unknown
+[POST] 18:45:28 tool=unknown status=done
+[PRE] 18:46:40 tool=unknown
+[POST] 18:46:41 tool=unknown status=done
+[PRE] 18:47:48 tool=unknown
+[POST] 18:47:49 tool=unknown status=done
+[PRE] 18:48:58 tool=unknown
+[POST] 18:48:59 tool=unknown status=done
+[PRE] 18:50:47 tool=unknown
+[POST] 18:50:47 tool=unknown status=done
+[PRE] 18:52:25 tool=unknown
+[POST] 18:52:25 tool=unknown status=done
+[PRE] 18:54:00 tool=unknown
+[POST] 18:54:01 tool=unknown status=done
+[PRE] 18:54:53 tool=unknown
+[POST] 18:54:53 tool=unknown status=done
+[PRE] 18:56:04 tool=unknown
+[POST] 18:56:04 tool=unknown status=done
+[PRE] 18:57:05 tool=unknown
+[POST] 18:57:05 tool=unknown status=done
+[PRE] 18:58:08 tool=unknown
+[POST] 18:58:08 tool=unknown status=done
+[PRE] 18:59:25 tool=unknown
+[POST] 18:59:25 tool=unknown status=done
+[PRE] 19:00:54 tool=unknown
+[POST] 19:00:54 tool=unknown status=done
+[PRE] 19:02:17 tool=unknown
+[POST] 19:02:17 tool=unknown status=done
+[PRE] 19:03:38 tool=unknown
+[POST] 19:03:38 tool=unknown status=done
+[PRE] 19:05:10 tool=unknown
+[POST] 19:05:10 tool=unknown status=done
+[PRE] 19:06:38 tool=unknown
+[POST] 19:06:38 tool=unknown status=done
+[PRE] 19:07:22 tool=unknown
+[POST] 19:07:23 tool=unknown status=done
+[PRE] 19:08:09 tool=unknown
+[POST] 19:08:09 tool=unknown status=done
+[PRE] 19:09:01 tool=unknown
+[POST] 19:09:01 tool=unknown status=done
+[PRE] 19:09:50 tool=unknown
+[POST] 19:09:50 tool=unknown status=done
+[PRE] 19:10:41 tool=unknown
+[POST] 19:10:42 tool=unknown status=done
+[PRE] 19:17:36 tool=unknown
+[POST] 19:17:37 tool=unknown status=done
+[PRE] 19:18:58 tool=unknown
+[POST] 19:18:58 tool=unknown status=done
+[PRE] 19:19:39 tool=unknown
+[POST] 19:19:39 tool=unknown status=done
+[PRE] 19:20:15 tool=unknown
+[POST] 19:20:15 tool=unknown status=done
+[PRE] 19:21:48 tool=unknown
+[POST] 19:21:49 tool=unknown status=done
+[PRE] 19:23:20 tool=unknown
+[POST] 19:23:21 tool=unknown status=done
+[PRE] 19:24:57 tool=unknown
+[POST] 19:24:57 tool=unknown status=done
+[PRE] 19:29:50 tool=unknown
+[POST] 19:29:50 tool=unknown status=done
+[PRE] 19:31:26 tool=unknown
+[POST] 19:31:26 tool=unknown status=done
+[PRE] 19:32:54 tool=unknown
+[POST] 19:32:54 tool=unknown status=done
+[PRE] 19:34:29 tool=unknown
+[POST] 19:34:29 tool=unknown status=done
+[STOP] 2026-03-20T19:36:23+09:00 session_end — update shared-intelligence/ before closing
+[PRE] 07:04:22 tool=unknown
+[PRE] 07:04:51 tool=unknown
+[POST] 07:04:52 tool=unknown status=done
+[PRE] 07:05:09 tool=unknown
+[POST] 07:05:10 tool=unknown status=done
+[PRE] 07:05:14 tool=unknown
+[POST] 07:05:15 tool=unknown status=done
+[PRE] 07:05:26 tool=unknown
+[POST] 07:12:12 tool=unknown status=done
+[PRE] 07:12:23 tool=unknown
+[POST] 07:12:23 tool=unknown status=done
+[PRE] 07:12:59 tool=unknown
+[POST] 07:13:01 tool=unknown status=done
+[PRE] 07:13:30 tool=unknown
+[PRE] 07:13:31 tool=unknown
+[POST] 07:13:32 tool=unknown status=done
+[POST] 07:13:32 tool=unknown status=done
+[PRE] 07:14:08 tool=unknown
+[POST] 07:14:25 tool=unknown status=done
+[PRE] 07:15:05 tool=unknown
+[POST] 07:15:36 tool=unknown status=done
+[PRE] 07:16:14 tool=unknown
+[PRE] 07:16:58 tool=unknown
+[POST] 07:17:00 tool=unknown status=done
+[PRE] 07:17:43 tool=unknown
+[PRE] 07:18:35 tool=unknown
+[PRE] 07:19:21 tool=unknown
+[PRE] 07:20:13 tool=unknown
+[PRE] 07:20:53 tool=unknown
+[PRE] 07:21:39 tool=unknown
+[STOP] 2026-03-21T07:22:36+09:00 session_end — update shared-intelligence/ before closing
+[STOP] 2026-03-21T07:29:00+09:00 session_end — update shared-intelligence/ before closing
+[PRE] 07:31:13 tool=unknown
+[POST] 07:31:13 tool=unknown status=done
+[STOP] 2026-03-21T07:32:15+09:00 session_end — update shared-intelligence/ before closing
+[STOP] 2026-03-21T07:34:32+09:00 session_end — update shared-intelligence/ before closing
+[PRE] 07:36:18 tool=unknown
+[POST] 07:36:20 tool=unknown status=done
+[PRE] 07:37:09 tool=unknown
+[POST] 07:37:09 tool=unknown status=done
+[PRE] 07:37:55 tool=unknown
+[POST] 07:37:55 tool=unknown status=done
+[PRE] 07:38:34 tool=unknown
+[PRE] 07:39:23 tool=unknown
+[POST] 07:39:27 tool=unknown status=done
+[PRE] 07:40:16 tool=unknown
+[PRE] 07:41:05 tool=unknown
+[POST] 07:41:06 tool=unknown status=done
+[PRE] 07:41:52 tool=unknown
+[POST] 07:41:53 tool=unknown status=done
+[PRE] 07:41:57 tool=unknown
+[POST] 07:42:01 tool=unknown status=done
+[PRE] 07:42:52 tool=unknown
+[PRE] 07:43:44 tool=unknown
+[POST] 07:43:46 tool=unknown status=done
+[PRE] 07:43:48 tool=unknown
+[POST] 07:43:49 tool=unknown status=done
+[PRE] 07:44:35 tool=unknown
+[POST] 07:44:36 tool=unknown status=done
+[PRE] 07:45:27 tool=unknown
+[PRE] 07:46:22 tool=unknown
+[POST] 07:46:28 tool=unknown status=done
+[PRE] 07:46:29 tool=unknown
+[POST] 07:46:33 tool=unknown status=done
+[PRE] 07:47:13 tool=unknown
+[POST] 07:47:22 tool=unknown status=done
+[PRE] 07:47:22 tool=unknown
+[POST] 07:47:26 tool=unknown status=done
+[PRE] 07:48:15 tool=unknown
+[POST] 07:48:16 tool=unknown status=done
+[PRE] 07:48:16 tool=unknown
+[POST] 07:48:17 tool=unknown status=done
+[PRE] 07:48:20 tool=unknown
+[POST] 07:48:24 tool=unknown status=done
+[PRE] 07:49:14 tool=unknown
+[PRE] 07:49:14 tool=unknown
+[POST] 07:49:15 tool=unknown status=done
+[POST] 07:49:15 tool=unknown status=done
+[PRE] 07:49:18 tool=unknown
+[POST] 07:49:20 tool=unknown status=done
+[PRE] 07:50:24 tool=unknown
+[PRE] 07:51:30 tool=unknown
+[PRE] 07:51:30 tool=unknown
+[POST] 07:51:32 tool=unknown status=done
+[POST] 07:51:32 tool=unknown status=done
+[PRE] 07:51:35 tool=unknown
+[POST] 07:51:36 tool=unknown status=done
+[PRE] 07:52:37 tool=unknown
+[POST] 07:52:40 tool=unknown status=done
+[PRE] 07:52:42 tool=unknown
+[POST] 07:52:44 tool=unknown status=done
+[PRE] 07:53:37 tool=unknown
+[PRE] 07:53:37 tool=unknown
+[POST] 07:53:38 tool=unknown status=done
+[POST] 07:53:38 tool=unknown status=done
+[PRE] 07:54:29 tool=unknown
+[PRE] 07:54:30 tool=unknown
+[POST] 07:54:31 tool=unknown status=done
+[POST] 07:54:32 tool=unknown status=done
+[PRE] 07:54:35 tool=unknown
+[POST] 07:54:37 tool=unknown status=done
+[PRE] 07:55:23 tool=unknown
+[POST] 07:55:28 tool=unknown status=done
+[PRE] 07:56:28 tool=unknown
+[POST] 07:56:33 tool=unknown status=done
+[PRE] 07:57:25 tool=unknown
+[POST] 07:57:27 tool=unknown status=done
+[PRE] 07:58:19 tool=unknown
+[PRE] 07:59:16 tool=unknown
+[PRE] 08:00:13 tool=unknown
+[POST] 08:00:14 tool=unknown status=done
+[PRE] 08:00:55 tool=unknown
+[POST] 08:00:55 tool=unknown status=done
+[PRE] 08:01:50 tool=unknown
+[POST] 08:01:50 tool=unknown status=done
+[PRE] 08:02:36 tool=unknown
+[PRE] 08:03:20 tool=unknown
+[POST] 08:03:20 tool=unknown status=done
+[PRE] 08:03:58 tool=unknown
+[POST] 08:03:58 tool=unknown status=done
+[PRE] 08:04:35 tool=unknown
+[PRE] 08:05:21 tool=unknown
+[POST] 08:05:21 tool=unknown status=done
+[PRE] 08:06:06 tool=unknown
+[POST] 08:06:06 tool=unknown status=done
+[PRE] 08:06:41 tool=unknown
+[POST] 08:06:41 tool=unknown status=done
+[PRE] 08:06:42 tool=unknown
+[POST] 08:06:43 tool=unknown status=done
+[PRE] 08:06:44 tool=unknown
+[POST] 08:06:44 tool=unknown status=done
+[PRE] 08:06:45 tool=unknown
+[POST] 08:06:45 tool=unknown status=done
+[PRE] 08:06:46 tool=unknown
+[POST] 08:06:46 tool=unknown status=done
+[PRE] 08:06:47 tool=unknown
+[POST] 08:06:47 tool=unknown status=done
+[PRE] 08:06:50 tool=unknown
+[POST] 08:06:50 tool=unknown status=done
+[PRE] 08:07:24 tool=unknown
+[POST] 08:07:24 tool=unknown status=done
+[PRE] 08:08:42 tool=unknown
+[POST] 08:08:42 tool=unknown status=done
+[PRE] 08:09:23 tool=unknown
+[POST] 08:09:24 tool=unknown status=done
+[PRE] 08:10:02 tool=unknown
+[POST] 08:10:09 tool=unknown status=done
+[PRE] 08:10:37 tool=unknown
+[POST] 08:10:38 tool=unknown status=done
+[PRE] 08:10:42 tool=unknown
+[POST] 08:10:42 tool=unknown status=done
+[PRE] 08:11:23 tool=unknown
+[POST] 08:11:24 tool=unknown status=done
+[PRE] 08:12:08 tool=unknown
+[POST] 08:12:08 tool=unknown status=done
+[PRE] 08:12:55 tool=unknown
+[POST] 08:12:55 tool=unknown status=done
+[PRE] 08:13:36 tool=unknown
+[POST] 08:13:36 tool=unknown status=done
+[PRE] 08:14:17 tool=unknown
+[POST] 08:14:17 tool=unknown status=done
+[PRE] 08:15:05 tool=unknown
+[POST] 08:15:05 tool=unknown status=done
+[PRE] 08:15:45 tool=unknown
+[POST] 08:15:46 tool=unknown status=done
+[PRE] 08:16:31 tool=unknown
+[POST] 08:16:33 tool=unknown status=done
+[PRE] 08:17:13 tool=unknown
+[POST] 08:17:14 tool=unknown status=done
+[PRE] 08:17:18 tool=unknown
+[POST] 08:17:20 tool=unknown status=done
+[PRE] 08:18:06 tool=unknown
+[POST] 08:18:08 tool=unknown status=done
+[PRE] 08:18:11 tool=unknown
+[POST] 08:18:12 tool=unknown status=done
+[PRE] 08:19:04 tool=unknown
+[PRE] 08:19:52 tool=unknown
+[POST] 08:19:53 tool=unknown status=done
+[PRE] 08:19:57 tool=unknown
+[POST] 08:19:59 tool=unknown status=done
+[PRE] 08:20:44 tool=unknown
+[POST] 08:20:49 tool=unknown status=done
+[PRE] 08:20:49 tool=unknown
+[PRE] 08:21:38 tool=unknown
+[POST] 08:21:39 tool=unknown status=done
+[PRE] 08:21:43 tool=unknown
+[POST] 08:21:44 tool=unknown status=done
+[PRE] 08:22:25 tool=unknown
+[POST] 08:22:26 tool=unknown status=done
+[PRE] 08:23:10 tool=unknown
+[POST] 08:23:15 tool=unknown status=done
+[PRE] 08:23:15 tool=unknown
+[POST] 08:23:17 tool=unknown status=done
+[PRE] 08:23:58 tool=unknown
+[POST] 08:23:59 tool=unknown status=done
+[PRE] 08:24:03 tool=unknown
+[POST] 08:24:05 tool=unknown status=done
+[PRE] 08:24:58 tool=unknown
+[PRE] 08:25:40 tool=unknown
+[POST] 08:25:41 tool=unknown status=done
+[PRE] 08:26:32 tool=unknown
+[PRE] 08:27:06 tool=unknown
+[POST] 08:27:07 tool=unknown status=done
+[PRE] 08:27:11 tool=unknown
+[POST] 08:27:13 tool=unknown status=done
+[PRE] 08:27:58 tool=unknown
+[POST] 08:27:59 tool=unknown status=done
+[PRE] 08:28:43 tool=unknown
+[POST] 08:28:44 tool=unknown status=done
+[PRE] 08:28:48 tool=unknown
+[POST] 08:28:49 tool=unknown status=done
+[PRE] 08:29:37 tool=unknown
+[POST] 08:29:38 tool=unknown status=done
+[PRE] 08:30:32 tool=unknown
+[PRE] 08:31:23 tool=unknown
+[POST] 08:31:25 tool=unknown status=done
+[PRE] 08:31:28 tool=unknown
+[POST] 08:31:30 tool=unknown status=done
+[PRE] 08:32:30 tool=unknown
+[STOP] 2026-03-21T08:33:44+09:00 session_end — update shared-intelligence/ before closing

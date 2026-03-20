@@ -13,7 +13,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
 BACKUP_DIR="${PROJECT_ROOT}/backups"
 RETENTION_DAYS=30
-DOCKER_COMPOSE="docker-compose -f ${PROJECT_ROOT}/docker-compose-prod.yml"
+DOCKER_COMPOSE="docker-compose -f ${PROJECT_ROOT}/docker-compose.production.yml"
 
 # S3 Configuration (optional)
 S3_ENABLED=${S3_ENABLED:-false}

@@ -27,6 +27,37 @@ jobs:
         shell: pwsh
         run: ./scripts/sync_mcp_docs.ps1 -Check
 
+      - name: Sync documentation metadata and index (validation)
+        shell: pwsh
+        run: |
+          ./scripts/sync-docs.ps1
+          $diff = git diff -- docs/CATALOG.json docs/doc-index.json
+          if ($diff) {
+            Write-Host "docs/CATALOG.json or docs/doc-index.json is out of date with current docs; please commit regenerated indexes"
+            git diff -- docs/CATALOG.json docs/doc-index.json
+            exit 1
+          }
+
+      - name: Generate repo-layout report
+        shell: pwsh
+        run: |
+          python scripts/check-repo-layout.py --json > repo-layout-report.json
+          $report = Get-Content repo-layout-report.json -Raw | ConvertFrom-Json
+          Write-Host "repo-layout report-only summary"
+          Write-Host ("root files present: {0}" -f $report.root_files_present)
+          Write-Host ("legacy root documents present: {0}" -f $report.legacy_root_documents_present.Count)
+          Write-Host ("disallowed root files present: {0}" -f $report.disallowed_root_files_present.Count)
+          Write-Host ("temp root files present: {0}" -f $report.temp_root_files_present.Count)
+          Write-Host ("missing link targets: {0}" -f $report.missing_link_targets.Count)
+
+      - name: Upload repo-layout report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: repo-layout-report
+          retention-days: 14
+          path: repo-layout-report.json
+
   # ---------------------------------------------------------------------------
   # JOB 1: Lint & static analysis
   # ---------------------------------------------------------------------------

@@ -7,7 +7,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#020617">
-    <title>Campaign Intelligence ??ReviewEverything Platinum</title>
+    <title>캠페인 인사이트 | 리뷰 플랫폼</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap"
         rel="stylesheet">
@@ -50,11 +50,12 @@
                 <a href="index.html" class="flex items-center gap-4 group">
                     <div
                         class="w-10 h-10 rounded-xl bg-slate-800 flex items-center justify-center group-hover:bg-amber-500 group-hover:text-black transition-all">
-                        ??/div>
-                    <span class="text-sm font-bold text-slate-400 group-hover:text-white">BACK TO HUB</span>
+                        </div>
+                    <span class="text-sm font-bold text-slate-400 group-hover:text-white">허브로 돌아가기</span>
                 </a>
             </div>
-            <nav class="flex-1 p-8 space-y-6">
+            <nav class="soft-nav-tree flex-1 p-8 space-y-6">
+                <button class="hamburger" aria-label="메뉴 열기/닫기"><span></span><span></span><span></span></button>
                 <div class="space-y-2">
                     <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Analytics</p>
                     <div class="glass-panel p-4 rounded-2xl bg-slate-900/50">
@@ -63,9 +64,9 @@
                     </div>
                 </div>
                 <div class="space-y-2">
-                    <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Probablity</p>
+                    <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest">예측</p>
                     <div class="glass-panel p-4 rounded-2xl bg-slate-900/50">
-                        <p class="text-[10px] text-slate-500 font-black uppercase mb-1">Approval Odds</p>
+                        <p class="text-[10px] text-slate-500 font-black uppercase mb-1">승인 확률</p>
                         <p class="text-2xl font-black text-indigo-400">High</p>
                     </div>
                 </div>
@@ -83,14 +84,13 @@
                         <span id="platformBadge"
                             class="bg-amber-500 text-black text-[10px] font-black px-3 py-1 rounded-full tracking-widest uppercase mb-4 inline-block">PLATFORM
                             NODE</span>
-                        <h2 id="campaignTitle"
-                            class="text-5xl font-black text-white tracking-tighter mb-4 leading-none">Campaign
-                            Loading...</h2>
+                            <h2 id="campaignTitle"
+                            class="text-5xl font-black text-white tracking-tighter mb-4 leading-none">캠페인 로딩중...</h2>
                         <div class="flex items-center gap-6">
                             <span id="brandName"
                                 class="text-lg font-bold text-slate-400 uppercase tracking-wider">PREMIUM BRAND</span>
                             <div class="h-4 w-[1px] bg-slate-700"></div>
-                            <span id="rewardValue" class="text-2xl font-black text-amber-500">??</span>
+                            <span id="rewardValue" class="text-2xl font-black text-amber-500">₩0</span>
                         </div>
                     </div>
                 </div>
@@ -99,27 +99,27 @@
                     <!-- Left: Details -->
                     <div class="lg:col-span-2 space-y-12">
                         <section>
-                            <h3 class="text-xs font-black text-slate-500 uppercase tracking-[0.2em] mb-6">Objective &
+                            <h3 class="text-xs font-black text-slate-500 uppercase tracking-[0.2em] mb-6">목표 및 범위
                                 Scope</h3>
                             <div class="glass-panel rounded-[2.5rem] p-8 bg-slate-900/40 text-slate-300 leading-relaxed text-sm"
                                 id="campaignDesc">
-                                Content synchronizing...
+                                콘텐츠를 불러오는 중입니다...
                             </div>
                         </section>
 
                         <section>
-                            <h3 class="text-xs font-black text-slate-500 uppercase tracking-[0.2em] mb-6">Requirement
+                            <h3 class="text-xs font-black text-slate-500 uppercase tracking-[0.2em] mb-6">요구조건
                                 Node</h3>
                             <div class="grid grid-cols-2 gap-6">
                                 <div class="glass-panel p-6 rounded-3xl flex items-center gap-4">
-                                    <div class="text-2xl">?뱷</div>
+                                    <div class="text-2xl">📝</div>
                                     <div>
-                                        <p class="text-[10px] text-slate-500 font-black uppercase">Content Type</p>
-                                        <p id="contentType" class="text-sm font-black text-white">Naver Blog Review</p>
+                                        <p class="text-[10px] text-slate-500 font-black uppercase">콘텐츠 타입</p>
+                                        <p id="contentType" class="text-sm font-black text-white">Naver Blog 리뷰</p>
                                     </div>
                                 </div>
                                 <div class="glass-panel p-6 rounded-3xl flex items-center gap-4">
-                                    <div class="text-2xl">??/div>
+                                    <div class="text-2xl"></div>
                                     <div>
                                         <p class="text-[10px] text-slate-500 font-black uppercase">Deadline</p>
                                         <p id="deadlineDate" class="text-sm font-black text-white">2026.03.12</p>
@@ -133,32 +133,29 @@
                     <div class="space-y-8">
                         <div
                             class="glass-panel rounded-[2.5rem] p-10 bg-gradient-to-br from-slate-900 to-indigo-900/10 border-amber-500/20 shadow-2xl">
-                            <h3 class="text-xs font-black text-slate-500 uppercase tracking-[0.2em] mb-6">Application
-                                Node</h3>
+                                <h3 class="text-xs font-black text-slate-500 uppercase tracking-[0.2em] mb-6">지원 가능 수</h3>
                             <div class="mb-10">
                                 <p class="text-4xl font-black text-white mb-2"><span id="currentApps">0</span><span
                                         class="text-slate-600 text-xl font-medium"> / </span><span id="maxApps">0</span>
                                 </p>
-                                <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Active
-                                    Applicants</p>
+                                <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest">현재 지원자</p>
                             </div>
                             <div class="w-full bg-slate-950 rounded-full h-2 mb-10 overflow-hidden">
                                 <div id="progressFill" class="bg-amber-500 h-2 rounded-full" style="width: 25%"></div>
                             </div>
                             <button onclick="location.href='apply.html?id=' + campaignId"
                                 class="w-full py-5 bg-amber-500 text-black font-black text-sm rounded-2xl shadow-xl shadow-amber-900/30 active:scale-95 transition-all">
-                                INITIATE APPLICATION
+                                지원하기
                             </button>
                             <p class="text-center text-[10px] text-slate-600 font-bold uppercase mt-6 tracking-widest">
-                                Verified Secured Node</p>
+                                검증된 캠페인</p>
                         </div>
 
                         <div class="glass-panel rounded-[2.5rem] p-8 border-slate-800/50">
-                            <h3 class="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-4">AI Insight
+                            <h3 class="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-4">AI 인사이트
                             </h3>
-                            <p class="text-xs text-slate-400 leading-relaxed font-medium italic">"Based on your 84%
-                                approval history in Beauty, we highly recommend this node for immediate revenue
-                                capture."</p>
+                            <p class="text-xs text-slate-400 leading-relaxed font-medium italic">"최근 84%의 승인 이력을 바탕으로
+                                이 캠페인의 즉시 신청을 권장합니다."</p>
                         </div>
                     </div>
                 </div>
@@ -179,7 +176,7 @@
                 document.getElementById('campaignTitle').textContent = campaign.title;
                 document.getElementById('campaignDesc').textContent = campaign.description;
                 document.getElementById('brandName').textContent = campaign.brand || 'PREMIUM BRAND';
-                document.getElementById('rewardValue').textContent = campaign.reward_value;
+                document.getElementById('rewardValue').textContent = `₩${campaign.reward_value || 0}`;
                 document.getElementById('deadlineDate').textContent = new Date(campaign.deadline).toLocaleDateString();
                 document.getElementById('currentApps').textContent = '12';
                 document.getElementById('maxApps').textContent = '20';

@@ -2,7 +2,7 @@
 import pytest
 from datetime import datetime
 from backend.models import (
-    db, User, Recipe, RecipeReview, RecipeLike, UserFollow, Feed, CookingSession
+    db, User, Chef, Recipe, RecipeReview, RecipeLike, UserFollow, Feed, CookingSession
 )
 from backend.services.feed_service import FeedService
 from flask import Flask

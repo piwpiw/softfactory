@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ko">
 
 <head>
@@ -7,12 +7,13 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#020617">
-    <title>AI Curation Hub — ReviewEverything Platinum</title>
+    <title>리뷰 운영 허브 — SoftFactory</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap"
         rel="stylesheet">
     <script src="../platform/api.js"></script>
-    <style>
+        <link rel="stylesheet" href="../responsive-framework.css">
+<style>
         :root {
             --primary-amber: #f59e0b;
             --primary-dark: #020617;
@@ -115,42 +116,34 @@
                 </div>
             </div>
 
-            <nav class="flex-1 p-6 space-y-1.5 overflow-y-auto scroll-hide">
-                <p class="text-[10px] font-black text-slate-500 uppercase px-4 mb-4 tracking-widest">Profit Center</p>
-                <a href="index.html"
-                    class="flex items-center gap-4 px-5 py-3.5 rounded-xl sidebar-item-active text-amber-500 font-bold transition-all">
-                    <span>🎯</span>
-                    <span class="text-sm">AI 탐색 (Explorer)</span>
-                </a>
-                <a href="aggregator.html"
-                    class="flex items-center gap-4 px-5 py-3.5 rounded-xl text-slate-400 font-medium hover:bg-slate-800/50 hover:text-white transition-all group">
-                    <span class="group-hover:scale-125 transition-transform">🔗</span>
-                    <span class="text-sm">종합 아카이브</span>
-                </a>
-                <a href="auto-apply.html"
-                    class="flex items-center gap-4 px-5 py-3.5 rounded-xl text-slate-400 font-medium hover:bg-slate-800/50 hover:text-white transition-all group">
-                    <span class="group-hover:scale-125 transition-transform">🤖</span>
-                    <span class="text-sm">오토파일럿 (Bot)</span>
-                </a>
+            <nav class="soft-nav-tree flex-1 p-6 overflow-y-auto scroll-hide">
+                <button class="hamburger" aria-label="메뉴 열기/닫기"><span></span><span></span><span></span></button>
+                <a href="../platform/index.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-slate-800 transition"><span aria-hidden="true">🏭</span> 플랫폼 홈</a>
+                <a href="index.html" aria-current="page" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg bg-amber-600/20 border-l-2 border-amber-500 text-white"><span aria-hidden="true">⭐</span> 리뷰 허브</a>
 
-                <div class="pt-8 mb-4">
-                    <p class="text-[10px] font-black text-slate-500 uppercase px-4 mb-4 tracking-widest">My Assets</p>
-                    <a href="my-campaigns.html"
-                        class="flex items-center gap-4 px-5 py-3.5 rounded-xl text-slate-400 font-medium hover:bg-slate-800/50 hover:text-white transition-all group">
-                        <span>📋</span>
-                        <span class="text-sm">포트폴리오</span>
-                    </a>
-                    <a href="accounts.html"
-                        class="flex items-center gap-4 px-5 py-3.5 rounded-xl text-slate-400 font-medium hover:bg-slate-800/50 hover:text-white transition-all group">
-                        <span>👤</span>
-                        <span class="text-sm">소셜 마스터 계정</span>
-                    </a>
-                    <a href="applications.html"
-                        class="flex items-center gap-4 px-5 py-3.5 rounded-xl text-slate-400 font-medium hover:bg-slate-800/50 hover:text-white transition-all group">
-                        <span>📊</span>
-                        <span class="text-sm">리워드 정산</span>
-                    </a>
-                </div>
+                <div class="soft-nav-divider"></div>
+                <details class="soft-nav-group" open>
+                    <summary class="soft-nav-summary"><span>현재 서비스 메뉴</span></summary>
+                    <div class="soft-nav-sub">
+                        <a href="index.html" aria-current="page" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg bg-amber-600/20 border-l-2 border-amber-500 text-white"><span aria-hidden="true">🏠</span> AI 큐레이션 허브</a>
+                        <a href="aggregator.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800"><span aria-hidden="true">🔎</span> 리뷰 통합 집계</a>
+                        <a href="auto-apply.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800"><span aria-hidden="true">⚙️</span> 자동 신청</a>
+                        <a href="my-campaigns.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800"><span aria-hidden="true">📝</span> 내 캠페인</a>
+                        <a href="accounts.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800"><span aria-hidden="true">👤</span> 계정 관리</a>
+                        <a href="applications.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800"><span aria-hidden="true">✅</span> 신청 현황</a>
+                    </div>
+                </details>
+
+                <details class="soft-nav-group" open>
+                    <summary class="soft-nav-summary"><span>운영 서비스</span></summary>
+                    <div class="soft-nav-sub">
+                        <a href="../sns-auto/index.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800"><span aria-hidden="true">📱</span> SNS 자동화</a>
+                        <a href="../coocook/index.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800"><span aria-hidden="true">🍳</span> CooCook</a>
+                        <a href="../ai-automation/index.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800"><span aria-hidden="true">🤖</span> AI 자동화</a>
+                        <a href="../webapp-builder/index.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800"><span aria-hidden="true">💻</span> 웹앱 빌더</a>
+                        <a href="../instagram-cardnews/index.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800"><span aria-hidden="true">📸</span> 카드뉴스 자동화</a>
+                    </div>
+                </details>
             </nav>
 
             <div class="p-6 border-t border-slate-800/50">
@@ -183,17 +176,16 @@
 
             <header class="h-24 px-10 flex items-center justify-between shrink-0 z-40">
                 <div>
-                    <h2 class="text-3xl font-black text-white tracking-tight">AI Curation Hub</h2>
+                    <h2 class="text-3xl font-black text-white tracking-tight">리뷰 운영 허브</h2>
                     <p class="text-xs text-slate-400 mt-1 font-medium flex items-center gap-2">
                         <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-                        현재 14개 플랫폼에서 실시간 최적 캠페인 분석 중
+                        추천 캠페인, 신청 대기, 계정 상태를 같은 순서로 확인합니다.
                     </p>
                 </div>
                 <div class="flex items-center gap-6">
                     <div class="flex flex-col items-end">
-                        <span class="text-[10px] text-slate-500 font-black uppercase tracking-widest">Est. Monthly
-                            Profit</span>
-                        <span class="text-2xl font-black premium-gradient-text tracking-tighter">₩2,450,000</span>
+                        <span class="text-[10px] text-slate-500 font-black uppercase tracking-widest">Next Action</span>
+                        <span class="text-base font-black text-sky-300 tracking-tight">추천 캠페인 우선 검토</span>
                     </div>
                     <button
                         class="w-12 h-12 rounded-2xl glass-panel flex items-center justify-center text-xl hover:bg-slate-800 transition-colors">🔔</button>
@@ -207,14 +199,29 @@
             </header>
 
             <main class="flex-1 overflow-y-scroll p-10 scroll-hide space-y-12">
+                <section class="sf-page-intro">
+                    <div class="sf-page-intro-grid">
+                        <div class="sf-page-intro-head">
+                            <span class="sf-page-intro-kicker">Review Ops</span>
+                            <h3 class="sf-page-intro-title">추천 캠페인을 먼저 보고, 신청 판단과 계정 상태를 이어서 확인합니다.</h3>
+                            <p class="sf-page-intro-copy">이 화면은 수익 표현보다 실제 운영 순서를 우선합니다. 먼저 신청할 캠페인을 고르고, 자동 신청과 계정 상태는 아래 상세 영역에서 이어집니다.</p>
+                        </div>
+                        <article class="sf-primary-action-card">
+                            <p class="sf-primary-action-label">지금 해야 할 일</p>
+                            <h4 class="sf-primary-action-title">추천 캠페인 3개를 먼저 확인하고 신청 가능 여부를 판단하세요.</h4>
+                            <p class="sf-primary-action-copy">추천 카드에서 현재 경쟁률과 카테고리를 보고, 필요한 경우 자동 신청이나 계정 관리 화면으로 내려가면 됩니다.</p>
+                            <a href="aggregator.html" class="sf-primary-action-cta">추천 캠페인 보기</a>
+                        </article>
+                    </div>
+                </section>
+
                 <!-- Insight Section -->
                 <section>
                     <div class="flex items-center justify-between mb-8">
                         <h3 class="text-xl font-extrabold text-white flex items-center gap-3">
-                            <span class="text-amber-500">🔥</span> Trending High-Profit
+                            <span class="text-amber-500">🔥</span> 추천 캠페인
                         </h3>
-                        <a href="aggregator.html" class="text-xs font-bold text-amber-500 hover:underline">View All
-                            Analysis →</a>
+                        <a href="aggregator.html" class="text-xs font-bold text-amber-500 hover:underline">전체 목록 보기 →</a>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="trending-grid">
                         <!-- Advanced Card Loader -->
@@ -257,20 +264,12 @@
                         </div>
                         <div class="relative z-10 flex flex-col md:flex-row items-center gap-10">
                             <div class="flex-1 space-y-6">
-                                <span
-                                    class="bg-amber-500 text-black text-[10px] font-black px-3 py-1 rounded-full tracking-widest uppercase">AI
-                                    Recommendation</span>
-                                <h3 class="text-4xl font-black text-white leading-tight">매일 아침 9시,<br>당신을 위한 <span
-                                        class="premium-gradient-text">황금 리스트</span>가 생성됩니다.</h3>
-                                <p class="text-slate-400 max-w-md text-sm leading-relaxed">블로그 지수와 SNS 팔로워 활동 시간을 AI가
-                                    분석하여, 당첨 확률이 80% 이상인 캠페인만 골라서 오토파일럿이 대기합니다.</p>
+                                <span class="bg-amber-500 text-black text-[10px] font-black px-3 py-1 rounded-full tracking-widest uppercase">신청 흐름</span>
+                                <h3 class="text-4xl font-black text-white leading-tight">추천 캠페인을 고르고,<br>자동 신청 여부를 <span class="premium-gradient-text">바로 판단</span>합니다.</h3>
+                                <p class="text-slate-400 max-w-md text-sm leading-relaxed">추천 기준과 계정 준비 상태를 같은 문맥으로 보여줘서, 어떤 캠페인을 지금 처리할지 빠르게 결정할 수 있습니다.</p>
                                 <div class="flex gap-4">
-                                    <button
-                                        class="px-8 py-4 bg-amber-500 text-black font-black rounded-2xl shadow-xl shadow-amber-900/20 active:scale-95 transition-all">지금
-                                        분석 시작하기</button>
-                                    <button
-                                        class="px-8 py-4 glass-panel text-white font-bold rounded-2xl hover:bg-slate-800 transition-all">설정
-                                        변경</button>
+                                    <a href="aggregator.html" class="px-8 py-4 bg-amber-500 text-black font-black rounded-2xl shadow-xl shadow-amber-900/20 active:scale-95 transition-all">추천 캠페인 보기</a>
+                                    <a href="auto-apply.html" class="px-8 py-4 glass-panel text-white font-bold rounded-2xl hover:bg-slate-800 transition-all">자동 신청 보기</a>
                                 </div>
                             </div>
                             <div class="w-full md:w-80 space-y-4">
@@ -279,18 +278,17 @@
                                         class="w-10 h-10 rounded-xl bg-green-500/20 flex items-center justify-center text-green-500 font-bold">
                                         A+</div>
                                     <div>
-                                        <p class="text-[10px] text-slate-500 font-bold uppercase">Success Probability
-                                        </p>
-                                        <p class="text-sm font-black text-white">IT/테크 분야 92%</p>
+                                        <p class="text-[10px] text-slate-500 font-bold uppercase">추천 카테고리</p>
+                                        <p class="text-sm font-black text-white">IT/테크 우선 검토</p>
                                     </div>
                                 </div>
                                 <div class="glass-panel p-5 rounded-3xl border-slate-700/50 flex items-center gap-4">
                                     <div
                                         class="w-10 h-10 rounded-xl bg-amber-500/20 flex items-center justify-center text-amber-500 font-bold">
-                                        ROI</div>
+                                        Q</div>
                                     <div>
-                                        <p class="text-[10px] text-slate-500 font-bold uppercase">Efficiency Rank</p>
-                                        <p class="text-sm font-black text-white">상위 5% 고수익 캠페인</p>
+                                        <p class="text-[10px] text-slate-500 font-bold uppercase">대기 상태</p>
+                                        <p class="text-sm font-black text-white">자동 신청 점검 필요</p>
                                     </div>
                                 </div>
                             </div>
@@ -399,7 +397,7 @@
                         <div class="flex-1">
                             <h4 class="text-xl font-black text-white mb-2 leading-tight">${c.title}</h4>
                             <p class="text-sm font-bold text-amber-600 mb-6">${c.reward_value}</p>
-                            
+
                             <div class="flex items-center gap-4 mb-8">
                                 <div class="px-3 py-1 rounded-lg bg-slate-800/50 border border-slate-700 text-[10px] font-bold text-slate-400 tracking-tighter uppercase">
                                     ${c.category || 'Product'}
@@ -409,7 +407,7 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div class="flex items-center justify-between pt-6 border-t border-slate-800/50">
                             <div class="flex flex-col">
                                 <span class="text-[10px] text-slate-500 font-bold uppercase">Competition</span>

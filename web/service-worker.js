@@ -23,15 +23,17 @@ const CACHE_NAMES = {
 // Static assets to cache on install
 const STATIC_ASSETS = [
   '/',
-  '/web/platform/index.html',
-  '/web/platform/api.js',
-  '/web/platform/login.html',
-  '/web/platform/register.html',
-  '/web/dashboard.html',
-  '/web/analytics.html',
-  '/web/operations.html',
-  '/web/offline.html',
-  '/web/manifest.json',
+  '/platform/index.html',
+  '/platform/api.js',
+  '/platform/login.html',
+  '/platform/register.html',
+  '/dashboard.html',
+  '/analytics.html',
+  '/operations.html',
+  '/offline.html',
+  '/manifest.json',
+  '/icons/app-icon.svg',
+  '/icons/app-icon-maskable.svg',
   'https://cdn.tailwindcss.com',
   'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Poppins:wght@600;700;800&display=swap',
   'https://cdnjs.cloudflare.com/ajax/libs/apexcharts/3.45.0/apexcharts.min.js',
@@ -158,7 +160,7 @@ async function networkFirstStrategy(request) {
 
     // Return offline page for HTML requests
     if (request.destination === 'document' || request.url.endsWith('.html')) {
-      return caches.match('/web/offline.html');
+      return caches.match('/offline.html');
     }
 
     // Return appropriate error responses
@@ -248,7 +250,7 @@ async function staleWhileRevalidateStrategy(request) {
     return networkResponse;
   } catch (error) {
     console.log('[SW] Stale-While-Revalidate failed:', request.url);
-    return caches.match(request) || caches.match('/web/offline.html');
+    return caches.match(request) || caches.match('/offline.html');
   }
 }
 
@@ -363,8 +365,8 @@ self.addEventListener('push', event => {
   console.log('[SW] Push notification received');
 
   const options = {
-    badge: '/web/icons/icon-192x192.png',
-    icon: '/web/icons/icon-192x192.png',
+    badge: '/icons/app-icon.svg',
+    icon: '/icons/app-icon.svg',
     body: event.data ? event.data.text() : 'SoftFactory Notification',
     vibrate: [200, 100, 200],
     tag: 'softfactory-notification',

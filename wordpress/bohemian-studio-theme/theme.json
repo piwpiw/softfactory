@@ -1,0 +1,87 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/theme.json",
+  "version": 3,
+  "settings": {
+    "appearanceTools": true,
+    "color": {
+      "defaultPalette": false,
+      "palette": [
+        { "slug": "ink", "name": "Ink", "color": "#0B1320" },
+        { "slug": "paper", "name": "Paper", "color": "#F6F1E8" },
+        { "slug": "teal", "name": "Teal", "color": "#0F766E" },
+        { "slug": "amber", "name": "Amber", "color": "#C58A2A" },
+        { "slug": "moss", "name": "Moss", "color": "#2F6B4F" }
+      ]
+    },
+    "layout": {
+      "contentSize": "760px",
+      "wideSize": "1240px"
+    },
+    "spacing": {
+      "spacingScale": {
+        "steps": 8
+      }
+    },
+    "typography": {
+      "fontFamilies": [
+        {
+          "fontFamily": "\"MaruBuri\", serif",
+          "name": "MaruBuri",
+          "slug": "maruburi"
+        },
+        {
+          "fontFamily": "\"SUIT Variable\", \"Apple SD Gothic Neo\", sans-serif",
+          "name": "SUIT Variable",
+          "slug": "suit"
+        }
+      ],
+      "fluid": true
+    }
+  },
+  "styles": {
+    "color": {
+      "background": "#0B1320",
+      "text": "#F6F1E8"
+    },
+    "elements": {
+      "heading": {
+        "typography": {
+          "fontFamily": "var:preset|font-family|maruburi",
+          "fontWeight": "700"
+        }
+      },
+      "button": {
+        "border": {
+          "radius": "999px"
+        },
+        "color": {
+          "background": "#0F766E",
+          "text": "#F6F1E8"
+        }
+      }
+    },
+    "typography": {
+      "fontFamily": "var:preset|font-family|suit",
+      "lineHeight": "1.7"
+    },
+    "blocks": {
+      "core/group": {
+        "border": {
+          "radius": "24px"
+        }
+      }
+    }
+  },
+  "templateParts": [
+    {
+      "name": "header",
+      "title": "Header",
+      "area": "header"
+    },
+    {
+      "name": "footer",
+      "title": "Footer",
+      "area": "footer"
+    }
+  ]
+}

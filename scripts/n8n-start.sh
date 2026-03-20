@@ -274,6 +274,19 @@ validate_configuration() {
     print_success "N8N_JWT_SECRET configured"
   fi
 
+  if [ -z "$GROWTH_QUEUE_TOKEN" ] || [ "$GROWTH_QUEUE_TOKEN" = "your_growth_queue_token_here_change_this" ]; then
+    print_warning "GROWTH_QUEUE_TOKEN not configured (growth queue endpoints will fail auth)"
+    ERRORS=$((ERRORS+1))
+  else
+    print_success "GROWTH_QUEUE_TOKEN configured"
+  fi
+
+  if [ -z "$EVENT_INGEST_TOKEN" ] || [ "$EVENT_INGEST_TOKEN" = "your_event_ingest_token_here_change_this" ]; then
+    print_warning "EVENT_INGEST_TOKEN not configured (recommended for production ingest protection)"
+  else
+    print_success "EVENT_INGEST_TOKEN configured"
+  fi
+
   if [ "$ERRORS" -gt 0 ]; then
     print_warning "Configuration incomplete - $ERRORS issue(s) found"
     print_info "Please update $ENV_FILE with required credentials"

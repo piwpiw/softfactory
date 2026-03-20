@@ -1,89 +1,442 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="theme-color" content="#111827">
-<title>AI 직원 생성 — AI Auto | SoftFactory</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <script src="../platform/api.js"></script>
-    <style>body { font-family: 'Inter', sans-serif; }</style>
-    <link rel="stylesheet" href="../responsive-framework.css">
-  </head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#111827">
+  <title>AI 직원 생성 | SoftFactory</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="../platform/api.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../responsive-framework.css">
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .scenario-card, .channel-chip, .approval-chip { transition: all 0.2s ease; }
+    .scenario-card.active { border-color: rgba(34, 211, 238, 0.8); box-shadow: inset 0 0 0 1px rgba(34, 211, 238, 0.35); background: rgba(8, 145, 178, 0.12); }
+    .channel-chip.active, .approval-chip.active { border-color: rgba(34, 211, 238, 0.8); background: rgba(8, 145, 178, 0.16); color: #ecfeff; }
+  </style>
+</head>
 <body class="bg-slate-950 text-slate-100">
-    <div class="flex h-screen overflow-hidden">
-        <aside class="w-64 bg-slate-900 border-r border-slate-800 flex flex-col shrink-0">
-            <div class="p-6 border-b border-slate-800">
-                <a href="index.html" class="flex items-center gap-3">
-                    <span>←</span><span class="text-sm font-medium">돌아가기</span>
-                </a>
-            </div>
-        </aside>
-        <div class="flex-1 flex flex-col overflow-hidden">
-            <header class="h-16 bg-slate-900 border-b border-slate-800 px-6 flex items-center justify-between shrink-0">
-                <h2 class="text-xl font-bold text-white">✨ AI 직원 생성</h2>
-            </header>
-            <main class="flex-1 overflow-y-auto p-6">
-                <div class="max-w-2xl mx-auto">
-                    <div class="mb-8">
-                        <div class="flex items-center justify-between mb-8">
-                            <div class="text-center">
-                                <div class="w-10 h-10 rounded-full bg-cyan-600 text-white flex items-center justify-center font-bold">1</div>
-                                <p class="text-xs text-slate-400 mt-2">시나리오 선택</p>
-                            </div>
-                            <div class="flex-1 mx-4 h-1 bg-slate-800"></div>
-                            <div class="text-center">
-                                <div class="w-10 h-10 rounded-full bg-slate-700 text-slate-400 flex items-center justify-center font-bold">2</div>
-                                <p class="text-xs text-slate-400 mt-2">설정</p>
-                            </div>
-                            <div class="flex-1 mx-4 h-1 bg-slate-800"></div>
-                            <div class="text-center">
-                                <div class="w-10 h-10 rounded-full bg-slate-700 text-slate-400 flex items-center justify-center font-bold">3</div>
-                                <p class="text-xs text-slate-400 mt-2">배포</p>
-                            </div>
-                        </div>
-                    </div>
+  <div class="flex h-screen overflow-hidden">
+    <aside class="w-64 bg-slate-900 border-r border-slate-800 flex flex-col shrink-0">
+      <div class="p-6 border-b border-slate-800">
+        <a href="index.html" class="flex items-center gap-3">
+          <span class="text-2xl">🤖</span>
+          <div>
+            <h1 class="font-bold text-white text-sm">AI 자동화</h1>
+            <p class="text-xs text-slate-400">실행형 직원 생성</p>
+          </div>
+        </a>
+      </div>
+      <nav class="soft-nav-tree flex-1 p-6 space-y-2 overflow-y-auto">
+        <button class="hamburger" aria-label="메뉴 열기/닫기"><span></span><span></span><span></span></button>
+        <a href="index.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">대시보드</a>
+        <a href="scenarios.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">시나리오</a>
+        <a href="create.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg bg-cyan-600 text-white font-medium">AI 직원 생성</a>
+        <a href="code.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">코드 에디터</a>
+        <a href="analytics.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">분석</a>
+      </nav>
+      <div class="p-6 border-t border-slate-800">
+        <button onclick="logout()" class="p-2 hover:bg-slate-800 rounded-lg text-slate-300">로그아웃</button>
+      </div>
+    </aside>
 
-                    <div class="bg-slate-800 rounded-xl p-8 border border-slate-700">
-                        <h3 class="text-2xl font-bold text-white mb-6">시나리오 선택</h3>
-                        <div class="space-y-3">
-                            <label class="flex items-center p-4 border-2 border-cyan-600 rounded-lg cursor-pointer bg-cyan-900/30 hover:bg-cyan-900/50 transition">
-                                <input type="radio" name="scenario" value="email" checked class="w-4 h-4">
-                                <div class="ml-4">
-                                    <p class="font-semibold text-white">📧 이메일 자동 응답</p>
-                                    <p class="text-xs text-slate-400">월 15시간 절약</p>
-                                </div>
-                            </label>
-                            <label class="flex items-center p-4 border-2 border-slate-700 rounded-lg cursor-pointer hover:border-cyan-600 transition">
-                                <input type="radio" name="scenario" value="social" class="w-4 h-4">
-                                <div class="ml-4">
-                                    <p class="font-semibold text-white">📱 소셜 미디어 포스팅</p>
-                                    <p class="text-xs text-slate-400">월 20시간 절약</p>
-                                </div>
-                            </label>
-                            <label class="flex items-center p-4 border-2 border-slate-700 rounded-lg cursor-pointer hover:border-cyan-600 transition">
-                                <input type="radio" name="scenario" value="support" class="w-4 h-4">
-                                <div class="ml-4">
-                                    <p class="font-semibold text-white">💬 고객 지원봇</p>
-                                    <p class="text-xs text-slate-400">월 30시간 절약</p>
-                                </div>
-                            </label>
-                        </div>
-                        <div class="flex gap-4 mt-8">
-                            <button class="flex-1 px-4 py-3 bg-slate-700 hover:bg-slate-600 text-slate-100 rounded-lg font-medium transition">취소</button>
-                            <button class="flex-1 px-4 py-3 bg-cyan-600 hover:bg-cyan-700 text-white rounded-lg font-medium transition">다음 →</button>
-                        </div>
-                    </div>
-                </div>
-            </main>
+    <div class="flex-1 flex flex-col overflow-hidden">
+      <header class="bg-slate-900 border-b border-slate-800 px-6 py-4 flex items-center justify-between shrink-0">
+        <div>
+          <h2 class="text-xl font-bold text-white">AI 직원 생성</h2>
+          <p class="text-xs text-slate-400">업무 조건을 먼저 설정하고, 초안 생성 뒤 바로 배포까지 연결합니다.</p>
         </div>
+        <div class="flex gap-2">
+          <button id="saveDraftBtn" class="px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm hover:bg-slate-700">초안 저장</button>
+          <a href="index.html" class="px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm hover:bg-slate-700">대시보드</a>
+        </div>
+      </header>
+
+      <main class="flex-1 overflow-y-auto p-6">
+        <div class="max-w-6xl mx-auto grid gap-6 xl:grid-cols-[1.35fr,0.65fr]">
+          <section class="space-y-6">
+            <article class="rounded-2xl border border-cyan-700/30 bg-gradient-to-br from-cyan-950/80 to-slate-900 p-6">
+              <div class="flex items-center justify-between gap-4">
+                <div>
+                  <p class="text-xs font-semibold tracking-[0.24em] text-cyan-300 uppercase">Step 1</p>
+                  <h3 class="text-2xl font-bold text-white mt-2">시나리오 선택</h3>
+                  <p class="text-sm text-slate-300 mt-2">반복 업무를 하나 고르면 추천 저장 시간, 승인 방식, 연결 채널 제안이 같이 바뀝니다.</p>
+                </div>
+                <span id="scenarioComplexityBadge" class="text-xs px-3 py-1 rounded-full border border-cyan-500/40 bg-cyan-500/10 text-cyan-100">복잡도 계산 중</span>
+              </div>
+              <div id="scenarioGrid" class="mt-5 grid gap-3 md:grid-cols-2"></div>
+            </article>
+
+            <article class="rounded-2xl border border-slate-800 bg-slate-900 p-6">
+              <div class="flex items-center justify-between gap-4">
+                <div>
+                  <p class="text-xs font-semibold tracking-[0.24em] text-slate-400 uppercase">Step 2</p>
+                  <h3 class="text-2xl font-bold text-white mt-2">운영 설정</h3>
+                </div>
+                <span class="text-xs px-3 py-1 rounded-full border border-slate-700 bg-slate-800 text-slate-300">실행 전 기본값</span>
+              </div>
+
+              <div class="grid gap-4 md:grid-cols-2 mt-5">
+                <label class="block">
+                  <span class="text-xs uppercase tracking-[0.18em] text-slate-400">직원 이름</span>
+                  <input id="employeeName" class="mt-2 w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-white" placeholder="예: 인바운드 응답 매니저">
+                </label>
+                <label class="block">
+                  <span class="text-xs uppercase tracking-[0.18em] text-slate-400">핵심 목표</span>
+                  <input id="employeeGoal" class="mt-2 w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-white" placeholder="예: 문의 1차 응답 5분 이내">
+                </label>
+                <label class="block md:col-span-2">
+                  <span class="text-xs uppercase tracking-[0.18em] text-slate-400">실행 설명</span>
+                  <textarea id="employeeDescription" rows="4" class="mt-2 w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-white" placeholder="어떤 업무를 어떤 기준으로 처리해야 하는지 적어주세요."></textarea>
+                </label>
+                <label class="block">
+                  <span class="text-xs uppercase tracking-[0.18em] text-slate-400">일일 처리량</span>
+                  <input id="dailyVolume" type="range" min="10" max="200" step="10" value="40" class="mt-3 w-full">
+                  <div class="text-sm text-slate-300 mt-2"><span id="dailyVolumeLabel">40</span>건/일</div>
+                </label>
+                <label class="block">
+                  <span class="text-xs uppercase tracking-[0.18em] text-slate-400">월 절약 목표</span>
+                  <input id="savingsHours" type="range" min="5" max="80" step="5" value="20" class="mt-3 w-full">
+                  <div class="text-sm text-slate-300 mt-2"><span id="savingsHoursLabel">20</span>시간/월</div>
+                </label>
+              </div>
+
+              <div class="mt-6">
+                <p class="text-xs uppercase tracking-[0.18em] text-slate-400 mb-3">승인 방식</p>
+                <div class="grid gap-3 md:grid-cols-3" id="approvalModeGrid">
+                  <button type="button" data-approval-mode="approve-before-publish" class="approval-chip rounded-xl border border-slate-700 bg-slate-950 px-4 py-4 text-left">
+                    <strong class="block text-white text-sm">사전 승인</strong>
+                    <span class="text-xs text-slate-400">중요 업무는 사람이 확인 후 실행</span>
+                  </button>
+                  <button type="button" data-approval-mode="approve-exceptions" class="approval-chip rounded-xl border border-slate-700 bg-slate-950 px-4 py-4 text-left">
+                    <strong class="block text-white text-sm">예외만 승인</strong>
+                    <span class="text-xs text-slate-400">기본은 자동, 위험 상황만 검토</span>
+                  </button>
+                  <button type="button" data-approval-mode="auto-run" class="approval-chip rounded-xl border border-slate-700 bg-slate-950 px-4 py-4 text-left">
+                    <strong class="block text-white text-sm">완전 자동</strong>
+                    <span class="text-xs text-slate-400">저위험 반복 작업 전용</span>
+                  </button>
+                </div>
+              </div>
+
+              <div class="mt-6">
+                <p class="text-xs uppercase tracking-[0.18em] text-slate-400 mb-3">연결 채널</p>
+                <div class="flex flex-wrap gap-2" id="channelGrid">
+                  <button type="button" data-channel="email" class="channel-chip rounded-full border border-slate-700 bg-slate-950 px-4 py-2 text-sm text-slate-300">Email</button>
+                  <button type="button" data-channel="instagram" class="channel-chip rounded-full border border-slate-700 bg-slate-950 px-4 py-2 text-sm text-slate-300">Instagram</button>
+                  <button type="button" data-channel="blog" class="channel-chip rounded-full border border-slate-700 bg-slate-950 px-4 py-2 text-sm text-slate-300">Blog</button>
+                  <button type="button" data-channel="notion" class="channel-chip rounded-full border border-slate-700 bg-slate-950 px-4 py-2 text-sm text-slate-300">Notion</button>
+                  <button type="button" data-channel="slack" class="channel-chip rounded-full border border-slate-700 bg-slate-950 px-4 py-2 text-sm text-slate-300">Slack</button>
+                </div>
+              </div>
+            </article>
+          </section>
+
+          <aside class="space-y-6">
+            <article class="rounded-2xl border border-slate-800 bg-slate-900 p-6">
+              <p class="text-xs font-semibold tracking-[0.24em] text-slate-400 uppercase">Step 3</p>
+              <h3 class="text-2xl font-bold text-white mt-2">실행 요약</h3>
+              <div class="mt-5 space-y-4 text-sm">
+                <div class="rounded-xl border border-slate-800 bg-slate-950 p-4">
+                  <p class="text-slate-400">선택 시나리오</p>
+                  <p id="summaryScenario" class="text-white font-semibold mt-1">시나리오를 선택하세요.</p>
+                </div>
+                <div class="rounded-xl border border-slate-800 bg-slate-950 p-4">
+                  <p class="text-slate-400">권장 승인 방식</p>
+                  <p id="summaryApproval" class="text-white font-semibold mt-1">사전 승인</p>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                  <div class="rounded-xl border border-slate-800 bg-slate-950 p-4">
+                    <p class="text-slate-400 text-xs">예상 처리량</p>
+                    <p id="summaryVolume" class="text-xl font-bold text-cyan-300 mt-1">40건/일</p>
+                  </div>
+                  <div class="rounded-xl border border-slate-800 bg-slate-950 p-4">
+                    <p class="text-slate-400 text-xs">절약 시간</p>
+                    <p id="summarySavings" class="text-xl font-bold text-cyan-300 mt-1">20시간/월</p>
+                  </div>
+                </div>
+                <div class="rounded-xl border border-slate-800 bg-slate-950 p-4">
+                  <p class="text-slate-400">연결 채널</p>
+                  <p id="summaryChannels" class="text-white font-semibold mt-1">선택 없음</p>
+                </div>
+              </div>
+            </article>
+
+            <article class="rounded-2xl border border-cyan-700/30 bg-cyan-950/20 p-6">
+              <h3 class="text-lg font-bold text-white">바로 실행</h3>
+              <p class="text-sm text-slate-300 mt-2">초안만 만들거나, 생성 후 바로 배포 단계까지 연결할 수 있습니다.</p>
+              <div class="grid gap-3 mt-5">
+                <button id="createDraftBtn" class="w-full rounded-xl bg-slate-800 border border-slate-700 px-4 py-3 text-sm font-medium text-white hover:bg-slate-700">초안 생성</button>
+                <button id="createDeployBtn" class="w-full rounded-xl bg-cyan-600 px-4 py-3 text-sm font-medium text-white hover:bg-cyan-500">생성 후 배포 준비</button>
+                <button id="createActivateBtn" class="w-full rounded-xl bg-emerald-600 px-4 py-3 text-sm font-medium text-white hover:bg-emerald-500">생성 후 즉시 활성화</button>
+              </div>
+              <div id="resultPanel" class="hidden mt-5 rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-4 text-sm"></div>
+            </article>
+
+            <article class="rounded-2xl border border-slate-800 bg-slate-900 p-6">
+              <h3 class="text-lg font-bold text-white">권장 세팅</h3>
+              <div id="recommendedChecklist" class="mt-4 space-y-3 text-sm text-slate-300"></div>
+            </article>
+          </aside>
+        </div>
+      </main>
     </div>
-    <script>
-        requireAuth();
-    </script>
-    <script src="../mobile-optimization.js" defer></script>
+  </div>
+
+  <script>
+    requireAuth();
+
+    const DRAFT_KEY = 'sf_ai_employee_builder_v2';
+    const state = {
+      scenarios: [],
+      selectedScenario: null,
+      approvalMode: 'approve-before-publish',
+      channels: new Set(['email'])
+    };
+
+    const scenarioCopy = {
+      email: { title: '이메일 자동 응답', complexity: '쉬움', checklist: ['고객 응답 톤 정의', '예외 문의 승인자 지정', '응답 SLA 설정'], defaultChannels: ['email', 'slack'] },
+      social: { title: 'SNS 댓글 대응', complexity: '보통', checklist: ['브랜드 금칙어 등록', '플랫폼별 응답 길이 정의', '승인 큐 연결'], defaultChannels: ['instagram', 'blog', 'slack'] },
+      customer_service: { title: '상담 지원', complexity: '높음', checklist: ['FAQ 우선순위 정의', '긴급 문의 분류 기준', '담당자 핸드오프 규칙'], defaultChannels: ['email', 'slack', 'notion'] },
+      data_entry: { title: '데이터 입력 자동화', complexity: '보통', checklist: ['입력 소스 지정', '검증 실패 처리 규칙', '담당자 알림'], defaultChannels: ['notion', 'slack'] },
+      scheduling: { title: '일정 운영 자동화', complexity: '쉬움', checklist: ['예약 규칙 설정', '캘린더 충돌 처리', '확정 알림 채널'], defaultChannels: ['email', 'slack'] }
+    };
+
+    function getScenarioMeta(key) {
+      return scenarioCopy[key] || { title: key, complexity: '보통', checklist: ['운영 기준 정의'], defaultChannels: ['email'] };
+    }
+
+    function getDescriptionPayload() {
+      const goal = document.getElementById('employeeGoal').value.trim();
+      const description = document.getElementById('employeeDescription').value.trim();
+      const volume = document.getElementById('dailyVolume').value;
+      const savings = document.getElementById('savingsHours').value;
+      const channelText = [...state.channels].join(', ') || 'none';
+      return [
+        description || '운영 설명 없음',
+        '',
+        `[goal] ${goal || '미설정'}`,
+        `[approval] ${state.approvalMode}`,
+        `[channels] ${channelText}`,
+        `[daily_volume] ${volume}`,
+        `[monthly_savings_hours] ${savings}`
+      ].join('\n');
+    }
+
+    function syncRangeLabels() {
+      document.getElementById('dailyVolumeLabel').textContent = document.getElementById('dailyVolume').value;
+      document.getElementById('savingsHoursLabel').textContent = document.getElementById('savingsHours').value;
+      document.getElementById('summaryVolume').textContent = `${document.getElementById('dailyVolume').value}건/일`;
+      document.getElementById('summarySavings').textContent = `${document.getElementById('savingsHours').value}시간/월`;
+    }
+
+    function renderScenarioGrid() {
+      const grid = document.getElementById('scenarioGrid');
+      const scenarios = state.scenarios.length ? state.scenarios : [
+        { category: 'email', name: '이메일 자동 응답', estimated_savings: 15, complexity: 'easy' },
+        { category: 'social', name: 'SNS 댓글 대응', estimated_savings: 20, complexity: 'medium' },
+        { category: 'customer_service', name: '상담 지원', estimated_savings: 30, complexity: 'advanced' },
+        { category: 'data_entry', name: '데이터 입력 자동화', estimated_savings: 18, complexity: 'medium' },
+        { category: 'scheduling', name: '일정 운영 자동화', estimated_savings: 10, complexity: 'easy' }
+      ];
+      grid.innerHTML = scenarios.map((scenario) => {
+        const key = scenario.category || scenario.scenario_type || 'email';
+        const active = state.selectedScenario === key;
+        return `
+          <button type="button" data-scenario="${key}" class="scenario-card ${active ? 'active' : ''} rounded-2xl border border-slate-700 bg-slate-950 p-5 text-left">
+            <div class="flex items-center justify-between gap-3">
+              <strong class="text-white text-base">${scenario.name || getScenarioMeta(key).title}</strong>
+              <span class="text-xs text-cyan-300">${scenario.estimated_savings || 0}h/mo</span>
+            </div>
+            <p class="text-sm text-slate-400 mt-2">${scenario.description || '반복 업무를 승인형 자동화로 전환합니다.'}</p>
+          </button>
+        `;
+      }).join('');
+    }
+
+    function renderChecklist() {
+      const meta = getScenarioMeta(state.selectedScenario || 'email');
+      document.getElementById('scenarioComplexityBadge').textContent = `복잡도 ${meta.complexity}`;
+      document.getElementById('recommendedChecklist').innerHTML = meta.checklist
+        .map((item) => `<div class="rounded-xl border border-slate-800 bg-slate-950 px-4 py-3">${item}</div>`)
+        .join('');
+    }
+
+    function updateSummary() {
+      const meta = getScenarioMeta(state.selectedScenario || 'email');
+      document.getElementById('summaryScenario').textContent = meta.title;
+      document.getElementById('summaryApproval').textContent = {
+        'approve-before-publish': '사전 승인',
+        'approve-exceptions': '예외만 승인',
+        'auto-run': '완전 자동'
+      }[state.approvalMode] || state.approvalMode;
+      document.getElementById('summaryChannels').textContent = [...state.channels].length ? [...state.channels].join(', ') : '선택 없음';
+      syncRangeLabels();
+      renderChecklist();
+    }
+
+    function selectScenario(nextScenario) {
+      state.selectedScenario = nextScenario;
+      const meta = getScenarioMeta(nextScenario);
+      state.channels = new Set(meta.defaultChannels);
+      const nameInput = document.getElementById('employeeName');
+      if (!nameInput.value.trim()) {
+        nameInput.value = `${meta.title} 매니저`;
+      }
+      const goalInput = document.getElementById('employeeGoal');
+      if (!goalInput.value.trim()) {
+        goalInput.value = meta.checklist[0] || '';
+      }
+      renderScenarioGrid();
+      renderChannelState();
+      updateSummary();
+    }
+
+    function renderChannelState() {
+      document.querySelectorAll('[data-channel]').forEach((button) => {
+        const active = state.channels.has(button.dataset.channel);
+        button.classList.toggle('active', active);
+      });
+    }
+
+    function renderApprovalState() {
+      document.querySelectorAll('[data-approval-mode]').forEach((button) => {
+        button.classList.toggle('active', button.dataset.approvalMode === state.approvalMode);
+      });
+    }
+
+    function saveDraft() {
+      const draft = {
+        selectedScenario: state.selectedScenario,
+        approvalMode: state.approvalMode,
+        channels: [...state.channels],
+        employeeName: document.getElementById('employeeName').value,
+        employeeGoal: document.getElementById('employeeGoal').value,
+        employeeDescription: document.getElementById('employeeDescription').value,
+        dailyVolume: document.getElementById('dailyVolume').value,
+        savingsHours: document.getElementById('savingsHours').value
+      };
+      localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+      showSuccess('AI 직원 초안을 저장했습니다.');
+    }
+
+    function restoreDraft() {
+      try {
+        const draft = JSON.parse(localStorage.getItem(DRAFT_KEY) || 'null');
+        if (!draft) return;
+        state.selectedScenario = draft.selectedScenario || state.selectedScenario;
+        state.approvalMode = draft.approvalMode || state.approvalMode;
+        state.channels = new Set(draft.channels || ['email']);
+        document.getElementById('employeeName').value = draft.employeeName || '';
+        document.getElementById('employeeGoal').value = draft.employeeGoal || '';
+        document.getElementById('employeeDescription').value = draft.employeeDescription || '';
+        document.getElementById('dailyVolume').value = draft.dailyVolume || '40';
+        document.getElementById('savingsHours').value = draft.savingsHours || '20';
+      } catch (_) {}
+    }
+
+    async function submitEmployee(mode) {
+      const name = document.getElementById('employeeName').value.trim();
+      if (!name) {
+        showError('직원 이름을 입력하세요.');
+        return;
+      }
+      if (!state.selectedScenario) {
+        showError('시나리오를 선택하세요.');
+        return;
+      }
+
+      const description = getDescriptionPayload();
+      const savingsHours = Number(document.getElementById('savingsHours').value || 10);
+
+      try {
+        showLoading('AI 직원을 생성하는 중입니다...');
+        const result = await createAIEmployee(name, state.selectedScenario, description);
+        const employee = result.employee || result;
+        if (!employee?.id) throw new Error('생성 결과를 확인할 수 없습니다.');
+
+        if (mode === 'deploy' || mode === 'activate') {
+          await deployAIEmployee(employee.id, savingsHours);
+        }
+        if (mode === 'activate') {
+          await activateAIEmployee(employee.id);
+        }
+
+        localStorage.removeItem(DRAFT_KEY);
+        const resultPanel = document.getElementById('resultPanel');
+        resultPanel.classList.remove('hidden');
+        resultPanel.innerHTML = `
+          <p class="font-semibold text-emerald-200">AI 직원이 생성되었습니다.</p>
+          <p class="mt-2 text-slate-200">이름: ${name}</p>
+          <p class="text-slate-200">상태: ${mode === 'activate' ? 'active' : mode === 'deploy' ? 'training' : 'draft'}</p>
+          <div class="mt-3 flex flex-wrap gap-2">
+            <a href="employee-detail.html?id=${employee.id}" class="rounded-lg bg-emerald-500 px-3 py-2 text-xs font-medium text-white">상세 보기</a>
+            <a href="index.html" class="rounded-lg border border-emerald-400/30 px-3 py-2 text-xs font-medium text-emerald-100">대시보드 이동</a>
+          </div>
+        `;
+        showSuccess(mode === 'activate' ? '생성 후 즉시 활성화했습니다.' : mode === 'deploy' ? '생성 후 배포 준비까지 완료했습니다.' : 'AI 직원 초안을 생성했습니다.');
+      } catch (error) {
+        showError(error.message || 'AI 직원 생성 중 오류가 발생했습니다.');
+      } finally {
+        hideLoading();
+      }
+    }
+
+    async function init() {
+      restoreDraft();
+      try {
+        state.scenarios = await getAIScenarios();
+      } catch (_) {
+        state.scenarios = [];
+      }
+      if (!state.selectedScenario) {
+        state.selectedScenario = (state.scenarios[0]?.category) || 'email';
+      }
+      renderScenarioGrid();
+      renderApprovalState();
+      renderChannelState();
+      if (!document.getElementById('employeeName').value.trim()) {
+        selectScenario(state.selectedScenario);
+      } else {
+        updateSummary();
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      init();
+      document.getElementById('saveDraftBtn').addEventListener('click', saveDraft);
+      document.getElementById('createDraftBtn').addEventListener('click', () => submitEmployee('draft'));
+      document.getElementById('createDeployBtn').addEventListener('click', () => submitEmployee('deploy'));
+      document.getElementById('createActivateBtn').addEventListener('click', () => submitEmployee('activate'));
+      document.getElementById('scenarioGrid').addEventListener('click', (event) => {
+        const button = event.target.closest('[data-scenario]');
+        if (!button) return;
+        selectScenario(button.dataset.scenario);
+      });
+      document.getElementById('approvalModeGrid').addEventListener('click', (event) => {
+        const button = event.target.closest('[data-approval-mode]');
+        if (!button) return;
+        state.approvalMode = button.dataset.approvalMode;
+        renderApprovalState();
+        updateSummary();
+      });
+      document.getElementById('channelGrid').addEventListener('click', (event) => {
+        const button = event.target.closest('[data-channel]');
+        if (!button) return;
+        const channel = button.dataset.channel;
+        if (state.channels.has(channel)) state.channels.delete(channel);
+        else state.channels.add(channel);
+        renderChannelState();
+        updateSummary();
+      });
+      ['employeeName', 'employeeGoal', 'employeeDescription', 'dailyVolume', 'savingsHours'].forEach((id) => {
+        document.getElementById(id).addEventListener('input', updateSummary);
+      });
+    });
+  </script>
+  <script src="../mobile-optimization.js" defer></script>
 </body>
 </html>

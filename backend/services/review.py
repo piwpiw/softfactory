@@ -1,5 +1,5 @@
 """Review Campaign Service - Influencer & Reviewer Campaigns + Review Listing Scraper Integration — Input-Validated"""
-from flask import Blueprint, request, jsonify, g
+from flask import Blueprint, request, jsonify, g, current_app
 from datetime import datetime, timedelta
 from sqlalchemy import and_, desc, or_, func, case
 from sqlalchemy.orm import joinedload, subqueryload
@@ -1025,6 +1025,7 @@ def apply_to_listing(listing_id):
 # ==================== AUTO-APPLY RULES API ====================
 
 @review_bp.route('/auto-rules', methods=['GET'])
+@review_bp.route('/auto-apply/rules', methods=['GET'])
 @require_auth
 def get_auto_apply_rules():
     """Get user's auto-apply rules"""
@@ -1036,6 +1037,7 @@ def get_auto_apply_rules():
 
 
 @review_bp.route('/auto-rules', methods=['POST'])
+@review_bp.route('/auto-apply/rules', methods=['POST'])
 @require_auth
 def create_auto_apply_rule():
     """Create a new auto-apply rule"""
@@ -1065,6 +1067,7 @@ def create_auto_apply_rule():
 
 
 @review_bp.route('/auto-rules/<int:rule_id>', methods=['PUT'])
+@review_bp.route('/auto-apply/rules/<int:rule_id>', methods=['PUT'])
 @require_auth
 def update_auto_apply_rule(rule_id):
     """Update auto-apply rule"""
@@ -1109,6 +1112,7 @@ def update_auto_apply_rule(rule_id):
 
 
 @review_bp.route('/auto-rules/<int:rule_id>', methods=['DELETE'])
+@review_bp.route('/auto-apply/rules/<int:rule_id>', methods=['DELETE'])
 @require_auth
 def delete_auto_apply_rule(rule_id):
     """Delete auto-apply rule"""
@@ -1121,6 +1125,23 @@ def delete_auto_apply_rule(rule_id):
     db.session.commit()
 
     return jsonify({'message': 'Rule deleted'}), 200
+
+
+@review_bp.route('/auto-apply/run', methods=['POST'])
+@require_auth
+def run_auto_apply_rules():
+    """Compatibility endpoint used by frontend to trigger an immediate auto-apply pass."""
+    from backend.scheduler import check_auto_apply_rules
+
+    check_auto_apply_rules(current_app._get_current_object())
+
+    return jsonify({
+        'success': True,
+        'message': 'Auto-apply run triggered',
+        'applied_count': 0,
+        'skipped_count': 0,
+        'errors': []
+    }), 200
 
 
 # ==================== SCRAPER CONTROL API ====================

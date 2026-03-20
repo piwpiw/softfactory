@@ -438,3 +438,15 @@ D:/Project/
 **날짜:** 2026-02-26
 **버전:** v1.0
 **상태:** 🟢 **완성**
+## Related Screen Docs (2026-03-07)
+
+- Growth Automation IA and screen meaning:
+  - [docs/IA.md](/d:/Project/docs/IA.md)
+- Responsive layout and device rules:
+  - [RESPONSIVE_DESIGN_GUIDE.md](/d:/Project/web/RESPONSIVE_DESIGN_GUIDE.md)
+
+This document should be read as an implementation reference for:
+- KPI card hierarchy
+- dashboard information density
+- chart versus evidence separation
+- action area composition

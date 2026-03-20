@@ -6,45 +6,86 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#111827">
-<title>셰프 상세 — CooCook | SoftFactory</title>
+    <title>셰프 상세 — CooCook | SoftFactory</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="../platform/api.js"></script>
+    <script src="../coocook/coocook-taxonomy.js"></script>
     <style>body { font-family: 'Inter', sans-serif; }</style>
     <link rel="stylesheet" href="../responsive-framework.css">
-  </head>
+</head>
 <body class="bg-slate-950 text-slate-100">
     <div class="flex h-screen overflow-hidden">
         <aside class="w-64 bg-slate-900 border-r border-slate-800 flex flex-col shrink-0">
             <div class="p-6 border-b border-slate-800">
-                <a href="explore.html" class="flex items-center gap-3">
-                    <span>←</span><span class="text-sm font-medium">탐색</span>
+                <a href="index.html" class="flex items-center gap-3">
+                    <span class="text-2xl">🍳</span>
+                    <div>
+                        <h1 class="font-bold text-white text-sm">CooCook</h1>
+                        <p class="text-xs text-slate-400">요리 체험 플랫폼</p>
+                    </div>
                 </a>
             </div>
+            <nav class="soft-nav-tree flex-1 p-6 space-y-2">
+                <button class="hamburger" aria-label="메뉴 토글" aria-expanded="false"><span></span><span></span><span></span></button>
+                <p class="text-xs font-semibold text-slate-400 uppercase px-4 mb-3">서비스 메뉴</p>
+                <a href="index.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">🏠 홈</a>
+                <a href="explore.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">🔍 셰프 탐색</a>
+                <a href="my-bookings.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">📅 내 예약</a>
+                <a href="recipes.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">🍳 레시피</a>
+                <a href="shopping-list.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">🛒 쇼핑 리스트</a>
+                <a href="feed.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">📰 피드</a>
+            </nav>
+            <div class="p-6 border-t border-slate-800">
+                <button onclick="logout()" class="p-2 hover:bg-slate-800 rounded-lg w-full text-left">로그아웃</button>
+            </div>
         </aside>
+
         <div class="flex-1 flex flex-col overflow-hidden">
             <main class="flex-1 overflow-y-auto p-6">
-                <div class="grid grid-cols-3 gap-6">
-                    <div class="col-span-2">
+                <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+                    <div class="xl:col-span-2">
                         <div class="bg-slate-800 rounded-xl p-8 border border-slate-700 mb-6">
-                            <div class="flex items-start gap-6 mb-6">
+                            <div class="flex flex-col md:flex-row items-start gap-6 mb-6">
                                 <div class="text-6xl" id="chefImage">👨‍🍳</div>
-                                <div>
+                                <div class="flex-1">
+                                    <p id="chefCuisinePill" class="text-sm text-orange-400 mb-2">Cuisine</p>
                                     <h1 class="text-3xl font-bold text-white mb-2" id="chefName">Chef Name</h1>
-                                    <p class="text-orange-400 mb-4" id="chefCuisine">Cuisine Type</p>
                                     <p class="text-yellow-400 text-lg mb-4">⭐ <span id="chefRating">5.0</span> (<span id="chefRatingCount">0</span>)</p>
-                                    <p class="text-slate-300 mb-4" id="chefBio">Bio here</p>
+                                    <div id="metaPills" class="flex flex-wrap gap-2"></div>
+                                    <p class="text-slate-300 mt-4 mb-1"><span class="text-slate-400">가격</span> <span id="chefPrice" class="ml-2 text-white font-bold">₩0</span></p>
+                                    <p class="text-slate-300"><span class="text-slate-400">위치</span> <span id="chefLocation" class="ml-2 text-white">-</span></p>
                                 </div>
                             </div>
+
+                            <p class="text-sm text-slate-400" id="chefBio"></p>
                         </div>
+
                         <div class="bg-slate-800 rounded-xl p-8 border border-slate-700 mb-6">
-                            <h3 class="text-lg font-bold text-white mb-4">🍽️ 특기</h3>
-                            <div class="flex gap-2" id="specialties">
-                                <span class="px-3 py-1 bg-orange-600 text-orange-100 text-sm rounded-full">요리1</span>
-                            </div>
+                            <h3 class="text-lg font-bold text-white mb-4">🍽️ 셰프 특기/키워드</h3>
+                            <div id="specialties" class="flex flex-wrap gap-2"></div>
                         </div>
+
                         <div class="bg-slate-800 rounded-xl p-8 border border-slate-700">
-                            <h3 class="text-lg font-bold text-white mb-4">💬 리뷰</h3>
+                            <h3 class="text-lg font-bold text-white mb-4">🧭 제휴 연동</h3>
+                            <div id="chefAffiliate" class="space-y-2"></div>
+                        </div>
+                    </div>
+
+                    <div class="xl:col-span-1 space-y-6">
+                        <div class="bg-gradient-to-br from-orange-900/30 to-orange-900/10 rounded-xl p-6 border-2 border-orange-600 h-fit">
+                            <p class="text-slate-400 text-sm mb-2">1회 요리 비용</p>
+                            <p class="text-3xl font-bold text-white mb-2" id="chefPricePanel">₩0</p>
+                            <a id="bookingLink" href="booking.html" class="w-full block text-center px-4 py-3 bg-orange-600 hover:bg-orange-700 text-white rounded-lg font-semibold transition mb-3">예약하기</a>
+                            <p class="text-xs text-slate-400 text-center">날짜와 시간을 선택하여 예약합니다</p>
+                        </div>
+
+                        <div class="bg-slate-800 rounded-xl p-6 border border-slate-700">
+                            <h3 class="text-lg font-bold text-white mb-4">추천 레시피</h3>
+                            <div id="recipeList" class="space-y-3 text-sm text-slate-200"></div>
+                        </div>
+
+                        <div class="bg-slate-800 rounded-xl p-6 border border-slate-700">
+                            <h3 class="text-lg font-bold text-white mb-4">리뷰</h3>
                             <div id="reviews" class="space-y-4">
                                 <div class="p-4 bg-slate-700 rounded-lg">
                                     <p class="text-sm text-slate-400">리뷰 로딩 중...</p>
@@ -52,48 +93,118 @@
                             </div>
                         </div>
                     </div>
-                    <div class="bg-gradient-to-br from-orange-900/30 to-orange-900/10 rounded-xl p-6 border-2 border-orange-600 h-fit">
-                        <p class="text-slate-400 text-sm mb-2">1회 요리 비용</p>
-                        <p class="text-3xl font-bold text-white mb-6" id="chefPrice">₩0</p>
-                        <a href="booking.html" class="w-full block text-center px-4 py-3 bg-orange-600 hover:bg-orange-700 text-white rounded-lg font-semibold transition mb-3">
-                            예약하기
-                        </a>
-                        <p class="text-xs text-slate-400 text-center">날짜와 시간을 선택하여 예약합니다</p>
-                    </div>
                 </div>
             </main>
         </div>
     </div>
+
     <script>
         requireAuth();
+        const registry = window.CooCookTaxonomy || null;
+        const params = new URLSearchParams(window.location.search);
+        const chefId = params.get('id') || 1;
+
+        function normalizeChef(chef) {
+            if (!registry) return { ...chef, cuisine: chef.cuisine_type || 'Korean', avatar: chef.image || '👨‍🍳' };
+            return registry.enrichChef(chef);
+        }
+
+        function renderPills(chef) {
+            const cuisineMeta = registry?.getCuisineMeta(chef.cuisine);
+            const catMeta = registry?.getMenuCategoryMeta(chef.category || 'main');
+            const affinity = registry?.getCuisineAffiliate(chef.cuisine) || null;
+            const chips = [
+                `<span class="px-3 py-1 rounded-full border text-xs ${cuisineMeta?.chipClass || 'border-slate-700 text-slate-300'}">${cuisineMeta?.emoji || '🍽️'} ${cuisineMeta?.label || chef.cuisine}</span>`,
+                `<span class="px-3 py-1 rounded-full border text-xs ${catMeta?.chipClass || 'border-slate-700 text-slate-300'}">${catMeta?.emoji || '🍳'} ${catMeta?.label || '메뉴'}</span>`
+            ];
+            document.getElementById('metaPills').innerHTML = chips.join('');
+            document.getElementById('chefCuisinePill').textContent = `${cuisineMeta?.flag || '🍽️'} ${cuisineMeta?.label || chef.cuisine}`;
+
+            if (affinity) {
+                const container = document.getElementById('chefAffiliate');
+                container.innerHTML = `
+                    <a href="${affinity.url}" target="_blank" rel="noopener noreferrer sponsored" class="block p-3 rounded-lg border border-orange-500 bg-slate-700/40 hover:bg-slate-700">
+                        ${affinity.label}
+                    </a>
+                    <p class="text-xs text-slate-400 mt-2">${affinity.disclosure}</p>
+                `;
+            }
+        }
+
+        function renderRecipes(chefName) {
+            if (!registry) {
+                document.getElementById('recipeList').innerHTML = '<p class="text-sm text-slate-500">추천 레시피 없음</p>';
+                return;
+            }
+            const recipes = registry.getChefRecipes(chefName, { limit: 4 });
+            if (!recipes.length) {
+                document.getElementById('recipeList').innerHTML = '<p class="text-sm text-slate-500">추천 레시피 없음</p>';
+                return;
+            }
+            document.getElementById('recipeList').innerHTML = recipes.map((recipe) => `
+                <a href="recipes.html?cuisine=${encodeURIComponent(recipe.cuisine)}&category=${encodeURIComponent(recipe.category)}&recipe=${recipe.id}" class="flex justify-between items-center p-3 bg-slate-700 rounded-lg hover:bg-slate-600">
+                    <div>
+                        <p class="font-medium text-white">${recipe.name}</p>
+                        <p class="text-xs text-slate-300">${recipe.categoryMeta?.label || recipe.category}</p>
+                    </div>
+                    <span class="text-xs text-orange-300">${recipe.ingredients?.length || 0}개 재료</span>
+                </a>
+            `).join('');
+        }
 
         async function init() {
             try {
-                const params = new URLSearchParams(window.location.search);
-                const chefId = params.get('id') || 1;
-                const chef = await getChefDetail(chefId);
-
-                document.getElementById('chefImage').textContent = chef.image || '👨‍🍳';
+                const raw = await getChefDetail(chefId);
+                const chef = normalizeChef(raw);
+                document.getElementById('chefImage').textContent = chef.avatar;
                 document.getElementById('chefName').textContent = chef.name;
-                document.getElementById('chefCuisine').textContent = chef.cuisine_type;
-                document.getElementById('chefRating').textContent = chef.rating;
-                document.getElementById('chefRatingCount').textContent = chef.rating_count;
-                document.getElementById('chefBio').textContent = chef.bio;
-                document.getElementById('chefPrice').textContent = formatKRW(chef.price_per_session);
+                document.getElementById('chefLocation').textContent = chef.location || '-';
+                document.getElementById('chefBio').textContent = chef.bio || '소개 없음';
+                document.getElementById('chefRating').textContent = chef.rating || 0;
+                document.getElementById('chefRatingCount').textContent = chef.rating_count || 0;
+                const price = Number(chef.price_per_session || 0);
+                const priceText = formatKRW(price);
+                document.getElementById('chefPrice').textContent = priceText;
+                document.getElementById('chefPricePanel').textContent = priceText;
+                document.getElementById('bookingLink').href = `booking.html?chef_id=${chef.id}`;
+                document.getElementById('specialties').innerHTML = (chef.specialties && chef.specialties.length)
+                    ? chef.specialties.map((item) => `<span class="px-3 py-1 bg-orange-600 text-orange-100 text-sm rounded-full">${item}</span>`).join('')
+                    : '<span class="text-sm text-slate-400">등록된 특기가 없습니다.</span>';
+                renderPills(chef);
+                renderRecipes(chef.name);
 
-                const specs = document.getElementById('specialties');
-                specs.innerHTML = (chef.specialties || []).map(s => `<span class="px-3 py-1 bg-orange-600 text-orange-100 text-sm rounded-full">${s}</span>`).join('');
-
-                const reviews = document.getElementById('reviews');
-                reviews.innerHTML = (chef.reviews || []).map(r => `
+                const reviews = chef.reviews && chef.reviews.length
+                    ? chef.reviews
+                    : [
+                        { author: '홍길동', rating: 5, comment: '요리 실력이 훌륭했어요.' },
+                        { author: '이몫수', rating: 4, comment: '시간 준수, 세팅 깔끔했습니다.' }
+                    ];
+                document.getElementById('reviews').innerHTML = reviews.map((review) => `
                     <div class="p-4 bg-slate-700 rounded-lg">
-                        <p class="text-sm text-yellow-400 mb-1">⭐ ${r.rating}</p>
-                        <p class="text-sm text-white font-medium">${r.author}</p>
-                        <p class="text-xs text-slate-300 mt-2">"${r.comment}"</p>
+                        <p class="text-sm text-yellow-400 mb-1">⭐ ${review.rating}</p>
+                        <p class="text-sm text-white font-medium">${review.author}</p>
+                        <p class="text-xs text-slate-300 mt-2">"${review.comment}"</p>
                     </div>
                 `).join('');
             } catch (error) {
-                showError('셰프 정보 로드 실패');
+                showError('셰프 정보를 불러오지 못했습니다. 샘플 데이터로 표시합니다.');
+                const chef = normalizeChef(
+                    registry?.getDefaultChefs?.().find((item) => String(item.id) === String(chefId))
+                    || { id: chefId, name: 'Chef Park', image: '👨‍🍳', cuisine_type: 'Korean', rating: 4.9, rating_count: 102, price_per_session: 30000, location: '서울', bio: '샘플 데이터입니다.', cuisine: 'Korean', category: 'main', specialties: ['한식'], reviews: [] }
+                );
+                document.getElementById('chefImage').textContent = chef.avatar;
+                document.getElementById('chefName').textContent = chef.name;
+                document.getElementById('chefLocation').textContent = chef.location;
+                document.getElementById('chefBio').textContent = chef.bio;
+                document.getElementById('chefRating').textContent = chef.rating;
+                document.getElementById('chefRatingCount').textContent = chef.rating_count;
+                const priceText = formatKRW(chef.price_per_session);
+                document.getElementById('chefPrice').textContent = priceText;
+                document.getElementById('chefPricePanel').textContent = priceText;
+                renderPills(chef);
+                renderRecipes(chef.name);
+                document.getElementById('specialties').innerHTML = '<span class="px-3 py-1 bg-orange-600 text-orange-100 text-sm rounded-full">한식</span>';
+                document.getElementById('reviews').innerHTML = '<p class="text-sm text-slate-500">리뷰 데이터 없음</p>';
             }
         }
 

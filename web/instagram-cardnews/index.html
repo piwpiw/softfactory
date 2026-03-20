@@ -1,0 +1,1641 @@
+﻿<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#111827">
+  <title>인스타그램 카드뉴스 자동화 | SoftFactory</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="../platform/api.js"></script>
+  <script src="../platform/workflow-contracts.js"></script>
+  <script src="../platform/approval-queue.js"></script>
+  <script src="../platform/cardnews-automation-core.js"></script>
+  <link rel="stylesheet" href="../responsive-framework.css">
+  <link rel="stylesheet" href="../accessibility.css">
+  <style>
+    body { font-family: 'Pretendard', 'Noto Sans KR', 'Inter', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; }
+    .card-carousel { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 12px; }
+    .slide-item { border: 1px solid rgba(148, 163, 184, 0.3); background: linear-gradient(180deg, rgba(30, 41, 59, 0.92), rgba(15, 23, 42, 0.95)); border-radius: 14px; overflow: hidden; color: var(--card-text-color, #f8fafc); font-family: var(--card-font-family, 'Pretendard', sans-serif); }
+    .slide-image { aspect-ratio: 4 / 5; background: linear-gradient(150deg, #1e1b4b, #312e81, #0f172a); display: grid; place-items: center; text-align: center; padding: 12px; font-weight: 700; font-size: 12px; }
+    .slide-body { padding: 12px; display: grid; gap: 6px; }
+    .slide-title { color: var(--card-text-color, #f8fafc); font-size: var(--card-title-size, 18px); font-weight: 700; text-align: var(--card-title-align, left); }
+    .slide-text { color: #cbd5e1; font-size: var(--card-body-size, 13px); min-height: 52px; line-height: 1.4; text-align: var(--card-body-align, left); }
+    .soft-kpi { background: rgba(15, 23, 42, 0.75); }
+    .soft-kpi .value { font-size: 1.6rem; color: #f8fafc; font-weight: 700; line-height: 1.3; }
+    .insight-item { border: 1px solid rgba(148, 163, 184, 0.22); background: rgba(15, 23, 42, 0.75); border-radius: 12px; padding: 12px; }
+    .insight-item h4 { font-size: 11px; color: #94a3b8; margin-bottom: 4px; text-transform: uppercase; letter-spacing: .06em; }
+    .insight-item p { color: #f8fafc; font-size: 13px; }
+    .dm-pill { display: inline-flex; align-items: center; gap: 6px; border-radius: 9999px; padding: 5px 10px; font-size: 11px; margin-right: 6px; margin-bottom: 6px; }
+    .channel-row { border: 1px solid rgba(148, 163, 184, 0.22); background: rgba(2, 6, 23, 0.6); border-radius: 12px; padding: 10px; display: grid; gap: 8px; }
+    .template-card { border: 1px solid rgba(148, 163, 184, 0.18); background: rgba(2, 6, 23, 0.7); border-radius: 12px; padding: 12px; }
+    .template-card.active { border-color: #60a5fa; box-shadow: 0 0 0 1px rgba(96,165,250,.35) inset; }
+    .template-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+    .template-tag { font-size: 11px; padding: 2px 8px; border-radius: 999px; border: 1px solid rgba(148, 163, 184, 0.35); }
+    .template-actions { margin-top: 8px; display: flex; gap: 8px; flex-wrap: wrap; }
+    .template-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 10px; }
+    .editor-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+    .scenario-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 12px; }
+    .scenario-card { border: 1px solid rgba(148, 163, 184, 0.2); background: rgba(2, 6, 23, 0.72); border-radius: 14px; padding: 14px; display: grid; gap: 8px; }
+    .scenario-card.active { border-color: #818cf8; box-shadow: 0 0 0 1px rgba(129,140,248,.35) inset; }
+    .scenario-chip, .research-chip { display: inline-flex; align-items: center; padding: 4px 8px; border-radius: 999px; font-size: 11px; border: 1px solid rgba(148, 163, 184, 0.3); color: #cbd5e1; }
+    .intel-grid, .research-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 12px; }
+    .intel-card, .research-card { border: 1px solid rgba(148, 163, 184, 0.18); background: rgba(2, 6, 23, 0.68); border-radius: 14px; padding: 14px; display: grid; gap: 8px; }
+    .intel-card.active, .research-card.active { border-color: #34d399; box-shadow: 0 0 0 1px rgba(52,211,153,.28) inset; }
+    .intel-meta { display: flex; flex-wrap: wrap; gap: 6px; }
+    .research-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+    .research-score { font-size: 1.2rem; font-weight: 700; color: #f8fafc; }
+    .score-breakdown { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+    .score-chip { border-radius: 10px; border: 1px solid rgba(148, 163, 184, 0.22); background: rgba(15, 23, 42, 0.7); padding: 8px; }
+    .queue-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
+    .queue-card { border: 1px solid rgba(148, 163, 184, 0.18); background: rgba(2, 6, 23, 0.74); border-radius: 14px; padding: 14px; display: grid; gap: 10px; }
+    .queue-card.done { border-color: rgba(52, 211, 153, 0.45); box-shadow: 0 0 0 1px rgba(52, 211, 153, 0.22) inset; }
+    .queue-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+    .section-head { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; }
+    .section-head-copy { max-width: 720px; }
+    @media (max-width: 768px) { .editor-grid { grid-template-columns: minmax(0, 1fr); } }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 antialiased soft-shell">
+  <a href="#main" class="skip-to-main sr-only">본문으로 바로가기</a>
+  <div class="flex h-screen overflow-hidden">
+    <aside class="w-64 soft-sidebar border-r border-slate-800 flex flex-col shrink-0">
+      <div class="p-6 border-b border-slate-800">
+        <div class="flex items-center gap-3">
+          <span class="text-2xl" aria-hidden="true">🎴</span>
+          <div>
+            <h1 class="font-bold text-white">SoftFactory</h1>
+            <p class="text-xs text-slate-400">인스타그램 카드뉴스 자동화</p>
+          </div>
+        </div>
+      </div>
+      <nav class="soft-nav-tree flex-1 p-6 overflow-y-auto" aria-label="사이드 네비게이션">
+        <button class="hamburger" aria-label="모바일 메뉴 토글"><span></span><span></span><span></span></button>
+        <a href="../platform/index.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-slate-800 transition"><span aria-hidden="true">🏭</span> 플랫폼 홈</a>
+        <a href="../platform/dashboard.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-slate-800 transition"><span aria-hidden="true">📊</span> 플랫폼 대시보드</a>
+
+        <div class="soft-nav-divider"></div>
+        <details class="soft-nav-group" open>
+          <summary class="soft-nav-summary"><span>현재 서비스 메뉴</span></summary>
+          <div class="soft-nav-sub">
+            <a href="index.html" aria-current="page" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg bg-indigo-600/20 border-l-2 border-indigo-500 text-white"><span aria-hidden="true">📸</span> 카드뉴스 자동화</a>
+          </div>
+        </details>
+        <details class="soft-nav-group" open>
+          <summary class="soft-nav-summary"><span>운영 서비스</span></summary>
+          <div class="soft-nav-sub">
+            <a href="../sns-auto/index.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-slate-800 transition"><span aria-hidden="true">📱</span> SNS 자동화</a>
+            <a href="../review/index.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-slate-800 transition"><span aria-hidden="true">⭐</span> 리뷰</a>
+            <a href="../coocook/index.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-slate-800 transition"><span aria-hidden="true">🍳</span> CooCook</a>
+            <a href="../ai-automation/index.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-slate-800 transition"><span aria-hidden="true">🤖</span> AI 자동화</a>
+            <a href="../webapp-builder/index.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-slate-800 transition"><span aria-hidden="true">💻</span> 웹앱 빌더</a>
+            <a href="../instagram-cardnews/index.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg bg-indigo-600/20 border-l-2 border-indigo-500 text-white"><span aria-hidden="true">📸</span> 인스타그램 카드뉴스 자동화</a>
+          </div>
+        </details>
+      </nav>
+      <div class="p-6 border-t border-slate-800 soft-user-panel">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm font-medium text-white" id="userName">사용자</p>
+            <p class="text-xs text-slate-400" id="userEmail">demo@softfactory.com</p>
+          </div>
+          <button onclick="if (typeof logout === 'function') { logout(); }" class="p-2 hover:bg-slate-800 rounded-lg transition" title="로그아웃">🚪</button>
+        </div>
+      </div>
+    </aside>
+
+    <div class="flex-1 flex flex-col overflow-hidden">
+      <header class="soft-topbar px-6 py-4 flex items-start justify-between gap-4 shrink-0">
+        <div>
+          <h2 class="text-xl font-bold text-white">인스타그램 카드뉴스 자동화</h2>
+          <p class="text-xs text-slate-400" id="headerStatus">리서치, 템플릿, 발행 단계를 같은 순서로 확인합니다.</p>
+        </div>
+        <div class="flex flex-wrap gap-2">
+          <button id="refreshPageBtn" class="soft-btn px-3 py-2 rounded-lg text-sm">새로고침</button>
+          <button id="clearDraftBtn" class="soft-btn px-3 py-2 rounded-lg text-sm">초안 비우기</button>
+        </div>
+      </header>
+
+      <main id="main" class="flex-1 overflow-y-auto soft-main p-6 space-y-6">
+        <section class="sf-page-intro">
+          <div class="sf-page-intro-grid">
+            <div class="sf-page-intro-head">
+              <span class="sf-page-intro-kicker">Cardnews Automation</span>
+              <h3 class="sf-page-intro-title">리서치 주제를 고르고, 템플릿을 맞추고, 발행까지 이어갑니다.</h3>
+              <p class="sf-page-intro-copy">위쪽은 지금 무엇을 해야 하는지만 먼저 보여줍니다. 상세 에디터와 자동응답 규칙, 프로젝트 이력은 아래에서 이어서 확인합니다.</p>
+            </div>
+            <article class="sf-primary-action-card">
+              <p class="sf-primary-action-label">지금 해야 할 일</p>
+              <h4 class="sf-primary-action-title">리서치 큐에서 주제를 선택한 뒤 생성 버튼을 누르세요.</h4>
+              <p class="sf-primary-action-copy">단계 탭은 유지하되 현재 작업은 한 번에 하나만 강조합니다. 위의 KPI는 상태 확인용이고 실제 작업은 리서치에서 시작합니다.</p>
+              <a href="#researchScenarioSection" class="sf-primary-action-cta">리서치부터 시작</a>
+            </article>
+          </div>
+        </section>
+
+        <section class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+          <article class="soft-kpi p-5 rounded-xl">
+            <p class="text-xs text-slate-400">연결 계정 수</p>
+            <p id="kpiAccounts" class="value mt-1">0개</p>
+          </article>
+          <article class="soft-kpi p-5 rounded-xl">
+            <p class="text-xs text-slate-400">활성 템플릿</p>
+            <p id="kpiTemplates" class="value mt-1">0개</p>
+          </article>
+          <article class="soft-kpi p-5 rounded-xl">
+            <p class="text-xs text-slate-400">DM 자동응답 규칙</p>
+            <p id="kpiDmRules" class="value mt-1">0개</p>
+          </article>
+          <article class="soft-kpi p-5 rounded-xl">
+            <p class="text-xs text-slate-400">예정 발행</p>
+            <p id="kpiScheduled" class="value mt-1">0건</p>
+          </article>
+        </section>
+
+        <section class="soft-card p-4">
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <h3 class="text-base font-bold text-white">작업 단계 집중 모드</h3>
+              <p class="text-sm text-slate-400 mt-1">리서치, 템플릿, 발행 단계만 번갈아 보면서 한 화면의 복잡도를 줄입니다.</p>
+            </div>
+            <div class="flex flex-wrap gap-2" id="workspaceStageTabs">
+              <button type="button" data-workspace-stage="research" class="soft-btn soft-btn-primary px-3 py-2 rounded-lg text-sm">리서치</button>
+              <button type="button" data-workspace-stage="template" class="soft-btn px-3 py-2 rounded-lg text-sm">템플릿</button>
+              <button type="button" data-workspace-stage="publish" class="soft-btn px-3 py-2 rounded-lg text-sm">발행</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="soft-card p-6" id="researchScenarioSection">
+          <div class="section-head">
+            <div class="section-head-copy">
+              <h3 class="text-lg font-bold text-white">0) 계정별 리서치 시나리오</h3>
+              <p class="text-sm text-slate-400 mt-2">각 계정이 다른 주제로 스스로 리서치하고, 맞는 템플릿과 톤으로 초안을 바로 만들 수 있도록 운영 시나리오를 먼저 고릅니다.</p>
+            </div>
+            <span class="text-xs px-2 py-1 rounded-md bg-indigo-500/20 text-indigo-200 border border-indigo-400/30">계정별 주제 큐</span>
+          </div>
+          <div class="mt-4 scenario-grid" id="scenarioGrid"></div>
+        </section>
+
+        <section class="grid grid-cols-1 xl:grid-cols-2 gap-6" id="researchInsightSection">
+          <article class="soft-card p-6">
+            <div class="section-head">
+              <div class="section-head-copy">
+                <h3 class="text-lg font-bold text-white">0-1) 계정 인텔리전스</h3>
+                <p class="text-sm text-slate-400 mt-2">계정 성격, 주요 독자, 콘텐츠 축, 추천 발행 시간대를 보고 리서치 방향을 맞춥니다.</p>
+              </div>
+              <span id="accountIntelSummary" class="text-xs px-2 py-1 rounded-md bg-emerald-500/20 text-emerald-200 border border-emerald-400/30">선택 계정 기준</span>
+            </div>
+            <div class="mt-4 intel-grid" id="accountIntelGrid"></div>
+          </article>
+
+          <article class="soft-card p-6">
+            <div class="section-head">
+              <div class="section-head-copy">
+                <h3 class="text-lg font-bold text-white">0-2) 리서치 큐</h3>
+                <p class="text-sm text-slate-400 mt-2">선택한 시나리오와 계정에 맞는 주제 후보입니다. 클릭하면 주제, 키워드, 톤, 추천 템플릿이 생성 폼에 채워집니다.</p>
+              </div>
+              <span id="researchSummary" class="text-xs px-2 py-1 rounded-md bg-sky-500/20 text-sky-200 border border-sky-400/30">주제 0개</span>
+            </div>
+            <div class="mt-4 research-grid" id="researchGrid"></div>
+          </article>
+        </section>
+
+        <section class="soft-card p-6" id="researchQueueSection">
+          <div class="section-head">
+            <div class="section-head-copy">
+              <h3 class="text-lg font-bold text-white">0-3) 저장형 리서치 큐</h3>
+              <p class="text-sm text-slate-400 mt-2">좋은 주제는 큐에 저장해 두고, 계정별 우선순위와 템플릿 적합도를 기준으로 나중에 바로 생성할 수 있습니다.</p>
+            </div>
+            <span id="queueSummary" class="text-xs px-2 py-1 rounded-md bg-violet-500/20 text-violet-200 border border-violet-400/30">저장 0건</span>
+          </div>
+          <div class="mt-4 queue-grid" id="researchQueueGrid"></div>
+        </section>
+
+        <section class="soft-card p-6" id="templateLibrarySection">
+          <div class="flex items-center justify-between">
+            <h3 class="text-lg font-bold text-white">1) 템플릿 라이브러리 · 스타일 제어</h3>
+            <span class="text-xs px-2 py-1 rounded-md bg-sky-500/20 text-sky-200 border border-sky-400/30">AI 연동 + 다중 채널</span>
+          </div>
+          <p class="text-sm text-slate-400 mt-2">템플릿을 즉시 복제/수정/삭제하고 폰트·색상·배치까지 커스터마이즈하세요.</p>
+          <div class="mt-4">
+            <div class="template-grid" id="templateCards"></div>
+          </div>
+        </section>
+
+        <section class="grid grid-cols-1 xl:grid-cols-2 gap-6" id="previewRuleSection">
+          <article class="soft-card p-6">
+            <div class="flex items-center justify-between">
+              <h3 class="text-lg font-bold text-white">2) 템플릿 에디터 (현재 선택: <span id="activeTemplateName">없음</span>)</h3>
+            </div>
+            <p class="text-sm text-slate-400 mt-2">현재 템플릿이 생성 파라미터의 기본 스타일로 반영됩니다.</p>
+
+            <div class="mt-5 grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+              <label class="block">
+                <span class="text-slate-300 text-xs uppercase tracking-wider">템플릿명</span>
+                <input id="templateName" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2.5 text-white" value="새 템플릿" />
+              </label>
+              <label class="block">
+                <span class="text-slate-300 text-xs uppercase tracking-wider">톤</span>
+                <select id="templateTone" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2.5 text-white">
+                  <option value="balanced">균형형</option>
+                  <option value="professional">전문형</option>
+                  <option value="dynamic">다이내믹형</option>
+                  <option value="friendly">친근형</option>
+                  <option value="narrative">스토리형</option>
+                </select>
+              </label>
+              <label class="block md:col-span-2">
+                <span class="text-slate-300 text-xs uppercase tracking-wider">템플릿 설명</span>
+                <input id="templateDesc" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2.5 text-white" placeholder="운영 기준 템플릿 목적을 한 줄로 입력" />
+              </label>
+              <label class="block">
+                <span class="text-slate-300 text-xs uppercase tracking-wider">슬라이드 수</span>
+                <select id="templateSlides" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2.5 text-white">
+                  <option value="4">4장</option>
+                  <option value="5">5장</option>
+                  <option value="6">6장</option>
+                  <option value="8" selected>8장</option>
+                  <option value="10">10장</option>
+                </select>
+              </label>
+              <label class="block">
+                <span class="text-slate-300 text-xs uppercase tracking-wider">형식</span>
+                <select id="templateFormat" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2.5 text-white"></select>
+              </label>
+              <label class="block md:col-span-2">
+                <span class="text-slate-300 text-xs uppercase tracking-wider">구조(슬라이드 라인)</span>
+                <textarea id="templateStructure" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2.5 text-white" rows="3" placeholder="줄바꿈으로 각 항목을 작성"></textarea>
+              </label>
+              <label class="block">
+                <span class="text-slate-300 text-xs uppercase tracking-wider">폰트 패밀리</span>
+                <select id="templateFont" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2.5 text-white"></select>
+              </label>
+              <label class="block">
+                <span class="text-slate-300 text-xs uppercase tracking-wider">이미지 비율 가이드</span>
+                <select id="templateFormatInfo" class="mt-1 w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2.5 text-slate-300" disabled></select>
+              </label>
+            </div>
+
+            <div class="editor-grid mt-4">
+              <label class="block">
+                <span class="text-slate-300 text-xs uppercase tracking-wider">제목 크기</span>
+                <input id="templateTitleSize" type="range" min="14" max="36" value="18" class="w-full mt-1" />
+              </label>
+              <label class="block">
+                <span class="text-slate-300 text-xs uppercase tracking-wider">본문 크기</span>
+                <input id="templateBodySize" type="range" min="11" max="22" value="13" class="w-full mt-1" />
+              </label>
+              <label class="block">
+                <span class="text-slate-300 text-xs uppercase tracking-wider">타이틀 정렬</span>
+                <select id="templateTitleAlign" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2.5 text-white">
+                  <option value="left">좌측</option>
+                  <option value="center">가운데</option>
+                  <option value="right">우측</option>
+                </select>
+              </label>
+              <label class="block">
+                <span class="text-slate-300 text-xs uppercase tracking-wider">본문 정렬</span>
+                <select id="templateBodyAlign" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2.5 text-white">
+                  <option value="left">좌측</option>
+                  <option value="center">가운데</option>
+                  <option value="right">우측</option>
+                </select>
+              </label>
+              <label class="block">
+                <span class="text-slate-300 text-xs uppercase tracking-wider">타이틀 위치</span>
+                <select id="templateTitlePos" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2.5 text-white">
+                  <option value="top">상단</option>
+                  <option value="middle">중앙</option>
+                  <option value="bottom">하단</option>
+                </select>
+              </label>
+              <label class="block">
+                <span class="text-slate-300 text-xs uppercase tracking-wider">태그(콤마)</span>
+                <input id="templateTags" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2.5 text-white" placeholder="브랜딩, 카드뉴스, 캠페인" />
+              </label>
+              <label class="block">
+                <span class="text-slate-300 text-xs uppercase tracking-wider">텍스트 색상</span>
+                <input id="templateTextColor" type="color" class="mt-1 w-full h-10 bg-transparent" value="#f8fafc" />
+              </label>
+              <label class="block">
+                <span class="text-slate-300 text-xs uppercase tracking-wider">강조 색상</span>
+                <input id="templateAccentColor" type="color" class="mt-1 w-full h-10 bg-transparent" value="#6366f1" />
+              </label>
+              <label class="block">
+                <span class="text-slate-300 text-xs uppercase tracking-wider">배경 색상</span>
+                <input id="templateBgColor" type="color" class="mt-1 w-full h-10 bg-transparent" value="#0f172a" />
+              </label>
+              <label class="block"></label>
+            </div>
+
+            <div class="mt-4 flex gap-2 flex-wrap">
+              <button id="templateSaveBtn" type="button" class="soft-btn soft-btn-primary px-4 py-2.5 rounded-lg">템플릿 저장</button>
+              <button id="templateNewBtn" type="button" class="soft-btn px-4 py-2.5 rounded-lg">새 템플릿</button>
+              <button id="templateDeleteBtn" type="button" class="soft-btn px-4 py-2.5 rounded-lg text-rose-200 border border-rose-500/50">선택 템플릿 삭제</button>
+              <button id="applyTemplateFormBtn" type="button" class="soft-btn px-4 py-2.5 rounded-lg">현재 값으로 생성에 적용</button>
+            </div>
+          </article>
+
+          <article class="soft-card p-6">
+            <div class="flex items-center justify-between">
+              <h3 class="text-lg font-bold text-white">3) 채널/AI 자동화</h3>
+              <span class="text-xs px-2 py-1 rounded-md bg-emerald-500/20 text-emerald-200 border border-emerald-400/30">다중 플랫폼 동시 발행</span>
+            </div>
+            <p class="text-sm text-slate-400 mt-2">채널별 형식/포맷을 직접 설정하고 AI 키를 등록해 스크립트 기반 생성 파이프라인을 시작하세요.</p>
+
+            <label class="block mt-3">
+              <span class="text-slate-300 text-xs uppercase tracking-wider">생성 주제</span>
+              <input id="topicInput" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2.5 text-white" placeholder="브랜드 메시지와 핵심 키워드를 입력하세요" />
+            </label>
+
+            <div class="mt-3 grid grid-cols-1 md:grid-cols-2 gap-3">
+              <label class="block">
+                <span class="text-slate-300 text-xs uppercase tracking-wider">슬라이드 수</span>
+                <input id="slideCountInput" type="number" min="4" max="12" value="8" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2.5 text-white" />
+              </label>
+              <label class="block">
+                <span class="text-slate-300 text-xs uppercase tracking-wider">톤</span>
+                <select id="toneInput" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2.5 text-white">
+                  <option value="balanced">균형형</option>
+                  <option value="professional">전문형</option>
+                  <option value="dynamic">다이내믹형</option>
+                  <option value="friendly">친근형</option>
+                  <option value="narrative">내러티브형</option>
+                </select>
+              </label>
+            </div>
+
+            <label class="block mt-3">
+              <span class="text-slate-300 text-xs uppercase tracking-wider">주제 기반 키워드(쉼표 구분)</span>
+              <input id="keywordsInput" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2.5 text-white" placeholder="브랜드,신규 이벤트,혜택" />
+            </label>
+            <div class="mt-4">
+              <p class="text-xs text-slate-300 uppercase tracking-wider">발행 계정(최소 1개)</p>
+              <div id="accountsWrap" class="mt-2 grid grid-cols-1 md:grid-cols-2 gap-2"></div>
+            </div>
+
+            <div class="mt-4 grid gap-3 md:grid-cols-2">
+              <label class="block">
+                <span class="text-slate-300 text-xs uppercase tracking-wider">AI 제공자</span>
+                <select id="aiProvider" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2.5 text-white"></select>
+              </label>
+              <label class="block">
+                <span class="text-slate-300 text-xs uppercase tracking-wider">AI API 키</span>
+                <input id="aiKey" type="password" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2.5 text-white" placeholder="연동 키를 입력" />
+              </label>
+            </div>
+
+            <div class="mt-4">
+              <p class="text-xs text-slate-300 uppercase tracking-wider">채널 선택</p>
+              <div id="channelsWrap" class="mt-2 grid gap-2"></div>
+            </div>
+
+            <div class="mt-4">
+              <label class="block">
+                <span class="text-slate-300 text-xs uppercase tracking-wider">오토파일럿</span>
+                <div class="mt-2 grid md:grid-cols-3 gap-2">
+                  <label class="insight-item">
+                    <span class="text-xs text-slate-300">자동 발행</span>
+                    <input id="automationEnabled" type="checkbox" class="mt-2 accent-indigo-500" />
+                  </label>
+                  <label class="insight-item">
+                    <span class="text-xs text-slate-300">빈도</span>
+                    <select id="automationFrequency" class="mt-2 w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2.5 text-white">
+                      <option value="hourly">매 시간</option>
+                      <option value="daily" selected>매일</option>
+                      <option value="weekdays">평일</option>
+                    </select>
+                  </label>
+                  <label class="insight-item">
+                    <span class="text-xs text-slate-300">일일 최대</span>
+                    <input id="automationMax" type="number" min="1" max="10" value="2" class="mt-2 w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2.5 text-white" />
+                  </label>
+                </div>
+              </label>
+            </div>
+
+            <label class="block mt-3">
+              <span class="text-slate-300 text-xs uppercase tracking-wider">예약 발행 시간</span>
+              <input id="scheduleInput" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2.5 text-white" type="datetime-local" />
+            </label>
+
+            <div class="mt-4 flex flex-wrap gap-2">
+              <button id="generateBtn" type="button" class="soft-btn soft-btn-primary px-4 py-2.5 rounded-lg">AI 카드뉴스 생성</button>
+              <button id="simulateBtn" type="button" class="soft-btn px-4 py-2.5 rounded-lg">DM 응답 시뮬레이션</button>
+              <button id="publishBtn" type="button" class="soft-btn px-4 py-2.5 rounded-lg">초안 발행/예약</button>
+            </div>
+            <p id="statusText" class="text-xs text-slate-400 mt-4">대기</p>
+          </article>
+        </section>
+
+        <section class="grid grid-cols-1 xl:grid-cols-2 gap-6" id="editorPublishSection">
+          <article class="soft-card p-6">
+            <h3 class="text-lg font-bold text-white">4) 생성 결과 미리보기</h3>
+            <p class="text-sm text-slate-400 mt-2">AI가 생성한 슬라이드와 이미지 프롬프트를 검토 후 발행하세요.</p>
+            <div id="cardPreview" class="mt-4 card-carousel"></div>
+            <div id="emptyPreview" class="mt-3 text-sm text-slate-500">주제를 입력하고 카드뉴스를 생성해 주세요.</div>
+          </article>
+
+          <article class="soft-card p-6">
+            <h3 class="text-lg font-bold text-white">5) DM 자동응답 규칙</h3>
+            <span class="text-xs px-2 py-1 rounded-md bg-violet-500/20 text-violet-200 border border-violet-400/30">ManyChat 연동 포맷</span>
+            <p class="text-sm text-slate-400 mt-2">인입 메시지 키워드 기준 응답 예측/자동 응답 규칙을 설정합니다.</p>
+            <label class="block mt-3">
+              <span class="text-slate-300 text-xs uppercase tracking-wider">고객 메시지 테스트</span>
+              <input id="dmMessageInput" class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2.5 text-white" placeholder="예: 가격은 어떻게 되나요?" />
+            </label>
+            <div id="simResult" class="mt-3 text-sm"></div>
+            <div id="rulesWrap" class="mt-5 space-y-2"></div>
+            <div class="mt-4 insight-item">
+              <h4>규칙 추가</h4>
+              <div class="grid grid-cols-1 md:grid-cols-4 gap-2 mt-2">
+                <input id="ruleKeyword" placeholder="키워드(예: 가격)" class="bg-slate-900 border border-slate-700 rounded-lg px-3 py-2" />
+                <input id="ruleReply" placeholder="자동 응답 텍스트" class="bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 md:col-span-2" />
+                <select id="ruleAction" class="bg-slate-900 border border-slate-700 rounded-lg px-3 py-2">
+                  <option value="auto">자동 전송</option>
+                  <option value="approve">승인 필요</option>
+                  <option value="notify">알림만</option>
+                </select>
+              </div>
+              <button id="addRuleBtn" type="button" class="soft-btn mt-2 px-3 py-2 rounded-lg">추가</button>
+            </div>
+          </article>
+        </section>
+
+        <section class="soft-card p-6" id="projectHistorySection">
+          <h3 class="text-lg font-bold text-white">6) 프로젝트 기록</h3>
+          <div id="projectsWrap" class="mt-4 space-y-2 text-sm"></div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <script src="../mobile-optimization.js" defer></script>
+  <script>
+    (function () {
+      const core = window.CardNewsAutomationCore || {};
+      const { getChannelLibrary, getDefaultFormats, getDefaultFonts, buildTemplatePayload, buildDraftPayload, makeStyleVars } = core;
+      const state = {
+        accounts: [],
+        templates: [],
+        rules: [],
+        projects: [],
+        selectedAccounts: new Set(),
+        draft: null,
+        selectedTemplateId: null,
+        lastCreatePayload: null,
+        aiSettings: { provider: 'openai', apiKey: '', apiEngine: 'gpt-4o-mini' },
+        selectedScenarioId: 'educational',
+        selectedResearchId: null,
+        researchQueue: []
+      };
+
+      const SCENARIO_LIBRARY = [
+        {
+          id: 'educational',
+          title: '교육형 카드뉴스',
+          summary: '개념 설명, 방법론, 체크리스트를 단계별로 정리',
+          tone: 'professional',
+          slideCount: 6,
+          tags: ['정보형', '저장 유도', '브랜드 신뢰']
+        },
+        {
+          id: 'offer',
+          title: '프로모션/오퍼',
+          summary: '혜택, 기간, 행동 유도를 빠르게 전달',
+          tone: 'dynamic',
+          slideCount: 5,
+          tags: ['전환형', 'CTA', '광고']
+        },
+        {
+          id: 'story',
+          title: '스토리텔링',
+          summary: '브랜드 스토리, 고객 사례, 전후 비교에 적합',
+          tone: 'narrative',
+          slideCount: 8,
+          tags: ['브랜딩', '사례형', '감정선']
+        },
+        {
+          id: 'local',
+          title: '로컬 매장 운영',
+          summary: '방문 동기, 신메뉴, 현장 분위기, 이벤트를 묶어 전달',
+          tone: 'friendly',
+          slideCount: 6,
+          tags: ['오프라인 유입', '이벤트', '친근함']
+        }
+      ];
+
+      const ACCOUNT_RESEARCH_LIBRARY = {
+        ig_account_01: [
+          { id: 'brand-proof', title: '브랜드 신뢰를 높이는 3가지 운영 포인트', score: 96, scenario: 'educational', keywords: ['브랜드 신뢰', '운영 자동화', '성과 지표'], recommendedTags: ['브랜딩', '전략'], templateHint: 'corporate', outline: ['문제 제기', '신뢰 요소', '자동화 근거', 'CTA'] },
+          { id: 'saas-case', title: '운영 자동화 도입 전후 성과 비교', score: 93, scenario: 'story', keywords: ['도입 사례', '전환율', '시간 절감'], recommendedTags: ['전략', '성과'], templateHint: 'corporate', outline: ['Before', 'Pain Point', 'After', '결과'] },
+          { id: 'trend-brief', title: '이번 주 마케팅 자동화 트렌드 브리프', score: 89, scenario: 'educational', keywords: ['트렌드', '자동화', '마케팅'], recommendedTags: ['브랜딩', '트렌드'], templateHint: 'minimal', outline: ['트렌드 요약', '시사점', '실행 팁', 'CTA'] }
+        ],
+        ig_account_02: [
+          { id: 'store-offer', title: '이번 주 방문 고객 혜택 카드뉴스', score: 94, scenario: 'offer', keywords: ['오픈 이벤트', '방문 혜택', '재방문'], recommendedTags: ['이벤트', '친근함'], templateHint: 'dynamic', outline: ['혜택 한 줄', '혜택 상세', '기간', '방문 CTA'] },
+          { id: 'menu-story', title: '신메뉴/신상품 비하인드 스토리', score: 91, scenario: 'local', keywords: ['신상품', '매장 분위기', '로컬'], recommendedTags: ['매장운영', '스토리'], templateHint: 'dynamic', outline: ['첫인상', '왜 만들었나', '추천 포인트', '방문 CTA'] },
+          { id: 'ugc-loop', title: '고객 후기를 모으는 참여형 카드뉴스', score: 87, scenario: 'story', keywords: ['리뷰', '참여 유도', 'UGC'], recommendedTags: ['리뷰', '친근함'], templateHint: 'minimal', outline: ['리뷰 소개', '공감 포인트', '참여 방법', '리그램 CTA'] }
+        ],
+        ig_account_03: [
+          { id: 'limited-deal', title: '한정 혜택 전환형 캠페인', score: 95, scenario: 'offer', keywords: ['한정 혜택', '전환', '광고 카피'], recommendedTags: ['캠페인', '전환'], templateHint: 'dynamic', outline: ['혜택', '대상', '증거', '즉시 CTA'] },
+          { id: 'campaign-proof', title: '캠페인 성과 지표 카드뉴스', score: 90, scenario: 'educational', keywords: ['성과 지표', '광고 효율', 'AB테스트'], recommendedTags: ['광고', '성과'], templateHint: 'corporate', outline: ['목표', '성과', '개선 포인트', '다음 행동'] }
+        ]
+      };
+
+      const refs = {
+        headerStatus: document.getElementById('headerStatus'),
+        topicInput: document.getElementById('topicInput'),
+        slideCountInput: document.getElementById('slideCountInput'),
+        toneInput: document.getElementById('toneInput'),
+        keywordInput: document.getElementById('keywordsInput'),
+        scheduleInput: document.getElementById('scheduleInput'),
+        kpiAccounts: document.getElementById('kpiAccounts'),
+        kpiTemplates: document.getElementById('kpiTemplates'),
+        kpiDmRules: document.getElementById('kpiDmRules'),
+        kpiScheduled: document.getElementById('kpiScheduled'),
+        accountsWrap: document.getElementById('accountsWrap'),
+        channelsWrap: document.getElementById('channelsWrap'),
+        templateCards: document.getElementById('templateCards'),
+        templateName: document.getElementById('templateName'),
+        templateTone: document.getElementById('templateTone'),
+        templateDesc: document.getElementById('templateDesc'),
+        templateSlides: document.getElementById('templateSlides'),
+        templateFormat: document.getElementById('templateFormat'),
+        templateFormatInfo: document.getElementById('templateFormatInfo'),
+        templateStructure: document.getElementById('templateStructure'),
+        templateFont: document.getElementById('templateFont'),
+        templateTitleSize: document.getElementById('templateTitleSize'),
+        templateBodySize: document.getElementById('templateBodySize'),
+        templateTitleAlign: document.getElementById('templateTitleAlign'),
+        templateBodyAlign: document.getElementById('templateBodyAlign'),
+        templateTitlePos: document.getElementById('templateTitlePos'),
+        templateTextColor: document.getElementById('templateTextColor'),
+        templateAccentColor: document.getElementById('templateAccentColor'),
+        templateBgColor: document.getElementById('templateBgColor'),
+        templateTags: document.getElementById('templateTags'),
+        templateSaveBtn: document.getElementById('templateSaveBtn'),
+        templateNewBtn: document.getElementById('templateNewBtn'),
+        templateDeleteBtn: document.getElementById('templateDeleteBtn'),
+        templateApplyBtn: document.getElementById('applyTemplateFormBtn'),
+        activeTemplateName: document.getElementById('activeTemplateName'),
+        aiProvider: document.getElementById('aiProvider'),
+        aiKey: document.getElementById('aiKey'),
+        automationEnabled: document.getElementById('automationEnabled'),
+        automationFrequency: document.getElementById('automationFrequency'),
+        automationMax: document.getElementById('automationMax'),
+        generateBtn: document.getElementById('generateBtn'),
+        simulateBtn: document.getElementById('simulateBtn'),
+        publishBtn: document.getElementById('publishBtn'),
+        clearDraftBtn: document.getElementById('clearDraftBtn'),
+        refreshPageBtn: document.getElementById('refreshPageBtn'),
+        statusText: document.getElementById('statusText'),
+        cardPreview: document.getElementById('cardPreview'),
+        emptyPreview: document.getElementById('emptyPreview'),
+        dmMessageInput: document.getElementById('dmMessageInput'),
+        simResult: document.getElementById('simResult'),
+        rulesWrap: document.getElementById('rulesWrap'),
+        projectsWrap: document.getElementById('projectsWrap'),
+        ruleKeyword: document.getElementById('ruleKeyword'),
+        ruleReply: document.getElementById('ruleReply'),
+        ruleAction: document.getElementById('ruleAction'),
+        addRuleBtn: document.getElementById('addRuleBtn'),
+        scenarioGrid: document.getElementById('scenarioGrid'),
+        accountIntelGrid: document.getElementById('accountIntelGrid'),
+        accountIntelSummary: document.getElementById('accountIntelSummary'),
+        researchGrid: document.getElementById('researchGrid'),
+        researchSummary: document.getElementById('researchSummary'),
+        researchQueueGrid: document.getElementById('researchQueueGrid'),
+        queueSummary: document.getElementById('queueSummary')
+      };
+
+      const STORAGE_KEYS = {
+        ai: 'sf_cardnews_ai_settings',
+        researchQueue: 'sf_cardnews_research_queue'
+      };
+
+      const safeText = (value, fallback = '') => {
+        if (value === null || typeof value === 'undefined') return fallback;
+        return String(value);
+      };
+      const safeNum = (value, fallback = 0) => {
+        const n = Number(value);
+        return Number.isFinite(n) ? n : fallback;
+      };
+
+      function setHeader(text) {
+        if (refs.headerStatus) refs.headerStatus.textContent = text;
+      }
+
+      function loadAiSettings() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEYS.ai);
+          if (!raw) return;
+          const parsed = JSON.parse(raw);
+          if (parsed.provider) state.aiSettings.provider = parsed.provider;
+          if (parsed.apiKey) state.aiSettings.apiKey = parsed.apiKey;
+          if (parsed.apiEngine) state.aiSettings.apiEngine = parsed.apiEngine;
+        } catch (_) {}
+
+        if (refs.aiProvider) refs.aiProvider.value = state.aiSettings.provider || 'openai';
+        if (refs.aiKey) refs.aiKey.value = state.aiSettings.apiKey || '';
+      }
+
+      function saveAiSettings() {
+        const providers = core && core.getAiProviders ? core.getAiProviders() : {};
+        const provider = providers[refs.aiProvider.value] || {};
+        state.aiSettings = {
+          provider: refs.aiProvider.value,
+          apiEngine: provider.defaultEngine || state.aiSettings.apiEngine,
+          apiKey: refs.aiKey.value.trim()
+        };
+        localStorage.setItem(STORAGE_KEYS.ai, JSON.stringify(state.aiSettings));
+      }
+
+      function loadResearchQueue() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEYS.researchQueue);
+          if (!raw) return [];
+          const parsed = JSON.parse(raw);
+          return Array.isArray(parsed) ? parsed : [];
+        } catch (_) {
+          return [];
+        }
+      }
+
+      function persistResearchQueue() {
+        localStorage.setItem(STORAGE_KEYS.researchQueue, JSON.stringify(state.researchQueue));
+      }
+
+      function syncAiProviderOptions() {
+        const providers = core && core.getAiProviders ? core.getAiProviders() : { openai: { keyLabel: 'OpenAI API Key', placeholder: 'sk-...' } };
+        const entries = Object.entries(providers);
+        refs.aiProvider.innerHTML = entries.map(([key, item]) => `<option value="${key}">${item.keyLabel}</option>`).join('');
+        refs.aiProvider.value = state.aiSettings.provider;
+      }
+
+      function syncTemplateSelectData() {
+        const formats = getDefaultFormats ? getDefaultFormats() : {};
+        refs.templateFormat.innerHTML = Object.values(formats)
+          .map((f) => `<option value="${f.id}">${safeText(f.label)} (${safeText(f.pixel)})</option>`)
+          .join('');
+
+        const fonts = getDefaultFonts ? getDefaultFonts() : ['Inter', 'Pretendard'];
+        refs.templateFont.innerHTML = fonts.map((font) => `<option value="${font}">${font}</option>`).join('');
+      }
+
+      function updateTemplateFormatInfo(formatId) {
+        const info = getDefaultFormats && getDefaultFormats()[formatId];
+        refs.templateFormatInfo.value = info ? `${safeText(info.label)} / ${safeText(info.width)}×${safeText(info.height)} / ${safeText(info.pixel)}` : '';
+      }
+
+      function renderChannels() {
+        const channels = getChannelLibrary ? getChannelLibrary() : {};
+        refs.channelsWrap.innerHTML = Object.values(channels).map((channel) => `
+          <label class="channel-row">
+            <label class="flex items-center justify-between">
+              <span class="font-medium text-sm">${channel.icon} ${safeText(channel.label)}</span>
+              <input class="channel-toggle" data-channel="${channel.key}" type="checkbox" checked />
+            </label>
+            <p class="text-xs text-slate-400">${safeText(channel.policy)}</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+              <label class="text-xs text-slate-300">
+                형식
+                <select class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white channel-format" data-channel="${channel.key}">
+                  ${(channel.formats || []).map((formatId) => {
+                    const f = getDefaultFormats ? getDefaultFormats()[formatId] : null;
+                    return `<option value="${formatId}">${safeText(f ? f.label : formatId)}</option>`;
+                  }).join('')}
+                </select>
+              </label>
+              <label class="text-xs text-slate-300">
+                해시태그 포함
+                <select class="mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white channel-hashtag" data-channel="${channel.key}">
+                  <option value="1">포함</option>
+                  <option value="0">제외</option>
+                </select>
+              </label>
+            </div>
+          </label>
+        `).join('');
+      }
+
+      function collectChannels() {
+        const rows = refs.channelsWrap.querySelectorAll('.channel-toggle[data-channel]');
+        const payload = [];
+        rows.forEach((checkbox) => {
+          const key = checkbox.dataset.channel;
+          if (!checkbox.checked) return;
+          const format = refs.channelsWrap.querySelector(`.channel-format[data-channel="${key}"]`)?.value || 'instagram-carousel-4-5';
+          const hashtag = refs.channelsWrap.querySelector(`.channel-hashtag[data-channel="${key}"]`)?.value;
+          payload.push({ platform: key, format, include_hashtags: hashtag === '1' });
+        });
+        return payload;
+      }
+
+      function normalizeChannelPayload(channels) {
+        if (!Array.isArray(channels) || !channels.length) return [];
+        return channels.map((item) => ({
+          platform: safeText(item.platform).toLowerCase(),
+          format: safeText(item.format),
+          include_hashtags: Boolean(item.include_hashtags)
+        }));
+      }
+
+      function setTemplateForm(template) {
+        const source = template || {};
+        state.selectedTemplateId = template?.id || null;
+        refs.templateName.value = safeText(source.name, '새 템플릿');
+        refs.templateTone.value = safeText(source.tone, 'balanced');
+        refs.templateDesc.value = safeText(source.description, '');
+        refs.templateSlides.value = String(source.slides || source.slide_count || 8);
+        refs.templateFormat.value = safeText(source.format, refs.templateFormat.options[0]?.value || '');
+        refs.templateStructure.value = Array.isArray(source.structure) ? source.structure.join('\n') : safeText(source.structure, '');
+        const design = source.design || {};
+        refs.templateFont.value = safeText(design.fontFamily, 'Pretendard');
+        refs.templateTitleSize.value = String(safeNum(design.titleSize, 18));
+        refs.templateBodySize.value = String(safeNum(design.bodySize, 13));
+        refs.templateTitleAlign.value = safeText(design.titleAlign, 'left');
+        refs.templateBodyAlign.value = safeText(design.bodyAlign, 'left');
+        refs.templateTitlePos.value = safeText(design.titlePosition, 'top');
+        refs.templateTextColor.value = safeText(design.textColor, '#f8fafc');
+        refs.templateAccentColor.value = safeText(design.accentColor, '#6366f1');
+        refs.templateBgColor.value = safeText(design.backgroundColor, '#0f172a');
+        refs.templateTags.value = Array.isArray(source.tags) ? source.tags.join(', ') : '';
+        refs.activeTemplateName.textContent = safeText(source.name, '없음');
+        updateTemplateFormatInfo(refs.templateFormat.value);
+      }
+
+      function renderTemplateCards() {
+        if (!state.templates.length) {
+          refs.templateCards.innerHTML = '<p class="text-sm text-slate-500">저장된 템플릿이 없습니다. 기본 템플릿을 저장해 두세요.</p>';
+          return;
+        }
+        refs.templateCards.innerHTML = state.templates.map((template) => `
+          <article class="template-card ${template.id === state.selectedTemplateId ? 'active' : ''}">
+            <p class="text-sm text-white font-bold">${safeText(template.name)} (${safeText(template.slides || 0)}장)</p>
+            <p class="text-xs text-slate-400 mt-1">${safeText(template.description)}</p>
+            <div class="template-tags mt-2">
+              <span class="template-tag">${safeText(template.tone)}</span>
+              <span class="template-tag">${safeText(template.format)}</span>
+            </div>
+            <p class="text-xs text-slate-400 mt-2">아이템 수: ${safeText(template.structure?.length, 0)} / 톤: ${safeText(template.tone)}</p>
+            <div class="template-actions">
+              <button type="button" class="soft-btn px-3 py-2 rounded-lg template-apply" data-template-id="${safeText(template.id)}">선택</button>
+              <button type="button" class="soft-btn px-3 py-2 rounded-lg template-load" data-template-id="${safeText(template.id)}">편집</button>
+              <button type="button" class="soft-btn px-3 py-2 rounded-lg template-delete" data-template-id="${safeText(template.id)}">삭제</button>
+            </div>
+          </article>
+        `).join('');
+      }
+
+      function collectTemplatePayload() {
+        return buildTemplatePayload({
+          id: state.selectedTemplateId || undefined,
+          name: refs.templateName.value,
+          tone: refs.templateTone.value,
+          description: refs.templateDesc.value,
+          slides: refs.templateSlides.value,
+          structure: refs.templateStructure.value,
+          fontFamily: refs.templateFont.value,
+          titleSize: refs.templateTitleSize.value,
+          bodySize: refs.templateBodySize.value,
+          titleAlign: refs.templateTitleAlign.value,
+          bodyAlign: refs.templateBodyAlign.value,
+          titlePosition: refs.templateTitlePos.value,
+          textColor: refs.templateTextColor.value,
+          accentColor: refs.templateAccentColor.value,
+          backgroundColor: refs.templateBgColor.value,
+          format: refs.templateFormat.value,
+          tags: (safeText(refs.templateTags.value, '')).split(',').map((item) => item.trim()).filter(Boolean)
+        });
+      }
+
+      function applyTemplateStyle(design = {}) {
+        const vars = makeStyleVars ? makeStyleVars(design) : {};
+        Object.entries(vars).forEach(([name, value]) => {
+          refs.cardPreview.style.setProperty(name, value);
+          document.documentElement.style.setProperty(name, value);
+        });
+      }
+
+      function renderAccounts() {
+        refs.accountsWrap.innerHTML = state.accounts
+          .map((account) => {
+            const checked = state.selectedAccounts.has(account.id) ? 'checked' : '';
+            const statusText = account.status === 'connected' ? '연결됨' : '연결 필요';
+            const statusClass = account.status === 'connected' ? 'bg-emerald-500/20 text-emerald-200 border-emerald-400/30' : 'bg-amber-500/20 text-amber-200 border-amber-400/30';
+            return `<label class="flex items-center gap-2 bg-slate-900 border border-slate-700 rounded-lg px-3 py-2.5 text-sm">
+              <input type="checkbox" class="account-check" value="${account.id}" ${checked} />
+              <span class="font-semibold">${safeText(account.name)}</span>
+              <span class="text-xs text-slate-400">(${safeText(account.handle)})</span>
+              <span class="dm-pill ${statusClass}">${statusText}</span>
+            </label>`;
+          }).join('');
+
+        refs.accountsWrap.querySelectorAll('.account-check').forEach((input) => {
+          input.addEventListener('change', () => {
+            if (input.checked) {
+              state.selectedAccounts.add(input.value);
+            } else {
+              state.selectedAccounts.delete(input.value);
+            }
+          });
+        });
+
+        if (state.accounts.length && state.selectedAccounts.size === 0) {
+          state.accounts.forEach((account) => {
+            if (account.status === 'connected') state.selectedAccounts.add(account.id);
+          });
+          if (state.selectedAccounts.size > 0) {
+            renderAccounts();
+          }
+        }
+        renderAccountIntel();
+        renderResearchQueue();
+      }
+
+      function getPrimaryAccount() {
+        const selectedId = Array.from(state.selectedAccounts)[0];
+        return state.accounts.find((account) => String(account.id) === String(selectedId)) || state.accounts[0] || null;
+      }
+
+      function renderScenarioLibrary() {
+        if (!refs.scenarioGrid) return;
+        refs.scenarioGrid.innerHTML = SCENARIO_LIBRARY.map((scenario) => `
+          <article class="scenario-card ${scenario.id === state.selectedScenarioId ? 'active' : ''}">
+            <div class="flex items-start justify-between gap-3">
+              <div>
+                <p class="text-sm font-bold text-white">${safeText(scenario.title)}</p>
+                <p class="text-xs text-slate-400 mt-1">${safeText(scenario.summary)}</p>
+              </div>
+              <span class="scenario-chip">${safeText(scenario.slideCount)}장</span>
+            </div>
+            <div class="flex flex-wrap gap-2">
+              ${(scenario.tags || []).map((tag) => `<span class="scenario-chip">${safeText(tag)}</span>`).join('')}
+            </div>
+            <button type="button" class="soft-btn px-3 py-2 rounded-lg scenario-apply" data-scenario-id="${safeText(scenario.id)}">이 시나리오 적용</button>
+          </article>
+        `).join('');
+      }
+
+      function renderAccountIntel() {
+        if (!refs.accountIntelGrid) return;
+        const primary = getPrimaryAccount();
+        refs.accountIntelSummary.textContent = primary ? `${safeText(primary.name)} 기준` : '계정 선택 필요';
+        if (!state.accounts.length) {
+          refs.accountIntelGrid.innerHTML = '<p class="text-sm text-slate-500">연결된 계정이 없습니다.</p>';
+          return;
+        }
+        refs.accountIntelGrid.innerHTML = state.accounts.map((account) => `
+          <article class="intel-card ${primary && String(primary.id) === String(account.id) ? 'active' : ''}">
+            <div class="flex items-start justify-between gap-3">
+              <div>
+                <p class="text-sm font-bold text-white">${safeText(account.name)}</p>
+                <p class="text-xs text-slate-400">${safeText(account.handle)} · ${safeText(account.businessType, '일반 계정')}</p>
+              </div>
+              <span class="research-chip">${safeText(account.bestPostingWindow || '시간 미정')}</span>
+            </div>
+            <p class="text-xs text-slate-300">타깃: ${safeText(account.audience, '일반 팔로워')}</p>
+            <div class="intel-meta">
+              ${(account.contentPillars || []).map((item) => `<span class="research-chip">${safeText(item)}</span>`).join('')}
+            </div>
+            <button type="button" class="soft-btn px-3 py-2 rounded-lg intel-focus" data-account-id="${safeText(account.id)}">이 계정 중심으로 보기</button>
+          </article>
+        `).join('');
+      }
+
+      function scoreResearchItem(researchItem, account, template) {
+        const outlineScore = Math.min(20, (researchItem?.outline?.length || 0) * 5);
+        const scenarioScore = SCENARIO_LIBRARY.some((item) => item.id === researchItem?.scenario) ? 20 : 8;
+        const accountTags = account?.preferredTemplateTags || [];
+        const audienceMatches = (researchItem?.recommendedTags || []).filter((tag) => accountTags.includes(tag)).length;
+        const audienceScore = Math.min(25, 10 + audienceMatches * 5);
+        const templateHaystack = template
+          ? [template.name, template.description, ...(template.tags || [])].join(' ').toLowerCase()
+          : '';
+        const templateScore = Math.min(
+          25,
+          8
+            + ((researchItem?.recommendedTags || []).filter((tag) => templateHaystack.includes(String(tag).toLowerCase())).length * 6)
+            + (templateHaystack.includes(String(researchItem?.templateHint || '').toLowerCase()) ? 5 : 0)
+        );
+        const priorityScore = Math.min(10, Math.max(0, Math.round((safeNum(researchItem?.score, 0) - 80) / 2)));
+        const total = Math.min(100, outlineScore + scenarioScore + audienceScore + templateScore + priorityScore);
+
+        return {
+          total,
+          breakdown: {
+            outline: outlineScore,
+            scenario: scenarioScore,
+            audience: audienceScore,
+            template: templateScore,
+            priority: priorityScore
+          }
+        };
+      }
+
+      function getResearchCandidates() {
+        const primary = getPrimaryAccount();
+        const base = primary ? (ACCOUNT_RESEARCH_LIBRARY[primary.id] || []) : [];
+        const scenarioId = state.selectedScenarioId;
+        return base.filter((item) => !scenarioId || item.scenario === scenarioId);
+      }
+
+      function findRecommendedTemplate(researchItem) {
+        const hints = [researchItem?.templateHint, ...(researchItem?.recommendedTags || [])].filter(Boolean).map((item) => String(item).toLowerCase());
+        return state.templates.find((template) => {
+          const haystack = [
+            template.name,
+            template.description,
+            ...(Array.isArray(template.tags) ? template.tags : [])
+          ].join(' ').toLowerCase();
+          return hints.some((hint) => haystack.includes(hint));
+        }) || state.templates[0] || null;
+      }
+
+      function renderResearchQueue() {
+        if (!refs.researchGrid) return;
+        const primary = getPrimaryAccount();
+        const items = getResearchCandidates();
+        refs.researchSummary.textContent = `${items.length}개 주제 · ${primary ? safeText(primary.name) : '계정 미선택'}`;
+        if (!items.length) {
+          refs.researchGrid.innerHTML = '<p class="text-sm text-slate-500">조건에 맞는 리서치 주제가 없습니다.</p>';
+          return;
+        }
+        refs.researchGrid.innerHTML = items.map((item) => {
+          const recommendedTemplate = findRecommendedTemplate(item);
+          const score = scoreResearchItem(item, primary, recommendedTemplate);
+          return `
+            <article class="research-card ${item.id === state.selectedResearchId ? 'active' : ''}">
+              <div class="flex items-start justify-between gap-3">
+                <div>
+                  <p class="text-sm font-bold text-white">${safeText(item.title)}</p>
+                  <p class="text-xs text-slate-400 mt-1">${safeText(item.outline?.join(' · '), '')}</p>
+                </div>
+                <div class="text-right">
+                  <div class="research-score">${safeText(score.total)}</div>
+                  <p class="text-[11px] text-slate-400">추천 점수</p>
+                </div>
+              </div>
+              <div class="score-breakdown">
+                <div class="score-chip">
+                  <p class="text-[11px] text-slate-400">계정 적합도</p>
+                  <p class="text-sm font-semibold text-white">${safeText(score.breakdown.audience)}점</p>
+                </div>
+                <div class="score-chip">
+                  <p class="text-[11px] text-slate-400">템플릿 적합도</p>
+                  <p class="text-sm font-semibold text-white">${safeText(score.breakdown.template)}점</p>
+                </div>
+              </div>
+              <div class="flex flex-wrap gap-2">
+                ${(item.keywords || []).map((keyword) => `<span class="research-chip">${safeText(keyword)}</span>`).join('')}
+              </div>
+              <p class="text-xs text-slate-300">추천 템플릿: ${safeText(recommendedTemplate?.name, '기본 템플릿')}</p>
+              <div class="research-actions">
+                <button type="button" class="soft-btn px-3 py-2 rounded-lg research-apply" data-research-id="${safeText(item.id)}">주제/키워드 채우기</button>
+                <button type="button" class="soft-btn px-3 py-2 rounded-lg research-generate" data-research-id="${safeText(item.id)}">즉시 생성 준비</button>
+                <button type="button" class="soft-btn px-3 py-2 rounded-lg research-save" data-research-id="${safeText(item.id)}">큐에 저장</button>
+              </div>
+            </article>
+          `;
+        }).join('');
+      }
+
+      function renderSavedResearchQueue() {
+        if (!refs.researchQueueGrid || !refs.queueSummary) return;
+        refs.queueSummary.textContent = `저장 ${state.researchQueue.length}건`;
+        if (!state.researchQueue.length) {
+          refs.researchQueueGrid.innerHTML = '<p class="text-sm text-slate-500">저장된 리서치 큐가 없습니다. 추천 주제를 저장해 두세요.</p>';
+          return;
+        }
+        refs.researchQueueGrid.innerHTML = state.researchQueue.map((item) => `
+          <article class="queue-card ${item.status === 'done' ? 'done' : ''}">
+            <div class="flex items-start justify-between gap-3">
+              <div>
+                <p class="text-sm font-bold text-white">${safeText(item.title)}</p>
+                <p class="text-xs text-slate-400 mt-1">${safeText(item.accountName)} · ${safeText(item.templateName, '기본 템플릿')}</p>
+              </div>
+              <span class="research-chip">${safeText(item.score)}점</span>
+            </div>
+            <div class="flex flex-wrap gap-2">
+              ${(item.keywords || []).map((keyword) => `<span class="research-chip">${safeText(keyword)}</span>`).join('')}
+            </div>
+            <div class="score-breakdown">
+              <div class="score-chip">
+                <p class="text-[11px] text-slate-400">시나리오</p>
+                <p class="text-sm font-semibold text-white">${safeText(item.breakdown?.scenario || 0)}점</p>
+              </div>
+              <div class="score-chip">
+                <p class="text-[11px] text-slate-400">우선순위</p>
+                <p class="text-sm font-semibold text-white">${safeText(item.breakdown?.priority || 0)}점</p>
+              </div>
+            </div>
+            <p class="text-xs text-slate-400">저장 시각: ${safeText(item.savedAt)}</p>
+            <div class="queue-actions">
+              <button type="button" class="soft-btn px-3 py-2 rounded-lg queue-apply" data-queue-id="${safeText(item.id)}">폼에 적용</button>
+              <button type="button" class="soft-btn px-3 py-2 rounded-lg queue-generate" data-queue-id="${safeText(item.id)}">즉시 생성</button>
+              <button type="button" class="soft-btn px-3 py-2 rounded-lg queue-done" data-queue-id="${safeText(item.id)}">${item.status === 'done' ? '대기 복원' : '완료 처리'}</button>
+              <button type="button" class="soft-btn px-3 py-2 rounded-lg queue-remove" data-queue-id="${safeText(item.id)}">제거</button>
+            </div>
+          </article>
+        `).join('');
+      }
+
+      function applyResearchItem(researchId, shouldGenerate = false) {
+        const item = getResearchCandidates().find((entry) => entry.id === researchId);
+        if (!item) return;
+        state.selectedResearchId = item.id;
+        refs.topicInput.value = item.title;
+        refs.keywordInput.value = (item.keywords || []).join(', ');
+        refs.toneInput.value = item.scenario === 'offer' ? 'dynamic' : item.scenario === 'story' ? 'narrative' : 'professional';
+        refs.slideCountInput.value = String((SCENARIO_LIBRARY.find((scenario) => scenario.id === item.scenario)?.slideCount) || 6);
+        const recommendedTemplate = findRecommendedTemplate(item);
+        if (recommendedTemplate) {
+          state.selectedTemplateId = recommendedTemplate.id;
+          setTemplateForm(recommendedTemplate);
+          renderTemplateCards();
+        }
+        renderResearchQueue();
+        setHeader(`리서치 주제가 적용되었습니다: ${safeText(item.title)}`);
+        if (shouldGenerate) {
+          handleGenerate();
+        }
+      }
+
+      function saveResearchItemToQueue(researchId) {
+        const item = getResearchCandidates().find((entry) => entry.id === researchId);
+        const primary = getPrimaryAccount();
+        if (!item || !primary) return;
+        const recommendedTemplate = findRecommendedTemplate(item);
+        const score = scoreResearchItem(item, primary, recommendedTemplate);
+        const queueItem = {
+          id: `${primary.id}:${item.id}`,
+          researchId: item.id,
+          accountId: primary.id,
+          accountName: primary.name,
+          title: item.title,
+          keywords: item.keywords || [],
+          scenario: item.scenario,
+          templateId: recommendedTemplate?.id || '',
+          templateName: recommendedTemplate?.name || '기본 템플릿',
+          score: score.total,
+          breakdown: score.breakdown,
+          savedAt: new Date().toLocaleString('ko-KR'),
+          status: 'queued'
+        };
+        state.researchQueue = [queueItem, ...state.researchQueue.filter((entry) => entry.id !== queueItem.id)];
+        persistResearchQueue();
+        renderSavedResearchQueue();
+        setHeader(`리서치 큐에 저장했습니다: ${safeText(item.title)}`);
+      }
+
+      function applyQueuedResearch(queueId, shouldGenerate = false) {
+        const queueItem = state.researchQueue.find((item) => item.id === queueId);
+        if (!queueItem) return;
+        state.selectedAccounts.clear();
+        state.selectedAccounts.add(queueItem.accountId);
+        renderAccounts();
+        applyResearchItem(queueItem.researchId, shouldGenerate);
+      }
+
+      function toggleQueuedResearchStatus(queueId) {
+        state.researchQueue = state.researchQueue.map((item) => {
+          if (item.id !== queueId) return item;
+          return Object.assign({}, item, { status: item.status === 'done' ? 'queued' : 'done' });
+        });
+        persistResearchQueue();
+        renderSavedResearchQueue();
+      }
+
+      function removeQueuedResearch(queueId) {
+        state.researchQueue = state.researchQueue.filter((item) => item.id !== queueId);
+        persistResearchQueue();
+        renderSavedResearchQueue();
+      }
+
+      function attachResearchDelegates() {
+        refs.scenarioGrid?.addEventListener('click', (event) => {
+          const target = event.target;
+          if (!(target instanceof HTMLElement)) return;
+          if (!target.classList.contains('scenario-apply')) return;
+          state.selectedScenarioId = target.dataset.scenarioId || 'educational';
+          state.selectedResearchId = null;
+          renderScenarioLibrary();
+          renderResearchQueue();
+          setHeader('시나리오가 적용되었습니다. 주제 큐를 확인하세요.');
+        });
+
+        refs.accountIntelGrid?.addEventListener('click', (event) => {
+          const target = event.target;
+          if (!(target instanceof HTMLElement)) return;
+          if (!target.classList.contains('intel-focus')) return;
+          const accountId = target.dataset.accountId;
+          state.selectedAccounts.clear();
+          if (accountId) state.selectedAccounts.add(accountId);
+          renderAccounts();
+          setHeader('선택 계정 중심으로 리서치 큐를 갱신했습니다.');
+        });
+
+        refs.researchGrid?.addEventListener('click', (event) => {
+          const target = event.target;
+          if (!(target instanceof HTMLElement)) return;
+          const researchId = target.dataset.researchId;
+          if (!researchId) return;
+          if (target.classList.contains('research-apply')) {
+            applyResearchItem(researchId, false);
+          }
+          if (target.classList.contains('research-generate')) {
+            applyResearchItem(researchId, true);
+          }
+          if (target.classList.contains('research-save')) {
+            saveResearchItemToQueue(researchId);
+          }
+        });
+
+        refs.researchQueueGrid?.addEventListener('click', (event) => {
+          const target = event.target;
+          if (!(target instanceof HTMLElement)) return;
+          const queueId = target.dataset.queueId;
+          if (!queueId) return;
+          if (target.classList.contains('queue-apply')) {
+            applyQueuedResearch(queueId, false);
+          }
+          if (target.classList.contains('queue-generate')) {
+            applyQueuedResearch(queueId, true);
+          }
+          if (target.classList.contains('queue-done')) {
+            toggleQueuedResearchStatus(queueId);
+          }
+          if (target.classList.contains('queue-remove')) {
+            removeQueuedResearch(queueId);
+          }
+        });
+      }
+
+      function renderRules() {
+        if (!state.rules.length) {
+          refs.rulesWrap.innerHTML = '<p class="text-xs text-slate-500">등록된 규칙이 없습니다. 메시지 키워드와 응답을 등록해 보세요.</p>';
+          return;
+        }
+        refs.rulesWrap.innerHTML = '';
+        state.rules.forEach((rule) => {
+          const actionLabel = {
+            auto: '자동 전송',
+            approve: '승인 필요',
+            notify: '알림만'
+          }[rule.action] || safeText(rule.action);
+          const actionClass = rule.action === 'approve' ? 'bg-amber-500/20 text-amber-200 border-amber-400/30' : 'bg-emerald-500/20 text-emerald-200 border-emerald-400/30';
+          const row = document.createElement('div');
+          row.className = 'insight-item';
+          row.innerHTML = `<div class="flex items-center justify-between"><p class="text-xs text-slate-300">키워드: <span class="font-semibold text-white">${safeText(rule.keyword)}</span></p><span class="dm-pill ${actionClass}">${actionLabel}</span></div><p class="text-sm text-slate-300 mt-1">${safeText(rule.reply)}</p>`;
+          refs.rulesWrap.appendChild(row);
+        });
+      }
+
+      function renderProjects() {
+        if (!state.projects.length) {
+          refs.projectsWrap.innerHTML = '<p class="text-xs text-slate-500">생성된 프로젝트 내역이 없습니다.</p>';
+          return;
+        }
+        refs.projectsWrap.innerHTML = state.projects
+          .map((project) => `<div class="insight-item"><p class="text-xs text-slate-400">${safeText(project.created_at)} · ${safeText(project.status || 'ready')}</p><p class="mt-1 text-sm text-white font-semibold">${safeText(project.title)}</p><p class="text-xs text-slate-400">주제: ${safeText(project.topic)} · 슬라이드: ${safeText(project.slide_count)}장 · 계정: ${safeText((project.accountIds || []).length)}개</p><p class="text-xs text-slate-400">채널: ${(project.channels || []).map((channel) => safeText(channel.platform)).join(', ') || '미지정'}</p></div>`).join('');
+      }
+
+      function renderKPIs() {
+        refs.kpiAccounts.textContent = `${state.accounts.length}개`;
+        refs.kpiTemplates.textContent = `${state.templates.length}개`;
+        refs.kpiDmRules.textContent = `${state.rules.length}개`;
+        refs.kpiScheduled.textContent = `${state.projects.filter((project) => project.status === 'scheduled').length}건`;
+      }
+
+      function renderPreview(draft) {
+        const hasSlides = Array.isArray(draft?.slides) && draft.slides.length;
+        refs.cardPreview.innerHTML = '';
+        refs.emptyPreview.style.display = hasSlides ? 'none' : 'block';
+        if (!hasSlides) return;
+
+        applyTemplateStyle(draft.design || {});
+        draft.slides.forEach((slide) => {
+          const article = document.createElement('article');
+          article.className = 'slide-item';
+          article.innerHTML = `<div class="slide-image">${safeText(slide.title || '슬라이드')}</div><div class="slide-body"><p class="slide-title">${safeText(slide.title, '제목 없음')}</p><p class="slide-text">${safeText(slide.body, '내용이 없습니다.')}</p></div><div class="px-3 pb-3"><p class="text-xs text-indigo-300">이미지 프롬프트</p><p class="text-[11px] text-slate-400">${safeText(slide.imagePrompt)}</p></div>`;
+          refs.cardPreview.appendChild(article);
+        });
+      }
+
+      function getTemplateById(templateId) {
+        return state.templates.find((template) => String(template.id) === String(templateId));
+      }
+
+      function collectDraftPayload() {
+        const topic = safeText(refs.topicInput.value).trim();
+        if (!topic) {
+          setHeader('주제를 입력해 주세요.');
+          return null;
+        }
+        const accountIds = Array.from(state.selectedAccounts);
+        if (!accountIds.length) {
+          setHeader('발행 계정을 최소 1개 선택해 주세요.');
+          return null;
+        }
+
+        const channels = normalizeChannelPayload(collectChannels());
+        if (!channels.length) {
+          setHeader('채널을 최소 1개 선택해 주세요.');
+          return null;
+        }
+
+        if (!state.selectedTemplateId) {
+          setHeader('템플릿을 먼저 선택하거나 저장해 주세요.');
+          return null;
+        }
+        const template = getTemplateById(state.selectedTemplateId);
+        if (!template) {
+          setHeader('선택된 템플릿을 찾을 수 없습니다.');
+          return null;
+        }
+
+        saveAiSettings();
+        const keywords = safeText(refs.keywordInput.value, '').split(',').map((item) => item.trim()).filter(Boolean);
+        return buildDraftPayload({
+          topic,
+          tone: refs.toneInput.value,
+          slide_count: safeNum(refs.slideCountInput.value, template.slides || 8),
+          template_id: template.id,
+          account_ids: accountIds,
+          channels,
+          keywords,
+          design: template.design || {},
+          ai: { provider: refs.aiProvider.value, apiKey: refs.aiKey.value.trim(), apiEngine: state.aiSettings.apiEngine },
+          automation: {
+            enabled: Boolean(refs.automationEnabled.checked),
+            frequency: refs.automationFrequency.value,
+            max_posts_per_day: safeNum(refs.automationMax.value, 2),
+            timezone: 'Asia/Seoul'
+          }
+        });
+      }
+
+      async function loadAll() {
+        setHeader('동기화 중...');
+        try {
+          const [accounts, templates, rules, projects] = await Promise.all([
+            getInstagramCardNewsAccounts(),
+            getInstagramCardNewsTemplates(),
+            getInstagramCardNewsDmRules(),
+            getInstagramCardNewsProjects()
+          ]);
+
+          state.accounts = accounts || [];
+          state.templates = templates || [];
+          state.rules = Array.isArray(rules) ? rules : [];
+          state.projects = projects || [];
+          state.selectedResearchId = null;
+          state.researchQueue = loadResearchQueue();
+
+          if (state.templates[0]) {
+            state.selectedTemplateId = state.templates[0].id;
+            setTemplateForm(state.templates[0]);
+          }
+          renderScenarioLibrary();
+          renderTemplateCards();
+          renderAccounts();
+          renderSavedResearchQueue();
+          renderRules();
+          renderProjects();
+          renderKPIs();
+          renderChannels();
+          syncTemplateSelectData();
+          syncAiProviderOptions();
+          if (!state.accounts.length) {
+            setHeader('연결된 SNS 계정이 없습니다. 먼저 SNS Auto에서 실제 계정을 연결해 주세요.');
+            refs.statusText.textContent = '실사용 전제 조건: SNS 계정 연결 필요';
+          } else {
+            setHeader(`총 ${state.projects.length}개 프로젝트, 연결 계정 ${state.accounts.length}개`);
+          }
+          loadAiSettings();
+        } catch (error) {
+          console.error(error);
+          setHeader(`상태 동기화 실패: ${safeText(error?.message || '실제 API 확인 필요')}`);
+        }
+      }
+
+      async function handleTemplateSave() {
+        const payload = collectTemplatePayload();
+        if (!payload.name) {
+          setHeader('템플릿명을 입력해 주세요.');
+          return;
+        }
+
+        if (state.selectedTemplateId) {
+          const updated = await updateInstagramCardNewsTemplate(state.selectedTemplateId, payload);
+          if (updated && updated.ok === false) {
+            setHeader('템플릿 수정에 실패했습니다.');
+            return;
+          }
+          const idx = state.templates.findIndex((template) => String(template.id) === String(state.selectedTemplateId));
+          if (idx > -1) state.templates[idx] = updated;
+          setTemplateForm(updated);
+          setHeader('템플릿이 수정되었습니다.');
+        } else {
+          const created = await createInstagramCardNewsTemplate(payload);
+          state.templates.unshift(created);
+          state.selectedTemplateId = created?.id;
+          setTemplateForm(created);
+          setHeader('템플릿이 새로 저장되었습니다.');
+        }
+        renderTemplateCards();
+        renderKPIs();
+      }
+
+      function handleTemplateNew() {
+        setTemplateForm({
+          name: '새 템플릿',
+          tone: 'balanced',
+          description: '',
+          slides: 8,
+          format: Object.keys(getDefaultFormats())[0] || 'instagram-carousel-4-5',
+          structure: ['시작', '본문', '근거', 'CTA'],
+          design: { fontFamily: 'Pretendard', titleSize: 18, bodySize: 13, titleAlign: 'left', bodyAlign: 'left', titlePosition: 'top', textColor: '#f8fafc', accentColor: '#6366f1', backgroundColor: '#0f172a' },
+          tags: []
+        });
+        state.selectedTemplateId = null;
+        setHeader('새 템플릿을 작성한 뒤 저장하세요.');
+      }
+      async function handleTemplateDelete() {
+        if (!state.selectedTemplateId) {
+          setHeader('삭제할 템플릿을 먼저 선택해 주세요.');
+          return;
+        }
+        await deleteInstagramCardNewsTemplate(state.selectedTemplateId);
+        state.templates = state.templates.filter((template) => String(template.id) !== String(state.selectedTemplateId));
+        if (state.templates[0]) {
+          setTemplateForm(state.templates[0]);
+        } else {
+          state.selectedTemplateId = null;
+          handleTemplateNew();
+        }
+        renderTemplateCards();
+        renderKPIs();
+      }
+
+      async function handleGenerate() {
+        const payload = collectDraftPayload();
+        if (!payload) return;
+        state.lastCreatePayload = payload;
+        setHeader('AI 생성 중...');
+        refs.statusText.textContent = '생성 실행 중입니다.';
+        const result = await generateInstagramCardNews(payload);
+        if (!result) return;
+
+        state.draft = Object.assign({}, result, {
+          topic: payload.topic,
+          tone: payload.tone,
+          template_id: payload.template_id,
+          account_ids: payload.account_ids,
+          slide_count: payload.slide_count,
+          channels: payload.channels,
+          automation: payload.automation,
+          design: payload.design
+        });
+
+        if (result.status === 'blocked') {
+          refs.statusText.textContent = 'AI 키 미등록으로 생성이 차단되었습니다.';
+          setHeader(result.message || 'AI 키를 등록해 주세요.');
+          return;
+        }
+
+        renderPreview(result);
+        refs.statusText.textContent = `${safeText(result?.slides?.length || 0)}개 슬라이드 생성 완료`;
+        setHeader('생성 완료: 발행 전 미리보기를 확인해 주세요.');
+      }
+
+      async function handlePublish() {
+        if (!state.draft) {
+          setHeader('발행할 초안이 없습니다. 먼저 카드뉴스를 생성하세요.');
+          return;
+        }
+
+        const channelPayload = normalizeChannelPayload(collectChannels());
+        const saved = await createInstagramCardNewsProject({
+          title: `${state.draft.topic} 카드뉴스`,
+          accountIds: state.draft.account_ids || [],
+          topic: state.draft.topic,
+          tone: state.draft.tone,
+          slide_count: Number(state.draft.slide_count || 8),
+          status: refs.scheduleInput.value ? 'scheduled' : 'ready',
+          scheduled_at: refs.scheduleInput.value || null,
+          created_at: new Date().toISOString(),
+          last_post_url: '',
+          templates: { used_template_id: state.draft.template_id || '', score: 0 },
+          channels: channelPayload,
+          preview: Array.isArray(state.draft.slides) ? state.draft.slides.slice(0, 3).map((slide) => safeText(slide.title)) : [],
+          automation: state.lastCreatePayload?.automation || null
+        });
+        if (!saved || !saved.id) {
+          setHeader('프로젝트 생성 후 발행을 실행하지 못했습니다.');
+          return;
+        }
+        state.projects = [saved, ...state.projects];
+        renderProjects();
+        renderKPIs();
+
+        const approvalQueue = window.SoftFactoryApprovalQueue;
+        const contracts = window.SoftFactoryWorkflowContracts;
+        if (approvalQueue) {
+          const workflowContract = contracts?.buildAutomationContract
+            ? contracts.buildAutomationContract({
+                topic: state.draft.topic,
+                purpose: 'cardnews-publish',
+                frequency: refs.scheduleInput.value ? 'scheduled-once' : 'instant',
+                platforms: channelPayload.map((item) => item.platform),
+                webhookUrl: '',
+                engine: state.lastCreatePayload?.ai?.provider || 'direct',
+                payloadVersion: '2026-03-10'
+              })
+            : null;
+          const queueItem = contracts?.buildApprovalQueueEntry
+            ? contracts.buildApprovalQueueEntry({
+                id: `instagram-cardnews:${saved.id}`,
+                service: 'instagram-cardnews',
+                title: saved.title,
+                status: refs.scheduleInput.value ? 'scheduled' : 'published',
+                approvalMode: refs.scheduleInput.value ? 'approve-before-publish' : 'publish-immediately',
+                owner: getAuthUser?.()?.email || 'demo@softfactory.com',
+                channels: channelPayload.map((item) => item.platform),
+                accountIds: saved.accountIds || [],
+                scheduledAt: refs.scheduleInput.value || null,
+                sourceUrl: '/instagram-cardnews/index.html',
+                summary: `${channelPayload.length}개 채널 · ${saved.slide_count}장 카드뉴스`,
+                contract: workflowContract,
+                metadata: { slides: saved.slide_count }
+              })
+            : {
+                id: `instagram-cardnews:${saved.id}`,
+                service: 'instagram-cardnews',
+                title: saved.title,
+                status: refs.scheduleInput.value ? 'scheduled' : 'published',
+                approvalMode: refs.scheduleInput.value ? 'approve-before-publish' : 'publish-immediately',
+                owner: getAuthUser?.()?.email || 'demo@softfactory.com',
+                channels: channelPayload.map((item) => item.platform),
+                accountIds: saved.accountIds || [],
+                scheduledAt: refs.scheduleInput.value || null,
+                sourceUrl: '/instagram-cardnews/index.html',
+                summary: `${channelPayload.length}개 채널 · ${saved.slide_count}장 카드뉴스`,
+                contract: workflowContract,
+                metadata: { slides: saved.slide_count }
+              };
+          await approvalQueue.enqueuePersist(queueItem);
+        }
+
+        if (!refs.scheduleInput.value) {
+          const result = await publishInstagramCardNewsJob(saved.id);
+          setHeader(result?.message || '발행이 요청되었습니다.');
+          refs.statusText.textContent = result?.status === 'dispatch_ready'
+            ? '연결된 채널에 대해 발행 준비가 완료되었습니다.'
+            : '외부 채널 연결 전까지 내부 발행 큐에 보관됩니다.';
+        } else {
+          setHeader('예약 발행이 등록되었습니다.');
+          refs.statusText.textContent = `${safeText(refs.scheduleInput.value)} 예약 적용`;
+        }
+      }
+
+      async function handleSimulateDM() {
+        const message = safeText(refs.dmMessageInput.value).trim();
+        if (!message) {
+          refs.simResult.innerHTML = '<p class="text-amber-300 text-xs">메시지를 입력해 주세요.</p>';
+          return;
+        }
+        setHeader('DM 응답 시뮬레이션 진행 중...');
+        const result = await simulateInstagramDM({ message });
+        if (!result || !Array.isArray(result.triggered) || !result.triggered.length) {
+          refs.simResult.innerHTML = '<p class="text-slate-400 text-xs">일치하는 규칙이 없습니다. 새 규칙을 추가해 보세요.</p>';
+          setHeader('시뮬레이션 완료');
+          return;
+        }
+        refs.simResult.innerHTML = result.triggered.map((item) => `<div class="mt-2 insight-item"><p class="text-xs text-slate-400">키워드: <span class="text-white">${safeText(item.keyword)}</span></p><p class="text-xs text-slate-200 mt-1">추천 응답: ${safeText(item.suggestion)}</p><p class="text-[11px] mt-1 text-slate-400">액션: ${safeText(item.action)}</p></div>`).join('');
+        setHeader('시뮬레이션 완료');
+      }
+
+      async function handleAddRule() {
+        const keyword = safeText(refs.ruleKeyword.value).trim();
+        const reply = safeText(refs.ruleReply.value).trim();
+        const action = safeText(refs.ruleAction.value);
+        if (!keyword || !reply) {
+          setHeader('키워드와 응답 텍스트를 모두 입력해 주세요.');
+          return;
+        }
+        const nextRule = { id: Date.now(), keyword, reply, action };
+        state.rules = [nextRule, ...state.rules];
+        refs.ruleKeyword.value = '';
+        refs.ruleReply.value = '';
+        refs.ruleAction.value = 'auto';
+        renderRules();
+        renderKPIs();
+        createInstagramCardNewsRule(nextRule).catch(() => {});
+      }
+
+      function clearDraft() {
+        state.draft = null;
+        refs.cardPreview.innerHTML = '';
+        refs.emptyPreview.style.display = 'block';
+        refs.statusText.textContent = '초안이 초기화되었습니다.';
+      }
+
+      function attachTemplateDelegates() {
+        refs.templateCards?.addEventListener('click', (event) => {
+          const target = event.target;
+          if (!(target instanceof HTMLElement)) return;
+          const id = target.dataset.templateId;
+          if (!id) return;
+          if (target.classList.contains('template-apply') || target.classList.contains('template-load')) {
+            const template = getTemplateById(id);
+            if (!template) return;
+            state.selectedTemplateId = template.id;
+            setTemplateForm(template);
+            renderTemplateCards();
+            setHeader(`템플릿이 선택되었습니다: ${safeText(template.name)}`);
+          }
+          if (target.classList.contains('template-delete')) {
+            state.selectedTemplateId = id;
+            handleTemplateDelete();
+          }
+        });
+      }
+
+      function setWorkspaceStage(stage) {
+        const visibleByStage = {
+          research: ['researchScenarioSection', 'researchInsightSection', 'researchQueueSection'],
+          template: ['templateLibrarySection', 'editorPublishSection'],
+          publish: ['editorPublishSection', 'previewRuleSection', 'projectHistorySection']
+        };
+        const active = new Set(visibleByStage[stage] || visibleByStage.research);
+        [
+          'researchScenarioSection',
+          'researchInsightSection',
+          'researchQueueSection',
+          'templateLibrarySection',
+          'editorPublishSection',
+          'previewRuleSection',
+          'projectHistorySection'
+        ].forEach((id) => {
+          document.getElementById(id)?.classList.toggle('hidden', !active.has(id));
+        });
+        document.querySelectorAll('[data-workspace-stage]').forEach((button) => {
+          const enabled = button.dataset.workspaceStage === stage;
+          button.classList.toggle('soft-btn-primary', enabled);
+          button.classList.toggle('text-sm', true);
+        });
+      }
+
+      function init() {
+        syncTemplateSelectData();
+        renderChannels();
+        syncAiProviderOptions();
+        loadAiSettings();
+        renderScenarioLibrary();
+        setHeader('초기화 완료');
+
+        if (refs.templateFormat) {
+          refs.templateFormat.addEventListener('change', () => updateTemplateFormatInfo(refs.templateFormat.value));
+        }
+        refs.templateSaveBtn.addEventListener('click', handleTemplateSave);
+        refs.templateNewBtn.addEventListener('click', handleTemplateNew);
+        refs.templateDeleteBtn.addEventListener('click', handleTemplateDelete);
+        refs.templateApplyBtn.addEventListener('click', () => {
+          if (!state.selectedTemplateId) state.selectedTemplateId = safeText(refs.templateName.value, '');
+          setHeader('현재 템플릿 설정이 생성 기준에 적용되었습니다.');
+        });
+        refs.aiProvider.addEventListener('change', () => {
+          const providers = core && core.getAiProviders ? core.getAiProviders() : {};
+          const provider = providers[refs.aiProvider.value];
+          if (provider?.placeholder) refs.aiKey.placeholder = provider.placeholder;
+        });
+
+        refs.generateBtn.addEventListener('click', handleGenerate);
+        refs.simulateBtn.addEventListener('click', handleSimulateDM);
+        refs.publishBtn.addEventListener('click', handlePublish);
+        refs.addRuleBtn.addEventListener('click', handleAddRule);
+        refs.clearDraftBtn.addEventListener('click', clearDraft);
+        refs.refreshPageBtn.addEventListener('click', loadAll);
+        document.getElementById('workspaceStageTabs')?.addEventListener('click', (event) => {
+          const target = event.target;
+          if (!(target instanceof HTMLElement)) return;
+          const stage = target.dataset.workspaceStage;
+          if (!stage) return;
+          setWorkspaceStage(stage);
+        });
+        attachTemplateDelegates();
+        attachResearchDelegates();
+        if (typeof requireAuth === 'function') requireAuth();
+        setWorkspaceStage('research');
+        loadAll();
+      }
+
+      init();
+    })();
+  </script>
+</body>
+</html>
+

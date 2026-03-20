@@ -10,6 +10,7 @@ from enum import Enum
 from typing import Dict, List, Optional, Set
 from dataclasses import dataclass, asdict
 import sys
+from pathlib import Path
 
 
 class TaskStatus(Enum):
@@ -83,7 +84,7 @@ class WorkManager:
                  ["T05", "T06"], "daemon/handlers/sns_handler.py"),
 
             # Phase 5: Final validation
-            Task("T14", "Team A", "Final validation + TEAM_WORK_STATUS.md",
+            Task("T14", "Team A", "Final validation + docs/status/TEAM_WORK_STATUS.md",
                  ["T07", "T08", "T09", "T10", "T11", "T12", "T13"], "Project completion report"),
         ]
 
@@ -196,7 +197,7 @@ class WorkManager:
         return "\n".join(output)
 
     def to_markdown(self) -> str:
-        """Generate TEAM_WORK_STATUS.md"""
+        """Generate docs/status/TEAM_WORK_STATUS.md"""
         lines = []
         lines.append("# Team Work Manager - SNS Automation v2.0")
         lines.append(f"\n**Last updated:** {datetime.utcnow().isoformat()}")
@@ -228,11 +229,13 @@ class WorkManager:
 
     def save_status(self):
         """Save status to JSON and Markdown"""
-        with open("D:/Project/TEAM_WORK_STATUS.json", "w") as f:
+        status_dir = Path("D:/Project/docs/status")
+        status_dir.mkdir(parents=True, exist_ok=True)
+        with open(status_dir / "TEAM_WORK_STATUS.json", "w") as f:
             data = {task_id: task.to_dict() for task_id, task in self.tasks.items()}
             json.dump(data, f, indent=2)
 
-        with open("D:/Project/TEAM_WORK_STATUS.md", "w") as f:
+        with open(status_dir / "TEAM_WORK_STATUS.md", "w") as f:
             f.write(self.to_markdown())
 
 
@@ -251,7 +254,7 @@ def main():
         print(manager.to_markdown())
     elif cmd == "--save":
         manager.save_status()
-        print("✅ Status saved to TEAM_WORK_STATUS.json and TEAM_WORK_STATUS.md")
+        print("✅ Status saved to docs/status/TEAM_WORK_STATUS.json and docs/status/TEAM_WORK_STATUS.md")
     elif cmd == "--ready":
         ready = manager.get_ready_tasks()
         print(f"🟢 {len(ready)} tasks ready to start:")

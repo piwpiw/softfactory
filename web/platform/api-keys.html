@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
@@ -7,7 +7,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#111827">
     <meta name="description" content="SoftFactory API key management">
-    <title>API Key Center — SoftFactory</title>
+    <title>API 키 센터 - SoftFactory</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="api.js"></script>
     <link rel="stylesheet" href="../responsive-framework.css">
@@ -18,43 +18,43 @@
     </style>
 </head>
 <body class="bg-slate-950 text-slate-100 antialiased soft-shell">
-    <a href="#main" class="skip-to-main sr-only">메인 콘텐츠로 이동</a>
+    <a href="#main" class="skip-to-main sr-only">본문으로 이동</a>
 
     <div class="flex h-screen overflow-hidden">
         <aside class="w-64 soft-sidebar border-r border-slate-800 flex flex-col shrink-0">
             <div class="p-6 border-b border-slate-800">
                 <div class="flex items-center gap-3">
-                    <span class="text-2xl" aria-hidden="true">🏭</span>
+                    <span class="text-2xl" aria-hidden="true">⚙️</span>
                     <div>
                         <h1 class="font-bold text-white">SoftFactory</h1>
-                        <p class="text-xs text-slate-400">Premium SaaS</p>
+                        <p class="text-xs text-slate-400">프리미엄 SaaS</p>
                     </div>
                 </div>
             </div>
-            <nav class="flex-1 p-6 space-y-2 overflow-y-auto" aria-label="사용자 네비게이션">
-                <button class="hamburger" aria-label="네비게이션 메뉴 열기" type="button"><span></span><span></span><span></span></button>
-                <a href="dashboard.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-slate-800 transition">📊 대시보드</a>
-                <a href="performance.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-slate-800 transition">📈 성능 & ROI</a>
-                <a href="billing.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-slate-800 transition">💳 결제 내역</a>
-                <a href="invoices.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-slate-800 transition">🧾 청구 내역</a>
-                <a href="profile.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-slate-800 transition">👤 계정</a>
-                <a href="admin.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-slate-800 transition">⚙️ 관리자</a>
+            <nav class="flex-1 p-6 space-y-2 overflow-y-auto" aria-label="메인 네비게이션">
+                <button class="hamburger" aria-label="내비게이션 메뉴 열기" type="button"><span></span><span></span><span></span></button>
+                <a href="dashboard.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-slate-800 transition">대시보드</a>
+                <a href="performance.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-slate-800 transition">성과 & ROI</a>
+                <a href="billing.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-slate-800 transition">요금제 관리</a>
+                <a href="invoices.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-slate-800 transition">인보이스 내역</a>
+                <a href="profile.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-slate-800 transition">프로필</a>
+                <a href="admin.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-slate-800 transition">관리자 모드</a>
 
                 <div class="my-6 border-t border-slate-800"></div>
-                <p class="section-title text-xs font-semibold text-slate-400 uppercase px-4 mb-3">서비스</p>
-                <a href="../sns-auto/index.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-slate-800 transition">📱 SNS Auto</a>
-                <a href="../review/index.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-slate-800 transition">⭐ Review</a>
+                <p class="section-title text-xs font-semibold text-slate-400 uppercase px-4 mb-3">하위 메뉴</p>
+                <a href="../sns-auto/index.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-slate-800 transition">📱 SNS 자동화</a>
+                <a href="../review/index.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-slate-800 transition">⭐ 리뷰</a>
                 <a href="../coocook/index.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-slate-800 transition">🍳 CooCook</a>
-                <a href="../ai-automation/index.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-slate-800 transition">🤖 AI Automation</a>
-                <a href="../webapp-builder/index.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-slate-800 transition">💻 WebApp Builder</a>
+                <a href="../ai-automation/index.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-slate-800 transition">🤖 AI 자동화</a>
+                <a href="../webapp-builder/index.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-slate-800 transition">💻 웹앱 빌더</a>
             </nav>
             <div class="p-6 border-t border-slate-800 soft-user-panel">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-sm font-medium text-white" id="userName">Demo User</p>
+                        <p class="text-sm font-medium text-white" id="userName">사용자</p>
                         <p class="text-xs text-slate-400" id="userEmail">demo@softfactory.com</p>
                     </div>
-                    <button onclick="logout()" class="p-2 hover:bg-slate-800 rounded-lg transition" title="로그아웃" type="button">🚪</button>
+                    <button onclick="logout()" class="p-2 hover:bg-slate-800 rounded-lg transition" title="로그아웃" type="button">⎋</button>
                 </div>
             </div>
         </aside>
@@ -62,43 +62,43 @@
         <div class="flex-1 flex flex-col overflow-hidden">
             <header class="soft-topbar px-6 py-4 flex items-start justify-between gap-4 shrink-0">
                 <div>
-                    <h2 class="text-xl font-bold text-white">API Key Center</h2>
-                    <p class="text-xs text-slate-400">키 발급, 권한, 사용량 추적</p>
+                    <h2 class="text-xl font-bold text-white">API 키 센터</h2>
+                    <p class="text-xs text-slate-400">API 키 생성, 조회, 권한 관리</p>
                 </div>
                 <div class="flex flex-wrap items-center gap-2">
                     <button id="refreshApiKeys" type="button" class="soft-btn px-3 py-2 rounded-lg text-sm">새로고침</button>
-                    <button id="openKeyModal" type="button" class="soft-btn soft-btn-primary px-3 py-2 rounded-lg text-sm">새 키 생성</button>
+                    <button id="openKeyModal" type="button" class="soft-btn soft-btn-primary px-3 py-2 rounded-lg text-sm">+ 새 키 생성</button>
                 </div>
             </header>
 
             <main id="main" class="flex-1 overflow-y-auto soft-main space-y-6">
                 <section class="soft-card p-6">
                     <div class="flex items-center justify-between gap-3 mb-4">
-                        <h3 class="text-lg font-bold text-white">발급된 키</h3>
+                        <h3 class="text-lg font-bold text-white">API 키 목록</h3>
                         <p class="text-xs text-slate-400"><span id="apiKeyCount">0</span>개 (활성/전체)</p>
                     </div>
                     <div id="apiKeyList" class="space-y-3"></div>
                 </section>
 
                 <section class="soft-card p-6">
-                    <h3 class="text-lg font-bold text-white mb-4">기본 권한 템플릿</h3>
+                    <h3 class="text-lg font-bold text-white mb-4">권한 템플릿</h3>
                     <div id="permissionRows" class="grid grid-cols-1 md:grid-cols-2 gap-3"></div>
                 </section>
 
                 <section class="soft-card p-6">
-                    <h3 class="text-lg font-bold text-white mb-4">요약 지표</h3>
+                    <h3 class="text-lg font-bold text-white mb-4">요금/성능 요약</h3>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <article class="bg-slate-800 border border-slate-700 rounded-lg p-4 text-center">
                             <p class="text-3xl font-bold text-indigo-400" id="monthlyRequests">0</p>
-                            <p class="text-sm text-slate-400 mt-1">이번 달 요청</p>
+                            <p class="text-sm text-slate-400 mt-1">월 요청 수</p>
                         </article>
                         <article class="bg-slate-800 border border-slate-700 rounded-lg p-4 text-center">
                             <p class="text-3xl font-bold text-green-400" id="availability">99.9%</p>
-                            <p class="text-sm text-slate-400 mt-1">가용성</p>
+                            <p class="text-sm text-slate-400 mt-1">가용률</p>
                         </article>
                         <article class="bg-slate-800 border border-slate-700 rounded-lg p-4 text-center">
                             <p class="text-3xl font-bold text-cyan-400" id="avgLatency">42ms</p>
-                            <p class="text-sm text-slate-400 mt-1">평균 응답시간</p>
+                            <p class="text-sm text-slate-400 mt-1">평균 응답 시간</p>
                         </article>
                     </div>
                 </section>
@@ -108,10 +108,10 @@
 
     <script>
         const API_KEY_PERMISSIONS = [
-            { key: 'read', label: 'Read', desc: '데이터 조회 권한', checked: true },
-            { key: 'write', label: 'Write', desc: '데이터 생성/갱신 권한', checked: false },
-            { key: 'delete', label: 'Delete', desc: '삭제 권한', checked: false },
-            { key: 'admin', label: 'Admin', desc: '관리자급 권한', checked: false }
+            { key: 'read', label: '읽기', desc: '조회 권한', checked: true },
+            { key: 'write', label: '쓰기', desc: '생성/수정 권한', checked: false },
+            { key: 'delete', label: '삭제', desc: '삭제 권한', checked: false },
+            { key: 'admin', label: '관리자', desc: '전체 관리 권한', checked: false }
         ];
 
         const API_KEYS_FALLBACK = [
@@ -137,7 +137,7 @@
         function setUserInfo() {
             const user = typeof getUser === 'function' ? getUser() : null;
             if (!user) return;
-            safeText('userName', user.name || 'Demo User');
+            safeText('userName', user.name || '사용자');
             safeText('userEmail', user.email || 'demo@softfactory.com');
         }
 
@@ -178,7 +178,7 @@
                 const statusClass = item.status === 'active'
                     ? 'bg-green-900/30 text-green-300'
                     : 'bg-red-900/30 text-red-300';
-                const statusLabel = item.status === 'active' ? '활성' : '중지';
+                const statusLabel = item.status === 'active' ? '활성' : '비활성';
                 return (
                     '<article class="soft-card p-4">' +
                         '<div class="flex items-start justify-between gap-4">' +
@@ -188,12 +188,12 @@
                                     '<span class="px-2 py-1 rounded-full text-xs font-semibold ' + statusClass + '">' + statusLabel + '</span>' +
                                 '</div>' +
                                 '<p class="text-sm text-slate-400 font-mono break-all">' + item.value + '</p>' +
-                                '<p class="text-xs text-slate-500">생성: ' + item.created + ' / 마지막 사용: ' + item.lastUsed + '</p>' +
+                                '<p class="text-xs text-slate-500">생성일: ' + item.created + ' / 마지막 사용: ' + item.lastUsed + '</p>' +
                                 '<p class="text-xs text-slate-500">권한: ' + item.permissions.map(permissionText).join(', ') + '</p>' +
                             '</div>' +
                             '<div class="flex gap-2 flex-shrink-0">' +
                                 '<button data-copy="' + item.id + '" class="soft-btn soft-btn-ghost px-3 py-1.5 rounded-lg text-sm">복사</button>' +
-                                '<button data-toggle="' + item.id + '" class="soft-btn px-3 py-1.5 rounded-lg text-sm">' + (item.status === 'active' ? '중지' : '재활성') + '</button>' +
+                                '<button data-toggle="' + item.id + '" class="soft-btn px-3 py-1.5 rounded-lg text-sm">' + (item.status === 'active' ? '비활성' : '활성') + '</button>' +
                                 '<button data-delete="' + item.id + '" class="soft-btn px-3 py-1.5 rounded-lg text-sm text-red-200 border-red-700 hover:border-red-500">삭제</button>' +
                             '</div>' +
                         '</div>' +
@@ -242,7 +242,7 @@
             temp.select();
             document.execCommand('copy');
             document.body.removeChild(temp);
-            showStatus('API 키가 복사되었습니다.', 'success');
+            showStatus('API 키가 클립보드에 복사되었습니다.', 'success');
         }
 
         function toggleApiKey(id) {
@@ -250,7 +250,7 @@
             if (!target) return;
             target.status = target.status === 'active' ? 'revoked' : 'active';
             target.lastUsed = new Date().toISOString().replace('T', ' ').slice(0, 16);
-            showStatus(target.status === 'active' ? 'API 키를 다시 활성화했습니다.' : 'API 키를 비활성화했습니다.', 'success');
+            showStatus(target.status === 'active' ? 'API 키가 활성화되었습니다.' : 'API 키가 비활성화되었습니다.', 'success');
             renderApiKeys();
         }
 
@@ -270,7 +270,7 @@
         }
 
         function createApiKey() {
-            const name = window.prompt('새 API 키 이름');
+            const name = window.prompt('새 API 키 이름을 입력하세요');
             if (!name) return;
 
             const permissionPayload = getPermissionPayload();
@@ -304,7 +304,7 @@
             refreshBtn?.addEventListener('click', () => {
                 renderApiKeys();
                 loadUsageMetrics();
-                showStatus('API 키 목록을 갱신했습니다.', 'success');
+                showStatus('API 키 목록을 다시 불러왔습니다.', 'success');
             });
             createBtn?.addEventListener('click', createApiKey);
         }

@@ -5,12 +5,28 @@
   "trailingSlash": false,
   "rewrites": [
     {
+      "source": "/health",
+      "destination": "/api/runtime?path=health"
+    },
+    {
+      "source": "/ready",
+      "destination": "/api/runtime?path=ready"
+    },
+    {
       "source": "/api/_health",
       "destination": "/api/_health"
     },
     {
+      "source": "/api/ping",
+      "destination": "/api/ping"
+    },
+    {
+      "source": "/api/ping/",
+      "destination": "/api/ping"
+    },
+    {
       "source": "/api/:path*",
-      "destination": "/api/proxy?path=:path*"
+      "destination": "/api/runtime?path=:path*"
     },
     {
       "source": "/platform",

@@ -1,5 +1,9 @@
 .env
 .env.local
+.env.n8n
+.n8n/
+n8n/credentials/
+n8n/backups/
 __pycache__/
 *.pyc
 *.pyo
@@ -41,6 +45,20 @@ coverage/
 .coverage
 platform.db
 n8n-comfy/
+.deploy/
+.playwright-cli/
+.pytest_cache/
+.workspace/
+agent_workspaces/
+artifacts/
+output/
+docs/plans/execution/
+htmlcov/
+tmp_logs/
+*.out
+*.err
+tmp_*
+_tmp_*
 
 # Local runtime artifacts
 .cache/

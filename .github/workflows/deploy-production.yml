@@ -1,11 +1,6 @@
 name: Deploy Production
 
 on:
-  push:
-    branches:
-      - main
-    tags:
-      - 'v*'
   workflow_dispatch:
     inputs:
       image_tag:
@@ -58,9 +53,6 @@ jobs:
         env:
           SECRET_DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
           SECRET_DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-          SECRET_PRODUCTION_HOST: ${{ secrets.PRODUCTION_HOST }}
-          SECRET_PRODUCTION_USER: ${{ secrets.PRODUCTION_USER }}
-          SECRET_PRODUCTION_SSH_KEY: ${{ secrets.PRODUCTION_SSH_KEY }}
         run: |
           DOCKER_USERNAME="${SECRET_DOCKER_USERNAME}"
           DOCKER_PASSWORD="${SECRET_DOCKER_PASSWORD}"
@@ -68,14 +60,11 @@ jobs:
 
           MISSING=()
           [[ -z "$DOCKER_PASSWORD" ]] && MISSING+=("DOCKER_PASSWORD")
-          [[ -z "$SECRET_PRODUCTION_HOST" ]] && MISSING+=("PRODUCTION_HOST")
-          [[ -z "$SECRET_PRODUCTION_USER" ]] && MISSING+=("PRODUCTION_USER")
-          [[ -z "$SECRET_PRODUCTION_SSH_KEY" ]] && MISSING+=("PRODUCTION_SSH_KEY")
           if [[ ${#MISSING[@]} -gt 0 ]]; then
             printf -v joined '%s,' "${MISSING[@]}"
             joined="${joined%,}"
-            echo "::error::Required deployment secrets are missing: ${joined}"
-            echo "::error::Set secrets in GitHub repository settings and re-run deploy-production."
+            echo "::error::Required registry secret is missing: ${joined}"
+            echo "::error::Set DOCKER_PASSWORD in repository Actions secrets and re-run deploy-production."
             exit 1
           fi
 
@@ -121,6 +110,26 @@ jobs:
     if: ${{ needs.prepare.outputs.can_deploy == 'true' }}
 
     steps:
+      - name: Validate production SSH secrets
+        env:
+          SECRET_PRODUCTION_HOST: ${{ secrets.PRODUCTION_HOST }}
+          SECRET_PRODUCTION_USER: ${{ secrets.PRODUCTION_USER }}
+          SECRET_PRODUCTION_SSH_KEY: ${{ secrets.PRODUCTION_SSH_KEY }}
+          SECRET_DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+        run: |
+          MISSING=()
+          [[ -z "$SECRET_DOCKER_PASSWORD" ]] && MISSING+=("DOCKER_PASSWORD")
+          [[ -z "$SECRET_PRODUCTION_HOST" ]] && MISSING+=("PRODUCTION_HOST")
+          [[ -z "$SECRET_PRODUCTION_USER" ]] && MISSING+=("PRODUCTION_USER")
+          [[ -z "$SECRET_PRODUCTION_SSH_KEY" ]] && MISSING+=("PRODUCTION_SSH_KEY")
+          if [[ ${#MISSING[@]} -gt 0 ]]; then
+            printf -v joined '%s,' "${MISSING[@]}"
+            joined="${joined%,}"
+            echo "::error::Required production deploy secrets are missing: ${joined}"
+            echo "::error::Set these in repository Actions secrets, then re-run deploy-production."
+            exit 1
+          fi
+
       - name: Checkout code
         uses: actions/checkout@v4
 

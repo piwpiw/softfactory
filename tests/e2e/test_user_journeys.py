@@ -6,6 +6,8 @@ Requires running server at localhost:8000.
 import pytest
 import requests
 
+pytestmark = pytest.mark.e2e
+
 BASE = "http://localhost:8000"
 DEMO_HEADERS = {"Authorization": "Bearer demo_token"}
 

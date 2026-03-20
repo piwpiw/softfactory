@@ -3,197 +3,133 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#111827">
-<title>SNS Auto — SoftFactory</title>
+    <title>SNS 자동화 운영 홈 | SoftFactory</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="../platform/api.js"></script>
-    <style>
-        body { font-family: 'Inter', sans-serif; }
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #0f172a; }
-        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
-
-        /* Mobile responsive for SNS dashboard */
-        @media (max-width: 768px) {
-            /* KPI cards: 2 columns on mobile */
-            .grid.grid-cols-1.md\:grid-cols-4 {
-                grid-template-columns: repeat(2, 1fr) !important;
-                gap: 10px !important;
-            }
-            .grid.grid-cols-1.md\:grid-cols-4 .p-6 {
-                padding: 14px !important;
-            }
-            .grid.grid-cols-1.md\:grid-cols-4 .text-3xl {
-                font-size: 1.5rem !important;
-            }
-            /* Account cards: single column */
-            .grid.grid-cols-1.md\:grid-cols-3 {
-                grid-template-columns: 1fr !important;
-            }
-            /* Top post grid */
-            .grid.grid-cols-3 {
-                grid-template-columns: 1fr !important;
-                gap: 12px !important;
-            }
-            /* Header */
-            header .flex.items-center.gap-3 a {
-                font-size: 13px;
-                padding: 8px 12px;
-            }
-            /* Chart container */
-            canvas {
-                max-height: 200px !important;
-            }
-            /* Section headings */
-            h3.text-lg {
-                font-size: 1rem !important;
-            }
-        }
-
-        @media (max-width: 400px) {
-            .grid.grid-cols-1.md\:grid-cols-4 {
-                grid-template-columns: 1fr !important;
-            }
-        }
-    </style>
+    <style>body { font-family: 'Inter', sans-serif; }</style>
     <link rel="stylesheet" href="../responsive-framework.css">
-  </head>
-<body class="bg-slate-950 text-slate-100 antialiased">
+</head>
+<body class="bg-slate-950 text-slate-100 antialiased soft-shell">
     <div class="flex h-screen overflow-hidden">
-        <!-- Sidebar -->
-        <aside class="w-64 bg-slate-900 border-r border-slate-800 flex flex-col shrink-0">
-            <!-- Logo -->
+        <aside class="w-64 soft-sidebar border-r border-slate-800 flex flex-col shrink-0">
             <div class="p-6 border-b border-slate-800">
-                <a href="../platform/dashboard.html" class="flex items-center gap-3">
-                    <span class="text-2xl">🏭</span>
+                <a href="../platform/index.html" class="flex items-center gap-3">
+                    <span class="text-2xl">📱</span>
                     <div>
                         <h1 class="font-bold text-white text-sm">SoftFactory</h1>
-                        <p class="text-xs text-slate-400">← Back</p>
+                        <p class="text-xs text-slate-400">SNS 자동화</p>
                     </div>
                 </a>
             </div>
-
-            <!-- Navigation -->
-            <nav class="flex-1 p-6 space-y-2 overflow-y-auto">
-                <button class="hamburger" aria-label="Toggle navigation menu">
-      <span></span>
-      <span></span>
-      <span></span>
-    </button>
-<p class="text-xs font-semibold text-slate-400 uppercase px-4 mb-3">📱 SNS Auto</p>
-                <a href="index.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg bg-pink-600 text-white font-medium">📊 대시보드</a>
-                <a href="accounts.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">🔗 계정 연동</a>
-                <a href="create.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">✍️ 블로그 자동포스팅</a>
-                <a href="schedule.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">📅 스케줄 관리</a>
-                <a href="analytics.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">📈 분석</a>
-                <a href="templates.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">🎨 템플릿</a>
-                <a href="settings.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">⚙️ 설정</a>
+            <nav class="soft-nav-tree flex-1 p-6 overflow-y-auto">
+                <button class="hamburger" aria-label="Toggle navigation menu"><span></span><span></span><span></span></button>
+                <details class="soft-nav-group" open>
+                    <summary class="soft-nav-summary"><span>플랫폼</span></summary>
+                    <div class="soft-nav-sub">
+                        <a href="../platform/index.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-slate-800 transition"><span aria-hidden="true">🏭</span> 플랫폼 홈</a>
+                        <a href="../platform/dashboard.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-slate-800 transition"><span aria-hidden="true">📊</span> 운영 대시보드</a>
+                    </div>
+                </details>
+                <details class="soft-nav-group" open>
+                    <summary class="soft-nav-summary"><span>현재 서비스</span></summary>
+                    <div class="soft-nav-sub">
+                        <a href="index.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg bg-pink-600/20 border-l-2 border-pink-500 text-white"><span aria-hidden="true">📱</span> 운영 홈</a>
+                        <a href="accounts.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-slate-800 transition"><span aria-hidden="true">🔌</span> 계정 연결</a>
+                        <a href="wordpress.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-slate-800 transition"><span aria-hidden="true">📰</span> WordPress</a>
+                        <a href="create.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-slate-800 transition"><span aria-hidden="true">✍️</span> 초안 생성</a>
+                        <a href="schedule.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-slate-800 transition"><span aria-hidden="true">🗓️</span> 예약</a>
+                        <a href="campaigns.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-slate-800 transition"><span aria-hidden="true">🎯</span> 캠페인</a>
+                        <a href="templates.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-slate-800 transition"><span aria-hidden="true">🧩</span> 템플릿</a>
+                    </div>
+                </details>
             </nav>
-
-            <!-- User Info -->
             <div class="p-6 border-t border-slate-800">
-                <div class="flex items-center justify-between">
-                    <p class="text-sm font-medium text-white">Demo User</p>
-                    <button onclick="logout()" class="p-2 hover:bg-slate-800 rounded-lg transition" title="Logout">
-                        🚪
-                    </button>
-                </div>
+                <button onclick="logout()" class="w-full p-2 hover:bg-slate-800 rounded-lg transition text-sm">로그아웃</button>
             </div>
         </aside>
 
-        <!-- Main Content -->
         <div class="flex-1 flex flex-col overflow-hidden">
-            <!-- Header -->
             <header class="h-16 bg-slate-900 border-b border-slate-800 px-6 flex items-center justify-between shrink-0">
                 <div>
-                    <h2 class="text-xl font-bold text-white">📱 SNS Auto 대시보드</h2>
-                    <p class="text-xs text-slate-400">소셜미디어 자동화 관리</p>
+                    <h2 class="text-xl font-bold text-white">SNS 자동화</h2>
+                    <p class="text-xs text-slate-400">계정 연결, 초안 생성, 예약 발행, 캠페인 관리를 같은 순서로 봅니다.</p>
                 </div>
                 <div class="flex items-center gap-3">
-                    <a href="create.html" class="px-4 py-2 bg-pink-600 hover:bg-pink-700 text-white rounded-lg font-medium transition text-sm">
-                        + 새 포스트
-                    </a>
+                    <a href="create.html" class="px-4 py-2 bg-pink-600 hover:bg-pink-700 text-white rounded-lg text-sm font-medium">초안 만들기</a>
+                    <a href="accounts.html" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg text-sm">계정 연결</a>
                 </div>
             </header>
 
-            <!-- Content -->
             <main class="flex-1 overflow-y-auto p-6 space-y-6">
-                <!-- KPI Cards -->
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-                    <div class="bg-slate-800 rounded-xl p-6 border border-slate-700">
-                        <p class="text-slate-400 text-sm font-medium mb-2">전체 포스트</p>
-                        <p class="text-3xl font-bold text-white" id="totalPosts">24</p>
-                        <p class="text-xs text-slate-500 mt-2">30일 기준</p>
+                <section class="sf-page-intro">
+                    <div class="sf-page-intro-grid">
+                        <div class="sf-page-intro-head">
+                            <span class="sf-page-intro-kicker">SNS Automation</span>
+                            <h3 class="sf-page-intro-title">연결된 계정으로 초안을 만들고 예약 발행까지 이어갑니다.</h3>
+                            <p class="sf-page-intro-copy">이 화면은 설명보다 작업 순서를 먼저 보여줍니다. 먼저 계정과 초안 상태를 확인하고, 그 다음 예약 발행과 캠페인 관리를 이어가면 됩니다.</p>
+                        </div>
+                        <div id="nextActionPanel" class="rounded-xl border border-pink-700/40 bg-pink-950/20 p-5">
+                            <p class="text-sm text-slate-300">운영 상태를 계산하는 중...</p>
+                        </div>
                     </div>
-                    <div class="bg-slate-800 rounded-xl p-6 border border-slate-700">
-                        <p class="text-slate-400 text-sm font-medium mb-2">총 상호작용</p>
-                        <p class="text-3xl font-bold text-white" id="totalEngagement">8,450</p>
-                        <p class="text-xs text-slate-500 mt-2">좋아요 + 댓글</p>
-                    </div>
-                    <div class="bg-slate-800 rounded-xl p-6 border border-slate-700">
-                        <p class="text-slate-400 text-sm font-medium mb-2">평균 상호작용</p>
-                        <p class="text-3xl font-bold text-white" id="avgEngagement">352</p>
-                        <p class="text-xs text-slate-500 mt-2">포스트당</p>
-                    </div>
-                    <div class="bg-slate-800 rounded-xl p-6 border border-slate-700">
-                        <p class="text-slate-400 text-sm font-medium mb-2">연결된 계정</p>
-                        <p class="text-3xl font-bold text-white" id="accountCount">2</p>
-                        <p class="text-xs text-slate-500 mt-2">활성 중</p>
-                    </div>
-                </div>
+                </section>
 
-                <!-- Accounts Summary -->
-                <div>
-                    <h3 class="text-lg font-bold text-white mb-4">📱 연결된 계정</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="accountsGrid">
-                        <div class="bg-slate-800 rounded-lg p-6 border border-slate-700 animate-pulse">
-                            <div class="h-6 bg-slate-700 rounded mb-4 w-3/4"></div>
-                            <div class="space-y-3">
-                                <div class="h-4 bg-slate-700 rounded"></div>
-                                <div class="h-4 bg-slate-700 rounded w-5/6"></div>
+                <section class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div class="bg-slate-900 rounded-xl p-5 border border-slate-800"><p class="text-xs text-slate-400 mb-1">연결 계정</p><p id="kpiAccountCount" class="text-2xl font-black text-white">0</p></div>
+                    <div class="bg-slate-900 rounded-xl p-5 border border-slate-800"><p class="text-xs text-slate-400 mb-1">초안 대기</p><p id="kpiDraftCount" class="text-2xl font-black text-pink-300">0</p></div>
+                    <div class="bg-slate-900 rounded-xl p-5 border border-slate-800"><p class="text-xs text-slate-400 mb-1">예약 발행</p><p id="kpiScheduledCount" class="text-2xl font-black text-cyan-300">0</p></div>
+                    <div class="bg-slate-900 rounded-xl p-5 border border-slate-800"><p class="text-xs text-slate-400 mb-1">활성 캠페인</p><p id="kpiCampaignCount" class="text-2xl font-black text-white">0</p></div>
+                </section>
+
+                <section class="grid grid-cols-1 lg:grid-cols-[0.95fr,1.05fr] gap-6">
+                    <div class="bg-slate-900 rounded-2xl p-6 border border-slate-800">
+                        <h3 class="text-lg font-bold text-white mb-1">준비 상태</h3>
+                        <p class="text-sm text-slate-400 mb-4">계정, 템플릿, 예약, 캠페인 순으로 먼저 확인합니다.</p>
+                        <div class="space-y-3" id="setupChecklist"><div class="text-sm text-slate-400">체크리스트를 불러오는 중...</div></div>
+                    </div>
+                    <div class="bg-slate-900 rounded-2xl p-6 border border-slate-800">
+                        <div class="flex items-center justify-between gap-3 mb-4">
+                            <div>
+                                <h3 class="text-lg font-bold text-white">현재 작업판</h3>
+                                <p class="text-sm text-slate-400 mt-1">초안, 예약, 발행 상태를 이 영역에서 바로 확인합니다.</p>
+                            </div>
+                            <a href="schedule.html" class="text-sm text-pink-300 hover:text-pink-200">전체 일정 보기</a>
+                        </div>
+                        <div class="space-y-3" id="publishQueue"><div class="rounded-lg border border-slate-800 bg-slate-950/60 p-4 text-sm text-slate-400">대기열을 불러오는 중...</div></div>
+                    </div>
+                </section>
+
+                <section class="bg-slate-900 rounded-2xl p-6 border border-slate-800">
+                    <div class="flex items-center justify-between gap-3 mb-4">
+                        <div>
+                            <h3 class="text-lg font-bold text-white">연결 계정</h3>
+                            <p class="text-sm text-slate-400 mt-1">채널별 연결 상태와 운영 가능 여부를 먼저 봅니다.</p>
+                        </div>
+                        <a href="accounts.html" class="text-sm text-pink-300 hover:text-pink-200">계정 관리</a>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4" id="accountsGrid"><div class="rounded-lg border border-slate-800 bg-slate-950/60 p-4 text-sm text-slate-400">계정을 불러오는 중...</div></div>
+                </section>
+
+                <section class="grid grid-cols-1 lg:grid-cols-[0.9fr,1.1fr] gap-6">
+                    <div class="bg-slate-900 rounded-2xl p-6 border border-slate-800">
+                        <h3 class="text-lg font-bold text-white mb-1">성과 요약</h3>
+                        <p class="text-sm text-slate-400 mb-4">게시 결과가 쌓이면 다음 작업 우선순위를 다시 조정합니다.</p>
+                        <div class="space-y-3" id="performanceSummary"><div class="text-sm text-slate-400">성과 데이터를 계산하는 중...</div></div>
+                    </div>
+                    <div class="bg-slate-900 rounded-2xl p-6 border border-slate-800">
+                        <div class="flex items-center justify-between gap-3 mb-4">
+                            <div>
+                                <h3 class="text-lg font-bold text-white">상세 데이터</h3>
+                                <p class="text-sm text-slate-400 mt-1">캠페인과 템플릿은 보조 상세 정보로 아래에 배치합니다.</p>
                             </div>
                         </div>
+                        <div class="space-y-3" id="campaignBoard"><div class="text-sm text-slate-400">캠페인을 불러오는 중...</div></div>
+                        <div class="border-t border-slate-800 my-4"></div>
+                        <div class="space-y-3" id="templateGrid"><div class="text-sm text-slate-400">템플릿을 불러오는 중...</div></div>
                     </div>
-                </div>
-
-                <!-- Top Performing Posts -->
-                <div>
-                    <h3 class="text-lg font-bold text-white mb-4">🌟 최고 성과 포스트</h3>
-                    <div class="bg-slate-800 rounded-xl p-6 border border-slate-700">
-                        <div id="topPost" class="space-y-4">
-                            <div class="animate-pulse">
-                                <div class="h-6 bg-slate-700 rounded mb-4 w-3/4"></div>
-                                <div class="space-y-3">
-                                    <div class="h-4 bg-slate-700 rounded"></div>
-                                    <div class="h-4 bg-slate-700 rounded w-5/6"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Platform Breakdown Chart -->
-                <div>
-                    <h3 class="text-lg font-bold text-white mb-4">📊 플랫폼별 분석</h3>
-                    <div class="bg-slate-800 rounded-xl p-6 border border-slate-700">
-                        <canvas id="platformChart" style="max-height: 300px;"></canvas>
-                    </div>
-                </div>
-
-                <!-- Recent Posts -->
-                <div>
-                    <h3 class="text-lg font-bold text-white mb-4">📝 최근 포스트</h3>
-                    <div class="space-y-3" id="recentPosts">
-                        <div class="bg-slate-800 rounded-lg p-4 border border-slate-700 animate-pulse">
-                            <div class="h-4 bg-slate-700 rounded w-3/4 mb-2"></div>
-                            <div class="h-3 bg-slate-700 rounded w-1/2"></div>
-                        </div>
-                    </div>
-                </div>
+                </section>
             </main>
         </div>
     </div>
@@ -201,162 +137,180 @@
     <script>
         requireAuth();
 
-        let platformChart = null;
+        const state = { accounts: [], posts: [], templates: [], campaigns: [], analytics: { totalPosts: 0, totalEngagement: 0, averageEngagement: 0, topPost: null, platformBreakdown: [] } };
+
+        function toArray(payload, key) {
+            if (Array.isArray(payload?.[key])) return payload[key];
+            return Array.isArray(payload) ? payload : [];
+        }
+
+        function normalizeAnalytics(payload) {
+            if (payload?.success && payload.data) {
+                return {
+                    totalPosts: state.posts.length,
+                    totalEngagement: Number(payload.data.totals?.engagement || 0),
+                    averageEngagement: Number(payload.data.average_engagement_rate || 0),
+                    topPost: null,
+                    platformBreakdown: Object.entries(payload.data.by_platform || {}).map(([platform, metrics]) => ({
+                        platform,
+                        engagement: Number(metrics?.engagement || 0),
+                        reach: Number(metrics?.reach || 0),
+                        followers: Number(metrics?.followers || 0)
+                    }))
+                };
+            }
+            return {
+                totalPosts: Number(payload?.total_posts || 0),
+                totalEngagement: Number(payload?.total_engagement || 0),
+                averageEngagement: Number(payload?.average_engagement || 0),
+                topPost: payload?.top_performing || null,
+                platformBreakdown: Array.isArray(payload?.platform_breakdown) ? payload.platform_breakdown : []
+            };
+        }
+
+        function icon(platform) {
+            const map = { instagram: '?벜', blog: '?뱷', tiktok: '?렦', youtube: '?띰툘', twitter: '?븦', threads: '?㏊', facebook: '?몟' };
+            return map[String(platform || '').toLowerCase()] || '?벑';
+        }
+
+        function badge(status) {
+            const map = { draft: 'bg-slate-700 text-slate-200', scheduled: 'bg-cyan-900 text-cyan-200', published: 'bg-emerald-900 text-emerald-200', failed: 'bg-rose-900 text-rose-200', active: 'bg-emerald-900 text-emerald-200', paused: 'bg-slate-700 text-slate-200', completed: 'bg-blue-900 text-blue-200' };
+            return `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${map[status] || 'bg-slate-700 text-slate-200'}">${status || 'unknown'}</span>`;
+        }
+
+        function dt(value) {
+            if (!value) return '誘몄젙';
+            const date = new Date(value);
+            if (Number.isNaN(date.getTime())) return value;
+            return date.toLocaleString('ko-KR', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+        }
+
+        function renderKpis() {
+            document.getElementById('kpiAccountCount').textContent = String(state.accounts.length);
+            document.getElementById('kpiDraftCount').textContent = String(state.posts.filter((item) => item.status === 'draft').length);
+            document.getElementById('kpiScheduledCount').textContent = String(state.posts.filter((item) => item.status === 'scheduled').length);
+            document.getElementById('kpiCampaignCount').textContent = String(state.campaigns.length);
+        }
+
+        function renderNextAction() {
+            const drafts = state.posts.filter((item) => item.status === 'draft').length;
+            let title = '?깃낵瑜??뺤씤?섍퀬 ?ㅼ쓬 珥덉븞??蹂듭젣?섏꽭??;
+            let body = '湲곕낯 ?명똿??媛뽰떠議뚯뒿?덈떎. 諛섏쓳??醫뗭? ?щ㎎??湲곗??쇰줈 ?ㅼ쓬 ?ъ뒪?몃? ?ъ궗?⑺븯硫??⑸땲??';
+            let href = 'analytics.html';
+            let cta = '?깃낵 ?뺤씤';
+            if (!state.accounts.length) {
+                title = '諛쒗뻾 梨꾨꼸遺???곌껐?섏꽭??;
+                body = '吏湲덉? ?ㅼ젣濡?寃곌낵瑜?蹂대궪 怨꾩젙???놁뒿?덈떎. Instagram?대굹 釉붾줈洹?怨꾩젙??癒쇱? ?곌껐?댁빞 ?댁쁺???쒖옉?????덉뒿?덈떎.';
+                href = 'accounts.html';
+                cta = '怨꾩젙 ?곌껐';
+            } else if (!state.posts.length) {
+                title = '泥??ъ뒪??珥덉븞??留뚮뱶?몄슂';
+                body = '梨꾨꼸? 以鍮꾨릺???덉?留?諛쒗뻾 ?뚯씠?꾨씪?몄씠 鍮꾩뼱 ?덉뒿?덈떎. 珥덉븞 1媛쒕쭔 留뚮뱾?대룄 ?댄썑 ?덉빟怨?罹좏럹???곌껐???ъ썙吏묐땲??';
+                href = 'create.html';
+                cta = '?ъ뒪???묒꽦';
+            } else if (drafts && !state.posts.some((item) => item.status === 'scheduled')) {
+                title = '珥덉븞???덉빟 諛쒗뻾?쇰줈 ?섍린?몄슂';
+                body = `?꾩옱 珥덉븞 ${drafts}嫄댁씠 ?덉뒿?덈떎. ?곸뼱??1嫄댁? ?ㅼ?以꾩뿉 ?щ젮???먮룞??猷⑦봽媛 ?꾩꽦?⑸땲??`;
+                href = 'schedule.html';
+                cta = '?ㅼ?以??깅줉';
+            } else if (!state.campaigns.length) {
+                title = '罹좏럹???⑥쐞濡?臾띠뼱 ?댁쁺?섏꽭??;
+                body = '?ъ뒪?멸? 媛쒕퀎?곸쑝濡??⑹뼱???덉쑝硫??깃낵 鍮꾧탳媛 ?대졄?듬땲?? ?대쾲 二??댁쁺遺꾩쓣 罹좏럹??1媛쒕줈 臾띠쑝?몄슂.';
+                href = 'campaigns.html';
+                cta = '罹좏럹??留뚮뱾湲?;
+            }
+            document.getElementById('nextActionPanel').innerHTML = `<p class="text-xs font-semibold tracking-[0.18em] text-pink-300 uppercase">Right Now</p><h4 class="text-xl font-bold text-white mt-2">${title}</h4><p class="text-sm text-slate-300 leading-7 mt-3">${body}</p><a href="${href}" class="inline-flex mt-5 px-4 py-2 rounded-lg bg-pink-600 text-white text-sm font-semibold hover:bg-pink-500">${cta}</a>`;
+        }
+
+        function renderChecklist() {
+            const published = state.posts.filter((item) => item.status === 'published').length;
+            const checks = [
+                { label: '諛쒗뻾 怨꾩젙 ?곌껐', done: state.accounts.length > 0, detail: state.accounts.length ? `${state.accounts.length}媛?梨꾨꼸 ?곌껐 ?꾨즺` : '?곌껐??SNS 怨꾩젙???놁뒿?덈떎.', href: 'accounts.html', cta: state.accounts.length ? '怨꾩젙 蹂닿린' : '?곌껐?섍린' },
+                { label: '?쒗뵆由??뺣낫', done: state.templates.length > 0, detail: state.templates.length ? `${state.templates.length}媛??쒗뵆由??ъ슜 媛?? : '?ъ궗???쒗뵆由우씠 ?놁뒿?덈떎.', href: 'templates.html', cta: '?쒗뵆由?蹂닿린' },
+                { label: '?덉빟 諛쒗뻾 ?湲곗뿴', done: state.posts.some((item) => item.status === 'scheduled'), detail: state.posts.some((item) => item.status === 'scheduled') ? '?덉빟 諛쒗뻾???≫? ?덉뒿?덈떎.' : '珥덉븞???ㅼ젣 ?덉빟?쇰줈 ?곌껐?댁빞 ?⑸땲??', href: 'schedule.html', cta: '?湲곗뿴 ?먭?' },
+                { label: '罹좏럹???댁쁺', done: state.campaigns.length > 0, detail: state.campaigns.length ? `${state.campaigns.length}媛?罹좏럹???댁쁺 以? : '?ъ뒪?몃? 臾띕뒗 罹좏럹?몄씠 ?놁뒿?덈떎.', href: 'campaigns.html', cta: '罹좏럹???닿린' },
+                { label: '?ㅼ젣 ?깃낵 ?곗씠??, done: published > 0 || state.analytics.totalEngagement > 0, detail: published > 0 || state.analytics.totalEngagement > 0 ? '?깃낵 ?곗씠?곌? ?덉뼱 媛쒖꽑 ?곗꽑?쒖쐞瑜??≪쓣 ???덉뒿?덈떎.' : '?꾩쭅 痢≪젙 媛?ν븳 ?깃낵 ?곗씠?곌? ?놁뒿?덈떎.', href: 'analytics.html', cta: '?깃낵 ?뺤씤' }
+            ];
+            document.getElementById('setupChecklist').innerHTML = checks.map((item) => `<div class="rounded-xl border ${item.done ? 'border-emerald-800' : 'border-amber-800'} bg-slate-950/60 p-4"><div class="flex items-start justify-between gap-3"><div><div class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full ${item.done ? 'bg-emerald-400' : 'bg-amber-400'}"></span><p class="text-sm font-semibold text-white">${item.label}</p></div><p class="text-xs text-slate-400 mt-2">${item.detail}</p></div><a href="${item.href}" class="px-3 py-2 rounded-lg bg-slate-800 text-slate-100 text-xs hover:bg-slate-700">${item.cta}</a></div></div>`).join('');
+        }
+
+        function renderAccounts() {
+            const el = document.getElementById('accountsGrid');
+            if (!state.accounts.length) {
+                el.innerHTML = `<div class="rounded-lg border border-dashed border-slate-700 bg-slate-950/60 p-5 text-sm text-slate-300 md:col-span-2 xl:col-span-3">?꾩쭅 ?곌껐??怨꾩젙???놁뒿?덈떎. ?ㅼ젣 ?댁쁺???쒖옉?섎젮硫?癒쇱? 諛쒗뻾 梨꾨꼸???곌껐?섏꽭??</div>`;
+                return;
+            }
+            el.innerHTML = state.accounts.map((account) => {
+                const followers = Number(account.followers_count ?? account.followers ?? 0);
+                const postCount = Number(account.post_count || 0);
+                const engagement = Number(account.engagement_rate || 0);
+                return `<article class="rounded-xl border border-slate-800 bg-slate-950/60 p-5"><div class="flex items-start justify-between gap-3"><div><div class="text-2xl">${icon(account.platform)}</div><h4 class="text-base font-semibold text-white mt-2">${account.account_name || 'Unnamed account'}</h4><p class="text-xs text-slate-400 capitalize mt-1">${account.platform || 'unknown'}</p></div>${badge(account.is_active ? 'active' : 'paused')}</div><div class="grid grid-cols-3 gap-3 mt-4 text-sm"><div><p class="text-slate-400 text-xs">?붾줈??/p><p class="text-white font-semibold mt-1">${followers.toLocaleString('ko-KR')}</p></div><div><p class="text-slate-400 text-xs">李몄뿬??/p><p class="text-white font-semibold mt-1">${engagement ? `${engagement.toFixed(1)}%` : '-'}</p></div><div><p class="text-slate-400 text-xs">?ъ뒪????/p><p class="text-white font-semibold mt-1">${postCount.toLocaleString('ko-KR')}</p></div></div></article>`;
+            }).join('');
+        }
+
+        function renderQueue() {
+            const el = document.getElementById('publishQueue');
+            if (!state.posts.length) {
+                el.innerHTML = `<div class="rounded-lg border border-dashed border-slate-700 bg-slate-950/60 p-5 text-sm text-slate-300">諛쒗뻾 ?湲곗뿴??鍮꾩뼱 ?덉뒿?덈떎. 珥덉븞??癒쇱? 留뚮뱾怨??덉빟 諛쒗뻾源뚯? ?곌껐??蹂댁꽭??</div>`;
+                return;
+            }
+            const posts = [...state.posts].sort((a, b) => new Date(b.scheduled_at || b.created_at || 0).getTime() - new Date(a.scheduled_at || a.created_at || 0).getTime());
+            el.innerHTML = posts.slice(0, 8).map((post) => `<article class="rounded-lg border border-slate-800 bg-slate-950/60 p-4"><div class="flex items-start justify-between gap-3"><div><p class="text-sm font-semibold text-white">${post.account_name || post.platform || '梨꾨꼸 誘몄???}</p><p class="text-xs text-slate-400 mt-1">${post.platform || 'unknown'} 쨌 ${post.template_type || 'template ?놁쓬'}</p></div>${badge(post.status)}</div><p class="text-sm text-slate-300 mt-3 leading-6">${post.content || '?댁슜 ?놁쓬'}</p><div class="grid grid-cols-1 md:grid-cols-3 gap-3 mt-4 text-xs text-slate-400"><div>?앹꽦: ${dt(post.created_at)}</div><div>?덉빟: ${dt(post.scheduled_at)}</div><div>諛쒗뻾: ${dt(post.published_at)}</div></div><div class="flex flex-wrap gap-2 mt-4"><a href="create.html" class="px-3 py-2 rounded-lg bg-slate-800 text-slate-100 text-xs hover:bg-slate-700">?섏젙/蹂듭젣</a>${post.status === 'draft' ? '<a href="schedule.html" class="px-3 py-2 rounded-lg bg-pink-600 text-white text-xs hover:bg-pink-500">?덉빟 ?대룞</a>' : ''}</div></article>`).join('');
+        }
+
+        function renderPerformance() {
+            const el = document.getElementById('performanceSummary');
+            if (!state.analytics.totalEngagement && !state.analytics.platformBreakdown.length && !state.analytics.topPost) {
+                el.innerHTML = `<div class="rounded-lg border border-dashed border-slate-700 bg-slate-950/60 p-5 text-sm text-slate-300">?꾩쭅 ?깃낵 ?곗씠?곌? 異⑸텇?섏? ?딆뒿?덈떎. 諛쒗뻾??癒쇱? ?섎┛ ??梨꾨꼸蹂?諛섏쓳??鍮꾧탳?섏꽭??</div>`;
+                return;
+            }
+            const topPost = state.analytics.topPost ? `<div class="rounded-lg border border-pink-800/40 bg-pink-950/20 p-4"><p class="text-xs font-semibold tracking-[0.18em] text-pink-300 uppercase">Top Post</p><p class="text-sm font-semibold text-white mt-2">${state.analytics.topPost.title || '?쒕ぉ ?놁쓬'}</p><p class="text-xs text-slate-300 mt-2">議고쉶 ${Number(state.analytics.topPost.views || 0).toLocaleString('ko-KR')} 쨌 醫뗭븘??${Number(state.analytics.topPost.likes || 0).toLocaleString('ko-KR')}</p></div>` : '';
+            const breakdown = state.analytics.platformBreakdown.length ? state.analytics.platformBreakdown.map((item) => `<div class="rounded-lg border border-slate-800 bg-slate-950/60 p-4"><div class="flex items-center justify-between gap-3"><p class="text-sm font-semibold text-white">${item.platform}</p><span class="text-xs text-slate-400">李몄뿬 ${Number(item.engagement || 0).toLocaleString('ko-KR')}</span></div><p class="text-xs text-slate-400 mt-2">?꾨떖 ${Number(item.reach || 0).toLocaleString('ko-KR')} 쨌 ?붾줈??${Number(item.followers || 0).toLocaleString('ko-KR')}</p></div>`).join('') : `<div class="rounded-lg border border-slate-800 bg-slate-950/60 p-4"><p class="text-sm font-semibold text-white">珥??곹샇?묒슜 ${state.analytics.totalEngagement.toLocaleString('ko-KR')}</p><p class="text-xs text-slate-400 mt-2">?됯퇏 李몄뿬??${state.analytics.averageEngagement.toLocaleString('ko-KR')}</p></div>`;
+            el.innerHTML = topPost + breakdown;
+        }
+
+        function renderCampaigns() {
+            const campaignsEl = document.getElementById('campaignBoard');
+            if (!state.campaigns.length) {
+                campaignsEl.innerHTML = `<div class="rounded-lg border border-dashed border-slate-700 bg-slate-950/60 p-5 text-sm text-slate-300">?꾩쭅 ?쒖꽦 罹좏럹?몄씠 ?놁뒿?덈떎. ?ъ뒪?몃? 紐⑺몴蹂꾨줈 臾띠뼱 ?댁쁺?섎㈃ ?깃낵 異붿쟻???ъ썙吏묐땲??</div>`;
+            } else {
+                campaignsEl.innerHTML = state.campaigns.slice(0, 4).map((campaign) => `<article class="rounded-lg border border-slate-800 bg-slate-950/60 p-4"><div class="flex items-start justify-between gap-3"><div><p class="text-sm font-semibold text-white">${campaign.name || '?대쫫 ?녿뒗 罹좏럹??}</p><p class="text-xs text-slate-400 mt-1">${(campaign.target_platforms || []).join(', ') || '梨꾨꼸 誘몄???}</p></div>${badge(campaign.status || 'active')}</div><p class="text-sm text-slate-300 mt-3">${campaign.description || '?ㅻ챸???놁뒿?덈떎.'}</p><div class="grid grid-cols-2 gap-3 mt-4 text-xs text-slate-400"><div>?쒖옉: ${dt(campaign.start_date)}</div><div>醫낅즺: ${dt(campaign.end_date)}</div><div>?곌껐 ?ъ뒪?? ${Number(campaign.post_count || 0).toLocaleString('ko-KR')}嫄?/div><div>?앹꽦?? ${dt(campaign.created_at)}</div></div></article>`).join('');
+            }
+
+            const templatesEl = document.getElementById('templateGrid');
+            if (!state.templates.length) {
+                templatesEl.innerHTML = `<div class="rounded-lg border border-dashed border-slate-700 bg-slate-950/60 p-5 text-sm text-slate-300">?쒗뵆由우씠 ?놁쑝硫?梨꾨꼸蹂??쇨??깆씠 源⑥쭛?덈떎. ?곗꽑 2~3媛쒖쓽 湲곕낯 ?쒗뵆由우쓣 ?뺣낫?섏꽭??</div>`;
+                return;
+            }
+            templatesEl.innerHTML = state.templates.slice(0, 5).map((template) => `<article class="rounded-lg border border-slate-800 bg-slate-950/60 p-4"><div class="flex items-start justify-between gap-3"><div><p class="text-sm font-semibold text-white">${template.name || '?대쫫 ?녿뒗 ?쒗뵆由?}</p><p class="text-xs text-pink-300 mt-1">${template.type || template.template_type || 'type ?놁쓬'}</p></div><span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-slate-800 text-slate-200">ready</span></div><p class="text-xs text-slate-400 mt-3">${template.description || '?ㅻ챸???놁뒿?덈떎.'}</p></article>`).join('');
+        }
 
         async function init() {
             try {
-                // Get SNS Analytics and Accounts
-                const [accountsData, analyticsData] = await Promise.all([
-                    getSNSAccounts(),
-                    apiFetch('/api/sns/analytics').then(r => r.json())
+                const [accountsRaw, postsRaw, templatesRaw, campaignsRaw, analyticsRaw] = await Promise.all([
+                    getSNSAccounts().catch(() => []),
+                    getSNSPosts().catch(() => ({ posts: [] })),
+                    getSNSTemplates().catch(() => []),
+                    getSNSCampaigns().catch(() => []),
+                    apiFetch('/api/sns/analytics').then((response) => response.json()).catch(() => ({}))
                 ]);
-
-                // Update KPI cards
-                document.getElementById('totalPosts').textContent = analyticsData.total_posts || 24;
-                document.getElementById('totalEngagement').textContent = (analyticsData.total_engagement || 8450).toLocaleString('ko-KR');
-                document.getElementById('avgEngagement').textContent = (analyticsData.average_engagement || 352).toLocaleString('ko-KR');
-                document.getElementById('accountCount').textContent = (accountsData.accounts?.length || 2);
-
-                // Render accounts
-                renderAccounts(accountsData.accounts || []);
-
-                // Render top post
-                renderTopPost(analyticsData.top_performing);
-
-                // Render chart
-                renderChart(analyticsData.platform_breakdown || []);
-
-                // Render recent posts
-                renderRecentPosts(analyticsData.trend_30days || []);
+                state.accounts = toArray(accountsRaw, 'accounts');
+                state.posts = toArray(postsRaw, 'posts');
+                state.templates = toArray(templatesRaw, 'templates');
+                state.campaigns = toArray(campaignsRaw, 'campaigns');
+                state.analytics = normalizeAnalytics(analyticsRaw);
             } catch (error) {
-                console.error('Error loading SNS Auto:', error);
-                showError('데이터 로드 중 오류 발생');
+                console.error('SNS dashboard init failed:', error);
+                showError('SNS ?댁쁺 ?곗씠?곕? 遺덈윭?ㅼ? 紐삵뻽?듬땲??');
             }
-        }
 
-        function renderAccounts(accounts) {
-            const grid = document.getElementById('accountsGrid');
-            grid.innerHTML = '';
-
-            const platformEmojis = {
-                instagram: '📷',
-                blog: '📝',
-                tiktok: '🎵',
-                youtube: '▶️',
-                twitter: '𝕏',
-                facebook: '👍'
-            };
-
-            accounts.forEach(account => {
-                const emoji = platformEmojis[account.platform] || '📱';
-                const html = `
-                    <div class="bg-gradient-to-br from-pink-900/30 to-pink-900/10 rounded-lg p-6 border-2 border-pink-600">
-                        <div class="flex items-start justify-between mb-4">
-                            <div>
-                                <div class="text-2xl mb-2">${emoji}</div>
-                                <h4 class="font-semibold text-white">${account.account_name}</h4>
-                                <p class="text-xs text-slate-400 capitalize">${account.platform}</p>
-                            </div>
-                            <span class="${account.is_active ? 'text-green-400 font-bold text-xs' : 'text-slate-400 text-xs'}">
-                                ${account.is_active ? '🟢 활성' : '⚫ 비활성'}
-                            </span>
-                        </div>
-                        <div class="grid grid-cols-2 gap-3 text-sm">
-                            <div>
-                                <p class="text-slate-400 text-xs">팔로워</p>
-                                <p class="font-bold text-white">${(account.followers || 0).toLocaleString('ko-KR')}</p>
-                            </div>
-                            <div>
-                                <p class="text-slate-400 text-xs">참여도</p>
-                                <p class="font-bold text-white">${(account.engagement_rate || 0).toFixed(1)}%</p>
-                            </div>
-                        </div>
-                    </div>
-                `;
-                grid.innerHTML += html;
-            });
-        }
-
-        function renderTopPost(topPost) {
-            const container = document.getElementById('topPost');
-            if (topPost) {
-                const html = `
-                    <div class="grid grid-cols-3 gap-4">
-                        <div>
-                            <p class="text-slate-400 text-sm mb-1">제목</p>
-                            <p class="font-semibold text-white">${topPost.title || '-'}</p>
-                        </div>
-                        <div>
-                            <p class="text-slate-400 text-sm mb-1">조회수</p>
-                            <p class="font-semibold text-white text-lg">${(topPost.views || 0).toLocaleString('ko-KR')}</p>
-                        </div>
-                        <div>
-                            <p class="text-slate-400 text-sm mb-1">상호작용</p>
-                            <p class="font-semibold text-white text-lg">${(topPost.likes || 0).toLocaleString('ko-KR')}❤️</p>
-                        </div>
-                    </div>
-                `;
-                container.innerHTML = html;
-            }
-        }
-
-        function renderChart(platformData) {
-            const ctx = document.getElementById('platformChart').getContext('2d');
-            const defaults = getChartDefaults();
-
-            const labels = (platformData || []).map(p => p.platform || 'Unknown');
-            const data = (platformData || []).map(p => p.engagement || 0);
-
-            platformChart = new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels: labels.length > 0 ? labels : ['Instagram', 'Blog'],
-                    datasets: [{
-                        data: data.length > 0 ? data : [5200, 3250],
-                        backgroundColor: [
-                            '#ec4899',
-                            '#f97316',
-                            '#06b6d4',
-                            '#a78bfa',
-                            '#10b981'
-                        ],
-                        borderColor: '#1e293b',
-                        borderWidth: 2
-                    }]
-                },
-                options: {
-                    ...defaults,
-                    plugins: {
-                        ...defaults.plugins,
-                        legend: {
-                            position: 'bottom',
-                            labels: { color: '#cbd5e1', font: { family: "'Inter', sans-serif", size: 12 } }
-                        }
-                    }
-                }
-            });
-        }
-
-        function renderRecentPosts(trend) {
-            const container = document.getElementById('recentPosts');
-            container.innerHTML = '';
-
-            if (trend && trend.length > 0) {
-                trend.forEach(item => {
-                    const html = `
-                        <div class="bg-slate-800 rounded-lg p-4 border border-slate-700 hover:border-pink-600 transition">
-                            <div class="flex items-start justify-between">
-                                <div>
-                                    <p class="text-sm text-slate-400">${item.day || '날짜'}</p>
-                                    <p class="font-medium text-white">${item.posts || 0} 포스트 • ${item.engagement || 0} 상호작용</p>
-                                </div>
-                                <a href="#" class="text-pink-400 hover:text-pink-300 text-xs">→</a>
-                            </div>
-                        </div>
-                    `;
-                    container.innerHTML += html;
-                });
-            }
+            renderKpis();
+            renderNextAction();
+            renderChecklist();
+            renderAccounts();
+            renderQueue();
+            renderPerformance();
+            renderCampaigns();
         }
 
         document.addEventListener('DOMContentLoaded', init);
@@ -364,6 +318,5 @@
     <script src="../mobile-optimization.js" defer></script>
 </body>
 </html>
-
 
 

@@ -7,16 +7,21 @@ import logging
 import json
 import time
 import uuid
+import traceback as _traceback
 from datetime import datetime
 from functools import wraps
-from flask import request, g
-from pythonjsonlogger import jsonlogger
+from flask import request, g, has_request_context
+from pythonjsonlogger.json import JsonFormatter
 
 
 class RequestIdFilter(logging.Filter):
     """Filter to inject request ID (correlation ID) into log records"""
 
     def filter(self, record):
+        if not has_request_context():
+            record.request_id = 'N/A'
+            return True
+
         if hasattr(g, 'request_id'):
             record.request_id = g.request_id
         else:
@@ -24,7 +29,7 @@ class RequestIdFilter(logging.Filter):
         return True
 
 
-class JSONFormatter(jsonlogger.JsonFormatter):
+class JSONFormatter(JsonFormatter):
     """Custom JSON formatter with consistent field names"""
 
     def add_fields(self, log_record, record, message_dict):
@@ -43,10 +48,11 @@ class JSONFormatter(jsonlogger.JsonFormatter):
         log_record['line_number'] = record.lineno
 
         # Add request context if available
-        if hasattr(g, 'request_id'):
-            log_record['request_id'] = g.request_id
-        if hasattr(g, 'user_id'):
-            log_record['user_id'] = g.user_id
+        if has_request_context():
+            if hasattr(g, 'request_id'):
+                log_record['request_id'] = g.request_id
+            if hasattr(g, 'user_id'):
+                log_record['user_id'] = g.user_id
 
 
 def configure_logging(app, log_file='logs/app.log', debug=False):
@@ -169,6 +175,33 @@ def request_logging_middleware(app):
                 'request_id': g.request_id
             }
         )
+        try:
+            # Persist exception for operator triage in /api/errors API.
+            from .error_api import error_tracker
+            current_user = getattr(g, 'user', None)
+            if current_user is not None and isinstance(current_user, dict):
+                current_user_id = current_user.get('user_id')
+            elif current_user is not None:
+                current_user_id = getattr(current_user, 'id', None)
+            else:
+                current_user_id = None
+            error_tracker.log_error(
+                error_type=type(e).__name__,
+                message=str(e),
+                traceback=''.join(_traceback.format_exception(type(e), e, e.__traceback__)),
+                context={
+                    'request_id': getattr(g, 'request_id', None),
+                    'method': request.method,
+                    'path': request.path,
+                    'query_string': request.query_string.decode('utf-8', errors='ignore'),
+                    'remote_addr': request.remote_addr,
+                },
+                file=getattr(request, 'endpoint', 'unknown') or 'unknown',
+                line=0,
+                user_id=current_user_id,
+            )
+        except Exception:
+            pass
         raise
 
 

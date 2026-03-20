@@ -1,121 +1,677 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="theme-color" content="#111827">
-<title>AI Automation — SoftFactory</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <script src="../platform/api.js"></script>
-    <style>body { font-family: 'Inter', sans-serif; }</style>
-    <link rel="stylesheet" href="../responsive-framework.css">
-  </head>
-<body class="bg-slate-950 text-slate-100">
-    <div class="flex h-screen overflow-hidden">
-        <aside class="w-64 bg-slate-900 border-r border-slate-800 flex flex-col shrink-0">
-            <div class="p-6 border-b border-slate-800">
-                <a href="../platform/dashboard.html" class="flex items-center gap-3">
-                    <span class="text-2xl">🏭</span>
-                    <div><h1 class="font-bold text-white text-sm">SoftFactory</h1><p class="text-xs text-slate-400">← Back</p></div>
-                </a>
-            </div>
-            <nav class="flex-1 p-6 space-y-2 overflow-y-auto">
-    <button class="hamburger" aria-label="Toggle navigation menu">
-      <span></span>
-      <span></span>
-      <span></span>
-    </button>
-                <p class="text-xs font-semibold text-slate-400 uppercase px-4 mb-3">🤖 AI Auto</p>
-                <a href="index.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg bg-cyan-600 text-white font-medium">📊 대시보드</a>
-                <a href="scenarios.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">📋 시나리오</a>
-                <a href="create.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">✨ 생성</a>
-                <a href="analytics.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">📈 분석</a>
-            </nav>
-            <div class="p-6 border-t border-slate-800">
-                <button onclick="logout()" class="p-2 hover:bg-slate-800 rounded-lg">🚪</button>
-            </div>
-        </aside>
-        <div class="flex-1 flex flex-col overflow-hidden">
-            <header class="h-16 bg-slate-900 border-b border-slate-800 px-6 flex items-center justify-between shrink-0">
-                <div><h2 class="text-xl font-bold text-white">🤖 AI Automation 대시보드</h2></div>
-                <a href="create.html" class="px-4 py-2 bg-cyan-600 hover:bg-cyan-700 text-white rounded-lg font-medium text-sm">+ AI 직원 생성</a>
-            </header>
-            <main class="flex-1 overflow-y-auto p-6 space-y-6">
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-                    <div class="bg-slate-800 rounded-xl p-6 border border-slate-700">
-                        <p class="text-slate-400 text-sm mb-2">활성 AI</p>
-                        <p class="text-3xl font-bold text-white">1</p>
-                    </div>
-                    <div class="bg-slate-800 rounded-xl p-6 border border-slate-700">
-                        <p class="text-slate-400 text-sm mb-2">절약 시간 (월)</p>
-                        <p class="text-3xl font-bold text-cyan-400">60시간</p>
-                    </div>
-                    <div class="bg-slate-800 rounded-xl p-6 border border-slate-700">
-                        <p class="text-slate-400 text-sm mb-2">절약 비용 (연)</p>
-                        <p class="text-3xl font-bold text-white">₩1.8M</p>
-                    </div>
-                    <div class="bg-slate-800 rounded-xl p-6 border border-slate-700">
-                        <p class="text-slate-400 text-sm mb-2">효율성</p>
-                        <p class="text-3xl font-bold text-white">+35%</p>
-                    </div>
-                </div>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#111827">
+  <title>AI 자동화 대시보드 | SoftFactory</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="../platform/api.js"></script>
+  <style>body { font-family: 'Inter', sans-serif; }</style>
+  <link rel="stylesheet" href="../responsive-framework.css">
+</head>
+<body class="bg-slate-950 text-slate-100 soft-shell">
+  <div class="flex h-screen overflow-hidden">
+    <aside class="w-64 bg-slate-900 border-r border-slate-800 flex flex-col shrink-0">
+      <div class="p-6 border-b border-slate-800">
+        <a href="../platform/dashboard.html" class="flex items-center gap-3">
+          <span class="text-2xl">[AUTO]</span>
+          <div><h1 class="font-bold text-white text-sm">SoftFactory</h1><p class="text-xs text-slate-400">메인으로 이동</p></div>
+        </a>
+      </div>
+      <nav class="soft-nav-tree flex-1 p-6 overflow-y-auto">
+        <button class="hamburger" aria-label="메뉴 열기/닫기"><span></span><span></span><span></span></button>
+        <a href="../platform/index.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-slate-800 transition"><span aria-hidden="true">🏭</span> 플랫폼 홈</a>
+        <a href="index.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg bg-cyan-600/20 border-l-2 border-cyan-500 text-white"><span aria-hidden="true">🤖</span> AI 자동화</a>
+        <div class="soft-nav-divider"></div>
+        <details class="soft-nav-group" open>
+          <summary class="soft-nav-summary"><span>현재 서비스 메뉴</span></summary>
+          <div class="soft-nav-sub">
+            <a href="index.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg bg-cyan-600/20 border-l-2 border-cyan-500 text-white"><span aria-hidden="true">🤖</span> 대시보드</a>
+            <a href="scenarios.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800"><span aria-hidden="true">🧭</span> 시나리오</a>
+            <a href="create.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800"><span aria-hidden="true">🧑‍💻</span> AI 직원 생성</a>
+            <a href="code.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800"><span aria-hidden="true">💻</span> 코드 에디터</a>
+            <a href="analytics.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800"><span aria-hidden="true">📊</span> 분석</a>
+            <a href="pricing.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800"><span aria-hidden="true">💎</span> 요금제</a>
+          </div>
+        </details>
+        <details class="soft-nav-group" open>
+          <summary class="soft-nav-summary"><span>운영 서비스</span></summary>
+          <div class="soft-nav-sub">
+            <a href="../sns-auto/index.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-slate-800 transition"><span aria-hidden="true">📱</span> SNS 자동화</a>
+            <a href="../review/index.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-slate-800 transition"><span aria-hidden="true">⭐</span> 리뷰</a>
+            <a href="../coocook/index.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-slate-800 transition"><span aria-hidden="true">🍳</span> CooCook</a>
+            <a href="../webapp-builder/index.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-slate-800 transition"><span aria-hidden="true">💻</span> 웹앱 빌더</a>
+            <a href="../instagram-cardnews/index.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-slate-800 transition"><span aria-hidden="true">📸</span> 인스타그램 카드뉴스</a>
+          </div>
+        </details>
+      </nav>
+      <div class="p-6 border-t border-slate-800">
+        <button onclick="logout()" class="p-2 hover:bg-slate-800 rounded-lg">로그아웃</button>
+      </div>
+    </aside>
 
-                <div>
-                    <h3 class="text-lg font-bold text-white mb-4">🤖 AI 직원</h3>
-                    <div class="space-y-4" id="employeesList">
-                        <div class="bg-gradient-to-br from-cyan-900/30 to-cyan-900/10 rounded-lg p-6 border-2 border-cyan-600">
-                            <div class="flex items-start justify-between">
-                                <div>
-                                    <h4 class="text-lg font-bold text-white">Email Bot</h4>
-                                    <p class="text-sm text-cyan-400">📧 이메일 자동 응답</p>
-                                </div>
-                                <span class="px-3 py-1 bg-green-900 text-green-200 text-xs rounded-full">✅ 활성</span>
-                            </div>
-                            <p class="text-sm text-slate-300 mt-4">절약: 15시간/월 • ₩150만/연</p>
-                        </div>
-                    </div>
-                </div>
-            </main>
+    <div class="flex-1 flex flex-col overflow-hidden">
+      <header class="h-16 bg-slate-900 border-b border-slate-800 px-6 flex items-center justify-between shrink-0">
+        <div>
+          <h2 class="text-xl font-bold text-white">AI 자동화</h2>
+          <p class="text-xs text-slate-400">실행 대기, 승인 큐, 다음 배포를 같은 순서로 봅니다.</p>
         </div>
+        <a href="create.html" class="px-4 py-2 bg-cyan-600 hover:bg-cyan-700 text-white rounded-lg font-medium text-sm">새 자동화 만들기</a>
+      </header>
+
+      <main class="flex-1 overflow-y-auto p-6 space-y-6">
+        <section class="sf-page-intro">
+          <div class="sf-page-intro-grid">
+            <div class="sf-page-intro-head">
+              <span class="sf-page-intro-kicker">AI Automation</span>
+              <h3 class="sf-page-intro-title">반복 업무를 실행 대기와 승인 큐 기준으로 운영합니다.</h3>
+              <p class="sf-page-intro-copy">이 화면은 AI 직원 소개보다 현재 처리해야 할 자동화 흐름을 먼저 보여줍니다. 먼저 실행 대기와 승인 상태를 확인하고, 그 다음 시나리오와 상세 활동으로 내려갑니다.</p>
+              <div class="sf-inline-list">
+                <a href="scenarios.html" class="sf-inline-chip">시나리오</a>
+                <a href="../sns-auto/create.html" class="sf-inline-chip">SNS 연결</a>
+                <a href="analytics.html" class="sf-inline-chip">성과 분석</a>
+              </div>
+            </div>
+            <article class="sf-primary-action-card">
+              <p class="sf-primary-action-label">지금 해야 할 일</p>
+              <h4 class="sf-primary-action-title">승인 큐를 먼저 확인하고 필요한 자동화만 배포하세요.</h4>
+              <p class="sf-primary-action-copy">AI 자동화는 생성보다 배포 판단이 더 중요합니다. 승인 대기 항목을 정리한 뒤 새 자동화를 추가하는 편이 더 빠릅니다.</p>
+              <a href="#approvalSection" class="sf-primary-action-cta">승인 큐 보기</a>
+            </article>
+          </div>
+        </section>
+
+        <section class="bg-slate-900/80 rounded-2xl border border-slate-800 p-4">
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <h3 class="text-base font-bold text-white">대시보드 집중 모드</h3>
+              <p class="text-sm text-slate-400 mt-1">지금 보고 싶은 묶음만 열어서 판단 속도를 높입니다.</p>
+            </div>
+            <div class="flex flex-wrap gap-2" id="dashboardViewTabs">
+              <button type="button" data-dashboard-view="overview" class="px-3 py-2 rounded-lg bg-cyan-600 text-white text-sm">운영 개요</button>
+              <button type="button" data-dashboard-view="queue" class="px-3 py-2 rounded-lg bg-slate-800 text-slate-200 text-sm">승인 큐</button>
+              <button type="button" data-dashboard-view="activity" class="px-3 py-2 rounded-lg bg-slate-800 text-slate-200 text-sm">최근 활동</button>
+              <button type="button" data-dashboard-view="employees" class="px-3 py-2 rounded-lg bg-slate-800 text-slate-200 text-sm">AI 직원</button>
+            </div>
+          </div>
+        </section>
+
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+          <div class="bg-slate-800 rounded-xl p-6 border border-slate-700">
+            <p class="text-slate-400 text-sm mb-2">활성 AI</p>
+            <p class="text-3xl font-bold text-white" id="kpi-active">0</p>
+          </div>
+          <div class="bg-slate-800 rounded-xl p-6 border border-slate-700">
+            <p class="text-slate-400 text-sm mb-2">실행 대기</p>
+            <p class="text-3xl font-bold text-cyan-400" id="kpi-pending">0</p>
+          </div>
+          <div class="bg-slate-800 rounded-xl p-6 border border-slate-700">
+            <p class="text-slate-400 text-sm mb-2">절약 시간 (월)</p>
+            <p class="text-3xl font-bold text-white" id="kpi-savings">0시간</p>
+          </div>
+          <div class="bg-slate-800 rounded-xl p-6 border border-slate-700">
+            <p class="text-slate-400 text-sm mb-2">다음 실행</p>
+            <p class="text-xl font-bold text-white" id="kpi-next-action">대기 중</p>
+          </div>
+        </div>
+
+        <section class="grid grid-cols-1 lg:grid-cols-[1.15fr,0.85fr] gap-6" id="actionDeskSection">
+          <div class="bg-slate-800 rounded-xl p-6 border border-slate-700">
+            <div class="flex items-center justify-between gap-3 mb-4">
+              <div>
+                <h3 class="text-lg font-bold text-white">실행이 필요한 직원</h3>
+                <p class="text-sm text-slate-400 mt-1">배포, 활성화, 검토가 필요한 순서대로 보여줍니다.</p>
+              </div>
+              <a href="create.html" class="text-sm text-cyan-300 hover:text-cyan-200">새 직원 만들기</a>
+            </div>
+            <div class="space-y-3" id="employeeActionList">
+              <div class="text-sm text-slate-400">실행 목록을 불러오는 중...</div>
+            </div>
+          </div>
+          <div class="bg-slate-800 rounded-xl p-6 border border-slate-700">
+            <div class="mb-4">
+              <h3 class="text-lg font-bold text-white">운영 체크</h3>
+              <p class="text-sm text-slate-400 mt-1">자동화가 실제 결과를 내기 전에 필요한 준비 상태를 빠르게 점검합니다.</p>
+            </div>
+            <div class="space-y-3" id="employeeOpsChecklist">
+              <div class="text-sm text-slate-400">운영 체크를 계산하는 중...</div>
+            </div>
+          </div>
+        </section>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6" id="overviewSection">
+          <section class="bg-slate-800 rounded-xl p-6 border border-slate-700">
+            <h3 class="text-lg font-bold text-white mb-3">콘텐츠 운영 파이프라인</h3>
+            <div class="space-y-3 text-sm text-slate-300">
+              <div class="rounded-lg border border-slate-700 bg-slate-900/70 p-3">1. AI 초안 생성</div>
+              <div class="rounded-lg border border-slate-700 bg-slate-900/70 p-3">2. 템플릿/브랜드 규칙 적용</div>
+              <div class="rounded-lg border border-slate-700 bg-slate-900/70 p-3">3. 채널별 문구 변형</div>
+              <div class="rounded-lg border border-slate-700 bg-slate-900/70 p-3">4. 예약 또는 반복 배포</div>
+            </div>
+          </section>
+          <section class="bg-slate-800 rounded-xl p-6 border border-slate-700">
+            <h3 class="text-lg font-bold text-white mb-3">연결 현황</h3>
+            <div class="space-y-3 text-sm">
+              <div class="flex items-center justify-between"><span class="text-slate-400">SNS 연동 계정</span><strong class="text-white" id="kpi-sns-accounts">-</strong></div>
+              <div class="flex items-center justify-between"><span class="text-slate-400">활성 캠페인</span><strong class="text-white" id="kpi-sns-campaigns">-</strong></div>
+              <div class="flex items-center justify-between"><span class="text-slate-400">권장 엔진</span><strong class="text-cyan-300">Direct API → n8n 확장</strong></div>
+            </div>
+          </section>
+          <section class="bg-slate-800 rounded-xl p-6 border border-slate-700">
+            <h3 class="text-lg font-bold text-white mb-3">빠른 실행</h3>
+            <div class="grid gap-3">
+              <a href="../sns-auto/templates.html" class="rounded-lg border border-slate-700 bg-slate-900/70 p-3 text-sm text-slate-200 hover:border-cyan-400 transition">SNS 템플릿 열기</a>
+              <a href="../sns-auto/campaigns.html" class="rounded-lg border border-slate-700 bg-slate-900/70 p-3 text-sm text-slate-200 hover:border-cyan-400 transition">캠페인 관리</a>
+              <a href="analytics.html" class="rounded-lg border border-slate-700 bg-slate-900/70 p-3 text-sm text-slate-200 hover:border-cyan-400 transition">자동화 성과 분석</a>
+            </div>
+          </section>
+        </div>
+
+        <section class="bg-slate-800 rounded-xl p-6 border border-slate-700" id="approvalSection">
+          <div class="flex items-center justify-between gap-4 mb-4">
+            <div>
+              <h3 class="text-lg font-bold text-white">공통 승인 큐</h3>
+              <p class="text-sm text-slate-400 mt-1">SNS 자동화, 카드뉴스, AI 자동화가 같은 승인 상태를 공유합니다.</p>
+            </div>
+            <div class="text-right text-sm">
+              <div class="text-slate-400">승인 대기</div>
+              <div class="text-2xl font-bold text-cyan-300" id="approvalPendingCount">0</div>
+            </div>
+          </div>
+          <div class="grid md:grid-cols-4 gap-4 mb-4 text-sm">
+            <div class="rounded-lg border border-slate-700 bg-slate-900/70 p-4">
+              <p class="text-slate-400">전체 큐</p>
+              <p class="text-white text-xl font-bold mt-1" id="approvalTotalCount">0</p>
+            </div>
+            <div class="rounded-lg border border-slate-700 bg-slate-900/70 p-4">
+              <p class="text-slate-400">예약됨</p>
+              <p class="text-white text-xl font-bold mt-1" id="approvalScheduledCount">0</p>
+            </div>
+            <div class="rounded-lg border border-slate-700 bg-slate-900/70 p-4">
+              <p class="text-slate-400">즉시 발행</p>
+              <p class="text-white text-xl font-bold mt-1" id="approvalPublishedCount">0</p>
+            </div>
+            <div class="rounded-lg border border-slate-700 bg-slate-900/70 p-4">
+              <p class="text-slate-400">서비스 수</p>
+              <p class="text-white text-xl font-bold mt-1" id="approvalServiceCount">0</p>
+            </div>
+          </div>
+          <div class="space-y-3" id="approvalQueueList">
+            <div class="text-slate-400 text-sm">큐를 불러오는 중...</div>
+          </div>
+        </section>
+
+        <section class="bg-slate-800 rounded-xl p-6 border border-slate-700" id="activitySection">
+          <div class="flex items-center justify-between gap-4 mb-4">
+            <div>
+              <h3 class="text-lg font-bold text-white">최근 승인 활동</h3>
+              <p class="text-sm text-slate-400 mt-1">서버에 기록된 생성, 상태 변경, 삭제 이벤트를 최근 순으로 표시합니다.</p>
+            </div>
+            <div class="text-xs text-slate-500" id="approvalActivityMeta">최근 12건</div>
+          </div>
+          <div class="space-y-3" id="approvalActivityList">
+            <div class="text-slate-400 text-sm">활동 로그를 불러오는 중...</div>
+          </div>
+        </section>
+
+        <div id="employeesSection">
+          <h3 class="text-lg font-bold text-white mb-4">AI 직원 목록</h3>
+          <div class="space-y-4" id="employeesList">
+            <div class="text-slate-400">로딩 중...</div>
+          </div>
+        </div>
+      </main>
     </div>
-    <script>
-        requireAuth();
+  </div>
 
-        async function init() {
-            try {
-                const employees = await getAIEmployees();
-                renderEmployees(employees);
-            } catch (error) {
-                showError('AI 직원 로드 실패');
-            }
+  <script src="../platform/approval-queue.js"></script>
+  <script>
+    requireAuth();
+    let currentViewer = null;
+    let dashboardState = { employees: [], accountList: [], campaignList: [] };
+
+    function statusBadge(status) {
+      const map = {
+        active: '<span class="px-3 py-1 bg-green-900 text-green-200 text-xs rounded-full">활성</span>',
+        training: '<span class="px-3 py-1 bg-blue-900 text-blue-200 text-xs rounded-full">배포 준비</span>',
+        paused: '<span class="px-3 py-1 bg-slate-700 text-slate-300 text-xs rounded-full">일시 중지</span>',
+        draft: '<span class="px-3 py-1 bg-amber-900 text-amber-200 text-xs rounded-full">초안</span>',
+      };
+      return map[status] || '<span class="px-3 py-1 bg-slate-700 text-slate-200 text-xs rounded-full">확인 필요</span>';
+    }
+
+    function scenarioLabel(value) {
+      const map = {
+        email: '이메일 응답',
+        social: 'SNS 운영',
+        customer_service: '고객 응대',
+        data_entry: '데이터 정리',
+        scheduling: '일정 조율'
+      };
+      return map[value] || value || '시나리오 미지정';
+    }
+
+    function savingsHours(employee) {
+      return Number(employee?.monthly_savings_hours || employee?.savings_hours || 0);
+    }
+
+    function nextEmployeeAction(employee) {
+      if (!employee) return { label: '확인 필요', button: '상세 확인', action: 'detail' };
+      if (employee.status === 'draft') return { label: '배포 설정이 필요합니다.', button: '배포', action: 'deploy' };
+      if (employee.status === 'training') return { label: '활성화 전 최종 검토가 필요합니다.', button: '활성화', action: 'activate' };
+      if (employee.status === 'paused') return { label: '다시 운영에 투입할지 결정하세요.', button: '상세', action: 'detail' };
+      return { label: '운영 중입니다.', button: '상세', action: 'detail' };
+    }
+
+    function employeePriority(employee) {
+      const order = { draft: 0, training: 1, paused: 2, active: 3 };
+      return order[employee?.status] ?? 9;
+    }
+
+    function formatShortDate(value) {
+      if (!value) return '미기록';
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return value;
+      return date.toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' });
+    }
+
+    function updateKpis(employees) {
+      const active = employees.filter((item) => item?.status === 'active').length;
+      const pending = employees.filter((item) => ['draft', 'training', 'paused'].includes(item?.status)).length;
+      const totalSavings = employees.reduce((sum, item) => sum + savingsHours(item), 0);
+      const nextEmployee = [...employees].sort((a, b) => employeePriority(a) - employeePriority(b))[0];
+      document.getElementById('kpi-active').textContent = String(active);
+      document.getElementById('kpi-pending').textContent = String(pending);
+      document.getElementById('kpi-savings').textContent = `${totalSavings}시간`;
+      document.getElementById('kpi-next-action').textContent = nextEmployee ? `${nextEmployee.name}` : '운영 안정';
+    }
+
+    function renderEmployeeActionDesk(employees, accountList, campaignList) {
+      const actionList = document.getElementById('employeeActionList');
+      const checklist = document.getElementById('employeeOpsChecklist');
+      if (!actionList || !checklist) return;
+
+      const prioritized = [...employees].sort((a, b) => employeePriority(a) - employeePriority(b));
+      const actionable = prioritized.filter((item) => ['draft', 'training', 'paused'].includes(item?.status));
+
+      if (!actionable.length) {
+        actionList.innerHTML = `
+          <div class="rounded-lg border border-slate-700 bg-slate-900/70 p-4 text-sm text-slate-300">
+            지금 당장 처리해야 할 직원이 없습니다. 새 자동화를 만들거나 운영 중인 직원을 점검하면 됩니다.
+          </div>
+        `;
+      } else {
+        actionList.innerHTML = actionable.slice(0, 4).map((employee) => {
+          const action = nextEmployeeAction(employee);
+          return `
+            <article class="rounded-lg border border-slate-700 bg-slate-900/70 p-4">
+              <div class="flex items-start justify-between gap-3">
+                <div>
+                  <p class="text-sm font-semibold text-white">${employee.name || '이름 없음'}</p>
+                  <p class="text-xs text-cyan-300 mt-1">${scenarioLabel(employee.scenario_type || employee.scenario)}</p>
+                  <p class="text-xs text-slate-400 mt-2">${action.label}</p>
+                </div>
+                ${statusBadge(employee.status || 'draft')}
+              </div>
+              <div class="flex flex-wrap gap-2 mt-4">
+                <button type="button" data-employee-action="${action.action}" data-employee-id="${employee.id}" class="px-3 py-2 rounded-lg bg-cyan-600 text-white text-xs hover:bg-cyan-500">${action.button}</button>
+                <a href="employee-detail.html?id=${employee.id}" class="px-3 py-2 rounded-lg bg-slate-800 text-slate-200 text-xs hover:bg-slate-700">상세</a>
+              </div>
+            </article>
+          `;
+        }).join('');
+      }
+
+      const checks = [
+        {
+          label: 'SNS 연동 계정',
+          value: `${accountList.length}개`,
+          tone: accountList.length ? 'border-emerald-800 text-emerald-200' : 'border-amber-800 text-amber-200',
+          hint: accountList.length ? 'SNS 초안 생성과 캠페인 연결이 가능합니다.' : 'SNS 자동화 계정을 먼저 연결해야 실출력 파이프라인이 완성됩니다.'
+        },
+        {
+          label: '활성 캠페인',
+          value: `${campaignList.length}개`,
+          tone: campaignList.length ? 'border-cyan-800 text-cyan-200' : 'border-slate-700 text-slate-300',
+          hint: campaignList.length ? '활성 캠페인이 있어 AI 결과를 바로 배포 루프로 넘길 수 있습니다.' : '캠페인을 만들면 자동화 결과를 한 묶음으로 관리할 수 있습니다.'
+        },
+        {
+          label: '실운영 직원',
+          value: `${employees.filter((item) => item?.status === 'active').length}명`,
+          tone: employees.some((item) => item?.status === 'active') ? 'border-emerald-800 text-emerald-200' : 'border-slate-700 text-slate-300',
+          hint: employees.some((item) => item?.status === 'active') ? '배포 후 실제 운영 중인 직원이 있습니다.' : '배포와 활성화까지 끝난 직원이 아직 없습니다.'
         }
+      ];
 
-        function renderEmployees(employees) {
-            const container = document.getElementById('employeesList');
-            container.innerHTML = '';
-            (employees || []).forEach(emp => {
-                const html = `
-                    <div class="bg-gradient-to-br from-cyan-900/30 to-cyan-900/10 rounded-lg p-6 border-2 border-cyan-600">
-                        <div class="flex items-start justify-between">
-                            <div>
-                                <h4 class="text-lg font-bold text-white">${emp.name}</h4>
-                                <p class="text-sm text-cyan-400">📋 ${emp.scenario}</p>
-                            </div>
-                            ${statusBadge(emp.status)}
-                        </div>
-                        <p class="text-sm text-slate-300 mt-4">절약: ${emp.savings_hours}시간/월</p>
-                    </div>
-                `;
-                container.innerHTML += html;
-            });
+      checklist.innerHTML = checks.map((item) => `
+        <div class="rounded-lg border ${item.tone} bg-slate-900/70 p-4">
+          <div class="flex items-center justify-between gap-3">
+            <p class="text-sm font-semibold">${item.label}</p>
+            <span class="text-sm font-bold">${item.value}</span>
+          </div>
+          <p class="text-xs text-slate-400 mt-2">${item.hint}</p>
+        </div>
+      `).join('');
+    }
+
+    function approvalStatusBadge(status) {
+      const map = {
+        queued: 'bg-amber-900 text-amber-200',
+        scheduled: 'bg-blue-900 text-blue-200',
+        published: 'bg-emerald-900 text-emerald-200',
+        done: 'bg-slate-700 text-slate-200'
+      };
+      return `<span class="px-3 py-1 ${map[status] || 'bg-slate-700 text-slate-200'} text-xs rounded-full">${status || 'queued'}</span>`;
+    }
+
+    function renderApprovalQueue(summaryOverride) {
+      const approvalQueue = window.SoftFactoryApprovalQueue;
+      if (!approvalQueue) return;
+      const items = approvalQueue.loadQueue();
+      const fallback = approvalQueue.summarize(items);
+      const summary = Object.assign({ total: 0, byStatus: {}, byService: {} }, fallback, summaryOverride || {});
+      const byStatus = summary.byStatus || {};
+      const byService = summary.byService || {};
+      document.getElementById('approvalPendingCount').textContent = byStatus.queued || 0;
+      document.getElementById('approvalTotalCount').textContent = summary.total || 0;
+      document.getElementById('approvalScheduledCount').textContent = byStatus.scheduled || 0;
+      document.getElementById('approvalPublishedCount').textContent = byStatus.published || 0;
+      document.getElementById('approvalServiceCount').textContent = Object.keys(byService).length;
+
+      const container = document.getElementById('approvalQueueList');
+      if (!items.length) {
+        container.innerHTML = '<div class="text-slate-400 text-sm">아직 공통 승인 큐에 등록된 작업이 없습니다.</div>';
+        return;
+      }
+
+      container.innerHTML = items.slice(0, 6).map((item) => `
+        <article class="rounded-lg border border-slate-700 bg-slate-900/70 p-4">
+          <div class="flex items-start justify-between gap-3">
+            <div>
+              <p class="text-sm font-semibold text-white">${item.title || '제목 없음'}</p>
+              <p class="text-xs text-slate-400 mt-1">${item.service} · ${item.approvalMode || 'approve-before-publish'} · approver:${item.approverRole || 'admin'}</p>
+            </div>
+            ${approvalStatusBadge(item.status)}
+          </div>
+          <p class="text-xs text-slate-300 mt-2">${item.summary || '요약 없음'}</p>
+          <p class="text-xs text-slate-500 mt-2">채널: ${(item.channels || []).join(', ') || '미지정'} · 생성: ${item.created_at || '-'}</p>
+          ${item.contract ? `<p class="text-xs text-slate-500 mt-1">엔진: ${item.contract.engine || 'direct'} · 전달 방식: ${item.contract.delivery_mode || 'direct'} · 버전: ${item.contract.payload_version || '-'}</p>` : ''}
+          <div class="flex flex-wrap gap-2 mt-3">
+            ${item.sourceUrl ? `<a href="${item.sourceUrl}" class="px-3 py-2 rounded-lg bg-slate-800 text-slate-200 text-xs hover:bg-slate-700">원본 열기</a>` : ''}
+            <button type="button" data-approval-action="approve" data-queue-id="${item.id}" class="px-3 py-2 rounded-lg bg-cyan-600 text-white text-xs hover:bg-cyan-500">승인 처리</button>
+            <button type="button" data-approval-action="done" data-queue-id="${item.id}" class="px-3 py-2 rounded-lg bg-emerald-600 text-white text-xs hover:bg-emerald-500">완료</button>
+            <button type="button" data-approval-action="remove" data-queue-id="${item.id}" class="px-3 py-2 rounded-lg bg-slate-700 text-slate-100 text-xs hover:bg-slate-600">제거</button>
+          </div>
+        </article>
+      `).join('');
+    }
+
+    function activityBadge(eventType) {
+      const map = {
+        created: 'bg-cyan-900 text-cyan-200',
+        updated: 'bg-sky-900 text-sky-200',
+        status_changed: 'bg-violet-900 text-violet-200',
+        deleted: 'bg-rose-900 text-rose-200'
+      };
+      return `<span class="px-2.5 py-1 ${map[eventType] || 'bg-slate-700 text-slate-200'} text-[11px] rounded-full">${eventType || 'event'}</span>`;
+    }
+
+    function formatEventMeta(item) {
+      const actor = item.actorName || 'system';
+      const status = item.status || '-';
+      return `${item.service || 'unknown'} · ${actor} · status:${status}`;
+    }
+
+    function renderApprovalActivity(events) {
+      const container = document.getElementById('approvalActivityList');
+      const meta = document.getElementById('approvalActivityMeta');
+      if (!container || !meta) return;
+      const list = Array.isArray(events) ? events : [];
+      meta.textContent = currentViewer?.role === 'admin' ? `최근 ${list.length}건` : '관리자 전용';
+      if (!list.length) {
+        container.innerHTML = currentViewer?.role === 'admin'
+          ? '<div class="text-slate-400 text-sm">아직 기록된 승인 활동이 없습니다.</div>'
+          : '<div class="text-slate-400 text-sm">최근 승인 활동은 관리자 계정에서 확인할 수 있습니다.</div>';
+        return;
+      }
+
+      container.innerHTML = list.map((item) => `
+        <article class="rounded-lg border border-slate-700 bg-slate-900/70 p-4">
+          <div class="flex items-start justify-between gap-3">
+            <div>
+              <p class="text-sm font-semibold text-white">${item.title || '제목 없음'}</p>
+              <p class="text-xs text-slate-400 mt-1">${formatEventMeta(item)}</p>
+            </div>
+            ${activityBadge(item.eventType)}
+          </div>
+          <p class="text-xs text-slate-300 mt-2">${item.summary || '요약 없음'}</p>
+          <p class="text-xs text-slate-500 mt-2">queue:${item.queueKey || '-'} · ${item.created_at || '-'}</p>
+        </article>
+      `).join('');
+    }
+
+    async function refreshApprovalPanels() {
+      const approvalQueue = window.SoftFactoryApprovalQueue;
+      if (!approvalQueue) return;
+      const isAdmin = currentViewer?.role === 'admin';
+      const summary = await approvalQueue.fetchSummary({ admin: isAdmin });
+      renderApprovalQueue(summary);
+      if (isAdmin) {
+        const events = await approvalQueue.fetchRecentEvents(12);
+        renderApprovalActivity(events);
+      } else {
+        renderApprovalActivity([]);
+      }
+    }
+
+    function bindApprovalActions() {
+      const container = document.getElementById('approvalQueueList');
+      if (!container) return;
+      container.addEventListener('click', async (event) => {
+        const target = event.target;
+        if (!(target instanceof HTMLElement)) return;
+        const action = target.dataset.approvalAction;
+        const queueId = target.dataset.queueId;
+        if (!action || !queueId) return;
+        const approvalQueue = window.SoftFactoryApprovalQueue;
+        if (!approvalQueue) return;
+        const current = approvalQueue.loadQueue().find((item) => item.id === queueId);
+        if (!current) return;
+
+        if (action === 'approve') {
+          const nextStatus = current.scheduledAt ? 'scheduled' : 'published';
+          await approvalQueue.updateStatusPersist(queueId, nextStatus);
         }
+        if (action === 'done') {
+          await approvalQueue.updateStatusPersist(queueId, 'done');
+        }
+        if (action === 'remove') {
+          await approvalQueue.removePersist(queueId);
+        }
+        await refreshApprovalPanels();
+      });
+    }
 
-        document.addEventListener('DOMContentLoaded', init);
-    </script>
-    <script src="../mobile-optimization.js" defer></script>
+    async function loadDashboardData() {
+      const [employees, snsAccounts, snsCampaigns] = await Promise.all([
+        getAIEmployees(),
+        getSNSAccounts().catch(() => []),
+        getSNSCampaigns().catch(() => [])
+      ]);
+      const employeeList = Array.isArray(employees) ? employees : [];
+      const accountList = Array.isArray(snsAccounts?.accounts) ? snsAccounts.accounts : Array.isArray(snsAccounts) ? snsAccounts : [];
+      const campaignList = Array.isArray(snsCampaigns?.campaigns) ? snsCampaigns.campaigns : Array.isArray(snsCampaigns) ? snsCampaigns : [];
+      dashboardState = { employees: employeeList, accountList, campaignList };
+      document.getElementById('kpi-sns-accounts').textContent = `${accountList.length}개`;
+      document.getElementById('kpi-sns-campaigns').textContent = `${campaignList.length}개`;
+      updateKpis(employeeList);
+      renderEmployeeActionDesk(employeeList, accountList, campaignList);
+      renderEmployees(employeeList);
+    }
+
+    async function runEmployeeAction(action, employeeId) {
+      const employee = dashboardState.employees.find((item) => String(item.id) === String(employeeId));
+      if (!employee) return;
+      if (action === 'detail') {
+        window.location.href = `employee-detail.html?id=${employeeId}`;
+        return;
+      }
+      try {
+        if (action === 'deploy') {
+          await deployAIEmployee(employeeId, Math.max(savingsHours(employee), 10));
+          showSuccess('AI 직원을 배포 준비 상태로 전환했습니다.');
+        }
+        if (action === 'activate') {
+          await activateAIEmployee(employeeId);
+          showSuccess('AI 직원을 활성화했습니다.');
+        }
+        if (action === 'delete') {
+          if (!confirm(`[${employee.name}] 직원을 삭제할까요?`)) return;
+          await deleteAIEmployee(employeeId);
+          showSuccess('AI 직원을 삭제했습니다.');
+        }
+        await loadDashboardData();
+      } catch (error) {
+        showError('AI 직원 작업 실패: ' + (error.message || '오류가 발생했습니다.'));
+      }
+    }
+
+    function bindEmployeeActions() {
+      ['employeeActionList', 'employeesList'].forEach((id) => {
+        document.getElementById(id)?.addEventListener('click', (event) => {
+          const target = event.target;
+          if (!(target instanceof HTMLElement)) return;
+          const action = target.dataset.employeeAction;
+          const employeeId = target.dataset.employeeId;
+          if (!action || !employeeId) return;
+          runEmployeeAction(action, employeeId);
+        });
+      });
+    }
+
+    async function init() {
+      try {
+        const approvalQueue = window.SoftFactoryApprovalQueue;
+        currentViewer = typeof getAuthUser === 'function' ? getAuthUser() : null;
+        if (approvalQueue) {
+          if (currentViewer?.role === 'admin') {
+            await approvalQueue.syncRemoteAdmin();
+          } else {
+            await approvalQueue.syncRemote();
+          }
+        }
+        await loadDashboardData();
+        await refreshApprovalPanels();
+      } catch (error) {
+        const fallbackEmployees = [
+          { id: 'fallback', name: 'Email Bot', scenario_type: 'email', monthly_savings_hours: 15, status: 'active', description: '문의 응답 자동화' }
+        ];
+        showError('AI 직원 로드 실패');
+        dashboardState = { employees: fallbackEmployees, accountList: [], campaignList: [] };
+        document.getElementById('kpi-sns-accounts').textContent = '0개';
+        document.getElementById('kpi-sns-campaigns').textContent = '0개';
+        updateKpis(fallbackEmployees);
+        renderEmployeeActionDesk(fallbackEmployees, [], []);
+        renderEmployees(fallbackEmployees);
+        await refreshApprovalPanels();
+      }
+    }
+
+    function renderEmployees(employees) {
+      const container = document.getElementById('employeesList');
+      container.innerHTML = '';
+      if (!employees.length) {
+        container.innerHTML = '<div class="text-slate-400">등록된 AI 직원이 없습니다.</div>';
+        return;
+      }
+      employees.forEach((emp) => {
+        const action = nextEmployeeAction(emp);
+        const html = `
+          <article class="bg-gradient-to-br from-cyan-900/30 to-cyan-900/10 rounded-lg p-6 border-2 border-cyan-600">
+            <div class="flex items-start justify-between gap-4">
+              <div>
+                <h4 class="text-lg font-bold text-white">${emp.name || '이름 없음'}</h4>
+                <p class="text-sm text-cyan-400">${scenarioLabel(emp.scenario_type || emp.scenario)}</p>
+                <p class="text-sm text-slate-300 mt-3">${emp.description || '직원의 역할과 승인 기준을 입력해 두면 운영자가 판단하기 쉽습니다.'}</p>
+              </div>
+              ${statusBadge(emp.status || 'draft')}
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-3 mt-4 text-sm">
+              <div class="rounded-lg border border-slate-700 bg-slate-900/70 p-3">
+                <p class="text-slate-400 text-xs">월 절약 시간</p>
+                <p class="text-white font-semibold mt-1">${savingsHours(emp)}시간</p>
+              </div>
+              <div class="rounded-lg border border-slate-700 bg-slate-900/70 p-3">
+                <p class="text-slate-400 text-xs">생성일</p>
+                <p class="text-white font-semibold mt-1">${formatShortDate(emp.created_at)}</p>
+              </div>
+              <div class="rounded-lg border border-slate-700 bg-slate-900/70 p-3">
+                <p class="text-slate-400 text-xs">배포일</p>
+                <p class="text-white font-semibold mt-1">${emp.deployed_at ? formatShortDate(emp.deployed_at) : '미배포'}</p>
+              </div>
+              <div class="rounded-lg border border-slate-700 bg-slate-900/70 p-3">
+                <p class="text-slate-400 text-xs">다음 액션</p>
+                <p class="text-white font-semibold mt-1">${action.button}</p>
+              </div>
+            </div>
+            <div class="flex flex-wrap gap-2 mt-4">
+              <a href="employee-detail.html?id=${emp.id}" class="px-3 py-2 rounded-lg bg-slate-800 text-slate-200 text-xs hover:bg-slate-700">상세 관리</a>
+              ${['draft', 'paused'].includes(emp.status) ? `<button type="button" data-employee-action="deploy" data-employee-id="${emp.id}" class="px-3 py-2 rounded-lg bg-cyan-600 text-white text-xs hover:bg-cyan-500">배포</button>` : ''}
+              ${emp.status === 'training' ? `<button type="button" data-employee-action="activate" data-employee-id="${emp.id}" class="px-3 py-2 rounded-lg bg-emerald-600 text-white text-xs hover:bg-emerald-500">활성화</button>` : ''}
+              ${emp.status !== 'active' ? `<button type="button" data-employee-action="delete" data-employee-id="${emp.id}" class="px-3 py-2 rounded-lg bg-slate-700 text-slate-100 text-xs hover:bg-slate-600">삭제</button>` : ''}
+            </div>
+          </article>
+        `;
+        container.insertAdjacentHTML('beforeend', html);
+      });
+    }
+
+    function setDashboardView(view) {
+      const views = {
+        overview: ['actionDeskSection', 'overviewSection'],
+        queue: ['approvalSection'],
+        activity: ['activitySection'],
+        employees: ['actionDeskSection', 'employeesSection']
+      };
+      const visible = new Set(views[view] || ['overviewSection']);
+      ['actionDeskSection', 'overviewSection', 'approvalSection', 'activitySection', 'employeesSection'].forEach((id) => {
+        document.getElementById(id)?.classList.toggle('hidden', !visible.has(id));
+      });
+      document.querySelectorAll('[data-dashboard-view]').forEach((button) => {
+        const active = button.dataset.dashboardView === view;
+        button.classList.toggle('bg-cyan-600', active);
+        button.classList.toggle('text-white', active);
+        button.classList.toggle('bg-slate-800', !active);
+        button.classList.toggle('text-slate-200', !active);
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      bindApprovalActions();
+      bindEmployeeActions();
+      init();
+      document.getElementById('dashboardViewTabs')?.addEventListener('click', (event) => {
+        const target = event.target;
+        if (!(target instanceof HTMLElement)) return;
+        const view = target.dataset.dashboardView;
+        if (!view) return;
+        setDashboardView(view);
+      });
+      setDashboardView('overview');
+    });
+    window.addEventListener('storage', (event) => {
+      const approvalQueue = window.SoftFactoryApprovalQueue;
+      if (!approvalQueue) return;
+      if (event.key === approvalQueue.STORAGE_KEY) {
+        refreshApprovalPanels();
+      }
+    });
+  </script>
+  <script src="../mobile-optimization.js" defer></script>
 </body>
 </html>

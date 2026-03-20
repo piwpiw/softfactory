@@ -1,0 +1,18 @@
+{
+  "items": [
+    {
+      "id": "dlq_9001",
+      "workflow_name": "recovery_flow",
+      "step_name": "send_payment_retry",
+      "error_summary": "Provider timeout during retry send",
+      "retry_count": 2,
+      "status": "open",
+      "resolved_at": null,
+      "resolved_reason": null
+    }
+  ],
+  "total": 1,
+  "page": 1,
+  "per_page": 20,
+  "pages": 1
+}

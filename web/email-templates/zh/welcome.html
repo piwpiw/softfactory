@@ -1,8 +1,9 @@
 ﻿<!DOCTYPE html>
-<html lang="zh">
+<html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SoftFactory 가입 안내</title>
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; }
         .container { max-width: 600px; margin: 0 auto; padding: 20px; }
@@ -11,48 +12,42 @@
         .content { background: #f9fafb; padding: 30px; border-radius: 0 0 8px 8px; }
         .button { display: inline-block; background: #F97316; color: #fff; padding: 10px 20px; text-decoration: none; border-radius: 4px; margin: 20px 0; }
         .footer { text-align: center; color: #666; font-size: 12px; margin-top: 20px; }
+        @media (max-width: 600px) {
+            .container { padding: 12px; }
+            .content { padding: 20px; }
+        }
     </style>
     <script src="../../mobile-optimization.js" defer></script>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>?쨼 JARVIS</h1>
-            <p>轝?퓥?ε댆??삜瓦먫맓楹사퍨</p>
+            <h1>🤖 SoftFactory</h1>
+            <p>환영합니다.</p>
         </div>
         <div class="content">
-            <p>?ⓨ? {{name}}竊?/p>
-
-            <p>轝?퓥?ε댆JARVIS竊곫궓?꾥뇹?룟럴?먨뒣?쎾뻠??/p>
-
-            <p>?①렟?ⓨ룾餓θ???</p>
+            <p>{{name}}님, 안녕하세요.</p>
+            <p>SoftFactory를 통해 SNS 운영 자동화를 시작하세요.</p>
+            <p>주요 기능:</p>
             <ul>
-                <li>??삜瓦먫맓?뚨???/li>
-                <li>?㎬꺗?녷옄?뚧뒫??/li>
-                <li>?뤶퐳藥ε끁?뚪싦에</li>
-                <li>?ゅ뒯?뽩램鵝쒏탛</li>
+                <li>통합 대시보드</li>
+                <li>캠페인 예약 및 발행</li>
+                <li>자동 응답과 성과 분석</li>
+                <li>멀티 채널 계정 관리</li>
             </ul>
-
-            <p>誤곩?冶뗤슴?⑨펽瑥루궧?삡툔?®쉪?됮뮢:</p>
-            <a href="{{login_url}}" class="button">謠뚩칮?①쉪兀?댎</a>
-
-            <p><strong>?삣퐬??뜮:</strong></p>
+            <a href="{{login_url}}" class="button">지금 로그인</a>
+            <p><strong>안내:</strong></p>
             <ul>
-                <li>???: {{email}}</li>
-                <li>訝닸뿶野녺쟻: {{temporary_password}}</li>
+                <li>이메일: {{email}}</li>
+                <li>임시 비밀번호: {{temporary_password}}</li>
             </ul>
-
-            <p>訝뷰틙若됧뀲壅룩쭅竊뚩??③쫿轝←쇉壤뺞뿶?닸뵻?①쉪野녺쟻??/p>
-
-            <p>倻귝쐣餓삡퐬?묌뿮竊뚩??붺내?묇뺄 <a href="mailto:support@jarvis.com">support@jarvis.com</a>??/p>
-
-            <p>瘟?각,<br>JARVIS??삜</p>
+            <p>도움이 필요하면 <a href="mailto:support@softfactory.kr">support@softfactory.kr</a>로 연락하세요.</p>
+            <p>감사합니다.<br>SoftFactory</p>
         </div>
         <div class="footer">
-            <p>&copy; 2026 JARVIS. ?덃쓢??됥?/p>
-            <p><a href="{{unsubscribe_url}}">?뽪텋溫?쁾</a></p>
+            <p>&copy; 2026 SoftFactory. All rights reserved.</p>
+            <p><a href="{{unsubscribe_url}}">수신 거부</a></p>
         </div>
     </div>
 </body>
 </html>
-

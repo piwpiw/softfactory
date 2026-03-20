@@ -59,7 +59,7 @@
                     <span class="text-2xl" aria-hidden="true">🏭</span>
                     <div>
                         <h1 class="font-bold text-white">SoftFactory</h1>
-                        <p class="text-xs text-slate-400">Management</p>
+                        <p class="text-xs text-slate-400">관리</p>
                     </div>
                 </div>
             </div>
@@ -78,7 +78,7 @@
             <div class="p-6 border-t border-slate-800 soft-user-panel">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-sm font-medium text-white" id="userName">Demo User</p>
+                        <p class="text-sm font-medium text-white" id="userName">사용자</p>
                         <p class="text-xs text-slate-400" id="userEmail">demo@softfactory.com</p>
                     </div>
                     <button onclick="logout()" class="p-2 hover:bg-slate-800 rounded-lg transition" title="로그아웃">🚪</button>
@@ -189,10 +189,10 @@
             }
         }
 
-        async function initAdminDashboard() {
+        async function initAdmin대시보드() {
             const user = getUser();
             if (user) {
-                document.getElementById('userName').textContent = user.name || 'Demo User';
+                document.getElementById('userName').textContent = user.name || '사용자';
                 document.getElementById('userEmail').textContent = user.email || 'demo@softfactory.com';
             }
 
@@ -285,7 +285,7 @@
             const ctx = document.getElementById('revenueChart').getContext('2d');
             const labels = products.length
                 ? products.map((item) => item.product_name || '상품')
-                : ['CooCook', 'SNS Auto', 'Review', 'AI', 'WebApp'];
+                : ['CooCook', 'SNS 자동화', '리뷰', 'AI', '웹앱'];
 
             const values = products.length
                 ? products.map((item) => Number(item.monthly_revenue || 0))
@@ -339,10 +339,9 @@
             });
         }
 
-        document.getElementById('refreshAdminBtn').addEventListener('click', initAdminDashboard);
-        document.addEventListener('DOMContentLoaded', initAdminDashboard);
+        document.getElementById('refreshAdminBtn').addEventListener('click', initAdmin대시보드);
+        document.addEventListener('DOMContentLoaded', initAdmin대시보드);
     </script>
     <script src="../mobile-optimization.js" defer></script>
 </body>
 </html>
-

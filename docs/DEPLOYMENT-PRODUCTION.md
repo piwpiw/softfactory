@@ -261,8 +261,8 @@ Requires=docker.service
 Type=simple
 User=ubuntu
 WorkingDirectory=/home/ubuntu/softfactory
-ExecStart=/usr/bin/docker-compose -f docker-compose-prod.yml up
-ExecStop=/usr/bin/docker-compose -f docker-compose-prod.yml down
+ExecStart=/usr/bin/docker-compose -f docker-compose.production.yml up
+ExecStop=/usr/bin/docker-compose -f docker-compose.production.yml down
 Restart=always
 RestartSec=10
 
@@ -315,7 +315,7 @@ docker run --rm softfactory:latest python --version
 
 ```bash
 # Start database only
-docker-compose -f docker-compose-prod.yml up -d db redis
+docker-compose -f docker-compose.production.yml up -d db redis
 
 # Wait for database to be ready
 sleep 15
@@ -335,13 +335,13 @@ docker exec softfactory-db psql -U postgres -d softfactory -c "\dt"
 
 ```bash
 # Stop current deployment (blue)
-docker-compose -f docker-compose-prod.yml stop web
+docker-compose -f docker-compose.production.yml stop web
 
 # Start new deployment (green)
-docker-compose -f docker-compose-prod.yml up -d web
+docker-compose -f docker-compose.production.yml up -d web
 
 # Monitor logs
-docker-compose -f docker-compose-prod.yml logs -f web
+docker-compose -f docker-compose.production.yml logs -f web
 ```
 
 ### Step 6: Health Check & Verification
@@ -367,7 +367,7 @@ docker stats softfactory-api
 docker ps | grep softfactory
 
 # Check logs for errors
-docker-compose -f docker-compose-prod.yml logs --tail=100 web
+docker-compose -f docker-compose.production.yml logs --tail=100 web
 
 # Update DNS (if domain changed)
 # Update load balancer (if applicable)
@@ -439,7 +439,7 @@ docker stats --no-stream softfactory-api softfactory-db
 For multiple API instances behind load balancer:
 
 ```yaml
-# docker-compose-prod.yml (modified)
+# docker-compose.production.yml (modified)
 services:
   web1:
     <<: *web_service
@@ -468,7 +468,7 @@ upstream flask_backend {
 ### Vertical Scaling (Increase Resources)
 
 ```yaml
-# docker-compose-prod.yml
+# docker-compose.production.yml
 services:
   web:
     cpu_shares: 2048      # Increase from 1024
@@ -517,10 +517,10 @@ git checkout abc1234def
 docker build -f Dockerfile.prod -t softfactory:stable .
 
 # 4. Update docker-compose to use :stable tag
-sed -i 's/softfactory:latest/softfactory:stable/' docker-compose-prod.yml
+sed -i 's/softfactory:latest/softfactory:stable/' docker-compose.production.yml
 
 # 5. Restart services
-docker-compose -f docker-compose-prod.yml up -d web
+docker-compose -f docker-compose.production.yml up -d web
 
 # 6. Verify
 curl -s http://localhost:8000/health | jq .
@@ -539,7 +539,7 @@ docker exec softfactory-db psql -U postgres -d softfactory < \
 docker exec softfactory-db psql -U postgres -d softfactory -c "SELECT COUNT(*) FROM users;"
 
 # 3. Restart API
-docker-compose -f docker-compose-prod.yml restart web
+docker-compose -f docker-compose.production.yml restart web
 
 # 4. Test endpoints
 curl -s http://localhost:8000/api/auth/status
@@ -557,11 +557,11 @@ git checkout HEAD~1 -- .env-prod
 cat .env-prod | grep DATABASE_URL
 
 # 3. Restart containers to pick up new variables
-docker-compose -f docker-compose-prod.yml down
-docker-compose -f docker-compose-prod.yml up -d
+docker-compose -f docker-compose.production.yml down
+docker-compose -f docker-compose.production.yml up -d
 
 # 4. Verify
-docker-compose -f docker-compose-prod.yml logs web | tail -20
+docker-compose -f docker-compose.production.yml logs web | tail -20
 ```
 
 ### Scenario 4: Full Rollback (15-30 min recovery)
@@ -582,8 +582,8 @@ cp backups/.env-prod.backup .env-prod
 
 # 4. Rebuild and deploy
 docker build -f Dockerfile.prod -t softfactory:v1.0.0 .
-docker-compose -f docker-compose-prod.yml down
-docker-compose -f docker-compose-prod.yml up -d
+docker-compose -f docker-compose.production.yml down
+docker-compose -f docker-compose.production.yml up -d
 
 # 5. Verify all services
 ./scripts/health-check.sh
@@ -708,7 +708,7 @@ docker exec softfactory-api python -m memory_profiler app.py
 docker logs softfactory-api | grep -i "memory\|leak"
 
 # 4. Increase memory allocation
-# Edit docker-compose-prod.yml, increase mem_limit, then restart
+# Edit docker-compose.production.yml, increase mem_limit, then restart
 ```
 
 ### Issue: Database Connection Errors

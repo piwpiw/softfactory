@@ -693,7 +693,7 @@ healthcheck:
 ```
 
 **When to use:** All docker-compose services (db, redis, web, nginx).
-**Files:** `docker-compose-prod.yml` all services include healthcheck.
+**Files:** `docker-compose.production.yml` all services include healthcheck.
 
 ### PAT-015: Database Migration on Deployment
 **Pattern:** Run migrations in container before starting API to ensure schema matches code.
@@ -778,7 +778,7 @@ WORKERS=9  # For 4-core instance
 DATABASE_URL=postgresql://user:password@db:5432/softfactory
 FLASK_ENV=production
 
-# docker-compose-prod.yml
+# docker-compose.production.yml
 services:
   web:
     environment:

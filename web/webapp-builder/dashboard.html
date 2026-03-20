@@ -1,15 +1,176 @@
-<!DOCTYPE html>
-<html lang="ko"><head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="theme-color" content="#111827">
-<title>학생 대시보드 — WebApp Builder | SoftFactory</title><script src="https://cdn.tailwindcss.com"></script><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"><script src="../platform/api.js"></script><style>body { font-family: 'Inter', sans-serif; }</style>    <link rel="stylesheet" href="../responsive-framework.css">
-  </head><body class="bg-slate-950 text-slate-100"><div class="flex h-screen overflow-hidden"><aside class="w-64 bg-slate-900 border-r border-slate-800 flex flex-col shrink-0"><div class="p-6 border-b border-slate-800"><a href="index.html"><span class="text-2xl">💻</span><div><h1 class="font-bold text-white text-sm">WebApp Builder</h1></div></a></div><nav class="flex-1 p-6 space-y-2">
-    <button class="hamburger" aria-label="Toggle navigation menu">
-      <span></span>
-      <span></span>
-      <span></span>
-    </button><a href="dashboard.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg bg-violet-600 text-white font-medium">📊 대시보드</a><a href="my-apps.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">📱 내 앱</a></nav></aside><div class="flex-1 flex flex-col overflow-hidden"><header class="h-16 bg-slate-900 border-b border-slate-800 px-6 flex items-center justify-between shrink-0"><h2 class="text-xl font-bold text-white">📊 수강 진도</h2></header><main class="flex-1 overflow-y-auto p-6 space-y-6"><div class="grid grid-cols-1 md:grid-cols-3 gap-6"><div class="bg-slate-800 rounded-xl p-6 border border-slate-700"><p class="text-slate-400 text-sm mb-2">진행 상황</p><p class="text-3xl font-bold text-white">25%</p></div><div class="bg-slate-800 rounded-xl p-6 border border-slate-700"><p class="text-slate-400 text-sm mb-2">남은 주차</p><p class="text-3xl font-bold text-white">6주</p></div><div class="bg-slate-800 rounded-xl p-6 border border-slate-700"><p class="text-slate-400 text-sm mb-2">수료 예정일</p><p class="text-3xl font-bold text-white">2026/04/21</p></div></div><div class="bg-slate-800 rounded-xl p-6 border border-slate-700"><h3 class="text-lg font-bold text-white mb-4">📋 주차별 체크리스트</h3><div class="space-y-3"><label class="flex items-center gap-3 p-3 bg-slate-700 rounded-lg cursor-pointer"><input type="checkbox" checked class="w-4 h-4"><span class="text-white">1주차: 자동화 기초</span></label><label class="flex items-center gap-3 p-3 bg-slate-700 rounded-lg cursor-pointer"><input type="checkbox" checked class="w-4 h-4"><span class="text-white">2주차: 고급 자동화</span></label><label class="flex items-center gap-3 p-3 bg-slate-700 rounded-lg cursor-pointer"><input type="checkbox" class="w-4 h-4"><span class="text-white">3주차: CRM 시스템</span></label><label class="flex items-center gap-3 p-3 bg-slate-700 rounded-lg cursor-pointer"><input type="checkbox" class="w-4 h-4"><span class="text-white">4주차: 웹앱 기초</span></label></div></div></main></div></div>    <script src="../mobile-optimization.js" defer></script>
-</body><script>requireAuth();</script></html>
+﻿<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="theme-color" content="#111827" />
+    <title>학생 대시보드 — 웹앱 빌더 | SoftFactory</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="../platform/api.js"></script>
+    <link rel="stylesheet" href="../responsive-framework.css" />
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+
+<body class="bg-slate-950 text-slate-100">
+    <div class="flex h-screen">
+        <aside class="w-64 soft-sidebar border-r border-slate-800 flex flex-col shrink-0">
+            <div class="p-6 border-b border-slate-800">
+                <a href="index.html" class="soft-nav-link flex items-center gap-3 text-base text-cyan-200">
+                    <span class="text-lg">💻</span>
+                    <div>
+                        <h1 class="font-bold text-white text-sm">웹앱 빌더</h1>
+                        <p class="text-xs text-slate-400">교육형 오퍼레이션</p>
+                    </div>
+                </a>
+            </div>
+
+            <nav class="soft-nav-tree flex-1 p-6 space-y-2 overflow-y-auto" aria-label="웹앱 빌더 네비게이션">
+                <button class="hamburger" aria-label="메뉴 열기/닫기" type="button">
+                    <span></span><span></span><span></span>
+                </button>
+                <a href="index.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 transition">🚀 소개</a>
+                <a href="dashboard.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg bg-violet-600 text-white font-semibold border-l-2 border-violet-400" aria-current="page">📊 대시보드</a>
+                <a href="my-apps.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 transition">📱 내 앱</a>
+                <a href="create.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 transition">✍️ 앱 생성</a>
+                <a href="../platform/index.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 transition">🏭 플랫폼 홈</a>
+            </nav>
+        </aside>
+
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <header class="h-16 bg-slate-900 border-b border-slate-800 px-6 flex items-center justify-between shrink-0">
+                <h2 class="text-xl font-bold text-white">📊 수강 진도</h2>
+            </header>
+
+            <main class="flex-1 overflow-y-auto p-6 space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <article class="bg-slate-800 rounded-xl p-6 border border-slate-700">
+                        <p class="text-slate-400 text-sm mb-2">진행률</p>
+                        <p id="progressRate" class="text-3xl font-bold text-white">-</p>
+                    </article>
+                    <article class="bg-slate-800 rounded-xl p-6 border border-slate-700">
+                        <p class="text-slate-400 text-sm mb-2">잔여 일수</p>
+                        <p id="remainingDays" class="text-3xl font-bold text-white">-</p>
+                    </article>
+                    <article class="bg-slate-800 rounded-xl p-6 border border-slate-700">
+                        <p class="text-slate-400 text-sm mb-2">수료 예정일</p>
+                        <p id="completionDate" class="text-3xl font-bold text-white">-</p>
+                    </article>
+                </div>
+
+                <section class="bg-slate-800 rounded-xl p-6 border border-slate-700">
+                    <h3 class="text-lg font-bold text-white mb-4">📋 주차별 체크리스트</h3>
+                    <div class="space-y-3">
+                        <label class="flex items-center gap-3 p-3 bg-slate-700 rounded-lg cursor-pointer">
+                            <input type="checkbox" checked class="w-4 h-4" />
+                            <span class="text-white">1주차: 자동화 기초</span>
+                        </label>
+                        <label class="flex items-center gap-3 p-3 bg-slate-700 rounded-lg cursor-pointer">
+                            <input type="checkbox" checked class="w-4 h-4" />
+                            <span class="text-white">2주차: 고급 자동화</span>
+                        </label>
+                        <label class="flex items-center gap-3 p-3 bg-slate-700 rounded-lg cursor-pointer">
+                            <input type="checkbox" class="w-4 h-4" />
+                            <span class="text-white">3주차: CRM 시스템</span>
+                        </label>
+                        <label class="flex items-center gap-3 p-3 bg-slate-700 rounded-lg cursor-pointer">
+                            <input type="checkbox" class="w-4 h-4" />
+                            <span class="text-white">4주차: 웹앱 기초</span>
+                        </label>
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        if (typeof requireAuth === 'function') {
+            requireAuth();
+        }
+
+        const ENROLLMENT_FALLBACK = {
+            progress: 25,
+            remainingDays: 0,
+            completionDate: '2026-04-21'
+        };
+
+        function calcRemainingDays(endDate) {
+            if (!endDate) return null;
+            const normalized = String(endDate).includes('T') ? endDate : `${endDate}T23:59:59`;
+            const end = new Date(normalized);
+            if (Number.isNaN(end.getTime())) return null;
+            return Math.max(0, Math.ceil((end.getTime() - Date.now()) / 86400000));
+        }
+
+        function formatDateYmd(dateText) {
+            if (!dateText) return '-';
+            const d = new Date(dateText);
+            if (Number.isNaN(d.getTime())) return String(dateText);
+            return d.toISOString().slice(0, 10).replace(/-/g, '/');
+        }
+
+        function normalizeEnrollmentList(raw) {
+            if (Array.isArray(raw)) return raw;
+            if (raw && Array.isArray(raw.items)) return raw.items;
+            if (raw && Array.isArray(raw.data)) return raw.data;
+            return [];
+        }
+
+        function setEnrollmentCard(progressEl, remainingEl, completionEl, payload) {
+            const safe = payload || ENROLLMENT_FALLBACK;
+            progressEl.textContent = `${Math.max(0, Math.min(100, Number(safe.progress) || 0))}%`;
+            remainingEl.textContent = `${Math.max(0, Number(safe.remainingDays) || 0)}일`;
+            completionEl.textContent = formatDateYmd(safe.completionDate);
+        }
+
+        async function loadEnrollmentProgress() {
+            const progressEl = document.getElementById('progressRate');
+            const remainingEl = document.getElementById('remainingDays');
+            const completionEl = document.getElementById('completionDate');
+            if (!progressEl || !remainingEl || !completionEl) return;
+
+            if (typeof getWebAppEnrollments !== 'function') {
+                setEnrollmentCard(progressEl, remainingEl, completionEl, ENROLLMENT_FALLBACK);
+                return;
+            }
+
+            try {
+                const enrollments = await getWebAppEnrollments();
+                const list = normalizeEnrollmentList(enrollments);
+                const active = list.find((item) => item && item.status === 'in_progress') || list[0];
+
+                if (!active) {
+                    setEnrollmentCard(progressEl, remainingEl, completionEl, ENROLLMENT_FALLBACK);
+                    return;
+                }
+
+                const progress = Number(active.progress ?? active.progress_percent);
+                const endDate = active.end ?? active.end_date ?? active.completion_date ?? ENROLLMENT_FALLBACK.completionDate;
+                const apiRemaining = Number(active.days_remaining ?? active.remaining_days);
+                const remainingDays = Number.isFinite(apiRemaining)
+                    ? Math.max(0, Math.round(apiRemaining))
+                    : calcRemainingDays(endDate);
+
+                setEnrollmentCard(progressEl, remainingEl, completionEl, {
+                    progress: Number.isFinite(progress) ? progress : ENROLLMENT_FALLBACK.progress,
+                    remainingDays: Number.isFinite(remainingDays) ? remainingDays : ENROLLMENT_FALLBACK.remainingDays,
+                    completionDate: endDate
+                });
+            } catch (error) {
+                setEnrollmentCard(progressEl, remainingEl, completionEl, ENROLLMENT_FALLBACK);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadEnrollmentProgress);
+    </script>
+    <script src="../mobile-optimization.js" defer></script>
+</body>
+
+</html>

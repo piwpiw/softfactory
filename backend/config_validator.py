@@ -5,6 +5,7 @@ Call validate_config(app) inside create_app() before returning.
 """
 import os
 import logging
+from .config import Config
 
 logger = logging.getLogger('config_validator')
 
@@ -54,7 +55,17 @@ def validate_config(app) -> None:
 
     # ---- Check required production variables ----
     if is_production:
-        missing_required = [var for var in REQUIRED_PROD if not os.getenv(var)]
+        # DATABASE_URL must be a valid DSN, not a placeholder.
+        db_url = Config.get_database_url()
+        if not db_url:
+            missing_required = ['DATABASE_URL']
+        elif not Config.is_database_url_safe(db_url):
+            missing_required = ['DATABASE_URL(invalid format)']
+        elif db_url.startswith('sqlite'):
+            missing_required = ['DATABASE_URL(sqlite is not allowed in production)']
+        else:
+            missing_required = [var for var in REQUIRED_PROD if not os.getenv(var)]
+
         if missing_required:
             issues_found = True
             for var in missing_required:

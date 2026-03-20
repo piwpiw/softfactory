@@ -1,71 +1,695 @@
 ﻿<!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bohemian Marketing AI | SoftFactory</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="theme-color" content="#0f172a" />
+  <title>보헤미안 마케팅 AI | SoftFactory</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script src="../platform/api.js"></script>
+  <link rel="stylesheet" href="../responsive-framework.css" />
   <style>
-    body { font-family: "Sora", "Segoe UI", sans-serif; }
+    body { font-family: 'Inter', sans-serif; }
+    .line-clamp-2 {
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
   </style>
-    <script src="../mobile-optimization.js" defer></script>
 </head>
-<body class="bg-slate-950 text-slate-100">
-  <main class="min-h-screen px-6 py-10">
-    <section class="mx-auto max-w-6xl rounded-3xl border border-slate-800 bg-slate-900/85 p-8 shadow-2xl">
-      <div class="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <p class="text-xs uppercase tracking-[0.18em] text-cyan-300">Bohemian Studio</p>
-          <h1 class="mt-2 text-3xl font-black md:text-4xl">Bohemian Marketing AI</h1>
-          <p class="mt-3 max-w-2xl text-slate-300">
-            All-in-one marketing workspace for planning, generation, publishing, inbox, and analytics.
-          </p>
+<body class="bg-slate-950 text-slate-100 soft-shell">
+  <main class="min-h-screen px-5 py-8 md:px-8">
+    <section class="mx-auto max-w-7xl space-y-6">
+      <header class="rounded-3xl border border-slate-800 bg-slate-900/85 p-6 shadow-2xl md:p-8">
+        <div class="flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <p class="text-xs uppercase tracking-[0.18em] text-cyan-300">마케팅 운영 자동화</p>
+            <h1 class="mt-2 text-3xl font-black md:text-4xl">보헤미안 마케팅 AI</h1>
+            <p class="mt-3 max-w-3xl text-sm text-slate-300">기획/생성/발행/인박스 처리까지 한 번에 수행하고, SNS API를 통해 분석 지표를 자동 추출합니다.</p>
+          </div>
+          <div class="flex flex-col items-end gap-2">
+            <div id="runtime-mode" class="rounded-lg border border-slate-700 bg-slate-800/80 px-3 py-2 text-xs text-slate-300">API 모드: -</div>
+            <button id="toggle-demo" class="rounded-xl border border-slate-700 px-4 py-2 text-sm hover:border-emerald-400">데모 모드 토글</button>
+          </div>
         </div>
-        <a href="../index.html" class="rounded-xl border border-slate-700 px-4 py-2 text-sm hover:border-cyan-400">Back to SoftFactory</a>
-      </div>
+        <div class="mt-6 grid gap-3 md:grid-cols-5">
+          <article class="rounded-xl border border-slate-800 bg-slate-950/60 p-4">
+            <p class="text-xs text-slate-400">연결 채널</p>
+            <p id="kpi-channels" class="mt-2 text-3xl font-black text-emerald-300">-</p>
+            <p class="mt-1 text-xs text-slate-500">연동된 계정 수</p>
+          </article>
+          <article class="rounded-xl border border-slate-800 bg-slate-950/60 p-4">
+            <p class="text-xs text-slate-400">초안</p>
+            <p id="kpi-drafts" class="mt-2 text-3xl font-black">-</p>
+            <p class="mt-1 text-xs text-slate-500">발행 전</p>
+          </article>
+          <article class="rounded-xl border border-slate-800 bg-slate-950/60 p-4">
+            <p class="text-xs text-slate-400">발행</p>
+            <p id="kpi-published" class="mt-2 text-3xl font-black text-cyan-300">-</p>
+            <p class="mt-1 text-xs text-slate-500">지난 30일</p>
+          </article>
+          <article class="rounded-xl border border-slate-800 bg-slate-950/60 p-4">
+            <p class="text-xs text-slate-400">미응답 인박스</p>
+            <p id="kpi-inbox" class="mt-2 text-3xl font-black">-</p>
+            <p class="mt-1 text-xs text-slate-500">새 메시지</p>
+          </article>
+          <article class="rounded-xl border border-slate-800 bg-slate-950/60 p-4">
+            <p class="text-xs text-slate-400">오토파일럿</p>
+            <p id="kpi-autopilot" class="mt-2 text-3xl font-black">OFF</p>
+            <p class="mt-1 text-xs text-slate-500">자동 실행 상태</p>
+          </article>
+        </div>
+      </header>
 
-      <div class="mt-8 grid gap-4 md:grid-cols-4">
-        <a href="persona.html" class="rounded-2xl border border-slate-700 bg-slate-800/70 p-5 hover:border-cyan-400">
-          <p class="text-xs text-slate-400">Engine</p>
-          <p class="mt-1 text-lg font-bold">Persona</p>
-          <p class="mt-2 text-sm text-slate-300">Brand tone, banned words, versioned profiles.</p>
-        </a>
-        <a href="autopilot.html" class="rounded-2xl border border-slate-700 bg-slate-800/70 p-5 hover:border-cyan-400">
-          <p class="text-xs text-slate-400">Automation</p>
-          <p class="mt-1 text-lg font-bold">Autopilot</p>
-          <p class="mt-2 text-sm text-slate-300">Daily max-post control, safe publish, instant OFF.</p>
-        </a>
-        <a href="pricing.html" class="rounded-2xl border border-slate-700 bg-slate-800/70 p-5 hover:border-cyan-400">
-          <p class="text-xs text-slate-400">Monetization</p>
-          <p class="mt-1 text-lg font-bold">Pricing & Credits</p>
-          <p class="mt-2 text-sm text-slate-300">Plans, credit ledger, and overage cap policy.</p>
-        </a>
-        <a href="app.html" class="rounded-2xl border border-cyan-500 bg-cyan-500/10 p-5 hover:bg-cyan-500/20">
-          <p class="text-xs text-cyan-200">Workspace</p>
-          <p class="mt-1 text-lg font-bold">Open App</p>
-          <p class="mt-2 text-sm text-cyan-100">Studio, Calendar, Inbox, Analytics in one shell.</p>
-        </a>
-      </div>
+      <section class="grid gap-6 xl:grid-cols-[1.3fr_1fr]">
+        <article class="rounded-2xl border border-slate-800 bg-slate-900 p-6">
+          <div class="mb-4 flex items-start justify-between gap-4">
+            <div>
+              <h2 class="text-2xl font-black">콘텐츠 생성 및 발행</h2>
+              <p class="mt-1 text-xs text-slate-400">채널을 선택해 생성부터 발행까지 수행합니다.</p>
+            </div>
+            <button id="refresh-all" class="rounded-lg border border-slate-700 px-3 py-2 text-sm hover:border-cyan-400">전체 새로고침</button>
+          </div>
+          <form id="generation-form" class="space-y-4">
+            <div class="grid gap-3 md:grid-cols-2">
+              <label class="block">
+                <span class="text-xs text-slate-400">주제</span>
+                <textarea id="topic" rows="3" required class="mt-1 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500" placeholder="예: 여름 시즌 신규 캠페인 공지"></textarea>
+              </label>
+              <div class="grid gap-2">
+                <label class="block">
+                  <span class="text-xs text-slate-400">템플릿</span>
+                  <select id="template-type" class="mt-1 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm">
+                    <option value="card_news">카드뉴스</option>
+                    <option value="blog_post">블로그 포스트</option>
+                    <option value="reel">릴스</option>
+                    <option value="shorts">숏폼</option>
+                  </select>
+                </label>
+                <label class="block">
+                  <span class="text-xs text-slate-400">톤</span>
+                  <select id="tone" class="mt-1 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm">
+                    <option value="professional">전문</option>
+                    <option value="friendly">친근</option>
+                    <option value="playful">경쾌</option>
+                    <option value="urgent">긴급</option>
+                  </select>
+                </label>
+              </div>
+            </div>
+            <label class="block text-xs text-slate-400">발행 채널 선택
+              <div id="channel-selector" class="mt-2 flex flex-wrap gap-2">
+                <label class="rounded-lg border border-slate-700 px-3 py-2"><input class="mr-2" type="checkbox" name="targets" value="instagram" checked> Instagram</label>
+                <label class="rounded-lg border border-slate-700 px-3 py-2"><input class="mr-2" type="checkbox" name="targets" value="blog" checked> Blog</label>
+                <label class="rounded-lg border border-slate-700 px-3 py-2"><input class="mr-2" type="checkbox" name="targets" value="tiktok"> TikTok</label>
+              </div>
+            </label>
+            <div class="grid gap-3 sm:grid-cols-2">
+              <button id="run-generate" type="submit" class="rounded-xl bg-cyan-500 px-5 py-2 text-sm font-semibold text-slate-950">콘텐츠 생성</button>
+              <button id="run-fullcycle" type="button" class="rounded-xl border border-emerald-400/70 px-5 py-2 text-sm font-semibold text-emerald-200">생성 + 발행</button>
+            </div>
+          </form>
 
-      <section class="mt-8 grid gap-4 md:grid-cols-3">
-        <article class="rounded-xl border border-slate-800 bg-slate-950/60 p-5">
-          <p class="text-xs text-slate-400">Flow 01</p>
-          <h2 class="mt-1 text-xl font-bold">Plan to Content</h2>
-          <p class="mt-2 text-sm text-slate-300">Topic input generates short-form, long-form, card deck, and script variants.</p>
+          <div class="mt-6 rounded-xl border border-slate-800 bg-slate-950/65 p-4">
+            <p class="text-xs text-slate-400">실행 결과</p>
+            <div id="generation-result" class="mt-2 min-h-20 rounded-lg border border-slate-800 bg-slate-900 px-3 py-2 text-sm text-slate-200">실행 결과가 여기에 표시됩니다.</div>
+            <div id="last-run-log" class="mt-3 text-xs text-slate-500">마지막 실행: 없음</div>
+          </div>
         </article>
-        <article class="rounded-xl border border-slate-800 bg-slate-950/60 p-5">
-          <p class="text-xs text-slate-400">Flow 02</p>
-          <h2 class="mt-1 text-xl font-bold">Publish to Inbox</h2>
-          <p class="mt-2 text-sm text-slate-300">Queue workers run idempotent publishing and route comments/DM into one inbox.</p>
+
+        <aside class="space-y-6">
+          <article class="rounded-2xl border border-slate-800 bg-slate-900 p-6">
+            <div class="flex items-center justify-between">
+              <h3 class="text-lg font-bold">채널 연결</h3>
+              <button id="refresh-accounts" class="rounded-lg border border-slate-700 px-3 py-2 text-sm hover:border-cyan-400">새로고침</button>
+            </div>
+            <p id="account-loading" class="mt-2 text-xs text-slate-500">조회 중...</p>
+            <ul id="channel-list" class="mt-3 space-y-2 text-sm"></ul>
+          </article>
+
+          <article class="rounded-2xl border border-slate-800 bg-slate-900 p-6">
+            <div class="flex items-center justify-between">
+              <h3 class="text-lg font-bold">인박스</h3>
+              <button id="refresh-inbox" class="rounded-lg border border-slate-700 px-3 py-2 text-sm hover:border-cyan-400">새로고침</button>
+            </div>
+            <ul id="inbox-list" class="mt-3 space-y-2 text-sm"></ul>
+          </article>
+
+          <article class="rounded-2xl border border-slate-800 bg-slate-900 p-6">
+            <h3 class="text-lg font-bold">초안 목록</h3>
+            <ul id="draft-list" class="mt-3 space-y-2 text-sm"></ul>
+            <p id="draft-empty" class="mt-3 text-xs text-slate-500">초안 데이터가 없습니다.</p>
+          </article>
+        </aside>
+      </section>
+      <section class="grid gap-4 md:grid-cols-3">
+        <article class="rounded-xl border border-slate-800 bg-slate-900 p-5">
+          <h4 class="font-bold">시스템 상태</h4>
+          <p id="health-status" class="mt-2 text-sm text-slate-300">상태 점검 필요</p>
+            <button id="health-check" class="mt-3 rounded-lg border border-cyan-500 px-3 py-2 text-sm text-cyan-100">연동 상태 점검</button>
+          <p class="mt-2 text-xs text-slate-500" id="api-provider">연동 공급자: SNS API</p>
         </article>
-        <article class="rounded-xl border border-slate-800 bg-slate-950/60 p-5">
-          <p class="text-xs text-slate-400">Flow 03</p>
-          <h2 class="mt-1 text-xl font-bold">Analytics to Action</h2>
-          <p class="mt-2 text-sm text-slate-300">Unified metrics and insight Q&amp;A drive next content cycle.</p>
+        <article class="rounded-xl border border-slate-800 bg-slate-900 p-5">
+          <h4 class="font-bold">SNS 분석 대시보드</h4>
+          <div class="mt-2 space-y-2">
+            <p id="analytics-total-posts" class="text-sm text-slate-300">총 게시물: -</p>
+            <p id="analytics-engagement" class="text-sm text-slate-300">총 참여: -</p>
+            <p id="analytics-top-channel" class="text-sm text-slate-300">최고 성과 채널: -</p>
+            <p id="analytics-since" class="text-xs text-slate-500">기간: 최근 30일</p>
+          </div>
+          <div id="analytics-channel-breakdown" class="mt-3 space-y-2 text-xs text-slate-400"></div>
+          <button id="refresh-analytics" class="mt-3 rounded-lg border border-slate-700 px-3 py-2 text-sm hover:border-cyan-400">채널별 분석 즉시 추출</button>
+        </article>
+        <article class="rounded-xl border border-slate-800 bg-slate-900 p-5">
+          <h4 class="font-bold">실행 기록</h4>
+          <ul id="run-history" class="mt-2 space-y-2 text-sm text-slate-300"></ul>
         </article>
       </section>
+
+      <div class="rounded-2xl border border-slate-800 bg-slate-900 p-5">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <h3 class="font-bold">자동화 설정</h3>
+          <div class="flex items-center gap-2">
+            <button id="run-autopilot" class="rounded-lg border border-emerald-400/70 px-3 py-2 text-sm text-emerald-200">오토파일럿 토글</button>
+            <button id="run-export" class="rounded-lg border border-violet-500/70 px-3 py-2 text-sm text-violet-200">리포트 CSV 내보내기</button>
+          </div>
+        </div>
+        <p id="autopilot-state" class="mt-3 text-xs text-slate-400">현재 상태: OFF</p>
+      </div>
     </section>
   </main>
+
+  <script>
+    const state = {
+      autopilotOn: false,
+      channels: [],
+      posts: [],
+      inbox: [],
+      analytics: null,
+      channelAnalytics: [],
+      running: false,
+      actionBusy: false,
+      lastRunAt: null,
+      refreshTimer: null,
+      autopilotTimer: null
+    };
+
+    const el = (id) => document.getElementById(id);
+    const safeText = (value, fallback = '-') => (value === null || value === undefined || value === '' ? fallback : String(value));
+    const platformLabel = (value) => {
+      if (!value) return '미지정';
+      const normalized = String(value).toLowerCase();
+      if (normalized === 'blog') return '블로그';
+      if (normalized === 'instagram') return 'Instagram';
+      if (normalized === 'tiktok') return 'TikTok';
+      return String(value);
+    };
+    const toList = (payload, keys = ['items', 'data', 'posts', 'accounts', 'messages']) => {
+      if (Array.isArray(payload)) return payload;
+      for (const k of keys) {
+        if (payload && Array.isArray(payload[k])) return payload[k];
+      }
+      return [];
+    };
+    const formatNumber = (value) => (value === null || value === undefined || Number.isNaN(value) ? '-' : Number(value).toLocaleString('ko-KR'));
+    const formatRate = (value) => (value === null || value === undefined || Number.isNaN(value) ? '-' : `${Number(value).toFixed(1)}%`);
+
+    const setHealthText = (text, level = 'info') => {
+      const target = el('health-status');
+      target.textContent = text;
+      target.className = level === 'ok'
+        ? 'mt-2 text-sm text-emerald-300'
+        : level === 'warn'
+          ? 'mt-2 text-sm text-amber-300'
+          : 'mt-2 text-sm text-slate-300';
+    };
+
+    const renderRuntimeMode = () => {
+      const mode = getApiMode();
+      el('runtime-mode').textContent = `API 모드: ${mode === 'live' ? '실시간 API' : '데모 데이터'}`;
+      el('runtime-mode').style.color = mode === 'live' ? '#6ee7b7' : '#fbbf24';
+    };
+
+    const setActionBusy = (busy) => {
+      state.actionBusy = busy;
+      ['run-generate', 'run-fullcycle', 'refresh-all', 'refresh-accounts', 'refresh-inbox', 'refresh-analytics', 'health-check', 'toggle-demo', 'run-autopilot', 'run-export']
+        .forEach((id) => {
+          const b = el(id);
+          if (!b) return;
+          b.disabled = busy;
+          b.classList.toggle('opacity-50', busy);
+          b.classList.toggle('cursor-not-allowed', busy);
+        });
+    };
+
+    const addHistory = (text) => {
+      const list = el('run-history');
+      const item = document.createElement('li');
+      item.textContent = `${new Date().toLocaleTimeString('ko-KR')}: ${text}`;
+      list.prepend(item);
+      while (list.children.length > 7) list.removeChild(list.lastElementChild);
+    };
+
+    const appendRunHistory = (message) => {
+      state.lastRunAt = new Date();
+      const mode = getApiMode();
+      addHistory(`${message} (mode=${mode})`);
+      el('last-run-log').textContent = `마지막 실행: ${state.lastRunAt.toLocaleString('ko-KR')}: ${message}`;
+    };
+
+    const renderChannels = () => {
+      const container = el('channel-list');
+      container.innerHTML = '';
+      if (!state.channels.length) {
+        container.innerHTML = '<li class="rounded-lg border border-slate-800 px-3 py-2 text-slate-500">연동된 채널이 없습니다.</li>';
+      } else {
+        state.channels.forEach((acc) => {
+          const status = acc.is_active ? '연결됨' : '중지';
+          const item = document.createElement('li');
+          item.className = 'rounded-lg border border-slate-800 px-3 py-2';
+          item.innerHTML = `<p class="font-semibold">${platformLabel(acc.platform)} - ${safeText(acc.account_name, '계정명 미정')}</p>
+            <p class="text-xs text-slate-400">상태: ${status} / 팔로워 ${formatNumber(acc.followers)} / 참여율 ${formatRate(acc.engagement_rate)}</p>`;
+          container.appendChild(item);
+        });
+      }
+      el('kpi-channels').textContent = `${state.channels.filter((c) => c && c.is_active).length} / ${state.channels.length}`;
+      el('kpi-autopilot').textContent = state.autopilotOn ? 'ON' : 'OFF';
+      el('kpi-autopilot').className = state.autopilotOn
+        ? 'mt-2 text-3xl font-black text-emerald-300'
+        : 'mt-2 text-3xl font-black text-slate-300';
+      el('run-autopilot').textContent = state.autopilotOn ? '오토파일럿 중지' : '오토파일럿 시작';
+    };
+
+    const renderDrafts = () => {
+      const list = el('draft-list');
+      const empty = el('draft-empty');
+      list.innerHTML = '';
+      if (!state.posts.length) {
+        empty.classList.remove('hidden');
+      } else {
+        empty.classList.add('hidden');
+      }
+      state.posts.slice(0, 6).forEach((post) => {
+        const id = safeText(post?.id, '');
+        const status = safeText(post?.status, 'draft');
+        const content = safeText(post?.content || post?.text, '');
+        const li = document.createElement('li');
+        li.className = 'rounded-lg border border-slate-800 px-3 py-2';
+        li.innerHTML = `<p class="font-semibold line-clamp-2">${content.slice(0, 130) || '임시 콘텐츠'}</p>
+          <p class="mt-1 text-xs text-slate-400">ID: ${id} · 상태: ${status}</p>
+          <div class="mt-2 flex flex-wrap gap-2">
+            ${id ? `<button class="publish-btn rounded-md border border-cyan-500/80 px-2 py-1 text-xs" data-id="${id}">발행</button>` : ''}
+            <button class="preview-btn rounded-md border border-slate-700 px-2 py-1 text-xs" data-content="${encodeURIComponent(content)}">미리보기</button>
+          </div>`;
+        list.appendChild(li);
+      });
+
+      el('kpi-drafts').textContent = state.posts.filter((p) => p && ['draft', 'scheduled'].includes(p.status)).length;
+      el('kpi-published').textContent = state.posts.filter((p) => p && p.status === 'published').length;
+
+      list.querySelectorAll('.publish-btn').forEach((btn) => {
+        btn.addEventListener('click', async () => await publishPost(Number(btn.dataset.id)));
+      });
+      list.querySelectorAll('.preview-btn').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          el('generation-result').textContent = decodeURIComponent(btn.dataset.content || '');
+        });
+      });
+    };
+
+    const renderInbox = () => {
+      const list = el('inbox-list');
+      list.innerHTML = '';
+      el('kpi-inbox').textContent = state.inbox.filter((i) => i && i.status !== 'read').length;
+      if (!state.inbox.length) {
+        list.innerHTML = '<li class="rounded-lg border border-slate-800 px-3 py-2 text-slate-500">새 메시지가 없습니다.</li>';
+        return;
+      }
+      state.inbox.slice(0, 5).forEach((msg) => {
+        const id = safeText(msg.id, '');
+        const preview = safeText(msg.preview || msg.content, '').replace(/\n/g, ' ');
+        const item = document.createElement('li');
+        item.className = 'rounded-lg border border-slate-800 px-3 py-2';
+        item.innerHTML = `<p class="font-semibold">${safeText(msg.platform, '메시지')}</p>
+          <p class="text-xs line-clamp-2 text-slate-300">${preview}</p>
+          <div class="mt-2 flex gap-2">
+            <button class="mark-read-btn rounded-md border border-emerald-500 px-2 py-1 text-xs" data-id="${id}">확인</button>
+            <button class="reply-btn rounded-md border border-cyan-500 px-2 py-1 text-xs" data-id="${id}">답장</button>
+          </div>
+          <p class="text-[11px] text-slate-500 mt-1">상태: ${safeText(msg.status, 'new')}</p>`;
+        list.appendChild(item);
+      });
+
+      list.querySelectorAll('.mark-read-btn').forEach((btn) => btn.addEventListener('click', async () => {
+        const id = Number(btn.dataset.id);
+        if (!id) return;
+        await markSNSInboxRead(id);
+        addHistory(`인박스 #${id} 읽음 처리`);
+        await refreshInbox();
+      }));
+      list.querySelectorAll('.reply-btn').forEach((btn) => btn.addEventListener('click', async () => {
+        const id = Number(btn.dataset.id);
+        if (!id) return;
+        const reply = window.prompt('답장할 내용을 입력하세요.');
+        if (!reply) return;
+        await replySNSInboxMessage(id, reply);
+        addHistory(`인박스 #${id} 답장 발송`);
+        await refreshInbox();
+      }));
+    };
+
+    const normalizeTopChannel = (analytics, fallback = '-') => {
+      if (!analytics) return safeText(fallback, '-');
+      if (analytics.top_performing) {
+        const top = analytics.top_performing;
+        return top.platform || top.title || safeText(fallback, '-');
+      }
+      if (analytics.top_channel) return analytics.top_channel;
+      if (Array.isArray(analytics.platform_breakdown) && analytics.platform_breakdown.length) {
+        const sorted = [...analytics.platform_breakdown].sort((a, b) => (b.engagement || b.posts || 0) - (a.engagement || a.posts || 0));
+        return sorted[0]?.platform || safeText(fallback, '-');
+      }
+      return safeText(fallback, '-');
+    };
+
+    const normalizeBreakdown = (raw = {}) => ({
+      platform: raw.platform || raw.channel || 'unknown',
+      total_posts: raw.total_posts ?? raw.posts_count ?? raw.posts ?? 0,
+      engagement_rate: raw.engagement_rate ?? raw.engagement ?? 0,
+      conversion_rate: raw.conversion_rate ?? raw.conversion ?? 0
+    });
+
+    const renderAnalytics = () => {
+      const totalPosts = safeText(state.analytics?.total_posts, state.analytics?.posts_count || '-');
+      const totalEngagement = safeText(state.analytics?.total_engagement, state.analytics?.engagement || '-');
+      const top = normalizeTopChannel(state.analytics);
+      el('analytics-total-posts').textContent = `총 게시물: ${totalPosts}`;
+      el('analytics-engagement').textContent = `총 참여: ${totalEngagement}`;
+      el('analytics-top-channel').textContent = `최고 성과 채널: ${safeText(top, '-')}`;
+      const from = state.analytics?.start_date || '';
+      const to = state.analytics?.end_date || '';
+      el('analytics-since').textContent = from && to ? `기간: ${from} ~ ${to}` : '기간: 최근 30일';
+
+      const wrap = el('analytics-channel-breakdown');
+      wrap.innerHTML = '';
+      if (!state.channelAnalytics.length) {
+        wrap.innerHTML = '<p class="text-slate-500">채널별 분석 데이터 없음</p>';
+        return;
+      }
+      state.channelAnalytics.forEach((item) => {
+        const rowData = normalizeBreakdown(item);
+        const row = document.createElement('div');
+        row.className = 'rounded-lg border border-slate-800 px-3 py-2';
+        row.innerHTML = `<p class="font-semibold">${platformLabel(rowData.platform)}</p>
+          <p class="text-xs text-slate-400">게시물 ${formatNumber(rowData.total_posts)}개 · 참여율 ${formatRate(rowData.engagement_rate)} · 전환율 ${formatRate(rowData.conversion_rate)}</p>`;
+        wrap.appendChild(row);
+      });
+    };
+
+    const renderTargetOptionsFromChannels = () => {
+      const channelSelector = el('channel-selector');
+      const channels = [...new Set(state.channels.map((c) => c.platform).filter(Boolean))];
+      if (!channels.length) return;
+      channelSelector.innerHTML = '';
+      channels.forEach((platform) => {
+        const label = document.createElement('label');
+        label.className = 'rounded-lg border border-slate-700 px-3 py-2';
+        const input = document.createElement('input');
+        input.type = 'checkbox';
+        input.name = 'targets';
+        input.value = platform;
+        input.checked = true;
+        input.className = 'mr-2';
+        label.appendChild(input);
+        label.append(` ${platformLabel(platform)}`);
+        channelSelector.appendChild(label);
+      });
+    };
+
+    const getTargets = () => Array.from(document.querySelectorAll('input[name="targets"]:checked')).map((e) => e.value);
+
+    const refreshAccounts = async () => {
+      try {
+        state.channels = toList(await getSNSAccounts(), ['accounts', 'data']);
+      } catch {
+        state.channels = [];
+      }
+      renderChannels();
+      renderTargetOptionsFromChannels();
+    };
+
+    const refreshPosts = async () => {
+      try {
+        state.posts = toList(await getSNSPosts(null, null, 1), ['posts', 'data']);
+      } catch {
+        state.posts = [];
+      }
+      renderDrafts();
+    };
+
+    const refreshInbox = async () => {
+      try {
+        state.inbox = toList(await getSNSInboxMessages({ status: 'all', page: 1 }), ['messages', 'items', 'data']);
+      } catch {
+        state.inbox = [];
+      }
+      renderInbox();
+    };
+
+    const refreshAnalytics = async () => {
+      const today = new Date();
+      const start = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
+      const startDate = start.toISOString().split('T')[0];
+      const endDate = today.toISOString().split('T')[0];
+
+      try {
+        state.analytics = await getSNSAnalytics(startDate, endDate);
+      } catch {
+        state.analytics = null;
+      }
+
+      try {
+        const activePlatforms = state.channels.length ? [...new Set(state.channels.map((c) => c.platform).filter(Boolean))] : ['instagram', 'blog', 'tiktok'];
+        const channelResults = await Promise.all(activePlatforms.map((platform) => getSNSAnalytics(startDate, endDate, platform).catch(() => null)));
+        state.channelAnalytics = channelResults.map((analytics, index) => {
+          const platform = activePlatforms[index];
+          const direct = (analytics && Array.isArray(analytics.platform_breakdown) && analytics.platform_breakdown.length)
+            ? analytics.platform_breakdown.find((entry) => platformLabel(entry.platform) === platformLabel(platform))
+            : null;
+          if (direct) return normalizeBreakdown({ ...direct, platform });
+          return normalizeBreakdown({ ...(analytics || {}), platform });
+        });
+      } catch {
+        state.channelAnalytics = [];
+      }
+      renderAnalytics();
+    };
+
+    const refreshAll = async (boot = false) => {
+      if (state.running) return;
+      state.running = true;
+      renderRuntimeMode();
+      el('account-loading').textContent = '동기화 중...';
+      setHealthText('연동 상태 확인 중...', 'warn');
+      try {
+        const results = await Promise.allSettled([refreshAccounts(), refreshPosts(), refreshInbox(), refreshAnalytics(), (async () => {
+          const ok = await detectApiMode();
+          setHealthText(ok ? 'API 연동 정상' : 'API 연동 실패(데모 권장)', ok ? 'ok' : 'warn');
+          return ok;
+        })()]);
+        const failed = results.filter((r) => r.status === 'rejected');
+        if (failed.length) {
+          addHistory(`동기화 일부 실패: ${failed.length}건`);
+        } else {
+          addHistory('동기화 완료');
+        }
+        el('account-loading').textContent = '동기화 완료';
+      } finally {
+        state.running = false;
+        renderRuntimeMode();
+        if (boot && !state.refreshTimer) {
+          state.refreshTimer = setInterval(() => refreshAll(), 60000);
+        }
+      }
+    };
+
+    const generateDraft = async () => {
+      if (state.actionBusy) return;
+      const topic = el('topic').value.trim();
+      const template = el('template-type').value || 'card_news';
+      const tone = el('tone').value || 'professional';
+      const targets = getTargets();
+      if (!topic) return showError('주제를 입력해 주세요.');
+      if (!targets.length) return showError('발행 채널을 최소 1개 이상 선택해 주세요.');
+      if (!state.channels.length) await refreshAccounts();
+      const targetAccount = state.channels.find((a) => a && targets.includes(a.platform)) || state.channels[0];
+      if (!targetAccount) return showError('연결된 계정이 없습니다.');
+
+      setActionBusy(true);
+      showLoading('콘텐츠 생성 중...');
+      try {
+        const generated = await generateSNSContent({
+          topic,
+          platform: targetAccount.platform,
+          tone,
+          template_type: template,
+          target_platforms: targets
+        });
+        const content = generated?.content || generated?.text || generated?.generated_text || `주제: ${topic}`;
+        const created = await createSNSPost(targetAccount.id, content, template);
+        el('generation-result').textContent = content;
+        await refreshPosts();
+        appendRunHistory(`콘텐츠 생성 완료: #${created?.id || '-'} (${targetAccount.platform})`);
+        showSuccess('콘텐츠 생성 및 초안 저장 완료');
+      } catch (error) {
+        showError(`생성 실패: ${error.message}`);
+      } finally {
+        hideLoading();
+        setActionBusy(false);
+      }
+    };
+
+    const publishPost = async (postId) => {
+      if (!postId || state.actionBusy) return;
+      setActionBusy(true);
+      showLoading('발행 요청 중...');
+      try {
+        await publishSNSPost(postId);
+        await refreshPosts();
+        appendRunHistory(`발행 완료: #${postId}`);
+        showSuccess('발행 완료');
+      } catch (error) {
+        showError(`발행 실패: ${error.message}`);
+      } finally {
+        hideLoading();
+        setActionBusy(false);
+      }
+    };
+
+    const runFullCycle = async () => {
+      if (state.actionBusy) return;
+      const targets = getTargets();
+      if (!targets.length) return showError('발행 채널을 선택해 주세요.');
+      setActionBusy(true);
+      try {
+        await generateDraft();
+        await refreshPosts();
+        const drafts = state.posts.filter((p) => p && ['draft', 'scheduled'].includes(p.status));
+        if (!drafts.length) return showError('발행할 초안이 없습니다.');
+        for (const item of drafts.slice(0, 3)) {
+          if (item?.id) await publishSNSPost(item.id);
+        }
+        await refreshPosts();
+        addHistory(`생성+발행 완료: ${Math.min(drafts.length, 3)}건`);
+        showSuccess('생성+발행 사이클 완료');
+      } catch (error) {
+        showError(`사이클 실패: ${error.message}`);
+      } finally {
+        hideLoading();
+        setActionBusy(false);
+      }
+    };
+
+    const runAutopilot = () => {
+      state.autopilotOn = !state.autopilotOn;
+      localStorage.setItem('bohemian_autopilot', state.autopilotOn ? 'on' : 'off');
+      el('autopilot-state').textContent = `현재 상태: ${state.autopilotOn ? 'ON' : 'OFF'}`;
+      if (state.autopilotOn) {
+        if (!state.autopilotTimer) {
+          state.autopilotTimer = setInterval(() => { if (state.autopilotOn) runFullCycle(); }, 5 * 60 * 1000);
+        }
+        showSuccess('오토파일럿을 시작했습니다.');
+      } else {
+        if (state.autopilotTimer) {
+          clearInterval(state.autopilotTimer);
+          state.autopilotTimer = null;
+        }
+        showSuccess('오토파일럿을 중단했습니다.');
+      }
+      renderChannels();
+    };
+
+    const exportCsv = () => {
+      const rows = [
+        ['지표', '값'],
+        ['동기화시간', new Date().toISOString()],
+        ['연결채널', `${state.channels.filter((c) => c.is_active).length}/${state.channels.length}`],
+        ['초안', state.posts.filter((p) => ['draft', 'scheduled'].includes(p.status)).length],
+        ['발행', state.posts.filter((p) => p.status === 'published').length],
+        ['미응답', state.inbox.filter((i) => i.status !== 'read').length],
+        ['API모드', getApiMode()]
+      ];
+      const csv = rows.map((r) => r.map((cell) => `"${safeText(cell, '')}"`).join(',')).join('\n');
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      const url = URL.createObjectURL(blob);
+      link.href = url;
+      link.download = `bohemian-dashboard-${Date.now()}.csv`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+      addHistory('CSV 내보내기 완료');
+      showSuccess('CSV 리포트가 다운로드되었습니다.');
+    };
+
+    const checkHealth = async () => {
+      if (state.actionBusy) return;
+      setActionBusy(true);
+      try {
+        const ok = await detectApiMode();
+        if (ok) {
+          setHealthText('연동 상태 점검 성공', 'ok');
+          el('api-provider').textContent = '연동 공급자: SNS API (live)';
+          showSuccess('API 연동이 정상입니다.');
+        } else {
+          setHealthText('연동 상태 점검 실패', 'warn');
+          el('api-provider').textContent = '연동 공급자: SNS API (fallback)';
+          showError('API 점검 실패. 데모 모드를 확인하세요.');
+        }
+      } finally {
+        setActionBusy(false);
+        renderRuntimeMode();
+      }
+    };
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      state.autopilotOn = localStorage.getItem('bohemian_autopilot') === 'on';
+      el('autopilot-state').textContent = `현재 상태: ${state.autopilotOn ? 'ON' : 'OFF'}`;
+      if (!localStorage.getItem('demo_mode') && !localStorage.getItem('access_token')) enableDemoMode();
+
+      renderRuntimeMode();
+      await refreshAll(true);
+
+      el('generation-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        await generateDraft();
+      });
+      el('run-fullcycle').addEventListener('click', runFullCycle);
+      el('run-autopilot').addEventListener('click', runAutopilot);
+      el('run-export').addEventListener('click', exportCsv);
+      el('refresh-all').addEventListener('click', () => refreshAll());
+      el('refresh-accounts').addEventListener('click', refreshAccounts);
+      el('refresh-inbox').addEventListener('click', refreshInbox);
+      el('refresh-analytics').addEventListener('click', refreshAnalytics);
+      el('health-check').addEventListener('click', checkHealth);
+      el('toggle-demo').addEventListener('click', () => {
+        if (isDemoMode()) {
+          disableDemoMode();
+          showSuccess('데모 모드 비활성화');
+        } else {
+          enableDemoMode();
+          showSuccess('데모 모드 활성화');
+        }
+        renderRuntimeMode();
+      });
+      requireAuth();
+    });
+  </script>
+  <script src="../mobile-optimization.js" defer></script>
 </body>
 </html>
-

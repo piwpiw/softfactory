@@ -6,450 +6,491 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#111827">
-    <meta name="description" content="SoftFactory 프리미엄 비즈니스 자동화 플랫폼 로그인 페이지">
-<title>로그인 — SoftFactory</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <meta name="description" content="SoftFactory 프리미엄 비즈니스 자동화 플랫폼 로그인">
+    <title>로그인 — SoftFactory</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%231d4ed8'/%3E%3Ctext x='50%25' y='54%25' text-anchor='middle' font-size='28' font-family='Arial' fill='white'%3ESF%3C/text%3E%3C/svg%3E">
     <script src="api.js"></script>
+    <link rel="stylesheet" href="../unified-ui.css">
+    <link rel="stylesheet" href="../responsive-framework.css">
+    <link rel="stylesheet" href="../accessibility.css">
     <style>
-        body { font-family: 'Inter', sans-serif; }
-        @keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
-        .fade-in { animation: fadeIn 0.3s ease-out; }
-
-        /* WCAG 2.1 AA: Focus Indicators */
-        button:focus,
-        input:focus,
-        a:focus,
-        [tabindex]:focus {
-            outline: 3px solid #ec4899;
-            outline-offset: 2px;
+        :root {
+            --login-bg: radial-gradient(1100px 500px at 10% -12%, #dcefff 0%, transparent 42%), radial-gradient(1000px 420px at 100% 10%, #ffe0bc 0%, transparent 43%), var(--bg);
+            --login-panel: rgba(255, 255, 255, 0.86);
+            --login-panel-border: rgba(18, 49, 94, 0.12);
+            --login-text: #0f294e;
+            --login-muted: #476a95;
         }
 
-        /* Skip to main content link (accessibility) */
-        .skip-to-main {
-            position: absolute;
-            top: -40px;
-            left: 0;
-            background: #ec4899;
-            color: white;
-            padding: 8px;
-            z-index: 100;
-        }
-        .skip-to-main:focus {
-            top: 0;
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: "Pretendard", "SUIT", "Noto Sans KR", "Segoe UI", sans-serif;
+            color: var(--login-text);
+            background: var(--login-bg);
         }
 
-        /* WCAG 2.1 AA: Color Contrast Compliance */
-        /* Text: minimum 4.5:1 for normal text, 3:1 for large text */
-        .text-slate-300 { color: #cbd5e1; } /* Improved contrast against dark backgrounds */
-        .text-slate-400 { color: #94a3b8; } /* Meets 4.5:1 on #1e293b */
+        .login-shell {
+            width: min(1120px, 100% - 2.5rem);
+            margin: clamp(1rem, 2vw, 2.4rem) auto;
+            padding: 1.2rem;
+        }
 
-        /* Screen reader only text (hidden visually but available to AT) */
-        .sr-only {
-            position: absolute;
-            width: 1px;
-            height: 1px;
-            padding: 0;
-            margin: -1px;
+        .login-panel-wrap {
+            display: grid;
+            grid-template-columns: 1.15fr 1fr;
+            align-items: stretch;
+            gap: 1.2rem;
+        }
+
+        .brand-panel {
+            background: linear-gradient(160deg, rgba(28, 83, 196, 0.95), rgba(22, 53, 140, 0.96));
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: var(--radius-lg);
+            padding: clamp(1.4rem, 3vw, 2.4rem);
+            box-shadow: var(--shadow-2);
+            position: relative;
             overflow: hidden;
-            clip: rect(0, 0, 0, 0);
+            animation: sfFadeUp 0.4s ease both;
+        }
+
+        .brand-panel::after {
+            content: "";
+            position: absolute;
+            right: -20%;
+            bottom: -20%;
+            width: 280px;
+            height: 280px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0));
+            pointer-events: none;
+        }
+
+        .brand-panel h1 {
+            margin-bottom: 0.4rem;
+            color: #ffffff;
+            letter-spacing: -0.02em;
+        }
+
+        .brand-panel p {
+            color: rgba(255, 255, 255, 0.86);
+        }
+
+        .brand-panel .feature-grid {
+            margin-top: 1.4rem;
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 0.7rem;
+        }
+
+        .brand-chip {
+            background: rgba(255, 255, 255, 0.14);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 0.75rem;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+            font-size: 0.87rem;
+            line-height: 1.35;
+            min-height: 88px;
+        }
+
+        .brand-chip strong {
+            color: #fff;
+            font-size: 0.95rem;
+        }
+
+        .auth-panel {
+            background: var(--login-panel);
+            border: 1px solid var(--login-panel-border);
+            border-radius: var(--radius-lg);
+            padding: clamp(1.2rem, 2.6vw, 1.75rem);
+            box-shadow: var(--shadow-1);
+            animation: sfFadeUp 0.5s ease both;
+        }
+
+        .auth-headline {
+            font-weight: 800;
+            margin-bottom: 1.2rem;
+        }
+
+        .login-tabs {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            margin: 0 0 1rem 0;
+            background: #edf3ff;
+            padding: 0.4rem;
+            border-radius: 10px;
+            gap: 0.4rem;
+            border: 1px solid #d6e2f2;
+        }
+
+        .login-tab {
+            border: 0;
+            padding: 0.8rem 1rem;
+            border-radius: 8px;
+            background: transparent;
+            color: var(--login-muted);
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .login-tab[aria-selected="true"] {
+            background: #ffffff;
+            color: var(--text);
+            box-shadow: 0 1px 2px rgba(15, 35, 63, 0.08);
+        }
+
+        .auth-card {
+            display: none;
+            border: 1px solid #d8e4f3;
+            border-radius: 14px;
+            padding: 1rem;
+            background: #fff;
+        }
+
+        .auth-card[aria-hidden="false"] {
+            display: block;
+        }
+
+        .auth-form {
+            display: grid;
+            gap: 0.85rem;
+        }
+
+        .auth-form label {
+            margin-bottom: 0.35rem;
+            font-weight: 600;
+            color: #173a67;
+        }
+
+        .auth-form input {
+            background: #fff;
+            color: #0f294e;
+            border-color: #c4d3e8;
+        }
+
+        .auth-primary {
+            width: 100%;
+            border-radius: 10px;
+            background: linear-gradient(180deg, #1d80ff 0%, #0f6fff 100%);
+            border-color: transparent;
+            color: #fff;
+            padding: 0.85rem 1rem;
+            font-weight: 700;
+            transition: transform .15s ease, box-shadow .2s ease;
+            min-height: 48px;
+        }
+
+        .auth-primary:hover {
+            transform: translateY(-1px);
+        }
+
+        .auth-muted-link {
+            color: #3465d6;
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-block;
+            margin-top: 0.5rem;
+        }
+
+        .social-login {
+            margin-top: 1rem;
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 0.6rem;
+        }
+
+        .social-login button {
+            min-height: 48px;
+            border-radius: 10px;
+            border: 1px solid #d7e2f1;
+            background: #fff;
+            color: #0f294e;
+            font-weight: 700;
+            padding: 0.6rem 0.55rem;
+        }
+
+        .social-login button:hover {
+            box-shadow: 0 8px 18px rgba(15, 111, 255, 0.14);
+        }
+
+        .social-login .kakao-btn {
+            background: #fee500;
+            border-color: #f7dd00;
+        }
+
+        .status-note {
+            margin-top: 0.85rem;
+            color: #3b567c;
+            font-size: 0.85rem;
+            line-height: 1.45;
+        }
+
+        .status-note code {
+            background: #edf2fb;
+            color: #2f5bb2;
+            border: 1px solid #c5d6f5;
+            border-radius: 8px;
+        }
+
+        .form-divider {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: #637a96;
+            margin-top: 0.9rem;
+            font-size: 0.85rem;
+            letter-spacing: 0.01em;
+        }
+
+        .form-divider::before,
+        .form-divider::after {
+            content: "";
+            flex: 1;
+            border-top: 1px solid #d6e1ee;
+        }
+
+        .service-preview {
+            margin-top: 1rem;
+            display: grid;
+            grid-template-columns: repeat(5, minmax(0, 1fr));
+            gap: 0.55rem;
+        }
+
+        .service-preview article {
+            background: #fff;
+            border: 1px solid #d6e3f6;
+            border-radius: 12px;
+            padding: 0.7rem;
+            text-align: center;
+        }
+
+        .service-preview span {
+            font-size: 1.2rem;
+            display: block;
+        }
+
+        .service-preview h3 {
+            margin: 0.45rem 0 0.25rem;
+            font-size: 0.86rem;
+            line-height: 1.4;
+            color: #112847;
             white-space: nowrap;
-            border-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
-        /* Mobile-first login styles */
-        @media (max-width: 768px) {
-            body {
-                padding: 16px !important;
-                align-items: flex-start !important;
-                padding-top: 32px !important;
+        .service-preview p {
+            font-size: 0.75rem;
+            margin: 0;
+        }
+
+        .live-status {
+            margin-top: 1.2rem;
+            color: #617799;
+            text-align: center;
+            font-size: 0.76rem;
+        }
+
+        .auth-alert {
+            min-height: 1.1rem;
+            color: #cf2e42;
+            font-size: 0.88rem;
+            margin-top: 0.45rem;
+        }
+
+        .auth-alert[hidden] {
+            display: none;
+        }
+
+        @media (max-width: 960px) {
+            .login-panel-wrap {
+                grid-template-columns: 1fr;
             }
-            .max-w-2xl {
-                max-width: 100% !important;
+
+            .service-preview {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
             }
-            /* Header */
-            h1.text-4xl {
-                font-size: 1.75rem !important;
-            }
-            .text-lg {
-                font-size: 0.875rem !important;
-            }
-            .mb-12 {
-                margin-bottom: 1.5rem !important;
-            }
-            /* Cards */
-            .grid.grid-cols-1.md\:grid-cols-2 {
-                grid-template-columns: 1fr !important;
-                gap: 16px !important;
-            }
-            .rounded-xl.p-8 {
-                padding: 20px !important;
-            }
-            /* Features grid */
-            .grid.grid-cols-1.md\:grid-cols-5 {
-                grid-template-columns: repeat(3, 1fr) !important;
-                gap: 8px !important;
-            }
-            .grid.grid-cols-1.md\:grid-cols-5 .p-4 {
-                padding: 10px !important;
-            }
-            .grid.grid-cols-1.md\:grid-cols-5 .text-3xl {
-                font-size: 1.5rem !important;
-            }
-            .mt-12 {
-                margin-top: 1.5rem !important;
-            }
-            /* Input fields - larger touch targets */
-            input[type="email"],
-            input[type="password"],
-            button[type="submit"] {
-                font-size: 16px !important; /* Prevents iOS zoom */
-                padding: 12px 16px !important;
-            }
-            /* Social login buttons */
-            .grid.grid-cols-3 button {
-                min-height: 48px;
+
+            .social-login {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
             }
         }
 
-        @media (max-width: 380px) {
-            .grid.grid-cols-1.md\:grid-cols-5 {
-                grid-template-columns: repeat(2, 1fr) !important;
+        @media (max-width: 520px) {
+            .login-shell {
+                margin: 0.7rem auto;
+                width: calc(100% - 1rem);
+                padding: 0;
             }
-            h1.text-4xl {
-                font-size: 1.5rem !important;
+
+            .brand-panel,
+            .auth-panel {
+                padding: 1rem;
             }
-            .text-2xl {
-                font-size: 1rem !important;
+
+            .brand-panel .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .service-preview {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
             }
         }
     </style>
-    <link rel="stylesheet" href="../responsive-framework.css">
-    <link rel="stylesheet" href="../accessibility.css">
-  </head>
-<body class="bg-slate-950 text-slate-100 antialiased min-h-screen flex items-center justify-center p-4">
-    <!-- Skip to main content -->
-    <a href="#main" class="skip-to-main" tabindex="1">메인 콘텐츠로 이동</a>
+</head>
+<body>
+    <a href="#main-content" class="skip-to-main">메인 콘텐츠로 이동</a>
 
-    <main id="main" class="w-full max-w-2xl">
-        <!-- Header -->
-        <header class="text-center mb-12">
-            <div class="text-4xl mb-3" aria-hidden="true">🏭</div>
-            <h1 class="text-4xl font-bold text-white mb-2">SoftFactory</h1>
-            <p class="text-slate-400 text-lg">프리미엄 비즈니스 자동화 플랫폼</p>
-        </header>
+    <main id="main-content" class="login-shell">
+        <div class="login-panel-wrap">
+            <section class="brand-panel" aria-labelledby="brand-title">
+                <p class="text-sm" style="opacity:.85; margin:0 0 0.4rem 0;">SoftFactory Platform</p>
+                <h1 id="brand-title">자동화로 더 빠른 성장</h1>
+                <p style="margin:0;">
+                    리뷰, SNS 자동화, 영업 알림, 콘텐츠 자동화까지 하나의 워크스페이스에서 운영하세요.
+                </p>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <!-- Demo Mode Card -->
-            <section class="bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl p-8 border border-slate-700 hover:border-slate-600 transition">
-                <div class="flex items-center gap-3 mb-6">
-                    <span class="text-2xl" aria-hidden="true">🎮</span>
-                    <div>
-                        <h2 class="text-xl font-bold text-white">데모 모드</h2>
-                        <p class="text-xs text-slate-400">모든 기능 미리보기</p>
+                <div class="feature-grid">
+                    <div class="brand-chip">
+                        <strong>실무형 워크플로</strong>
+                        <span>캠페인부터 배포·분석까지 한 화면</span>
+                    </div>
+                    <div class="brand-chip">
+                        <strong>자동화 운영</strong>
+                        <span>스케줄링, 댓글 대응, 리포트 통합 관리</span>
+                    </div>
+                    <div class="brand-chip">
+                        <strong>가시성 개선</strong>
+                        <span>실시간 KPI와 성과 분석 대시보드</span>
+                    </div>
+                    <div class="brand-chip">
+                        <strong>보안 기반 접속</strong>
+                        <span>약관 동의, 토큰 관리, 감사 로그</span>
                     </div>
                 </div>
-
-                <form id="demoForm" class="space-y-4">
-                    <div>
-                        <label for="passkey" class="block text-sm font-medium text-slate-300 mb-2">패스키 입력</label>
-                        <input type="password" id="passkey" placeholder="••••••" required
-                            aria-label="데모 모드 패스키 입력"
-                            aria-describedby="passkey-hint"
-                            class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white placeholder-slate-500 focus:border-indigo-500 focus:outline-none transition">
-                        <p id="passkey-hint" class="text-xs text-slate-500 mt-2">💡 힌트: <code class="bg-slate-800 px-2 py-1 rounded">demo2026</code></p>
-                    </div>
-                    <button type="submit" aria-label="데모 모드로 로그인" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 rounded-lg transition">
-                        데모 시작
-                    </button>
-                </form>
-
-                <p class="text-xs text-slate-500 text-center mt-4">Mock 데이터로 모든 기능 테스트 가능</p>
             </section>
 
-            <!-- Real Login Card -->
-            <section class="bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl p-8 border border-slate-700">
-                <div class="flex items-center gap-3 mb-6">
-                    <span class="text-2xl" aria-hidden="true">🔐</span>
-                    <div>
-                        <h2 class="text-xl font-bold text-white">실제 로그인</h2>
-                        <p class="text-xs text-slate-400">계정으로 접속</p>
-                    </div>
+            <section class="auth-panel" aria-label="로그인">
+                <h2 class="auth-headline">로그인</h2>
+
+                <div class="login-tabs" role="tablist" aria-label="로그인 방식 선택">
+                    <button id="tab-demo" class="login-tab" role="tab" aria-controls="demo-auth" aria-selected="false" data-tab="demo">데모 로그인</button>
+                    <button id="tab-live" class="login-tab" role="tab" aria-controls="live-auth" aria-selected="true" data-tab="live">계정 로그인</button>
                 </div>
 
-                <form id="loginForm" class="space-y-4">
-                    <div>
-                        <label for="email" class="block text-sm font-medium text-slate-300 mb-2">이메일</label>
-                        <input type="email" id="email" placeholder="admin@softfactory.com" required
-                            aria-label="이메일 주소"
-                            aria-describedby="email-example"
-                            class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white placeholder-slate-500 focus:border-indigo-500 focus:outline-none transition">
-                        <p id="email-example" class="text-xs text-slate-500 mt-1">예: admin@softfactory.com</p>
-                    </div>
+                <div id="tab-alert" class="auth-alert" role="status" aria-live="polite" hidden></div>
 
-                    <div>
-                        <label for="password" class="block text-sm font-medium text-slate-300 mb-2">비밀번호</label>
-                        <input type="password" id="password" placeholder="••••••" required
-                            aria-label="비밀번호"
-                            class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white placeholder-slate-500 focus:border-indigo-500 focus:outline-none transition">
-                    </div>
+                <section id="demo-auth" class="auth-card" role="tabpanel" aria-labelledby="tab-demo" aria-hidden="true">
+                    <form id="demoForm" class="auth-form" autocomplete="off">
+                        <p style="margin-top:0; margin-bottom:0.2rem; color:#334d71;">데모 계정으로 접속하면 실제 연동 없이 전체 화면을 바로 확인할 수 있습니다.</p>
+                        <label for="passkey">데모 접근 키</label>
+                        <input type="password" id="passkey" name="passkey" required placeholder="접근 키를 입력하세요" autocomplete="off" inputmode="numeric">
+                        <p id="passkey-hint" style="margin:0; color:#5f7797; font-size:0.82rem;">
+                            힌트: <code>demo2026</code>
+                        </p>
+                        <button id="demoSubmit" type="submit" class="auth-primary">데모 시작</button>
+                    </form>
+                    <p class="status-note">
+                        실제 운영 연동 없이 <code>Mock 데이터</code>와 샘플 화면으로 검증할 수 있습니다.
+                    </p>
+                </section>
 
-                    <div class="flex items-center gap-2">
-                        <input type="checkbox" id="remember" class="w-4 h-4 rounded border-slate-600 bg-slate-700 text-indigo-600">
-                        <label for="remember" class="text-sm text-slate-400">로그인 유지</label>
-                    </div>
+                <section id="live-auth" class="auth-card" role="tabpanel" aria-labelledby="tab-live" aria-hidden="false">
+                    <form id="loginForm" class="auth-form">
+                        <label for="email">이메일</label>
+                        <input type="email" id="email" name="email" required placeholder="admin@softfactory.com" autocomplete="username">
+                        <label for="password">비밀번호</label>
+                        <input type="password" id="password" name="password" required placeholder="비밀번호" autocomplete="current-password">
+                        <label for="remember" style="display:flex; align-items:center; gap:.55rem; color:#2f4f7a; font-weight:600; margin-top:.2rem;">
+                            <input type="checkbox" id="remember" style="margin:0; min-width:auto; min-height:auto;">
+                            로그인 유지
+                        </label>
+                        <button id="loginSubmit" type="submit" class="auth-primary">로그인</button>
+                        <div class="form-divider">또는</div>
+                    </form>
 
-                    <button type="submit" aria-label="로그인 버튼" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 rounded-lg transition">
-                        로그인
-                    </button>
-                </form>
+                    <nav class="social-login" aria-label="소셜 로그인">
+                        <button id="googleBtn" type="button" aria-label="Google 계정으로 로그인">Google</button>
+                        <button id="facebookBtn" type="button" aria-label="Facebook 계정으로 로그인">Facebook</button>
+                        <button id="kakaoBtn" type="button" class="kakao-btn" aria-label="Kakao 계정으로 로그인">Kakao</button>
+                    </nav>
 
-                <!-- Social Login Section -->
-                <nav class="mt-6 pt-6 border-t border-slate-700" aria-label="소셜 로그인">
-                    <p class="text-xs text-slate-400 text-center mb-4">소셜 계정으로 로그인</p>
-                    <div class="grid grid-cols-3 gap-2">
-                        <!-- Google Button -->
-                        <button id="googleBtn" aria-label="Google로 로그인" class="flex items-center justify-center gap-2 bg-white text-slate-900 hover:bg-slate-100 font-semibold py-2.5 rounded-lg transition" title="Google 계정으로 로그인">
-                            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/></svg>
-                        </button>
+                    <p class="status-note">
+                        예시 계정: <code>admin@softfactory.com</code> / <code>admin123</code>
+                    </p>
+                    <p>
+                        <a class="auth-muted-link" href="forgot-password.html">비밀번호를 잊으셨나요?</a>
+                    </p>
+                </section>
 
-                        <!-- Facebook Button -->
-                        <button id="facebookBtn" aria-label="Facebook로 로그인" class="flex items-center justify-center gap-2 bg-blue-600 text-white hover:bg-blue-700 font-semibold py-2.5 rounded-lg transition" title="Facebook 계정으로 로그인">
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
-                        </button>
+                <div class="service-preview" aria-label="제공 모듈 미리보기">
+                    <article><span>🍳</span><h3>CooCook</h3><p>셰프 마켓</p></article>
+                    <article><span>📱</span><h3>SNS 자동화</h3><p>캠페인 운영</p></article>
+                    <article><span>⭐</span><h3>Review</h3><p>리뷰 캠페인</p></article>
+                    <article><span>🤖</span><h3>AI 자동화</h3><p>직원형 AI</p></article>
+                    <article><span>💻</span><h3>WebApp</h3><p>부트캠프</p></article>
+                </div>
 
-                        <!-- Kakao Button -->
-                        <button id="kakaoBtn" aria-label="Kakao로 로그인" class="flex items-center justify-center gap-2 bg-yellow-400 text-slate-900 hover:bg-yellow-500 font-semibold py-2.5 rounded-lg transition" title="Kakao 계정으로 로그인">
-                            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C6.48 2 2 5.58 2 10c0 2.72 1.44 5.12 3.72 6.72.48.36.96 1.2.84 2.04-.12.72-.72 2.4-1.44 4.44 1.92-.48 4.32-1.44 5.52-2.28.72.12 1.44.12 2.16.12 5.52 0 10-3.58 10-8s-4.48-8-10-8z"/></svg>
-                        </button>
-                    </div>
-                </nav>
-
-                <p class="text-xs text-slate-500 text-center mt-4">
-                    데모: <code class="bg-slate-800 px-2 py-1 rounded">admin@softfactory.com</code> / <code class="bg-slate-800 px-2 py-1 rounded">admin123</code>
-                </p>
-            </div>
+                <p class="live-status">현재 상태: SoftFactory 플랫폼 로그인 인터페이스 최신 반영</p>
+            </section>
         </div>
-
-        <!-- Features Grid -->
-        <section class="mt-12" aria-label="제품 기능">
-            <h2 class="sr-only">SoftFactory의 5가지 핵심 기능</h2>
-            <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
-                <article class="bg-slate-800 rounded-lg p-4 text-center border border-slate-700 hover:border-slate-600 transition">
-                    <div class="text-3xl mb-2" aria-hidden="true">🍳</div>
-                    <h3 class="text-sm font-medium text-slate-200">CooCook</h3>
-                    <p class="text-xs text-slate-500">셰프 마켓</p>
-                </article>
-                <article class="bg-slate-800 rounded-lg p-4 text-center border border-slate-700 hover:border-slate-600 transition">
-                    <div class="text-3xl mb-2" aria-hidden="true">📱</div>
-                    <h3 class="text-sm font-medium text-slate-200">SNS Auto</h3>
-                    <p class="text-xs text-slate-500">소셜 자동화</p>
-                </article>
-                <article class="bg-slate-800 rounded-lg p-4 text-center border border-slate-700 hover:border-slate-600 transition">
-                    <div class="text-3xl mb-2" aria-hidden="true">⭐</div>
-                    <h3 class="text-sm font-medium text-slate-200">Review</h3>
-                    <p class="text-xs text-slate-500">리뷰 캠페인</p>
-                </article>
-                <article class="bg-slate-800 rounded-lg p-4 text-center border border-slate-700 hover:border-slate-600 transition">
-                    <div class="text-3xl mb-2" aria-hidden="true">🤖</div>
-                    <h3 class="text-sm font-medium text-slate-200">AI Auto</h3>
-                    <p class="text-xs text-slate-500">AI 직원</p>
-                </article>
-                <article class="bg-slate-800 rounded-lg p-4 text-center border border-slate-700 hover:border-slate-600 transition">
-                    <div class="text-3xl mb-2" aria-hidden="true">💻</div>
-                    <h3 class="text-sm font-medium text-slate-200">WebApp</h3>
-                    <p class="text-xs text-slate-500">부트캠프</p>
-                </article>
-            </div>
-        </section>
-
-        <!-- Footer -->
-        <footer class="mt-12 text-center text-xs text-slate-500">
-            <p>🔗 백엔드: http://localhost:8000</p>
-            <p class="mt-2">© 2026 SoftFactory — Premium B2B SaaS Platform</p>
-        </footer>
     </main>
 
     <script>
-        // ============================================
-        // WCAG 2.1 AA: Keyboard Navigation & Accessibility
-        // ============================================
-
-        /**
-         * Announce messages to screen readers
-         */
         function announceToScreenReader(message, priority = 'polite') {
-            const announcement = document.createElement('div');
-            announcement.setAttribute('role', 'status');
-            announcement.setAttribute('aria-live', priority);
-            announcement.setAttribute('aria-atomic', 'true');
-            announcement.className = 'sr-only';
-            announcement.textContent = message;
-            document.body.appendChild(announcement);
-
-            // Remove after announcement
-            setTimeout(() => announcement.remove(), 1000);
+            const region = document.getElementById('tab-alert');
+            region.textContent = message;
+            region.hidden = false;
+            region.setAttribute('aria-live', priority);
+            setTimeout(() => {
+                region.textContent = '';
+                region.hidden = true;
+            }, 1200);
         }
 
-        /**
-         * Show error messages with proper ARIA attributes
-         */
-        function showErrorAccessible(message) {
-            showError(message);
-            announceToScreenReader(`오류: ${message}`, 'assertive');
+        function setBusy(button, busy) {
+            if (!button) return;
+            button.disabled = busy;
+            button.style.opacity = busy ? '0.8' : '1';
         }
 
-        /**
-         * Show success messages with proper ARIA attributes
-         */
-        function showSuccessAccessible(message) {
-            showSuccess(message);
-            announceToScreenReader(`성공: ${message}`, 'polite');
-        }
+        function switchAuthTab(target) {
+            const tabs = document.querySelectorAll('.login-tab');
+            const panels = document.querySelectorAll('.auth-card');
 
-        /**
-         * Keyboard shortcut support
-         * Alt+D = Demo Mode
-         * Alt+L = Real Login
-         */
-        document.addEventListener('keydown', (e) => {
-            if (e.altKey) {
-                if (e.key === 'd' || e.key === 'D') {
-                    document.getElementById('passkey').focus();
-                    announceToScreenReader('데모 모드 패스키 입력 필드로 포커스 이동');
-                } else if (e.key === 'l' || e.key === 'L') {
-                    document.getElementById('email').focus();
-                    announceToScreenReader('이메일 입력 필드로 포커스 이동');
-                }
-            }
-            // Escape key to clear error messages
-            if (e.key === 'Escape') {
-                const alerts = document.querySelectorAll('[role="alert"]');
-                alerts.forEach(alert => alert.remove());
-            }
-        });
+            tabs.forEach(tab => {
+                const isTarget = tab.dataset.tab === target;
+                tab.setAttribute('aria-selected', isTarget ? 'true' : 'false');
+            });
 
-        // OAuth Handler
-        async function handleOAuthLogin(provider) {
-            try {
-                // Get authorization URL
-                const urlResponse = await fetch(`/api/auth/oauth/${provider}/url`);
-                const urlData = await urlResponse.json();
+            panels.forEach(panel => {
+                const id = panel.id.replace('-auth', '');
+                panel.setAttribute('aria-hidden', id === target ? 'false' : 'true');
+            });
 
-                if (urlData.error) {
-                    showError(`OAuth 오류: ${urlData.error}`);
-                    return;
-                }
-
-                // In mock mode, directly proceed to callback with mock code
-                if (urlData.mock_mode) {
-                    console.log(`OAuth in mock mode for ${provider}`);
-                    const mockCode = `mock_${provider}_code_${Date.now()}`;
-
-                    // Call callback endpoint
-                    const callbackResponse = await fetch(`/api/auth/oauth/${provider}/callback`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ code: mockCode, state: urlData.state })
-                    });
-
-                    const callbackData = await callbackResponse.json();
-
-                    if (callbackData.access_token) {
-                        localStorage.setItem('access_token', callbackData.access_token);
-                        localStorage.setItem('refresh_token', callbackData.refresh_token || '');
-                        localStorage.setItem('user', JSON.stringify(callbackData.user));
-                        showSuccess(`${provider.charAt(0).toUpperCase() + provider.slice(1)} 로그인 성공!`);
-                        setTimeout(() => {
-                            window.location.href = getPostLoginRedirect();
-                        }, 500);
-                    } else {
-                        showError(callbackData.error || 'OAuth 콜백 실패');
-                    }
-                } else {
-                    // Real OAuth flow - redirect to provider
-                    const width = 500;
-                    const height = 600;
-                    const left = (window.innerWidth - width) / 2;
-                    const top = (window.innerHeight - height) / 2;
-
-                    const popup = window.open(
-                        urlData.auth_url,
-                        `${provider}_login`,
-                        `width=${width},height=${height},left=${left},top=${top}`
-                    );
-
-                    // Store callback handler in session storage
-                    sessionStorage.setItem('oauth_provider', provider);
-                    sessionStorage.setItem('oauth_state', urlData.state);
-
-                    // Poll for callback result
-                    const checkPopup = setInterval(() => {
-                        if (popup.closed) {
-                            clearInterval(checkPopup);
-                            // Callback should have stored token
-                            const token = localStorage.getItem('access_token');
-                            if (token) {
-                                showSuccess('로그인 성공!');
-                                setTimeout(() => {
-                                    window.location.href = getPostLoginRedirect();
-                                }, 500);
-                            }
-                        }
-                    }, 500);
-                }
-            } catch (error) {
-                console.error('OAuth login error:', error);
-                showError('소셜 로그인 중 오류 발생');
+            if (target === 'demo') {
+                document.getElementById('passkey')?.focus();
+                announceToScreenReader('데모 로그인 입력 폼으로 전환했습니다.');
+            } else {
+                document.getElementById('email')?.focus();
+                announceToScreenReader('계정 로그인 입력 폼으로 전환했습니다.');
             }
         }
 
-        // Social Login Button Handlers
-        document.getElementById('googleBtn').addEventListener('click', (e) => {
-            e.preventDefault();
-            handleOAuthLogin('google');
-        });
-
-        document.getElementById('facebookBtn').addEventListener('click', (e) => {
-            e.preventDefault();
-            handleOAuthLogin('facebook');
-        });
-
-        document.getElementById('kakaoBtn').addEventListener('click', (e) => {
-            e.preventDefault();
-            handleOAuthLogin('kakao');
-        });
-
-        /**
-         * Determine redirect target after successful login.
-         * New users (no 'onboarding_complete' key) → onboarding wizard.
-         * Returning users → dashboard.
-         */
         function getPostLoginRedirect() {
+            const params = new URLSearchParams(window.location.search);
+            const next = params.get('next');
+            if (next && !next.startsWith('http://') && !next.startsWith('https://')) {
+                return next;
+            }
             const onboardingDone = localStorage.getItem('onboarding_complete');
             return onboardingDone ? 'dashboard.html' : 'onboarding.html';
         }
 
-        // Demo Mode Handler
-        document.getElementById('demoForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const passkey = document.getElementById('passkey').value;
-
-            if (passkey === DEMO_PASSKEY) {
-                enableDemoMode();
-                showSuccessAccessible('데모 모드 활성화!');
-                setTimeout(() => {
-                    // Demo users skip onboarding
-                    window.location.href = 'dashboard.html';
-                }, 500);
-            } else {
-                showErrorAccessible('잘못된 패스키입니다.');
-                document.getElementById('passkey').value = '';
-                document.getElementById('passkey').focus();
-            }
-        });
-
-        // Check 2FA status after password login
         async function check2FARequired(email, password) {
             try {
                 const response = await fetch('/api/auth/login-check-2fa', {
@@ -457,58 +498,219 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email, password })
                 });
-
-                if (response.ok) {
-                    const data = await response.json();
-                    return data.requires_2fa;
-                }
-                return false;
+                if (!response.ok) return false;
+                const data = await response.json();
+                return Boolean(data?.requires_2fa);
             } catch (error) {
                 console.error('2FA check error:', error);
                 return false;
             }
         }
 
-        // Real Login Handler with 2FA Support
-        document.getElementById('loginForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-
+        async function handleOAuthLogin(provider) {
             try {
-                // First, check if 2FA is enabled
-                const requires2FA = await check2FARequired(email, password);
+                const urlResponse = await fetch(`/api/auth/oauth/${provider}/url`);
+                const urlData = await urlResponse.json();
+                if (urlData.error) {
+                    showError(`OAuth 오류: ${urlData.error}`);
+                    announceToScreenReader(`오류: ${urlData.error}`, 'assertive');
+                    return;
+                }
 
-                if (requires2FA) {
-                    // Store email for 2FA verification page
-                    sessionStorage.setItem('2fa_email', email);
-                    sessionStorage.setItem('pending_password', password);
-                    showSuccessAccessible('패스워드 확인됨. 2단계 인증으로 이동합니다.');
-                    setTimeout(() => {
-                        window.location.href = 'login-2fa.html';
-                    }, 500);
-                } else {
-                    // No 2FA required, proceed with normal login
-                    const data = await login(email, password);
-                    if (data.access_token) {
-                        localStorage.setItem('access_token', data.access_token);
-                        localStorage.setItem('refresh_token', data.refresh_token || '');
-                        localStorage.setItem('user', JSON.stringify(data.user));
-                        showSuccessAccessible('로그인 성공!');
+                if (urlData.mock_mode) {
+                    const mockCode = `mock_${provider}_code_${Date.now()}`;
+                    const callbackResponse = await fetch(`/api/auth/oauth/${provider}/callback`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ code: mockCode, state: urlData.state })
+                    });
+                    const callbackData = await callbackResponse.json();
+                    if (callbackData.access_token) {
+                        localStorage.setItem('access_token', callbackData.access_token);
+                        localStorage.setItem('refresh_token', callbackData.refresh_token || '');
+                        localStorage.setItem('user', JSON.stringify(callbackData.user));
+                        if (typeof isAdminUser === 'function' && typeof enableAdminFixtureMode === 'function' && isAdminUser(callbackData.user)) {
+                            enableAdminFixtureMode(callbackData.user);
+                        } else if (typeof disableAdminFixtureMode === 'function') {
+                            disableAdminFixtureMode();
+                        }
+                        showSuccess(`${provider.toUpperCase()} 로그인 성공`);
+                        setTimeout(() => (window.location.href = getPostLoginRedirect()), 500);
+                    } else {
+                        showError(callbackData.error || 'OAuth 콜백 실패');
+                        announceToScreenReader('OAuth 콜백 처리 실패', 'assertive');
+                    }
+                    return;
+                }
+
+                const width = 500;
+                const height = 640;
+                const left = (window.innerWidth - width) / 2;
+                const top = (window.innerHeight - height) / 2;
+                const popup = window.open(urlData.auth_url, `${provider}_login`, `width=${width},height=${height},left=${left},top=${top}`);
+                if (!popup) {
+                    showError('팝업이 차단되어 소셜 로그인을 진행할 수 없습니다.');
+                    announceToScreenReader('팝업이 차단되어 소셜 로그인을 진행할 수 없습니다.', 'assertive');
+                    return;
+                }
+
+                sessionStorage.setItem('oauth_provider', provider);
+                sessionStorage.setItem('oauth_state', urlData.state);
+
+                const checkPopup = setInterval(() => {
+                    if (popup.closed) {
+                        clearInterval(checkPopup);
+                        const token = localStorage.getItem('access_token');
+                        if (token) {
+                            showSuccess('로그인 성공');
+                            setTimeout(() => (window.location.href = getPostLoginRedirect()), 500);
+                        } else {
+                            announceToScreenReader('소셜 로그인 후 토큰이 전달되지 않았습니다.', 'assertive');
+                        }
+                    }
+                }, 500);
+            } catch (error) {
+                console.error('OAuth login error:', error);
+                showError('소셜 로그인 처리 중 오류가 발생했습니다.');
+                announceToScreenReader('소셜 로그인 처리 중 오류가 발생했습니다.', 'assertive');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('tab-live').addEventListener('click', () => switchAuthTab('live'));
+            document.getElementById('tab-demo').addEventListener('click', () => switchAuthTab('demo'));
+
+            document.querySelectorAll('.login-tab').forEach((tab) => {
+                tab.addEventListener('keydown', (event) => {
+                    if (event.key === 'ArrowRight' || event.key === 'ArrowLeft') {
+                        event.preventDefault();
+                        const tabs = Array.from(document.querySelectorAll('.login-tab'));
+                        const index = tabs.indexOf(tab);
+                        const next = event.key === 'ArrowRight' ? (index + 1) % tabs.length : (index - 1 + tabs.length) % tabs.length;
+                        tabs[next]?.focus();
+                        tabs[next]?.click();
+                    }
+                });
+            });
+
+            switchAuthTab('live');
+
+            document.getElementById('googleBtn').addEventListener('click', (e) => {
+                e.preventDefault();
+                handleOAuthLogin('google');
+            });
+            document.getElementById('facebookBtn').addEventListener('click', (e) => {
+                e.preventDefault();
+                handleOAuthLogin('facebook');
+            });
+            document.getElementById('kakaoBtn').addEventListener('click', (e) => {
+                e.preventDefault();
+                handleOAuthLogin('kakao');
+            });
+
+            document.getElementById('demoForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const passkey = document.getElementById('passkey').value.trim();
+                const submitBtn = document.getElementById('demoSubmit');
+                setBusy(submitBtn, true);
+                try {
+                    if (passkey === DEMO_PASSKEY) {
+                        if (typeof detectApiMode === 'function') {
+                            await detectApiMode();
+                        }
+                        if (typeof getApiMode === 'function' && getApiMode() === 'live') {
+                            const data = await login('demo@softfactory.com', 'demo123');
+                            if (!data?.access_token) {
+                                throw new Error('real demo login failed');
+                            }
+                            localStorage.removeItem('demo_mode');
+                            if (typeof disableAdminFixtureMode === 'function') {
+                                disableAdminFixtureMode();
+                            }
+                            localStorage.setItem('access_token', data.access_token);
+                            localStorage.setItem('refresh_token', data.refresh_token || '');
+                            localStorage.setItem('user', JSON.stringify(data.user));
+                            showSuccess('실제 데모 계정으로 로그인했습니다.');
+                            announceToScreenReader('실제 데모 계정으로 로그인했습니다.');
+                        } else {
+                            enableDemoMode();
+                            showSuccess('데모 모드로 이동합니다.');
+                            announceToScreenReader('데모 모드로 이동합니다.');
+                        }
                         setTimeout(() => {
                             window.location.href = getPostLoginRedirect();
                         }, 500);
                     } else {
-                        showErrorAccessible(data.message || '로그인 실패');
+                        showError('잘못된 접근 키입니다.');
+                        announceToScreenReader('데모 접근 키가 일치하지 않습니다.', 'assertive');
+                        const passkeyInput = document.getElementById('passkey');
+                        passkeyInput.value = '';
+                        passkeyInput.focus();
                     }
+                } finally {
+                    setBusy(submitBtn, false);
                 }
-            } catch (error) {
-                console.error('Login error:', error);
-                showErrorAccessible('로그인 중 오류 발생');
-            }
+            });
+
+            document.getElementById('loginForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const email = document.getElementById('email').value.trim();
+                const password = document.getElementById('password').value.trim();
+                const submitBtn = document.getElementById('loginSubmit');
+                setBusy(submitBtn, true);
+
+                try {
+                    const requires2FA = await check2FARequired(email, password);
+                    if (requires2FA) {
+                        sessionStorage.setItem('2fa_email', email);
+                        sessionStorage.setItem('pending_password', password);
+                        showSuccess('2단계 인증이 필요합니다.');
+                        announceToScreenReader('2단계 인증 화면으로 이동합니다.');
+                        setTimeout(() => {
+                            window.location.href = 'login-2fa.html';
+                        }, 500);
+                        return;
+                    }
+
+                    const data = await login(email, password);
+                    if (data?.access_token) {
+                        localStorage.setItem('access_token', data.access_token);
+                        localStorage.setItem('refresh_token', data.refresh_token || '');
+                        localStorage.setItem('user', JSON.stringify(data.user));
+                        if (typeof isAdminUser === 'function' && typeof enableAdminFixtureMode === 'function' && isAdminUser(data.user)) {
+                            enableAdminFixtureMode(data.user);
+                        } else if (typeof disableAdminFixtureMode === 'function') {
+                            disableAdminFixtureMode();
+                        }
+                        showSuccess('로그인에 성공했습니다.');
+                        announceToScreenReader('로그인에 성공했습니다.');
+                        setTimeout(() => {
+                            window.location.href = getPostLoginRedirect();
+                        }, 500);
+                    } else {
+                        showError(data?.message || '로그인에 실패했습니다.');
+                        announceToScreenReader('로그인에 실패했습니다.', 'assertive');
+                    }
+                } catch (error) {
+                    console.error('Login error:', error);
+                    showError('로그인 처리 중 오류가 발생했습니다.');
+                    announceToScreenReader('로그인 처리 중 오류가 발생했습니다.', 'assertive');
+                } finally {
+                    setBusy(submitBtn, false);
+                }
+            });
+
+            document.addEventListener('keydown', (event) => {
+                if (!event.altKey) return;
+                if (event.key === 'd' || event.key === 'D') {
+                    switchAuthTab('demo');
+                } else if (event.key === 'l' || event.key === 'L') {
+                    switchAuthTab('live');
+                }
+            });
         });
     </script>
     <script src="../mobile-optimization.js" defer></script>
-    <script src="/web/platform/cookie-consent.js" defer></script>
+    <script src="cookie-consent.js" defer></script>
 </body>
 </html>

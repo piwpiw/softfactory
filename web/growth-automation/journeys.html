@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Growth Journeys</title>
+  <link rel="stylesheet" href="/unified-ui.css" />
+  <script src="/unified-ui.js" defer></script>
+  <script src="/shared-runtime.js"></script>
+  <style>
+    :root {
+      --bg: #f4f7fb;
+      --ink: #0f172a;
+      --muted: #334155;
+      --line: #9fb0c4;
+      --card: rgba(255, 255, 255, 0.98);
+      --accent: #0f766e;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", "Apple SD Gothic Neo", sans-serif;
+      background:
+        radial-gradient(circle at top right, rgba(15, 118, 110, 0.14), transparent 22rem),
+        linear-gradient(180deg, #eef5fb 0%, var(--bg) 100%);
+      color: var(--ink);
+    }
+    .wrap { max-width: 1180px; margin: 0 auto; padding: 28px 20px 44px; }
+    .hero {
+      padding: 28px;
+      border: 1px solid rgba(15, 118, 110, 0.34);
+      border-radius: 30px;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,0.96), rgba(236,252,249,0.98)),
+        var(--card);
+      box-shadow: 0 24px 56px rgba(15, 23, 42, 0.12);
+    }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 12px;
+      border-radius: 999px;
+      background: rgba(15, 118, 110, 0.08);
+      color: var(--accent);
+      font-size: 0.84rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .hero h1 { margin: 14px 0 10px; font-size: clamp(2rem, 4vw, 3.2rem); line-height: 1.05; }
+    .hero p { margin: 0; max-width: 760px; color: var(--muted); font-size: 1rem; }
+    .nav { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 18px; }
+    .nav a {
+      text-decoration: none;
+      color: var(--ink);
+      border: 1px solid #8da4bb;
+      border-radius: 999px;
+      padding: 10px 14px;
+      background: rgba(255,255,255,0.75);
+      font-weight: 600;
+    }
+    .nav a.active {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 16px;
+      margin-top: 18px;
+    }
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.98), rgba(247,250,253,0.95)),
+        var(--card);
+      box-shadow: 0 16px 32px rgba(15, 23, 42, 0.09);
+      padding: 22px;
+    }
+    .panel h2, .panel h3 { margin: 0 0 10px; }
+    .panel p { margin: 0; color: var(--muted); }
+    .action-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 16px;
+    }
+    label {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      font-weight: 600;
+      color: var(--muted);
+      font-size: 0.94rem;
+    }
+    input, select {
+      width: 100%;
+      padding: 12px 13px;
+      border: 1px solid #7f96ad;
+      border-radius: 14px;
+      background: #fff;
+      color: var(--ink);
+      font: inherit;
+    }
+    .button-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 14px;
+    }
+    button {
+      border: 1px solid transparent;
+      border-radius: 14px;
+      padding: 11px 14px;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+      color: #fff;
+      background: var(--ink);
+    }
+    button.secondary {
+      background: #d8f3ee;
+      color: var(--accent);
+      border-color: #8fd3c7;
+    }
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 16px;
+    }
+    .stat-card {
+      border: 1px solid #b4c7d8;
+      border-radius: 18px;
+      padding: 16px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(236,252,249,0.78));
+      position: relative;
+      overflow: hidden;
+    }
+    .stat-card::before {
+      content: "";
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 4px;
+      background: rgba(15, 118, 110, 0.25);
+    }
+    .stat-card .label { color: var(--muted); font-size: 0.88rem; }
+    .stat-card .value { margin-top: 6px; font-size: 1.7rem; font-weight: 800; }
+    .stage-active::before { background: #16a34a; }
+    .stage-at_risk::before { background: #dc2626; }
+    .stage-signed_up::before { background: #2563eb; }
+    .stage-lead::before { background: #f59e0b; }
+    .chip-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+    }
+    .filter-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 16px;
+    }
+    .filter-chip {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #fff;
+      color: var(--ink);
+      padding: 8px 12px;
+      font-size: 0.84rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .filter-chip.is-active {
+      background: #d8f3ee;
+      border-color: #7bc8bb;
+      color: var(--accent);
+    }
+    .list { display: grid; gap: 10px; margin-top: 16px; }
+    .list-item {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 16px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(240,253,250,0.8));
+    }
+    .list-item strong { display: block; font-size: 1rem; }
+    .list-item span { display: block; margin-top: 6px; color: var(--muted); }
+    .table-wrap {
+      overflow: auto;
+      margin-top: 16px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: rgba(255,255,255,0.92);
+    }
+    table { width: 100%; border-collapse: collapse; min-width: 720px; }
+    th, td {
+      padding: 12px 14px;
+      border-top: 1px solid #edf2f7;
+      text-align: left;
+      font-size: 0.94rem;
+      vertical-align: top;
+    }
+    thead th {
+      border-top: 0;
+      background: #dfeaf5;
+      color: #1e293b;
+      font-size: 0.82rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      position: sticky;
+      top: 0;
+    }
+    .detail-panel {
+      margin-top: 16px;
+      padding: 14px;
+      border-radius: 16px;
+      border: 1px solid #8fd3c7;
+      background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(240,253,250,0.78));
+    }
+    .compare-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 14px;
+    }
+    .trend-strip {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 14px;
+    }
+    .trend-card {
+      padding: 12px 14px;
+      border-radius: 16px;
+      border: 1px solid #dbe7ef;
+      background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(248,251,255,0.92));
+    }
+    .trend-spark {
+      display: flex;
+      align-items: end;
+      height: 60px;
+      margin-top: 8px;
+    }
+    .trend-bar {
+      display: block;
+      width: 100%;
+      border-radius: 12px 12px 6px 6px;
+      background: linear-gradient(180deg, #0f766e 0%, #34d399 100%);
+      min-height: 18px;
+    }
+    .trend-label { color: var(--muted); font-size: 0.8rem; }
+    .trend-value { margin-top: 6px; font-size: 1.05rem; font-weight: 800; color: var(--ink); }
+    .trend-meta { margin-top: 6px; font-size: 0.78rem; font-weight: 700; }
+    .compare-card {
+      padding: 14px;
+      border-radius: 16px;
+      border: 1px solid #dbe7ef;
+      background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(240,253,250,0.78));
+    }
+    .compare-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .compare-card p { margin: 8px 0 0; color: var(--muted); font-size: 0.84rem; }
+    .compare-trend { margin-bottom: 8px; font-size: 0.78rem; font-weight: 700; }
+    .trend-up { color: #166534; }
+    .trend-down { color: #b45309; }
+    .trend-bar.trend-down { background: linear-gradient(180deg, #f59e0b 0%, #fbbf24 100%); }
+    .compare-bar { height: 8px; border-radius: 999px; background: #dbe7ef; overflow: hidden; }
+    .compare-fill { height: 100%; border-radius: inherit; background: linear-gradient(90deg, #0f766e 0%, #34d399 100%); }
+    .detail-panel h3 { margin: 0 0 10px; font-size: 0.98rem; }
+    .detail-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+    .detail-item {
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid #dbe7ef;
+      background: rgba(255,255,255,0.92);
+    }
+    .detail-item strong {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+    .table-selectable tbody tr { cursor: pointer; }
+    .table-selectable tbody tr:hover { background: #edf6ff; }
+    .table-selectable tbody tr.is-selected { background: #d8f3ee; }
+    .status-note {
+      margin-top: 14px;
+      padding: 12px 14px;
+      border-radius: 16px;
+      border: 1px solid rgba(15, 118, 110, 0.3);
+      background: linear-gradient(180deg, rgba(217,243,239,0.9), rgba(240,253,250,0.96));
+      color: var(--accent);
+      font-weight: 600;
+    }
+    @media (max-width: 980px) {
+      .grid { grid-template-columns: 1fr; }
+      .stat-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .action-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 640px) {
+      .wrap { padding: 20px 14px 34px; }
+      .hero, .panel { border-radius: 22px; padding: 18px; }
+      .stat-grid { grid-template-columns: 1fr; }
+      button { width: 100%; }
+    }
+  </style>
+</head>
+<body data-page="journeys">
+  <div class="wrap">
+    <section class="hero">
+      <span class="eyebrow">Journey Orchestration</span>
+      <h1>사용자 여정을 바로 전진시키고 상태 변화를 즉시 확인하세요</h1>
+      <p>실제 사용자 기준으로 이벤트를 보내고, 다음 단계가 어디에서 막히는지, 어떤 전환이 일어나는지 같은 화면에서 판단합니다.</p>
+      <nav class="nav">
+        <a href="/growth-automation/">Hub</a>
+        <a href="/growth-automation/contacts.html">Contacts</a>
+        <a class="active" href="/growth-automation/journeys.html">Journeys</a>
+        <a href="/growth-automation/ops.html">Ops</a>
+      </nav>
+    </section>
+
+    <div class="grid">
+      <section class="panel">
+        <h2>지금 바로 여정 진행</h2>
+        <p>이메일과 전화번호만 입력해도 `lead -> signup -> activation -> risk` 흐름을 실제 이벤트로 실행할 수 있습니다.</p>
+        <div class="action-grid">
+          <label>
+            테스트 이메일
+            <input id="journeyEmail" type="email" placeholder="growth-demo@example.com" />
+          </label>
+          <label>
+            테스트 연락처
+            <input id="journeyPhone" type="tel" placeholder="01012345678" />
+          </label>
+        </div>
+        <div class="button-row">
+          <button type="button" data-progress-event="lead_captured">리드 진입</button>
+          <button type="button" data-progress-event="signup_completed">가입 완료</button>
+          <button type="button" data-progress-event="key_action_completed">활성화 완료</button>
+          <button type="button" data-progress-event="payment_failed">리스크 전환</button>
+          <button type="button" class="secondary" id="journeyRefreshBtn">지금 상태 새로고침</button>
+        </div>
+        <div class="status-note" id="journeyActionHint">추천 흐름: `리드 진입 -> 가입 완료 -> 활성화 완료` 순서로 실행하면 상태 변화가 바로 반영됩니다.</div>
+      </section>
+
+      <section class="panel">
+        <h2>이 화면에서 봐야 할 것</h2>
+        <div class="list" id="journeyActionList"></div>
+      </section>
+    </div>
+
+    <section class="panel">
+      <h2>여정 단계 요약</h2>
+      <div class="stat-grid" id="journeyStageCards"></div>
+      <div class="trend-strip" id="journeyTrendStrip"></div>
+      <div class="compare-grid" id="journeyCompareGrid"></div>
+      <div class="filter-row" id="journeySavedFilters"></div>
+      <div class="chip-row">
+        <label style="min-width:240px;">
+          상태 필터
+          <select id="journeyStateFilter">
+            <option value="">전체 상태</option>
+            <option value="lead">lead</option>
+            <option value="signed_up">signed_up</option>
+            <option value="active">active</option>
+            <option value="trial">trial</option>
+            <option value="inactive">inactive</option>
+            <option value="at_risk">at_risk</option>
+          </select>
+        </label>
+      </div>
+      <div class="table-wrap">
+        <table class="table-selectable">
+          <thead>
+            <tr>
+              <th>Contact</th>
+              <th>Journey</th>
+              <th>State</th>
+              <th>Entered</th>
+              <th>Last Action</th>
+              <th>Cooldown</th>
+            </tr>
+          </thead>
+          <tbody id="journeyRows"></tbody>
+        </table>
+      </div>
+      <div class="detail-panel" id="journeyDetailPanel">
+        <h3>선택한 여정 상세</h3>
+        <div class="detail-grid" id="journeyDetailGrid"></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>최근 여정 관련 이벤트</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Event</th>
+              <th>Status</th>
+              <th>Contact</th>
+              <th>Timestamp</th>
+            </tr>
+          </thead>
+          <tbody id="journeyEventRows"></tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+  <script src="/growth-automation/app.js"></script>
+</body>
+</html>

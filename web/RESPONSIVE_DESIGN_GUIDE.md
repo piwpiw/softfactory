@@ -743,3 +743,30 @@ body {
 
 Last Updated: 2026-02-26
 Version: 1.0 - Full Release
+
+## Login Screen Advanced Standard (2026-03)
+
+### 핵심 원칙
+- 로그인 화면을 데모/실계정 탭으로 분리하고 탭 전환 시 ARIA 상태를 정확히 반영한다.
+- 모든 입력 요소는 모바일 최소 터치 타겟(48px)을 준수한다.
+- 키보드(Alt+D, Alt+L)와 화면리더 메시지(성공/오류 안내)를 제공한다.
+- 백엔드 연동 실패, 팝업 차단, OAuth 토큰 미수신 등 실제 장애 상태를 명시적으로 안내한다.
+- 모든 문구를 한국어로 정리하고, 기능 힌트/상태 텍스트는 1줄 이상 유지해 가독성을 확보한다.
+
+### 필수 체크포인트
+- `skip-to-main` 링크 존재
+- `role="tablist"`, `role="tab"`, `role="tabpanel"` 상태 속성 일치
+- 오류 알림은 1초 이내 자동 사라지지 않도록 필요 시 수동 확인 가능한 구조
+- 모바일 520px 이하에서 수평 스크롤 없음, 2열 이하 카드 정렬
+- 데모 로그인, OAuth, 2FA 플로우 모두 동일한 리디렉션 규칙 적용
+
+## Related Screen Docs (2026-03-07)
+
+- Growth Automation IA and screen meaning:
+  - [docs/IA.md](/d:/Project/docs/IA.md)
+- Platform dashboard implementation reference:
+  - [DASHBOARD_IMPLEMENTATION.md](/d:/Project/web/platform/DASHBOARD_IMPLEMENTATION.md)
+
+Use this guide with the IA document:
+- `docs/IA.md` defines what each screen block means.
+- `web/RESPONSIVE_DESIGN_GUIDE.md` defines how those blocks must adapt across devices.

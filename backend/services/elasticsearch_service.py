@@ -8,6 +8,7 @@ from datetime import datetime, timedelta
 from typing import Dict, List, Tuple, Optional
 import logging
 import json
+import os
 from flask import current_app
 from sqlalchemy import desc
 from ..models import db, SearchHistory
@@ -615,6 +616,12 @@ search_manager = None
 def init_elasticsearch(app):
     """Initialize Elasticsearch service on app startup"""
     global es_service, search_manager
+
+    if app.config.get('TESTING') or os.getenv('DISABLE_ELASTICSEARCH', '').lower() in {'1', 'true', 'yes', 'on'}:
+        logger.info("Elasticsearch initialization skipped for testing/disabled runtime")
+        es_service = None
+        search_manager = None
+        return
 
     try:
         es_host_raw = app.config.get('ELASTICSEARCH_HOST', 'localhost')

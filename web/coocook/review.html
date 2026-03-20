@@ -6,159 +6,83 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#111827">
-<title>리뷰 작성 — CooCook | SoftFactory</title>
+    <title>리뷰 작성 — CooCook</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="../platform/api.js"></script>
     <style>body { font-family: 'Inter', sans-serif; }</style>
     <link rel="stylesheet" href="../responsive-framework.css">
-  </head>
+</head>
 <body class="bg-slate-950 text-slate-100">
     <div class="flex h-screen overflow-hidden">
         <div class="flex-1 flex flex-col overflow-hidden">
             <header class="h-16 bg-slate-900 border-b border-slate-800 px-6 flex items-center justify-between shrink-0">
-                <h2 class="text-xl font-bold text-white">⭐ 리뷰 작성</h2>
-                <a href="my-bookings.html" class="text-slate-400 hover:text-white">← 돌아가기</a>
+                <h2 class="text-xl font-bold text-white">리뷰 작성</h2>
+                <a href="my-bookings.html" class="text-slate-400 hover:text-white">예약으로 돌아가기</a>
             </header>
+
             <main class="flex-1 overflow-y-auto p-6">
-                <div class="grid grid-cols-3 gap-6">
-                    <!-- Review Form -->
-                    <div class="col-span-2 space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="md:col-span-2 space-y-6">
                         <div class="bg-slate-800 rounded-xl p-8 border border-slate-700">
-                            <h3 class="text-lg font-bold text-white mb-6">경험을 평가해주세요</h3>
-
-                            <!-- Chef Info Card -->
-                            <div class="bg-slate-900 rounded-lg p-6 mb-8 border border-slate-700">
-                                <div class="flex items-center gap-4">
-                                    <div class="text-4xl" id="chef-emoji">🇰🇷</div>
-                                    <div>
-                                        <p class="text-xs text-slate-400">셰프</p>
-                                        <p id="chef-name" class="text-xl font-bold text-white">Chef Park</p>
-                                        <p id="chef-cuisine" class="text-sm text-slate-400">Korean Cuisine</p>
-                                    </div>
+                            <h3 class="text-lg font-bold text-white mb-6">예약 정보</h3>
+                            <div class="flex items-center gap-4 mb-6">
+                                <div class="text-4xl">👨‍🍳</div>
+                                <div>
+                                    <p class="text-xs text-slate-400">셰프</p>
+                                    <p id="chefName" class="text-xl font-bold text-white">-</p>
+                                    <p id="chefCuisine" class="text-sm text-slate-400">-</p>
                                 </div>
                             </div>
+                            <div class="grid grid-cols-2 gap-4 text-sm">
+                                <p><span class="text-slate-400">날짜</span> <span id="bookingDate" class="ml-2 text-white">-</span></p>
+                                <p><span class="text-slate-400">소요시간</span> <span id="duration" class="ml-2 text-white">-</span></p>
+                            </div>
+                        </div>
 
-                            <!-- Booking Info -->
-                            <div class="bg-slate-900 rounded-lg p-6 mb-8 border border-slate-700">
-                                <p class="text-xs text-slate-400 mb-4 font-bold">예약 정보</p>
-                                <div class="grid grid-cols-2 gap-4">
-                                    <div>
-                                        <p class="text-xs text-slate-400">날짜</p>
-                                        <p id="booking-date" class="font-bold text-white">2026-03-01</p>
-                                    </div>
-                                    <div>
-                                        <p class="text-xs text-slate-400">소요 시간</p>
-                                        <p id="duration" class="font-bold text-white">2시간</p>
-                                    </div>
-                                </div>
+                        <div class="bg-slate-800 rounded-xl p-8 border border-slate-700">
+                            <h3 class="text-lg font-bold text-white mb-4">종합 평점</h3>
+                            <div id="ratingButtons" class="flex gap-3 text-4xl mb-4">
+                                <button onclick="setRating(1)" class="opacity-40 hover:opacity-100">⭐</button>
+                                <button onclick="setRating(2)" class="opacity-40 hover:opacity-100">⭐</button>
+                                <button onclick="setRating(3)" class="opacity-40 hover:opacity-100">⭐</button>
+                                <button onclick="setRating(4)" class="opacity-40 hover:opacity-100">⭐</button>
+                                <button onclick="setRating(5)" class="opacity-40 hover:opacity-100">⭐</button>
+                            </div>
+                            <p id="ratingText" class="text-sm text-orange-400 mb-4">5점 만점 중 선택해주세요.</p>
+
+                            <div class="space-y-3">
+                                <label class="text-sm font-bold text-white">카테고리 점수</label>
+                                <div class="grid grid-cols-1 gap-3" id="criteriaContainer"></div>
                             </div>
 
-                            <!-- Star Rating -->
-                            <div class="mb-8">
-                                <label class="block text-sm font-bold text-white mb-4">⭐ 만족도 평가</label>
-                                <div class="flex gap-3">
-                                    <button onclick="setRating(1)" class="rating-btn text-4xl opacity-40 hover:opacity-100 transition" data-rating="1">⭐</button>
-                                    <button onclick="setRating(2)" class="rating-btn text-4xl opacity-40 hover:opacity-100 transition" data-rating="2">⭐</button>
-                                    <button onclick="setRating(3)" class="rating-btn text-4xl opacity-40 hover:opacity-100 transition" data-rating="3">⭐</button>
-                                    <button onclick="setRating(4)" class="rating-btn text-4xl opacity-40 hover:opacity-100 transition" data-rating="4">⭐</button>
-                                    <button onclick="setRating(5)" class="rating-btn text-4xl opacity-100 transition" data-rating="5">⭐</button>
-                                </div>
-                                <p id="rating-text" class="text-sm text-orange-400 mt-2">⭐ 5점 - 매우 만족</p>
+                            <div class="mt-6">
+                                <label class="block text-sm font-bold text-white mb-2">리뷰 작성</label>
+                                <div class="flex flex-wrap gap-2 mb-2" id="quickTags"></div>
+                                <textarea id="reviewText" placeholder="경험을 간결하게 남겨주세요. (최대 500자)" rows="6"
+                                    class="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-orange-500 resize-none"></textarea>
+                                <p class="text-xs text-slate-400 mt-1"><span id="commentCount">0</span>/500</p>
                             </div>
 
-                            <!-- Rating Categories -->
-                            <div class="mb-8 space-y-4">
-                                <p class="text-sm font-bold text-white">평가 항목</p>
-
-                                <div class="space-y-4">
-                                    <div class="flex items-center justify-between p-3 bg-slate-900 rounded-lg border border-slate-700">
-                                        <span class="text-slate-300">👨‍🍳 요리 수준</span>
-                                        <div class="flex gap-1">
-                                            <span class="text-lg">⭐</span><span class="text-lg">⭐</span><span class="text-lg">⭐</span><span class="text-lg">⭐</span><span class="text-lg opacity-40">⭐</span>
-                                        </div>
-                                    </div>
-                                    <div class="flex items-center justify-between p-3 bg-slate-900 rounded-lg border border-slate-700">
-                                        <span class="text-slate-300">😊 친절함</span>
-                                        <div class="flex gap-1">
-                                            <span class="text-lg">⭐</span><span class="text-lg">⭐</span><span class="text-lg">⭐</span><span class="text-lg">⭐</span><span class="text-lg">⭐</span>
-                                        </div>
-                                    </div>
-                                    <div class="flex items-center justify-between p-3 bg-slate-900 rounded-lg border border-slate-700">
-                                        <span class="text-slate-300">🏠 위생/위치</span>
-                                        <div class="flex gap-1">
-                                            <span class="text-lg">⭐</span><span class="text-lg">⭐</span><span class="text-lg">⭐</span><span class="text-lg">⭐</span><span class="text-lg">⭐</span>
-                                        </div>
-                                    </div>
-                                    <div class="flex items-center justify-between p-3 bg-slate-900 rounded-lg border border-slate-700">
-                                        <span class="text-slate-300">💰 가격/만족도</span>
-                                        <div class="flex gap-1">
-                                            <span class="text-lg">⭐</span><span class="text-lg">⭐</span><span class="text-lg">⭐</span><span class="text-lg">⭐</span><span class="text-lg opacity-40">⭐</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Comment -->
-                            <div class="mb-8">
-                                <label class="block text-sm font-bold text-white mb-2">💭 리뷰 작성 (선택사항)</label>
-                                <textarea id="review-comment" placeholder="당신의 경험을 자유롭게 공유해주세요. 다른 고객들에게 도움이 됩니다!" class="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-orange-600 resize-none" rows="6"></textarea>
-                                <p class="text-xs text-slate-400 mt-1">최대 500자</p>
-                            </div>
-
-                            <!-- Tags/Quick Comments -->
-                            <div class="mb-8">
-                                <label class="block text-sm font-bold text-white mb-3">빠른 평가 선택 (선택사항)</label>
-                                <div class="grid grid-cols-3 gap-3">
-                                    <button class="px-4 py-2 rounded-lg bg-slate-700 hover:bg-orange-600 text-slate-300 hover:text-white text-sm font-bold transition">✓ 정말 맛있어요</button>
-                                    <button class="px-4 py-2 rounded-lg bg-slate-700 hover:bg-orange-600 text-slate-300 hover:text-white text-sm font-bold transition">✓ 친절했어요</button>
-                                    <button class="px-4 py-2 rounded-lg bg-slate-700 hover:bg-orange-600 text-slate-300 hover:text-white text-sm font-bold transition">✓ 깨끗해요</button>
-                                    <button class="px-4 py-2 rounded-lg bg-slate-700 hover:bg-orange-600 text-slate-300 hover:text-white text-sm font-bold transition">✓ 추천합니다</button>
-                                    <button class="px-4 py-2 rounded-lg bg-slate-700 hover:bg-orange-600 text-slate-300 hover:text-white text-sm font-bold transition">✓ 다시 이용할게요</button>
-                                    <button class="px-4 py-2 rounded-lg bg-slate-700 hover:bg-orange-600 text-slate-300 hover:text-white text-sm font-bold transition">✓ 친구에게 추천</button>
-                                </div>
-                            </div>
-
-                            <!-- Action Buttons -->
-                            <div class="flex gap-4">
-                                <button onclick="cancelReview()" class="flex-1 px-6 py-3 rounded-lg border-2 border-slate-700 text-slate-300 hover:border-slate-600 font-bold">
-                                    취소
-                                </button>
-                                <button onclick="submitReview()" class="flex-1 px-6 py-3 rounded-lg bg-gradient-to-r from-orange-600 to-orange-500 text-white font-bold hover:from-orange-700 hover:to-orange-600 transition">
-                                    ✓ 리뷰 제출
-                                </button>
+                            <div class="mt-6 flex gap-3">
+                                <button onclick="cancelReview()" class="px-5 py-3 rounded-lg border border-slate-700 text-slate-300 hover:border-slate-600">취소</button>
+                                <button onclick="submitReview()" class="px-5 py-3 rounded-lg bg-orange-600 hover:bg-orange-700 text-white font-bold">리뷰 제출</button>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Summary Sidebar -->
                     <div class="bg-gradient-to-br from-blue-900/30 to-blue-900/10 rounded-xl p-6 border-2 border-blue-600 h-fit">
-                        <h3 class="text-lg font-bold text-white mb-6">📊 당신의 평가</h3>
-
-                        <div class="space-y-4 mb-6 pb-6 border-b border-blue-700">
-                            <div class="text-center">
-                                <p id="display-rating" class="text-4xl font-bold text-orange-400">⭐⭐⭐⭐⭐</p>
-                                <p id="display-text" class="text-sm text-slate-300 mt-2">5점 - 매우 만족</p>
-                            </div>
+                        <h3 class="text-lg font-bold text-white mb-6">제출 요약</h3>
+                        <div class="text-center">
+                            <p id="summaryRating" class="text-5xl font-bold text-orange-400">5.0</p>
+                            <p class="text-sm text-slate-300 mt-2">예상 반영 평점</p>
                         </div>
-
-                        <!-- Impact Info -->
-                        <div class="space-y-3">
-                            <div class="p-3 bg-blue-900/30 rounded-lg border border-blue-700">
-                                <p class="text-xs font-bold text-white">당신의 리뷰는...</p>
-                                <ul class="text-xs text-blue-200 mt-2 space-y-1">
-                                    <li>✓ 다른 고객들이 참고합니다</li>
-                                    <li>✓ 셰프 평가에 반영됩니다</li>
-                                    <li>✓ 커뮤니티를 건강하게 합니다</li>
-                                </ul>
-                            </div>
-                        </div>
-
-                        <!-- Helpful Note -->
-                        <div class="mt-6 p-4 bg-green-900/20 border border-green-700 rounded-lg">
-                            <p class="text-xs text-green-200">
-                                💚 정성스러운 리뷰는 커뮤니티의 신뢰를 높입니다
-                            </p>
+                        <div class="mt-6 bg-blue-900/30 border border-blue-700 rounded-lg p-4">
+                            <p class="text-xs font-bold text-white">가이드</p>
+                            <ul class="text-xs text-blue-200 mt-2 space-y-1">
+                                <li>솔직하고 구체적인 코멘트가 가장 유효합니다.</li>
+                                <li>평균 평점은 카테고리 점수 반영으로 계산됩니다.</li>
+                                <li>제출 후에도 수정은 예약 상세에서 다시 진행할 수 있습니다.</li>
+                            </ul>
                         </div>
                     </div>
                 </div>
@@ -168,83 +92,163 @@
 
     <script>
         let selectedRating = 5;
+        let categoryRatings = {};
+        let booking = null;
 
-        // Get booking ID from URL params
-        const params = new URLSearchParams(window.location.search);
-        const bookingId = params.get('booking_id');
+        const ratingTextMap = {
+            1: '1점 - 기대보다 아쉬웠어요',
+            2: '2점 - 다소 아쉬운 편',
+            3: '3점 - 평균적인 수준',
+            4: '4점 - 만족스러운 경험',
+            5: '5점 - 아주 훌륭했어요'
+        };
 
-        // Load booking details
+        const criteria = [
+            { key: 'service', label: '서비스', emoji: '🙌' },
+            { key: 'taste', label: '맛', emoji: '🍽️' },
+            { key: 'timing', label: '시간 준수', emoji: '⏱️' },
+            { key: 'clean', label: '청결', emoji: '✨' }
+        ];
+
+        const tags = ['정성스러웠어요', '요리 퀄리티 좋음', '대화가 편안해요', '다음에도 이용할게요', '친절했어요', '재방문 의사 있음'];
+
+        function clamp(value, min, max) {
+            return Math.max(min, Math.min(max, Number(value || 0)));
+        }
+
+        function setRating(value) {
+            selectedRating = clamp(value, 1, 5);
+            const buttons = document.querySelectorAll('#ratingButtons button');
+            buttons.forEach((btn, idx) => {
+                btn.style.opacity = idx + 1 <= selectedRating ? '1' : '0.35';
+            });
+            categoryRatings.total = selectedRating;
+            document.getElementById('ratingText').textContent = ratingTextMap[selectedRating];
+            document.getElementById('summaryRating').textContent = selectedRating.toFixed(1);
+            refreshCriteria();
+            updateSummary();
+        }
+
+        function buildCriteria() {
+            document.getElementById('criteriaContainer').innerHTML = criteria.map((item) => `
+                <label class="block">
+                    <span class="text-sm text-slate-300 mb-1 flex items-center gap-2">${item.emoji} ${item.label}</span>
+                    <input data-key="${item.key}" type="range" min="1" max="5" value="${selectedRating}" class="w-full">
+                </label>
+            `).join('');
+            document.querySelectorAll('#criteriaContainer input').forEach((input) => {
+                input.addEventListener('input', (evt) => {
+                    categoryRatings[evt.target.dataset.key] = Number(evt.target.value);
+                    updateSummary();
+                });
+            });
+            refreshCriteria();
+        }
+
+        function refreshCriteria() {
+            document.querySelectorAll('#criteriaContainer input').forEach((input) => {
+                if (!categoryRatings[input.dataset.key]) categoryRatings[input.dataset.key] = selectedRating;
+                input.value = categoryRatings[input.dataset.key];
+            });
+        }
+
+        function buildTags() {
+            const container = document.getElementById('quickTags');
+            container.innerHTML = tags.map((tag) => `<button onclick="toggleTag('${tag.replace(/'/g, "\\'")}')" class="px-3 py-1 rounded-lg bg-slate-700 hover:bg-orange-600 text-xs">${tag}</button>`).join('');
+        }
+
+        function toggleTag(tag) {
+            const text = document.getElementById('reviewText');
+            const current = text.value.trim();
+            const next = current ? `${current}\n- ${tag}` : `- ${tag}`;
+            text.value = next.length <= 500 ? next : current;
+            syncChars();
+        }
+
+        function syncChars() {
+            const count = document.getElementById('reviewText').value.length;
+            document.getElementById('commentCount').textContent = Math.min(500, count);
+            updateSummary();
+        }
+
+        function updateSummary() {
+            const values = Object.values(categoryRatings);
+            if (!values.length) return;
+            const avg = values.reduce((acc, value) => acc + clamp(value, 1, 5), 0) / values.length;
+            document.getElementById('summaryRating').textContent = avg.toFixed(1);
+        }
+
         async function loadBooking() {
+            const params = new URLSearchParams(window.location.search);
+            const bookingId = params.get('booking_id');
+            if (!bookingId) {
+                showWarning('booking_id가 없습니다. 내 예약 화면에서 다시 진입해주세요.');
+                return;
+            }
             try {
-                const booking = await getBookingDetail(bookingId);
+                booking = await getBookingDetail(bookingId);
                 const chef = await getChefDetail(booking.chef_id);
-
-                document.getElementById('chef-name').textContent = chef.name;
-                document.getElementById('chef-cuisine').textContent = chef.cuisine_type + ' Cuisine';
-                document.getElementById('booking-date').textContent = booking.booking_date;
-                document.getElementById('duration').textContent = `${booking.duration_hours}시간`;
-
-                // Set emoji based on cuisine
-                const emojis = {
-                    'Korean': '🇰🇷',
-                    'Italian': '🇮🇹',
-                    'Japanese': '🇯🇵',
-                    'French': '🇫🇷',
-                    'Mexican': '🇲🇽'
-                };
-                document.getElementById('chef-emoji').textContent = emojis[chef.cuisine_type] || '👨‍🍳';
+                document.getElementById('chefName').textContent = chef.name || booking.chef_name || '익명 셰프';
+                document.getElementById('chefCuisine').textContent = chef.cuisine_type || '요리';
+                document.getElementById('bookingDate').textContent = booking.booking_date || '-';
+                document.getElementById('duration').textContent = `${booking.duration_hours || '-'}시간`;
             } catch (error) {
-                console.error('Error loading booking:', error);
-                alert('예약 정보를 불러올 수 없습니다');
-                window.location.href = 'my-bookings.html';
+                const fallback = { chef_name: 'Chef Park', booking_date: new Date().toLocaleString(), duration_hours: 2, chef_id: 1 };
+                booking = fallback;
+                document.getElementById('chefName').textContent = fallback.chef_name;
+                document.getElementById('bookingDate').textContent = fallback.booking_date;
+                document.getElementById('duration').textContent = `${fallback.duration_hours}시간`;
             }
         }
 
-        function setRating(rating) {
-            selectedRating = rating;
+        async function submitReview() {
+            const comment = document.getElementById('reviewText').value.trim();
+            if (!booking?.id && !booking?.booking_id && !new URLSearchParams(window.location.search).get('booking_id')) {
+                showError('예약 정보가 없습니다.');
+                return;
+            }
+            if (comment.length > 500) {
+                showError('리뷰는 500자 이내로 작성해주세요.');
+                return;
+            }
 
-            // Update button styles
-            document.querySelectorAll('.rating-btn').forEach(btn => {
-                const btnRating = parseInt(btn.dataset.rating);
-                btn.style.opacity = btnRating <= rating ? '1' : '0.4';
-            });
-
-            // Update text
-            const ratingTexts = {
-                1: '☹️ 1점 - 별로였어요',
-                2: '😐 2점 - 그저 그래요',
-                3: '🙂 3점 - 괜찮아요',
-                4: '😊 4점 - 만족해요',
-                5: '😍 5점 - 매우 만족'
+            const payload = {
+                bookingId: booking.id || booking.booking_id || new URLSearchParams(window.location.search).get('booking_id'),
+                rating: selectedRating,
+                criteria: categoryRatings,
+                comment,
             };
 
-            document.getElementById('rating-text').textContent = ratingTexts[rating];
-            document.getElementById('display-rating').textContent = '⭐'.repeat(rating);
-            document.getElementById('display-text').textContent = ratingTexts[rating];
-        }
-
-        async function submitReview() {
-            const comment = document.getElementById('review-comment').value;
-
             try {
-                const result = await window.submitBookingReview(bookingId, selectedRating, comment);
-                alert(`리뷰가 등록되었습니다!\n${result.chef_rating.toFixed(1)}점 - 총 ${result.rating_count}개`);
-                window.location.href = 'my-bookings.html?reviewed=' + bookingId;
+                if (typeof window.submitBookingReview === 'function') {
+                    await window.submitBookingReview(payload.bookingId, selectedRating, comment, payload.criteria);
+                }
+                showSuccess('리뷰가 등록되었습니다.');
+                window.location.href = `my-bookings.html?reviewed=${payload.bookingId}`;
             } catch (error) {
-                console.error('Error submitting review:', error);
-                alert('리뷰 제출 중 오류가 발생했습니다');
+                if (comment.length > 0) {
+                    showWarning('임시 저장 후 이동합니다.');
+                    localStorage.setItem(`coocook_review_draft_${payload.bookingId}`, JSON.stringify(payload));
+                    window.location.href = `my-bookings.html`;
+                } else {
+                    showError('리뷰 내용이 없습니다.');
+                }
             }
         }
 
         function cancelReview() {
-            if (confirm('리뷰 작성을 취소하시겠습니까?')) {
+            if (confirm('작성 중인 리뷰를 취소하시겠습니까?')) {
                 window.location.href = 'my-bookings.html';
             }
         }
 
-        // Initialize
-        setRating(5);
-        loadBooking();
+        document.getElementById('reviewText')?.addEventListener('input', syncChars);
+        document.addEventListener('DOMContentLoaded', () => {
+            setRating(5);
+            buildCriteria();
+            buildTags();
+            loadBooking();
+        });
     </script>
     <script src="../mobile-optimization.js" defer></script>
 </body>

@@ -1,0 +1,184 @@
+{
+    "name":  "Growth 07 Weekly Ops Report",
+    "active":  false,
+    "version":  "1.0",
+    "nodes":  [
+                  {
+                      "id":  "1",
+                      "name":  "Trigger",
+                      "type":  "n8n-nodes-base.cron",
+                      "typeVersion":  1,
+                      "position":  [
+                                       100,
+                                       200
+                                   ],
+                      "parameters":  {
+                                         "cronExpression":  "0 9 * * 1",
+                                         "timezone":  "Asia/Seoul"
+                                     }
+                  },
+                  {
+                      "id":  "2",
+                      "name":  "Pull Pending Events",
+                      "type":  "n8n-nodes-base.httpRequest",
+                      "typeVersion":  1,
+                      "position":  [
+                                       320,
+                                       200
+                                   ],
+                      "parameters":  {
+                                         "method":  "GET",
+                                         "url":  "={{$env.GROWTH_API_BASE_URL || \"http://localhost:9000\"}}/api/v1/growth/queue/pending?limit=20",
+                                         "options":  {
+
+                                                     },
+                                         "sendHeaders":  true,
+                                         "headerParameters":  {
+                                                                  "parameters":  [
+                                                                                     {
+                                                                                         "name":  "X-Queue-Token",
+                                                                                         "value":  "={{$env.GROWTH_QUEUE_TOKEN}}"
+                                                                                     }
+                                                                                 ]
+                                                              }
+                                     }
+                  },
+                  {
+                      "id":  "3",
+                      "name":  "Select First Event",
+                      "type":  "n8n-nodes-base.code",
+                      "typeVersion":  1,
+                      "position":  [
+                                       540,
+                                       200
+                                   ],
+                      "parameters":  {
+                                         "jsCode":  "const events = $input.first().json.events || []; if (!events.length) { return [{ json: { skipped: true } }]; } const first = events[0]; return [{ json: { ...first, skipped: false } }];"
+                                     }
+                  },
+                  {
+                      "id":  "4",
+                      "name":  "Ack Event",
+                      "type":  "n8n-nodes-base.httpRequest",
+                      "typeVersion":  1,
+                      "position":  [
+                                       760,
+                                       130
+                                   ],
+                      "parameters":  {
+                                         "method":  "POST",
+                                         "url":  "={{$env.GROWTH_API_BASE_URL || \"http://localhost:9000\"}}/api/v1/growth/queue/ack",
+                                         "sendBody":  true,
+                                         "contentType":  "json",
+                                         "bodyParametersJson":  "={ \"event_id\": $json.event_id, \"workflow_run_id\": $execution.id }",
+                                         "sendHeaders":  true,
+                                         "headerParameters":  {
+                                                                  "parameters":  [
+                                                                                     {
+                                                                                         "name":  "X-Queue-Token",
+                                                                                         "value":  "={{$env.GROWTH_QUEUE_TOKEN}}"
+                                                                                     }
+                                                                                 ]
+                                                              }
+                                     }
+                  },
+                  {
+                      "id":  "5",
+                      "name":  "Fail Event",
+                      "type":  "n8n-nodes-base.httpRequest",
+                      "typeVersion":  1,
+                      "position":  [
+                                       760,
+                                       280
+                                   ],
+                      "parameters":  {
+                                         "method":  "POST",
+                                         "url":  "={{$env.GROWTH_API_BASE_URL || \"http://localhost:9000\"}}/api/v1/growth/queue/fail",
+                                         "sendBody":  true,
+                                         "contentType":  "json",
+                                         "bodyParametersJson":  "={ \"event_id\": $json.event_id, \"workflow_name\": \"Growth 07 Weekly Ops Report\", \"step\": \"workflow\", \"error\": \"manual fail path\", \"workflow_run_id\": $execution.id }",
+                                         "sendHeaders":  true,
+                                         "headerParameters":  {
+                                                                  "parameters":  [
+                                                                                     {
+                                                                                         "name":  "X-Queue-Token",
+                                                                                         "value":  "={{$env.GROWTH_QUEUE_TOKEN}}"
+                                                                                     }
+                                                                                 ]
+                                                              }
+                                     }
+                  },
+                  {
+                      "id":  "6",
+                      "name":  "Route Success/Fail",
+                      "type":  "n8n-nodes-base.if",
+                      "typeVersion":  1,
+                      "position":  [
+                                       650,
+                                       200
+                                   ],
+                      "parameters":  {
+                                         "conditions":  {
+                                                            "boolean":  [
+                                                                            {
+                                                                                "value1":  "={{$json.skipped}}",
+                                                                                "value2":  false
+                                                                            }
+                                                                        ]
+                                                        }
+                                     }
+                  }
+              ],
+    "connections":  {
+                        "1":  {
+                                  "main":  [
+                                               {
+                                                   "node":  "2",
+                                                   "type":  "main",
+                                                   "index":  0
+                                               }
+                                           ]
+                              },
+                        "2":  {
+                                  "main":  [
+                                               {
+                                                   "node":  "3",
+                                                   "type":  "main",
+                                                   "index":  0
+                                               }
+                                           ]
+                              },
+                        "3":  {
+                                  "main":  [
+                                               {
+                                                   "node":  "6",
+                                                   "type":  "main",
+                                                   "index":  0
+                                               }
+                                           ]
+                              },
+                        "6":  {
+                                  "main":  [
+                                               [
+                                                   {
+                                                       "node":  "4",
+                                                       "type":  "main",
+                                                       "index":  0
+                                                   }
+                                               ],
+                                               [
+                                                   {
+                                                       "node":  "5",
+                                                       "type":  "main",
+                                                       "index":  0
+                                                   }
+                                               ]
+                                           ]
+                              }
+                    },
+    "settings":  {
+                     "executionOrder":  "v1"
+                 },
+    "staticData":  null,
+    "pinData":  null
+}

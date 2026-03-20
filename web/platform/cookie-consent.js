@@ -3,7 +3,7 @@
  * SoftFactory — GDPR + 한국 개인정보보호법 준수
  *
  * 사용법: 모든 HTML 페이지의 </body> 직전에 아래 태그를 추가하세요.
- * <script src="/web/platform/cookie-consent.js" defer></script>
+ * <script src="/platform/cookie-consent.js" defer></script>
  *
  * 의존성: 없음 (순수 JS, 외부 라이브러리 불필요)
  */
@@ -48,7 +48,7 @@
             '">',
             '  <p style="margin:0;flex:1;min-width:200px;">',
             '    SoftFactory는 서비스 품질 개선을 위해 쿠키를 사용합니다.',
-            '    <a href="/web/platform/privacy.html"',
+            '    <a href="/platform/privacy.html"',
             '       style="color:#a78bfa;text-decoration:underline;"',
             '       target="_blank" rel="noopener noreferrer">개인정보처리방침</a>에서 자세한 내용을 확인하세요.',
             '  </p>',

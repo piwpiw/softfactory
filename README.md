@@ -9,7 +9,7 @@
 ## ??Executive Summary (?듭떖 ?붿빟)
 - **二쇱슂 ?댁슜**: 蹂?臾몄꽌??SoftFactory Platform 愿???듭떖 紐낆꽭 諛?愿由??ъ씤?몃? ?ы븿?⑸땲??
 - **?곹깭**: ?꾩옱 理쒖떊???꾨즺 諛?寃????
-- **?곌? 臾몄꽌**: [Master Index](./NOTION_MASTER_INDEX.md)
+- **?곌? 臾몄꽌**: [Docs Index](./docs/INDEX.md)
 
 ---
 
@@ -23,10 +23,21 @@ SoftFactory is a monolithic Flask platform that serves multiple product areas fr
 
 - Platform admin and account management
 - SNS automation
+- WordPress editorial publishing and quality-gated automation
 - CooCook experience platform
 - Review campaign services
 - AI automation and webapp builder
 - Payments, files, search, RBAC, video, notifications
+
+## Bohemian Studio WordPress Lane
+
+The repository now includes a first-class `Bohemian Studio` WordPress lane for research-driven publishing.
+
+- Operations UI: `web/sns-auto/wordpress.html`
+- Backend API: `/api/sns/wordpress/*`
+- Theme export package: `wordpress/bohemian-studio-theme`
+- Companion plugin package: `wordpress/bohemian-studio-core`
+- Operating notes: `docs/wordpress-bohemian-studio.md`
 
 ## Verified Runtime Modes
 
@@ -40,6 +51,9 @@ python start_server.py
 
 - Base URL: `http://127.0.0.1:8000`
 - Health: `GET /health`
+- Local app log: `.workspace/logs/app.log`
+
+Note: 일부 플랫폼(예: Render)에서 `run.py` 진입점으로 실행할 경우에도 동작하도록 `run.py`를 제공하고 `PORT`(우선) 또는 `APP_PORT` 환경변수를 사용합니다.
 
 ### 2) Integrated Demo Mode (port 9000)
 
@@ -49,6 +63,7 @@ python start_platform.py
 
 - Web entry: `http://localhost:9000/web/platform/index.html`
 - API base: `http://localhost:9000/api/`
+- Local app log: `.workspace/logs/app.log`
 
 ### 3) Docker Local Stack (port 8000)
 
@@ -65,11 +80,29 @@ docker-compose up -d --build
 - Install frontend as a static Vercel site using `vercel.json`.
 - API calls are routed to your backend via Vercel function `api/proxy.js`.
 - Set `API_UPSTREAM_URL` (or `VERCEL_API_UPSTREAM_URL`) in Vercel Environment Variables.
-- Example command:
+- Recommended production command:
 
-```bash
-npx vercel --prod --yes
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\vercel_release.ps1 -Deploy
 ```
+
+- This path enforces auth preflight, minimal staging payload, and remote verification retries.
+- Avoid raw root deploys like `npx vercel --prod --yes` for normal releases.
+- Deployment guardrails: `docs/VERCEL_DEPLOYMENT_GUARDRAILS.md`
+
+## Bohemian Marketing Page Operations
+
+- Target page: `web/bohemian-marketing/index.html`
+- Local smoke test (recommended):
+  - `python -m http.server 4173 -d web`
+  - open `http://localhost:4173/bohemian-marketing/index.html`
+  - click:
+    - `콘텐츠 생성` to verify draft creation path
+    - `전체 상태 새로고침` to verify API/demo mode sync
+    - `health check` to verify mode detection
+- Deployment check:
+  - ensure `web/bohemian-marketing/index.html` includes `../platform/api.js` and action script.
+  - confirm `/web/bohemian-marketing/index.html` is accessible on `softfactory-platform.vercel.app`
 
 ## Key Backend Mounts
 
@@ -123,18 +156,21 @@ Primary deployment workflows:
 
 - `.github/workflows/deploy-staging.yml`
 - `.github/workflows/deploy-production.yml`
+- `docs/RELEASE_SAFE_CHANGE_CHECKLIST.md` (feature-upgrade safety checklist)
 
 ### Deployment Workflows
 
 | File | Trigger | Purpose |
 |------|---------|---------|
 | `ci.yml` | Push to main/develop/feature/*, PR | Linting, testing, security checks |
-| `deploy.yml` | Push tag (v*) | Simple deployment (legacy) |
 | `deploy-production.yml` | Push to main, tag (v*), manual | Production deployment (canary + auto-rollback) |
-| `deploy-staging.yml` | Push to develop, manual | Staging deployment |
+| `deploy-staging.yml` | Manual dispatch | Staging deployment |
 | `security.yml` | Push, PR, weekly | CodeQL, Bandit, OWASP ZAP scanning |
+| `deploy-pipeline.yml` | Deprecated | Kept for archive notice only |
 
 **Important:** Set GitHub Secrets before deploying. See `.env.example` for details.
+
+For Render deployment (`Language=Docker`, `Root Directory` blank), use `run.py` as fallback entrypoint and keep runtime port alignment with `PORT` (or `APP_PORT`, default `8000`).
 
 ## Documentation Policy
 
@@ -144,7 +180,11 @@ For current engineering truth, prioritize:
 
 1. Runtime code in `backend/`, `web/`, `scripts/`
 2. CI/CD workflows in `.github/workflows/`
-3. `STATUS.md`, `PROJECT_STATUS_2026-02-26.md`, and `API_ENDPOINT_QUICK_REFERENCE.md`
+3. `AGENTS.md`, `docs/status/CURRENT.md`, `docs/status/BACKLOG.md`, and `STATUS.md`
+4. `docs/INDEX.md`, `docs/status/repo-structure-management-dashboard.md`, and `docs/API_REFERENCE_INDEX.md`
+5. `docs/RELEASE_SAFE_CHANGE_CHECKLIST.md` and `docs/reference/active-paths.md` for upgrade and path controls
+
+Git-tracked docs are the history of record. Notion is a derived publishing surface, not the source of truth.
 
 ## MCP Source of Truth
 
@@ -173,3 +213,109 @@ This repository now supports autonomous subproject execution:
 - Recurrence control: failure memory in `agent_workspaces/_memory/failure_registry.json` blocks repeated failing agents by signature.
 
 Control all behavior in `orchestrator/automation-governance.json`.
+
+<!-- doc-metadata
+id: softfactory-platform-docs-appendix-2026-03-03
+type: platform-documentation-index
+owner: ops-engineering
+status: active
+updated: 2026-03-03
+keywords: softfactory, docs, search-index, bohemian-marketing, render, vercel
+scope: deployment, operations, frontend, ci-cd
+-->
+
+## Documentation Enhancement Addendum (2026-03-03)
+
+이 섹션은 기존 문서 구조를 **삭제 없이** 보완합니다.
+
+### Documentation Search Matrix
+
+| 도메인 | 핵심 문서 | 검색 키워드 |
+|---|---|---|
+| 운영 런타임 | `README.md` (Runtime Modes, CI/CD) | `run.py`, `render`, `start_server.py`, `start_platform.py`, `PORT`, `APP_PORT` |
+| Bohemian Marketing | `README.md`, `web/bohemian-marketing/parallel-implementation-plan.md` | `bohemian`, `autopilot`, `generateDraft`, `runFullCycle`, `getSNSPosts`, `health check` |
+| 오케스트레이션 상태 | `web/bohemian-marketing/index.html`, `web/platform/api.js` | `actionBusy`, `draft`, `inbox`, `analytics`, `accounts` |
+| 자동화/병렬 실행 | `orchestrator/README.md`, `orchestrator/task-queue.json` | `run_all_agents.py`, `agent-registry` |
+
+### Bohemian Marketing Documentation Guardrails
+
+- 변경 최소단위: 페이지 동작/구조 변경 시 최소 1개 체크셋(기능) + 1개 체크셋(문서) 동시 갱신
+- 변경 증분 기록: 본 문서 하단 "변경 이력"에 항목 추가
+- 회귀 방지 규칙: 문서 변경이 코드 변경보다 선행되면 안 됨
+
+### 운영 점검 체크리스트 (요약)
+
+1. `python -m http.server 4173 -d web`
+2. `http://127.0.0.1:4173/bohemian-marketing/index.html` 접속
+3. 핵심 액션: `전체 상태 새로고침`, `콘텐츠 생성`, `실행 + 자동 발행`, `health check`
+4. 배포 확인: `https://softfactory-platform.vercel.app/bohemian-marketing/index.html`
+
+### 빠른 검색 커맨드
+
+```bash
+rg -n "bohemian|run.py|runFullCycle|generateDraft|autopilot|health check|inbox|render" README.md web/bohemian-marketing/*.md
+```
+
+### 변경 이력
+
+- 2026-03-03: `web/bohemian-marketing/index.html` 고도화(액션 잠금, 상태 카드, 인박스/분석/드래프트 패널, API 모드 처리) 반영
+- 2026-03-03: `README.md`에 운영 검색성·색인성 보완 섹션 추가
+- 2026-03-03: `web/bohemian-marketing/parallel-implementation-plan.md`에 실행 메타/수용 기준/리스크 매트릭스 추가
+
+## Documentation Maintenance Standard (v1)
+
+- 문서 표준 템플릿: `docs/documentation-maintenance-template.md`
+- 사람용 인덱스: `docs/INDEX.md`
+- 기계용 인덱스: `docs/CATALOG.json`
+- 호환 인덱스: `docs/doc-index.json`
+- 검증 체크: `pwsh scripts/check-doc-metadata.ps1` + `python scripts/check-repo-layout.py`
+
+### 적용 규칙 (필수)
+
+1. 기능/문서 수정 시 `요청/근거/검증/롤백` 항목을 최소 1회 기록
+2. 문서 상단 메타 블록(`doc-metadata`) 유지
+3. 문서 변경과 실행 근거는 24시간 이내 동기화
+
+
+### 문서 인덱스 자동 갱신
+
+```bash
+powershell -ExecutionPolicy Bypass -File scripts/refresh-doc-index.ps1
+```
+
+`scripts/refresh-doc-index.ps1`는 `docs/CATALOG.json`과 `docs/doc-index.json`을 함께 갱신합니다.
+
+### 레이아웃 검사
+
+```bash
+python scripts/check-repo-layout.py
+python scripts/check-repo-layout.py --strict
+```
+
+- 기본 모드는 보고서 전용입니다.
+- `--strict`는 루트 레거시 문서 재분류가 끝난 뒤에만 사용합니다.
+
+### 로컬 temp/log 격리
+
+```bash
+python scripts/quarantine-root-artifacts.py --older-than-hours 24
+python scripts/quarantine-root-artifacts.py --older-than-hours 24 --execute
+```
+
+- 오래된 루트 `tmp_*.log`, `*.out`, `*.err`, `*.pid` 파일은 `.workspace/root-artifacts/`로 격리합니다.
+- 현재 실행 중인 프로세스 산출물은 즉시 이동하지 않도록 시간 기준을 둡니다.
+
+### 문서 동기화 원클릭
+
+```bash
+./scripts/sync-docs.ps1
+```
+
+- 수행 내용: `check-doc-metadata.ps1` + `refresh-doc-index.ps1`
+
+### 문서 인덱스 정책
+
+- `docs/CATALOG.json`은 **정식 생성 인덱스**이며 변경 결과는 커밋 대상입니다.
+- `docs/doc-index.json`은 **호환용 별칭 파일**이며 같이 갱신됩니다.
+- 개발자는 문서 변경 후 `./scripts/sync-docs.ps1` 실행 후 diff를 포함해 커밋해야 합니다.
+- `docs/INDEX.md`와 `README.md`는 유일한 시작 페이지로 유지합니다.

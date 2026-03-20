@@ -1,8 +1,9 @@
 {
   "name": "SoftFactory",
   "short_name": "SoftFactory",
-  "description": "SoftFactory - 멀티서비스 비즈니스 자동화 플랫폼",
-  "start_url": "/web/platform/index.html",
+  "description": "SoftFactory 통합 운영 플랫폼",
+  "id": "/platform/index.html",
+  "start_url": "/platform/index.html",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait-primary",
@@ -11,53 +12,41 @@
   "categories": ["productivity", "business"],
   "screenshots": [
     {
-      "src": "/web/icons/screenshot-540x720.png",
+      "src": "/icons/screenshot-dashboard.svg",
       "sizes": "540x720",
-      "type": "image/png",
+      "type": "image/svg+xml",
       "form_factor": "narrow"
     },
     {
-      "src": "/web/icons/screenshot-1280x720.png",
+      "src": "/icons/screenshot-dashboard.svg",
       "sizes": "1280x720",
-      "type": "image/png",
+      "type": "image/svg+xml",
       "form_factor": "wide"
     }
   ],
   "icons": [
     {
-      "src": "/web/icons/icon-192x192.png",
-      "sizes": "192x192",
-      "type": "image/png",
+      "src": "/icons/app-icon.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
       "purpose": "any"
     },
     {
-      "src": "/web/icons/icon-512x512.png",
+      "src": "/icons/app-icon-maskable.svg",
       "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/web/icons/icon-maskable-192x192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "maskable"
-    },
-    {
-      "src": "/web/icons/icon-maskable-512x512.png",
-      "sizes": "512x512",
-      "type": "image/png",
+      "type": "image/svg+xml",
       "purpose": "maskable"
     }
   ],
   "shortcuts": [
     {
-      "name": "대시보드",
-      "short_name": "대시보드",
-      "description": "CEO 대시보드로 이동",
-      "url": "/web/platform/index.html",
+      "name": "플랫폼",
+      "short_name": "플랫폼",
+      "description": "통합 플랫폼 대시보드로 이동",
+      "url": "/platform/index.html",
       "icons": [
         {
-          "src": "/web/icons/shortcut-dashboard-192x192.png",
+          "src": "/icons/shortcut-dashboard.svg",
           "sizes": "192x192"
         }
       ]
@@ -66,35 +55,25 @@
       "name": "SNS 자동화",
       "short_name": "SNS",
       "description": "SNS 자동화 도구로 이동",
-      "url": "/web/sns-auto/index.html",
+      "url": "/sns-auto/index.html",
       "icons": [
         {
-          "src": "/web/icons/shortcut-sns-192x192.png",
+          "src": "/icons/shortcut-sns.svg",
           "sizes": "192x192"
         }
       ]
     },
     {
-      "name": "리뷰 자동응모",
+      "name": "리뷰 자동화",
       "short_name": "리뷰",
-      "description": "리뷰 자동응모 도구로 이동",
-      "url": "/web/review/index.html",
+      "description": "리뷰 자동화 도구로 이동",
+      "url": "/review/index.html",
       "icons": [
         {
-          "src": "/web/icons/shortcut-review-192x192.png",
+          "src": "/icons/shortcut-review.svg",
           "sizes": "192x192"
         }
       ]
     }
-  ],
-  "share_target": {
-    "action": "/web/platform/share-handler.html",
-    "method": "POST",
-    "enctype": "multipart/form-data",
-    "params": {
-      "title": "title",
-      "text": "text",
-      "url": "url"
-    }
-  }
+  ]
 }

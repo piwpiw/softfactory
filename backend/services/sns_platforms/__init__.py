@@ -9,6 +9,7 @@ from .youtube_client import YouTubeClient
 from .pinterest_client import PinterestClient
 from .threads_client import ThreadsClient
 from .youtube_shorts_client import YouTubeShortsClient
+from .wordpress_client import WordPressClient
 
 PLATFORM_CLIENTS = {
     'instagram': InstagramClient,
@@ -20,17 +21,22 @@ PLATFORM_CLIENTS = {
     'pinterest': PinterestClient,
     'threads': ThreadsClient,
     'youtube_shorts': YouTubeShortsClient,
+    'blog': WordPressClient,
+    'wordpress': WordPressClient,
 }
 
-def get_client(platform, access_token=None, refresh_token=None, simulation_mode=False):
+def get_client(platform, access_token=None, refresh_token=None, simulation_mode=False,
+               site_url=None, wp_username=None):
     """
     Get platform client instance.
 
     Args:
-        platform: 'instagram', 'facebook', 'twitter', etc.
-        access_token: OAuth access token
+        platform: 'instagram', 'facebook', 'blog', 'wordpress', etc.
+        access_token: OAuth access token (WordPress: Application Password)
         refresh_token: OAuth refresh token
         simulation_mode: If True, return mock data without calling platform API
+        site_url: WordPress site URL (e.g. 'https://myblog.com') — blog/wordpress only
+        wp_username: WordPress username — blog/wordpress only
 
     Returns:
         Platform client instance or None if invalid platform
@@ -39,6 +45,11 @@ def get_client(platform, access_token=None, refresh_token=None, simulation_mode=
         return None
 
     client_class = PLATFORM_CLIENTS[platform]
+
+    if platform in ('blog', 'wordpress'):
+        return client_class(access_token, refresh_token, simulation_mode,
+                            site_url=site_url, wp_username=wp_username)
+
     return client_class(access_token, refresh_token, simulation_mode)
 
 
@@ -54,4 +65,5 @@ __all__ = [
     'PinterestClient',
     'ThreadsClient',
     'YouTubeShortsClient',
+    'WordPressClient',
 ]

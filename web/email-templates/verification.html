@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>?대찓???몄쬆 ??SoftFactory</title>
+  <title>이메일 인증 코드 | SoftFactory</title>
   <!--[if mso]><noscript><xml><o:OfficeDocumentSettings><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml></noscript><![endif]-->
   <style>
     body { margin: 0; padding: 0; background-color: #f3f4f6; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; }
@@ -12,7 +12,7 @@
     .header { background: linear-gradient(135deg, #7C3AED 0%, #5B21B6 100%); padding: 40px 48px 36px; text-align: center; }
     .header img { height: 36px; margin-bottom: 16px; }
     .header h1 { margin: 0; color: #ffffff; font-size: 24px; font-weight: 700; letter-spacing: -0.3px; }
-    .header p { margin: 8px 0 0; color: rgba(255,255,255,0.85); font-size: 15px; }
+    .header p { margin: 8px 0 0; color: rgba(255,255,255,0.9); font-size: 15px; }
     .body { padding: 48px; }
     .greeting { font-size: 16px; color: #374151; margin: 0 0 24px; }
     .description { font-size: 15px; color: #6B7280; line-height: 1.7; margin: 0 0 32px; }
@@ -27,56 +27,53 @@
     .footer { padding: 24px 48px 40px; text-align: center; }
     .footer p { font-size: 12px; color: #9CA3AF; margin: 4px 0; }
     .footer a { color: #7C3AED; text-decoration: none; }
+    @media (max-width: 640px) {
+      .body { padding: 32px 24px; }
+      .header { padding: 32px 24px 28px; }
+      .code { font-size: 36px; }
+    }
   </style>
     <script src="../mobile-optimization.js" defer></script>
 </head>
 <body>
   <div class="wrapper">
     <div class="card">
-      <!-- Header -->
       <div class="header">
         <h1>SoftFactory</h1>
-        <p>?대찓??二쇱냼瑜??몄쬆?댁＜?몄슂</p>
+        <p>이메일 인증을 위해 아래 코드를 확인하세요.</p>
       </div>
-
-      <!-- Body -->
       <div class="body">
-        <p class="greeting">?덈뀞?섏꽭?? <strong>{{ user_name }}</strong>??</p>
+        <p class="greeting">{{ user_name }}님, 안녕하세요.</p>
         <p class="description">
-          SoftFactory 媛?낆쓣 ?섏쁺?⑸땲?? ?꾨옒??6?먮━ ?몄쬆 肄붾뱶瑜??낅젰?섏뿬
-          ?대찓??二쇱냼瑜??뺤씤?댁＜?몄슂.
+          SoftFactory 인증을 완료하려면 아래 인증 코드 6자리를 입력해주세요.
+          코드는 아래 문구와 함께 유효 기간이 존재합니다.
         </p>
 
-        <!-- Verification Code -->
         <div class="code-wrapper">
-          <p class="code-label">?몄쬆 肄붾뱶</p>
+          <p class="code-label">인증 코드</p>
           <p class="code">{{ verification_token }}</p>
         </div>
 
-        <!-- Expiry notice -->
         <div class="expiry">
-          ???몄쬆 肄붾뱶??<strong>{{ expires_hours }}?쒓컙</strong> ??留뚮즺?⑸땲??
-          肄붾뱶瑜??쒕븣 ?낅젰?섏? ?딆쑝硫??щ컻?≪씠 ?꾩슂?⑸땲??
+          인증 코드는 <strong>{{ expires_hours }}시간</strong> 동안만 유효합니다.
+          입력 실패가 반복되면 새 코드를 다시 발급해 주세요.
         </div>
 
         <hr class="divider" />
 
         <p class="note">
-          蹂몄씤??SoftFactory??媛?낇븯吏 ?딆븯嫄곕굹 ???대찓?쇱쓣 ?붿껌?섏? ?딆븯?ㅻ㈃,
-          ?덉쟾?섍쾶 臾댁떆?섏뀛???⑸땲?? 洹?섏쓽 怨꾩젙? ?곹뼢??諛쏆? ?딆뒿?덈떎.
+          본 메일은 단순 안내용이며, 계정 보안을 위해 절대 비밀번호를 공유하지 마십시오.
+          의심스러운 활동이 있다면 즉시 고객지원으로 문의해 주세요.
         </p>
       </div>
-
-      <!-- Footer -->
       <div class="footer">
         <p>&copy; {{ year }} SoftFactory. All rights reserved.</p>
         <p>
           <a href="https://softfactory.kr">softfactory.kr</a> &nbsp;|&nbsp;
-          <a href="https://softfactory.kr/privacy">媛쒖씤?뺣낫泥섎━諛⑹묠</a>
+          <a href="https://softfactory.kr/privacy">개인정보보호정책</a>
         </p>
       </div>
     </div>
   </div>
 </body>
 </html>
-

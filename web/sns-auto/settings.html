@@ -6,38 +6,132 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#111827">
-<title>설정 — SNS Auto | SoftFactory</title>
+<title>설정 — SNS 자동화 | SoftFactory</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="../platform/api.js"></script>
-    <style>body { font-family: 'Inter', sans-serif; }</style>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .settings-card {
+            background: linear-gradient(180deg, rgba(30, 41, 59, 0.96), rgba(15, 23, 42, 0.96));
+        }
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            border-radius: 999px;
+            padding: 6px 12px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+        .status-pill.ok {
+            background: rgba(16, 185, 129, 0.16);
+            border: 1px solid rgba(16, 185, 129, 0.35);
+            color: #86efac;
+        }
+        .status-pill.warn {
+            background: rgba(245, 158, 11, 0.16);
+            border: 1px solid rgba(245, 158, 11, 0.35);
+            color: #fcd34d;
+        }
+        .telegram-shell {
+            background:
+                radial-gradient(circle at top right, rgba(59, 130, 246, 0.18), transparent 38%),
+                linear-gradient(145deg, rgba(15, 23, 42, 0.96), rgba(30, 41, 59, 0.96));
+        }
+    </style>
     <link rel="stylesheet" href="../responsive-framework.css">
   </head>
 <body class="bg-slate-950 text-slate-100">
     <div class="flex h-screen overflow-hidden">
         <aside class="w-64 bg-slate-900 border-r border-slate-800 flex flex-col shrink-0">
-            <div class="p-6"><a href="index.html" class="flex items-center gap-3"><span class="text-2xl">📱</span><h1 class="font-bold text-white text-sm">SNS Auto</h1></a></div>
-            <nav class="flex-1 p-6 space-y-2">
+            <div class="p-6"><a href="index.html" class="flex items-center gap-3"><span class="text-2xl">📱</span><h1 class="font-bold text-white text-sm">SNS 자동화</h1></a></div>
+            <nav class="soft-nav-tree flex-1 p-6 space-y-2">
                 <button class="hamburger" aria-label="Toggle navigation menu">
       <span></span>
       <span></span>
       <span></span>
     </button>
-<p class="text-xs font-semibold text-slate-400 uppercase px-4 mb-3">📱 SNS Auto</p>
-                <a href="index.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">📊 대시보드</a>
-                <a href="accounts.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">🔗 계정 연동</a>
-                <a href="create.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">✍️ 블로그 자동포스팅</a>
-                <a href="schedule.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">📅 스케줄 관리</a>
-                <a href="analytics.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">📈 분석</a>
-                <a href="templates.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">🎨 템플릿</a>
-                <a href="settings.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg bg-pink-600 text-white font-medium">⚙️ 설정</a>
+<p class="text-xs font-semibold text-slate-400 uppercase px-4 mb-3">📱 SNS 자동화</p>
+                <a href="index.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">📊 대시보드</a>
+                <a href="accounts.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">🔗 계정 연동</a>
+                <a href="create.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">✍️ 블로그 자동포스팅</a>
+                <a href="schedule.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">📅 스케줄 관리</a>
+                <a href="analytics.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">📈 분석</a>
+                <a href="templates.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">🎨 템플릿</a>
+                <a href="settings.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg bg-pink-600 text-white font-medium">⚙️ 설정</a>
             </nav>
         </aside>
         <div class="flex-1 flex flex-col overflow-hidden">
-            <header class="h-16 bg-slate-900 border-b border-slate-800 px-6 flex items-center"><h2 class="text-xl font-bold text-white">⚙️ SNS Auto 설정</h2></header>
+            <header class="h-16 bg-slate-900 border-b border-slate-800 px-6 flex items-center"><h2 class="text-xl font-bold text-white">⚙️ SNS 자동화 설정</h2></header>
             <main class="flex-1 overflow-y-auto p-6">
                 <div class="max-w-2xl space-y-6">
-                    <div class="bg-slate-800 rounded-xl p-8 border border-slate-700">
+                    <section class="telegram-shell rounded-3xl border border-slate-700 p-8">
+                        <div class="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+                            <div class="space-y-3">
+                                <span id="telegramStatusPill" class="status-pill warn">연결 상태 확인 중</span>
+                                <div>
+                                    <h3 class="text-xl font-bold text-white">Telegram 알림 연결</h3>
+                                    <p class="mt-2 text-sm leading-6 text-slate-300">
+                                        게시 성공, 실패, 예약 자동화 결과를 Telegram으로 받는 흐름입니다.
+                                        백엔드 라우트는 준비되어 있어 이 화면에서 바로 연결 상태를 확인하고 테스트할 수 있습니다.
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="rounded-2xl border border-blue-400/20 bg-slate-950/40 px-4 py-3 text-sm text-slate-300">
+                                <p class="font-semibold text-white">실사용 흐름</p>
+                                <p class="mt-1">1. 링크 생성</p>
+                                <p>2. Telegram에서 `/start`</p>
+                                <p>3. 연결 확인 후 테스트 발송</p>
+                            </div>
+                        </div>
+
+                        <div class="mt-6 grid gap-4 md:grid-cols-2">
+                            <div class="rounded-2xl border border-slate-700 bg-slate-950/40 p-5">
+                                <p class="text-xs font-semibold uppercase tracking-wide text-slate-400">현재 상태</p>
+                                <p id="telegramStatusTitle" class="mt-3 text-lg font-bold text-white">연결 상태를 불러오는 중입니다.</p>
+                                <p id="telegramStatusCopy" class="mt-2 text-sm leading-6 text-slate-300">
+                                    API 응답을 확인한 뒤 다음 액션을 안내합니다.
+                                </p>
+                                <div class="mt-4 rounded-2xl border border-slate-700 bg-slate-900/70 p-4">
+                                    <p class="text-xs text-slate-400">Bot Username</p>
+                                    <p id="telegramBotName" class="mt-1 text-sm font-semibold text-white">@piwpiwtelegrambot</p>
+                                    <p class="mt-3 text-xs text-slate-400">연결된 Chat ID</p>
+                                    <p id="telegramChatId" class="mt-1 text-sm text-slate-200">미연결</p>
+                                    <p class="mt-3 text-xs text-slate-400">연결 시각</p>
+                                    <p id="telegramLinkedAt" class="mt-1 text-sm text-slate-200">확인 전</p>
+                                </div>
+                            </div>
+
+                            <div class="rounded-2xl border border-slate-700 bg-slate-950/40 p-5">
+                                <p class="text-xs font-semibold uppercase tracking-wide text-slate-400">다음 액션</p>
+                                <div id="telegramActionGuide" class="mt-3 rounded-2xl border border-slate-700 bg-slate-900/70 p-4 text-sm leading-6 text-slate-300">
+                                    Telegram 연결 상태에 따라 추천 액션이 표시됩니다.
+                                </div>
+                                <div class="mt-4 grid gap-3">
+                                    <button id="telegramLinkBtn" class="w-full rounded-xl bg-sky-500 px-4 py-3 font-semibold text-white transition hover:bg-sky-400">
+                                        Telegram 연결 링크 만들기
+                                    </button>
+                                    <button id="telegramTestBtn" class="w-full rounded-xl bg-emerald-600 px-4 py-3 font-semibold text-white transition hover:bg-emerald-500 disabled:cursor-not-allowed disabled:bg-slate-700 disabled:text-slate-400" disabled>
+                                        테스트 메시지 보내기
+                                    </button>
+                                    <button id="telegramRefreshBtn" class="w-full rounded-xl border border-slate-600 px-4 py-3 font-semibold text-slate-200 transition hover:border-slate-500 hover:bg-slate-800">
+                                        상태 새로고침
+                                    </button>
+                                    <button id="telegramUnlinkBtn" class="w-full rounded-xl border border-rose-500/40 px-4 py-3 font-semibold text-rose-200 transition hover:bg-rose-500/10 disabled:cursor-not-allowed disabled:border-slate-700 disabled:text-slate-500" disabled>
+                                        Telegram 연결 해제
+                                    </button>
+                                </div>
+                                <div id="telegramLinkPanel" class="mt-4 hidden rounded-2xl border border-sky-400/30 bg-sky-500/10 p-4">
+                                    <p class="text-xs font-semibold uppercase tracking-wide text-sky-200">연결 링크</p>
+                                    <a id="telegramLinkAnchor" href="#" target="_blank" rel="noopener noreferrer" class="mt-2 block break-all text-sm font-medium text-white underline underline-offset-4"></a>
+                                    <p id="telegramLinkInstructions" class="mt-3 text-sm leading-6 text-sky-100"></p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <div class="settings-card rounded-xl p-8 border border-slate-700">
                         <h3 class="text-xl font-bold text-white mb-6">발행 설정</h3>
                         <div class="space-y-4">
                             <label class="flex items-center gap-3"><input type="checkbox" checked class="w-4 h-4 rounded"><span class="text-white">자동 최적 시간 발행</span></label>
@@ -47,7 +141,7 @@
                         </div>
                     </div>
 
-                    <div class="bg-slate-800 rounded-xl p-8 border border-slate-700">
+                    <div class="settings-card rounded-xl p-8 border border-slate-700">
                         <h3 class="text-xl font-bold text-white mb-6">콘텐츠 필터</h3>
                         <div class="space-y-4">
                             <div>
@@ -63,10 +157,188 @@
     </div>
     <script>
         requireAuth();
+
+        const telegramState = {
+            linked: false,
+            statusPayload: null,
+            linkPayload: null,
+            pollTimer: null,
+        };
+
+        function formatIso(value) {
+            if (!value) return '미연결';
+            const date = new Date(value);
+            if (Number.isNaN(date.getTime())) return value;
+            return date.toLocaleString('ko-KR');
+        }
+
+        function setTelegramView() {
+            const pill = document.getElementById('telegramStatusPill');
+            const title = document.getElementById('telegramStatusTitle');
+            const copy = document.getElementById('telegramStatusCopy');
+            const chatId = document.getElementById('telegramChatId');
+            const linkedAt = document.getElementById('telegramLinkedAt');
+            const guide = document.getElementById('telegramActionGuide');
+            const testBtn = document.getElementById('telegramTestBtn');
+            const unlinkBtn = document.getElementById('telegramUnlinkBtn');
+            const payload = telegramState.statusPayload || {};
+            const linkPanel = document.getElementById('telegramLinkPanel');
+
+            if (telegramState.linked) {
+                pill.className = 'status-pill ok';
+                pill.textContent = '연결 완료';
+                title.textContent = 'Telegram 알림이 활성화되어 있습니다.';
+                copy.textContent = payload.bot_can_send === false
+                    ? '연결은 완료되었지만 서버에 Telegram bot token이 없어 실제 메시지 전송은 아직 비활성화 상태입니다.'
+                    : 'SNS 자동화 결과를 Telegram으로 받을 수 있습니다. 테스트 메시지로 실제 수신 여부를 확인하세요.';
+                chatId.textContent = payload.masked_chat_id || payload.telegram_chat_id || '확인 필요';
+                linkedAt.textContent = formatIso(payload.linked_at);
+                guide.innerHTML = payload.bot_can_send === false
+                    ? '다음 단계는 서버 환경변수에 `TELEGRAM_BOT_TOKEN`을 설정하는 것입니다. 설정 후 테스트 메시지 전송이 활성화됩니다.'
+                    : '지금 할 일은 간단합니다. 테스트 메시지를 보내고, 예약 발행이나 자동화 실행 후 알림이 실제로 오는지 확인하면 됩니다.';
+                testBtn.disabled = payload.bot_can_send === false;
+                unlinkBtn.disabled = false;
+                if (linkPanel && !telegramState.linkPayload) {
+                    linkPanel.classList.add('hidden');
+                }
+            } else if (payload.link_pending) {
+                pill.className = 'status-pill warn';
+                pill.textContent = '연결 대기';
+                title.textContent = 'Telegram에서 /start 를 기다리는 중입니다.';
+                copy.textContent = '방금 생성한 링크로 Telegram bot을 열고 /start 를 보내면 이 화면이 자동으로 연결 완료 상태로 바뀝니다.';
+                chatId.textContent = '연결 대기';
+                linkedAt.textContent = formatIso(payload.pending_expires_at);
+                guide.innerHTML = '브라우저를 닫지 않아도 됩니다. Telegram에서 /start 를 보낸 뒤 5초 정도 기다리거나 새로고침 버튼을 눌러 연결 상태를 확인하세요.';
+                testBtn.disabled = true;
+                unlinkBtn.disabled = false;
+            } else {
+                pill.className = 'status-pill warn';
+                pill.textContent = '미연결';
+                title.textContent = 'Telegram 알림이 아직 연결되지 않았습니다.';
+                copy.textContent = payload.message || '연결 링크를 만든 뒤 Telegram에서 /start 를 보내면 계정 연결을 진행할 수 있습니다.';
+                chatId.textContent = '미연결';
+                linkedAt.textContent = '미연결';
+                guide.innerHTML = '먼저 연결 링크를 생성한 뒤 Telegram에서 봇을 열어 `/start`를 보내세요. 그 다음 상태 새로고침으로 연결 여부를 확인합니다.';
+                testBtn.disabled = true;
+                unlinkBtn.disabled = true;
+            }
+        }
+
+        function startTelegramPolling() {
+            stopTelegramPolling();
+            telegramState.pollTimer = window.setInterval(async () => {
+                await loadTelegramStatus({ silent: true });
+                if (telegramState.linked || !(telegramState.statusPayload?.link_pending)) {
+                    stopTelegramPolling();
+                }
+            }, 5000);
+        }
+
+        function stopTelegramPolling() {
+            if (telegramState.pollTimer) {
+                window.clearInterval(telegramState.pollTimer);
+                telegramState.pollTimer = null;
+            }
+        }
+
+        async function loadTelegramStatus(options = {}) {
+            const pill = document.getElementById('telegramStatusPill');
+            pill.className = 'status-pill warn';
+            pill.textContent = '상태 확인 중';
+
+            try {
+                const response = await apiFetch('/api/telegram/status');
+                if (!response.ok) {
+                    throw new Error(`status ${response.status}`);
+                }
+                telegramState.statusPayload = await response.json();
+                telegramState.linked = telegramState.statusPayload.telegram_enabled === true;
+                if (telegramState.linked || !telegramState.statusPayload.link_pending) {
+                    stopTelegramPolling();
+                }
+                setTelegramView();
+            } catch (error) {
+                telegramState.linked = false;
+                telegramState.statusPayload = {
+                    message: '상태를 불러오지 못했습니다. 인증 또는 백엔드 연결을 확인하세요.',
+                };
+                stopTelegramPolling();
+                setTelegramView();
+                if (!options.silent) {
+                    showError('Telegram 상태 조회 실패: ' + error.message);
+                }
+            }
+        }
+
+        async function createTelegramLink() {
+            try {
+                const response = await apiFetch('/api/telegram/link-account');
+                if (!response.ok) {
+                    throw new Error(`status ${response.status}`);
+                }
+                telegramState.linkPayload = await response.json();
+                document.getElementById('telegramLinkAnchor').href = telegramState.linkPayload.linking_url;
+                document.getElementById('telegramLinkAnchor').textContent = telegramState.linkPayload.linking_url;
+                document.getElementById('telegramLinkInstructions').textContent = telegramState.linkPayload.instructions || 'Telegram에서 /start 를 보내고 돌아와 상태를 새로고침하세요.';
+                document.getElementById('telegramBotName').textContent = '@' + (telegramState.linkPayload.bot_username || 'piwpiwtelegrambot');
+                document.getElementById('telegramLinkPanel').classList.remove('hidden');
+                telegramState.statusPayload = {
+                    ...(telegramState.statusPayload || {}),
+                    link_pending: true,
+                    pending_expires_at: telegramState.linkPayload.expires_at || null,
+                    message: 'Telegram bot에서 /start 를 보내면 연결이 완료됩니다.',
+                };
+                telegramState.linked = false;
+                setTelegramView();
+                startTelegramPolling();
+                showSuccess('Telegram 연결 링크를 생성했습니다.');
+            } catch (error) {
+                showError('Telegram 연결 링크 생성 실패: ' + error.message);
+            }
+        }
+
+        async function sendTelegramTestMessage() {
+            try {
+                const response = await apiFetch('/api/telegram/send-test-message', {
+                    method: 'POST',
+                    body: JSON.stringify({}),
+                });
+                if (!response.ok) {
+                    throw new Error(`status ${response.status}`);
+                }
+                showSuccess('테스트 메시지를 전송했습니다.');
+            } catch (error) {
+                showError('Telegram 테스트 메시지 전송 실패: ' + error.message);
+            }
+        }
+
+        async function unlinkTelegram() {
+            try {
+                const response = await apiFetch('/api/telegram/unlink-account', {
+                    method: 'POST',
+                    body: JSON.stringify({}),
+                });
+                if (!response.ok) {
+                    throw new Error(`status ${response.status}`);
+                }
+                document.getElementById('telegramLinkPanel').classList.add('hidden');
+                telegramState.linkPayload = null;
+                stopTelegramPolling();
+                showSuccess('Telegram 연결을 해제했습니다.');
+                await loadTelegramStatus();
+            } catch (error) {
+                showError('Telegram 연결 해제 실패: ' + error.message);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('telegramLinkBtn').addEventListener('click', createTelegramLink);
+            document.getElementById('telegramTestBtn').addEventListener('click', sendTelegramTestMessage);
+            document.getElementById('telegramRefreshBtn').addEventListener('click', loadTelegramStatus);
+            document.getElementById('telegramUnlinkBtn').addEventListener('click', unlinkTelegram);
+            loadTelegramStatus();
+        });
     </script>
     <script src="../mobile-optimization.js" defer></script>
 </body>
 </html>
-
-
-

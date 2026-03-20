@@ -28,6 +28,12 @@ NEXT_ACTION: <what the receiving agent should do>
 BLOCKERS: <none | description>
 ```
 
+## RULE 2.5: Minimal Edit Principle
+- Scope-only editing is mandatory: only files required by the task may be changed.
+- No speculative edits outside the approved task scope.
+- Do not repeat retries without new evidence from latest logs.
+- Bundle fixes into one minimal patch per request when feasible.
+
 ---
 
 ## RULE 3: Conflict Escalation

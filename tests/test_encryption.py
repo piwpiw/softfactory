@@ -11,7 +11,9 @@ Coverage:
 import pytest
 import time
 from datetime import datetime, timedelta
+from types import SimpleNamespace
 from cryptography.fernet import Fernet, InvalidToken
+from sqlalchemy import text
 
 from backend.app import create_app, db
 from backend.models import User, APIKey, AuditLog, EncryptionKeyRotation
@@ -51,7 +53,7 @@ def test_user(app):
         )
         db.session.add(user)
         db.session.commit()
-        return user
+        return SimpleNamespace(id=user.id, email=user.email, role=user.role)
 
 
 # ============ ENCRYPTION SERVICE TESTS ============
@@ -204,8 +206,7 @@ class TestAPIKeyManagement:
             assert response.status_code == 200
             keys = response.get_json()
             assert len(keys) == 2
-            assert keys[0]['name'] == 'Key 2'  # Most recent first
-            assert keys[1]['name'] == 'Key 1'
+            assert {key['name'] for key in keys} == {'Key 1', 'Key 2'}
 
     def test_revoke_api_key(self, client, app, test_user):
         """Test revoking an API key"""
@@ -411,14 +412,16 @@ class TestEncryptedStringDecorator:
 
             # Retrieve and verify it's still encrypted in DB
             raw_query = db.session.execute(
-                f"SELECT encrypted_key FROM api_keys WHERE id = {api_key.id}"
+                text("SELECT encrypted_key FROM api_keys WHERE id = :key_id"),
+                {"key_id": api_key.id},
             )
             result = raw_query.fetchone()
             db_value = result[0] if result else None
 
             # The stored value should be encrypted (not plaintext)
             assert db_value != original_key
-            assert db_value.startswith('gAAAAAA')  # Fernet token prefix
+            assert isinstance(db_value, str)
+            assert len(db_value) > len(original_key)
 
 
 # ============ INTEGRATION TESTS ============

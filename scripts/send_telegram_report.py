@@ -87,9 +87,9 @@ Deployment Time:
 
 📚 DOCUMENTATION COMPLETE
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-✅ DOCKER_QUICK_START.md — 5-step deployment guide
-✅ DEPLOYMENT_CHECKLIST.md — Pre-deployment verification
-✅ FINAL_COMPLETION_REPORT.md — Comprehensive report
+✅ docs/runbooks/DOCKER_QUICK_START.md — 5-step deployment guide
+✅ docs/checklists/DEPLOYMENT_CHECKLIST.md — Pre-deployment verification
+✅ docs/archive/root-legacy/FINAL_COMPLETION_REPORT.md — Comprehensive report
 ✅ ADR-0010 — Architecture decision recorded
 
 🚀 NEXT STEPS TO PRODUCTION

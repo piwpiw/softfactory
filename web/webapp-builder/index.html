@@ -6,33 +6,50 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#111827">
-<title>WebApp Builder — SoftFactory</title>
+    <title>웹앱 빌더 — SoftFactory</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="../platform/api.js"></script>
     <style>body { font-family: 'Inter', sans-serif; }</style>
     <link rel="stylesheet" href="../responsive-framework.css">
-  </head>
-<body class="bg-slate-950 text-slate-100">
+</head>
+<body class="bg-slate-950 text-slate-100 soft-shell">
     <div class="flex h-screen overflow-hidden">
-        <aside class="w-64 bg-slate-900 border-r border-slate-800 flex flex-col shrink-0">
+        <aside class="w-64 soft-sidebar border-r border-slate-800 flex flex-col shrink-0">
             <div class="p-6 border-b border-slate-800">
-                <a href="../platform/dashboard.html" class="flex items-center gap-3">
-                    <span class="text-2xl">🏭</span>
-                    <div><h1 class="font-bold text-white text-sm">SoftFactory</h1><p class="text-xs text-slate-400">← Back</p></div>
+                <a href="../platform/index.html" class="flex items-center gap-3">
+                    <span class="text-2xl">💻</span>
+                    <div><h1 class="font-bold text-white text-sm">SoftFactory</h1><p class="text-xs text-slate-400">웹앱 빌더</p></div>
                 </a>
             </div>
-            <nav class="flex-1 p-6 space-y-2 overflow-y-auto">
-    <button class="hamburger" aria-label="Toggle navigation menu">
-      <span></span>
-      <span></span>
-      <span></span>
-    </button>
-                <p class="text-xs font-semibold text-slate-400 uppercase px-4 mb-3">💻 WebApp</p>
-                <a href="index.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg bg-violet-600 text-white font-medium">🏠 홈</a>
-                <a href="curriculum.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">📚 커리큘럼</a>
-                <a href="enroll.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">✍️ 등록</a>
-                <a href="my-apps.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">📱 내 앱</a>
+            <nav class="soft-nav-tree flex-1 p-6 overflow-y-auto">
+                <button class="hamburger" aria-label="메뉴 열기/닫기"><span></span><span></span><span></span></button>
+                <details class="soft-nav-group" open>
+                    <summary class="soft-nav-summary"><span>플랫폼</span></summary>
+                    <div class="soft-nav-sub">
+                        <a href="../platform/index.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-slate-800 transition"><span aria-hidden="true">🏭</span> 플랫폼 홈</a>
+                        <a href="../platform/dashboard.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-slate-800 transition"><span aria-hidden="true">📊</span> 운영 대시보드</a>
+                    </div>
+                </details>
+                <details class="soft-nav-group" open>
+                    <summary class="soft-nav-summary"><span>현재 서비스</span></summary>
+                    <div class="soft-nav-sub">
+                        <a href="index.html" aria-current="page" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg bg-violet-600/20 border-l-2 border-violet-500 text-white"><span aria-hidden="true">💻</span> 운영 홈</a>
+                        <a href="curriculum.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-slate-800 transition"><span aria-hidden="true">📚</span> 커리큘럼</a>
+                        <a href="enroll.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-slate-800 transition"><span aria-hidden="true">✍️</span> 등록</a>
+                        <a href="my-apps.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-slate-800 transition"><span aria-hidden="true">📱</span> 내 앱</a>
+                    </div>
+                </details>
+                <details class="soft-nav-group" open>
+                    <summary class="soft-nav-summary"><span>다른 서비스</span></summary>
+                    <div class="soft-nav-sub">
+                        <a href="../sns-auto/index.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-slate-800 transition"><span aria-hidden="true">📱</span> SNS 자동화</a>
+                        <a href="../review/index.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-slate-800 transition"><span aria-hidden="true">⭐</span> 리뷰</a>
+                        <a href="../coocook/index.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-slate-800 transition"><span aria-hidden="true">🍳</span> CooCook</a>
+                        <a href="../ai-automation/index.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-slate-800 transition"><span aria-hidden="true">🤖</span> AI 자동화</a>
+                        <a href="../instagram-cardnews/index.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-slate-800 transition"><span aria-hidden="true">📸</span> 카드뉴스</a>
+                    </div>
+                </details>
             </nav>
             <div class="p-6 border-t border-slate-800">
                 <button onclick="logout()" class="p-2 hover:bg-slate-800 rounded-lg">🚪</button>
@@ -40,68 +57,236 @@
         </aside>
         <div class="flex-1 flex flex-col overflow-hidden">
             <header class="h-16 bg-slate-900 border-b border-slate-800 px-6 flex items-center justify-between shrink-0">
-                <div><h2 class="text-xl font-bold text-white">💻 WebApp Builder</h2><p class="text-xs text-slate-400">8주 부트캠프</p></div>
-                <a href="enroll.html" class="px-4 py-2 bg-violet-600 hover:bg-violet-700 text-white rounded-lg font-medium text-sm">지금 등록</a>
+                <div>
+                    <h2 class="text-xl font-bold text-white">웹앱 빌더</h2>
+                    <p class="text-xs text-slate-400">앱 생성, 배포 상태, 실행 로그를 같은 순서로 봅니다.</p>
+                </div>
+                <a href="enroll.html" class="px-4 py-2 bg-violet-600 hover:bg-violet-700 text-white rounded-lg font-medium text-sm">등록 열기</a>
             </header>
             <main class="flex-1 overflow-y-auto p-6 space-y-6">
-                <div class="bg-gradient-to-r from-violet-900 to-violet-950 rounded-xl p-8 border border-violet-700">
-                    <h1 class="text-3xl font-bold text-white mb-2">업무 자동화 + 웹앱 개발</h1>
-                    <p class="text-violet-200 mb-6">초보자도 쉽게 배우는 8주 집중 부트캠프</p>
-                    <a href="enroll.html" class="inline-block px-6 py-3 bg-violet-600 hover:bg-violet-700 text-white rounded-lg font-semibold transition">지금 신청하기 →</a>
-                </div>
-
-                <div>
-                    <h3 class="text-lg font-bold text-white mb-4">📚 커리큘럼 (8주)</h3>
-                    <div class="space-y-3">
-                        <div class="flex gap-4 p-4 bg-slate-800 rounded-lg border border-slate-700">
-                            <div class="text-2xl font-bold text-violet-400">1-2주</div>
-                            <div>
-                                <p class="font-semibold text-white">자동화 기초</p>
-                                <p class="text-sm text-slate-400">이메일, 데이터 입력 자동화</p>
-                            </div>
+                <section class="sf-page-intro">
+                    <div class="sf-page-intro-grid">
+                        <div class="sf-page-intro-head">
+                            <span class="sf-page-intro-kicker">Webapp Builder</span>
+                            <h3 class="sf-page-intro-title">템플릿으로 앱을 만들고, 배포 상태를 확인하고, 실행 로그를 읽습니다.</h3>
+                            <p class="sf-page-intro-copy">설명보다 작업판이 먼저 보이도록 구조를 줄였습니다. 이 화면에서 다음 실행과 현재 상태를 먼저 판단한 뒤 상세 로그를 확인하면 됩니다.</p>
                         </div>
-                        <div class="flex gap-4 p-4 bg-slate-800 rounded-lg border border-slate-700">
-                            <div class="text-2xl font-bold text-violet-400">3-4주</div>
-                            <div>
-                                <p class="font-semibold text-white">심화 자동화</p>
-                                <p class="text-sm text-slate-400">CRM, 보고서 자동화</p>
-                            </div>
-                        </div>
-                        <div class="flex gap-4 p-4 bg-slate-800 rounded-lg border border-slate-700">
-                            <div class="text-2xl font-bold text-violet-400">5-6주</div>
-                            <div>
-                                <p class="font-semibold text-white">웹앱 기초</p>
-                                <p class="text-sm text-slate-400">HTML, CSS, JavaScript</p>
-                            </div>
-                        </div>
-                        <div class="flex gap-4 p-4 bg-slate-800 rounded-lg border border-slate-700">
-                            <div class="text-2xl font-bold text-violet-400">7-8주</div>
-                            <div>
-                                <p class="font-semibold text-white">웹앱 개발</p>
-                                <p class="text-sm text-slate-400">배포 및 포트폴리오</p>
-                            </div>
-                        </div>
+                        <article class="sf-primary-action-card">
+                            <p class="sf-primary-action-label">지금 해야 할 일</p>
+                            <h4 class="sf-primary-action-title">파이프라인 이름을 확인하고 다음 실행을 시작하세요.</h4>
+                            <p class="sf-primary-action-copy">새 앱 생성이나 배포 실행 둘 중 하나만 먼저 선택하면 나머지 상태는 아래에서 이어집니다.</p>
+                            <button id="createAppBtn" class="sf-primary-action-cta" type="button">앱 생성 시작</button>
+                        </article>
                     </div>
-                </div>
+                </section>
 
-                <div class="bg-slate-800 rounded-xl p-6 border border-slate-700">
-                    <h3 class="text-lg font-bold text-white mb-4">💰 요금</h3>
-                    <div class="grid grid-cols-2 gap-6">
-                        <div class="p-4 border border-violet-600 rounded-lg bg-violet-900/30">
-                            <p class="text-sm text-slate-400 mb-1">평일 (월-금 7-9PM)</p>
-                            <p class="text-2xl font-bold text-white">₩590,000</p>
+                <section class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <article class="rounded-xl border border-slate-800 bg-slate-900 p-5">
+                        <p class="text-xs text-slate-400">현재 작업</p>
+                        <p id="activeFlow" class="text-2xl font-black text-violet-300">-</p>
+                        <p id="flowState" class="text-xs text-slate-500 mt-2">상태 없음</p>
+                    </article>
+                    <article class="rounded-xl border border-slate-800 bg-slate-900 p-5">
+                        <p class="text-xs text-slate-400">연결된 앱</p>
+                        <p id="appCount" class="text-2xl font-black text-emerald-300">0</p>
+                        <p class="text-xs text-slate-500 mt-2">등록된 프로젝트</p>
+                    </article>
+                    <article class="rounded-xl border border-slate-800 bg-slate-900 p-5">
+                        <p class="text-xs text-slate-400">최근 배포</p>
+                        <p id="lastDeploy" class="text-2xl font-black text-cyan-300">-</p>
+                        <p class="text-xs text-slate-500 mt-2" id="deployState">기록 없음</p>
+                    </article>
+                </section>
+
+                <section class="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
+                    <article class="rounded-xl border border-slate-800 bg-slate-900 p-6">
+                        <div class="sf-section-head">
+                            <div>
+                                <h3 class="text-lg font-bold text-white">현재 작업판</h3>
+                                <p class="sf-section-caption">파이프라인 이름과 실행 종류만 먼저 정하고 메모는 필요한 경우에만 적습니다.</p>
+                            </div>
+                            <button id="refreshBuilderBtn" class="soft-btn px-3 py-2 rounded-lg text-sm" type="button">상태 새로고침</button>
                         </div>
-                        <div class="p-4 border border-slate-700 rounded-lg">
-                            <p class="text-sm text-slate-400 mb-1">주말 (토-일 10AM-2PM)</p>
-                            <p class="text-2xl font-bold text-white">₩590,000</p>
+                        <div class="space-y-3 mt-4">
+                            <div class="grid gap-2 md:grid-cols-2">
+                                <input id="pipelineName" type="text" class="bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm" placeholder="파이프라인 이름" value="softfactory-webapp-pipeline" />
+                                <select id="pipelineAction" class="bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm">
+                                    <option value="scan">새 템플릿 탐지</option>
+                                    <option value="build">빌드 실행</option>
+                                    <option value="deploy">배포 실행</option>
+                                    <option value="report">리포트 생성</option>
+                                </select>
+                            </div>
+                            <textarea id="pipelineNotes" rows="3" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm" placeholder="실행 사유 또는 주의사항을 입력하세요."></textarea>
+                            <div class="flex flex-wrap gap-3">
+                                <button id="runPipelineBtn" class="px-4 py-2 rounded-lg bg-violet-600 hover:bg-violet-700 text-white font-semibold" type="button">파이프라인 실행</button>
+                                <button id="deployAllBtn" class="px-4 py-2 rounded-lg border border-violet-400 text-violet-100 hover:bg-violet-900/40" type="button">배포 실행</button>
+                            </div>
                         </div>
-                    </div>
-                </div>
+                    </article>
+
+                    <article class="rounded-xl border border-slate-800 bg-slate-900 p-6">
+                        <h3 class="text-lg font-bold text-white mb-2">준비 상태</h3>
+                        <p class="text-sm text-slate-400 mb-4">생성, 빌드, 배포 순서로 이어집니다.</p>
+                        <div class="space-y-3 text-sm">
+                            <div class="rounded-xl border border-slate-800 bg-slate-950/60 p-4">
+                                <p class="text-white font-semibold">1. 앱 생성</p>
+                                <p class="text-slate-400 mt-2">새 앱을 만들면 아래 목록에 바로 추가됩니다.</p>
+                            </div>
+                            <div class="rounded-xl border border-slate-800 bg-slate-950/60 p-4">
+                                <p class="text-white font-semibold">2. 빌드 실행</p>
+                                <p class="text-slate-400 mt-2">현재 선택한 파이프라인으로 빌드를 실행합니다.</p>
+                            </div>
+                            <div class="rounded-xl border border-slate-800 bg-slate-950/60 p-4">
+                                <p class="text-white font-semibold">3. 배포 확인</p>
+                                <p class="text-slate-400 mt-2">최근 배포 시간과 로그를 기준으로 상태를 확인합니다.</p>
+                            </div>
+                        </div>
+                    </article>
+                </section>
+
+                <section class="grid gap-6 lg:grid-cols-[0.85fr_1.15fr]">
+                    <article class="rounded-xl border border-slate-800 bg-slate-900 p-6">
+                        <h3 class="text-lg font-bold text-white mb-4">실행 로그</h3>
+                        <ul id="pipelineLog" class="space-y-2 text-sm text-slate-300 max-h-64 overflow-y-auto pr-1">
+                            <li class="text-slate-500">로그 대기 중</li>
+                        </ul>
+                    </article>
+
+                    <article class="rounded-xl border border-slate-800 bg-slate-900 p-6">
+                        <div class="sf-section-head">
+                            <div>
+                                <h3 class="text-lg font-bold text-white">연결된 앱</h3>
+                                <p class="sf-section-caption">상세 상태는 아래 목록으로 내려서 확인합니다.</p>
+                            </div>
+                            <a href="my-apps.html" class="text-sm text-violet-300 hover:text-violet-200">내 앱 보기</a>
+                        </div>
+                        <div id="appsGrid" class="grid gap-3 md:grid-cols-2 mt-4"></div>
+                    </article>
+                </section>
             </main>
         </div>
     </div>
     <script>
         requireAuth();
+
+        const TXT = {
+            ready: "\uC900\uBE44",
+            running: "\uC2E4\uD589 \uC911",
+            waiting: "\uB300\uAE30",
+            none: "\uAE30\uB85D \uC5C6\uC74C",
+            noRecentDeploy: "\uCD5C\uADFC \uBC30\uD3EC \uC5C6\uC74C",
+            lastDeployPrefix: "\uB9C8\uC9C0\uB9C9 \uBC30\uD3EC: ",
+            templatePrefix: "\uD15C\uD50C\uB9BF: ",
+            statusPrefix: "\uC0C1\uD0DC: ",
+            syncPrefix: "\uB9C8\uC9C0\uB9C9 \uB3D9\uAE30\uD654: ",
+            logBoot: "\uC2DC\uC2A4\uD15C \uCD08\uAE30\uD654 \uC644\uB8CC",
+            logTemplate: "\uBAA8\uB4C8 \uC801\uC7AC: \uD15C\uD50C\uB9BF \uB9E4\uB2C8\uC800",
+            logHealthy: "\uC5F0\uACB0 \uC11C\uBE44\uC2A4 \uC0C1\uD0DC \uC815\uC0C1",
+            logRequest: "\uC694\uCCAD",
+            logDone: "\uC644\uB8CC",
+            logTemplateDone: "\uD15C\uD50C\uB9BF \uBAA9\uB85D \uB3D9\uAE30\uD654 \uC644\uB8CC",
+            logManualRefresh: "\uC218\uB3D9 \uC0C1\uD0DC \uC810\uAC80",
+            logNewApp: "\uC0C8 \uC571 \uC0DD\uC131: ",
+            logMemo: "\uBA54\uBAA8: "
+        };
+
+        const apps = [
+            { id: "web-dashboard", name: "\uC6F9 \uB300\uC2DC\uBCF4\uB4DC", status: "\uC6B4\uC601", template: "analytics", lastSync: "\uBC29\uAE08 \uC804" },
+            { id: "review-ops", name: "\uB9AC\uBDF0 \uC6B4\uC601", status: "\uC6B4\uC601", template: "automation", lastSync: "16\uBD84 \uC804" },
+            { id: "sns-auto-bot", name: "SNS \uC790\uB3D9 \uD3EC\uC2A4\uD305", status: "\uB300\uAE30", template: "publishing", lastSync: "1\uC2DC\uAC04 \uC804" }
+        ];
+        const log = [TXT.logBoot, TXT.logTemplate, TXT.logHealthy];
+        const state = {
+            running: null,
+            total: 0,
+            lastDeploy: null
+        };
+
+        function logAppend(message) {
+            const target = document.getElementById("pipelineLog");
+            const item = document.createElement("li");
+            item.className = "border-b border-slate-800 pb-2 last:border-0 last:pb-0";
+            item.textContent = `${new Date().toLocaleTimeString("ko-KR")}: ${message}`;
+            target.prepend(item);
+            while (target.children.length > 15) target.removeChild(target.lastElementChild);
+        }
+
+        function renderDashboard() {
+            state.total = apps.length;
+            document.getElementById("appCount").textContent = String(state.total);
+            document.getElementById("activeFlow").textContent = state.running || TXT.ready;
+            document.getElementById("flowState").textContent = state.running ? TXT.running : TXT.waiting;
+            document.getElementById("lastDeploy").textContent = state.lastDeploy || "-";
+            document.getElementById("deployState").textContent = state.lastDeploy ? `${TXT.lastDeployPrefix}${state.lastDeploy}` : TXT.noRecentDeploy;
+
+            const grid = document.getElementById("appsGrid");
+            grid.innerHTML = "";
+            apps.forEach((app) => {
+                const item = document.createElement("div");
+                item.className = "rounded-lg border border-slate-800 p-4";
+                item.innerHTML = `
+                    <p class="text-xs text-slate-500">ID: ${app.id}</p>
+                    <p class="text-lg font-bold text-white">${app.name}</p>
+                    <p class="text-xs text-slate-400 mt-2">${TXT.templatePrefix}${app.template}</p>
+                    <p class="text-xs text-slate-400 mt-1">${TXT.statusPrefix}${app.status}</p>
+                    <p class="text-xs text-slate-500 mt-1">${TXT.syncPrefix}${app.lastSync}</p>
+                `;
+                grid.appendChild(item);
+            });
+        }
+
+        function appendLogFromAction(action, name) {
+            const suffix = name ? `(${name})` : "";
+            logAppend(`${action} ${TXT.logRequest} ${suffix}`.trim());
+        }
+
+        function runAction(action, name) {
+            state.running = action;
+            renderDashboard();
+            appendLogFromAction(action, name);
+            setTimeout(() => {
+                state.running = null;
+                const now = new Date().toLocaleString("ko-KR");
+                if (action === "deploy") {
+                    state.lastDeploy = now;
+                }
+                logAppend(`${action} ${TXT.logDone}`);
+                renderDashboard();
+                if (action === "scan") {
+                    logAppend(TXT.logTemplateDone);
+                }
+            }, 900);
+        }
+
+        function boot() {
+            const logWrap = document.getElementById("pipelineLog");
+            logWrap.innerHTML = "";
+            log.slice(-1).forEach((item) => logAppend(item));
+            renderDashboard();
+
+            document.getElementById("refreshBuilderBtn").addEventListener("click", () => {
+                logAppend(TXT.logManualRefresh);
+                renderDashboard();
+            });
+            document.getElementById("createAppBtn").addEventListener("click", () => {
+                const name = document.getElementById("pipelineName").value || "new-app";
+                const newApp = { id: `app-${Date.now()}`, name: name, status: TXT.ready, template: "custom", lastSync: "\uBC29\uAE08 \uC804" };
+                apps.unshift(newApp);
+                logAppend(`${TXT.logNewApp}${name}`);
+                renderDashboard();
+            });
+            document.getElementById("deployAllBtn").addEventListener("click", () => runAction("deploy", apps[0]?.name));
+            document.getElementById("runPipelineBtn").addEventListener("click", () => {
+                const action = document.getElementById("pipelineAction").value;
+                const name = document.getElementById("pipelineName").value;
+                const note = document.getElementById("pipelineNotes").value.trim();
+                runAction(action, name);
+                if (note) logAppend(`${TXT.logMemo}${note}`);
+            });
+        }
+
+        document.addEventListener("DOMContentLoaded", boot);
     </script>
     <script src="../mobile-optimization.js" defer></script>
 </body>

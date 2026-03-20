@@ -3,115 +3,443 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#111827">
-<title>CooCook — SoftFactory</title>
+    <base href="/coocook/">
+    <title>CooCook 운영 홈 - SoftFactory</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23ea580c'/%3E%3Ctext x='50%25' y='54%25' text-anchor='middle' font-size='28' font-family='Arial' fill='white'%3ECC%3C/text%3E%3C/svg%3E">
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="../platform/api.js"></script>
-    <style>body { font-family: 'Inter', sans-serif; }</style>
+    <script src="./coocook-taxonomy.js"></script>
     <link rel="stylesheet" href="../responsive-framework.css">
-  </head>
-<body class="bg-slate-950 text-slate-100">
+    <style>
+        body { font-family: "Inter", sans-serif; }
+        .glass-card { background: rgba(15, 23, 42, 0.78); backdrop-filter: blur(10px); }
+        .interactive-card { transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease; }
+        .interactive-card:hover { transform: translateY(-4px); box-shadow: 0 18px 45px rgba(2, 6, 23, 0.36); }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 soft-shell">
     <div class="flex h-screen overflow-hidden">
-        <aside class="w-64 bg-slate-900 border-r border-slate-800 flex flex-col shrink-0">
-            <div class="p-6 border-b border-slate-800">
-                <a href="../platform/dashboard.html" class="flex items-center gap-3">
-                    <span class="text-2xl">🏭</span>
-                    <div><h1 class="font-bold text-white text-sm">SoftFactory</h1><p class="text-xs text-slate-400">← Back</p></div>
+        <aside class="w-64 shrink-0 overflow-y-auto border-r border-slate-800 bg-slate-900">
+            <div class="border-b border-slate-800 p-6">
+                <a href="index.html" class="flex items-center gap-3">
+                    <span class="text-2xl">🍳</span>
+                    <div>
+                        <h1 class="text-sm font-bold text-white">CooCook</h1>
+                        <p class="text-xs text-slate-400">추천 흐름 운영</p>
+                    </div>
                 </a>
             </div>
-            <nav class="flex-1 p-6 space-y-2 overflow-y-auto">
-    <button class="hamburger" aria-label="Toggle navigation menu">
-      <span></span>
-      <span></span>
-      <span></span>
-    </button>
-                <p class="text-xs font-semibold text-slate-400 uppercase px-4 mb-3">🍳 CooCook</p>
-                <a href="index.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg bg-orange-600 text-white font-medium">🏠 홈</a>
-                <a href="explore.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">🔍 탐색</a>
-                <a href="my-bookings.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">📅 내 예약</a>
+            <nav class="soft-nav-tree flex-1 space-y-2 p-6">
+                <p class="px-4 text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">플랫폼</p>
+                <a href="../platform/index.html" class="soft-nav-link rounded-lg px-4 py-2.5 text-slate-300 hover:bg-slate-800">플랫폼 홈</a>
+                <p class="px-4 pt-4 text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">현재 서비스</p>
+                <a href="index.html" class="soft-nav-link rounded-lg border-l-2 border-orange-500 bg-orange-600/20 px-4 py-2.5 text-white">운영 홈</a>
+                <a href="explore.html" class="soft-nav-link rounded-lg px-4 py-2.5 text-slate-300 hover:bg-slate-800">셰프 탐색</a>
+                <a href="my-bookings.html" class="soft-nav-link rounded-lg px-4 py-2.5 text-slate-300 hover:bg-slate-800">예약</a>
+                <a href="recipes.html" class="soft-nav-link rounded-lg px-4 py-2.5 text-slate-300 hover:bg-slate-800">레시피</a>
+                <a href="shopping-list.html" class="soft-nav-link rounded-lg px-4 py-2.5 text-slate-300 hover:bg-slate-800">쇼핑리스트</a>
+                <a href="feed.html" class="soft-nav-link rounded-lg px-4 py-2.5 text-slate-300 hover:bg-slate-800">피드</a>
             </nav>
-            <div class="p-6 border-t border-slate-800">
-                <button onclick="logout()" class="p-2 hover:bg-slate-800 rounded-lg">🚪</button>
+            <div class="border-t border-slate-800 p-6">
+                <button id="sessionActionButton" class="w-full rounded-lg px-4 py-2 text-left text-slate-200 hover:bg-slate-800">로그아웃</button>
             </div>
         </aside>
-        <div class="flex-1 flex flex-col overflow-hidden">
-            <header class="h-16 bg-slate-900 border-b border-slate-800 px-6 flex items-center justify-between shrink-0">
-                <div><h2 class="text-xl font-bold text-white">🍳 CooCook - 셰프 마켓플레이스</h2><p class="text-xs text-slate-400">로컬 셰프와 요리 경험</p></div>
-                <a href="explore.html" class="px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-lg font-medium text-sm">셰프 탐색</a>
-            </header>
-            <main class="flex-1 overflow-y-auto p-6 space-y-6">
-                <!-- Hero Section -->
-                <div class="bg-gradient-to-r from-orange-900 to-orange-950 rounded-xl p-8 border border-orange-700">
-                    <h1 class="text-3xl font-bold text-white mb-2">맛있는 경험을 예약하세요</h1>
-                    <p class="text-orange-200 mb-4">서울의 최고 셰프들과 함께하는 특별한 요리 경험</p>
-                    <a href="explore.html" class="inline-block px-6 py-3 bg-orange-600 hover:bg-orange-700 text-white rounded-lg font-semibold transition">지금 예약하기</a>
-                </div>
 
-                <!-- Stats -->
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="bg-slate-800 rounded-xl p-6 border border-slate-700">
-                        <p class="text-slate-400 text-sm mb-2">활동 중인 셰프</p>
-                        <p class="text-3xl font-bold text-white">5</p>
-                    </div>
-                    <div class="bg-slate-800 rounded-xl p-6 border border-slate-700">
-                        <p class="text-slate-400 text-sm mb-2">총 예약</p>
-                        <p class="text-3xl font-bold text-orange-400">24</p>
-                    </div>
-                    <div class="bg-slate-800 rounded-xl p-6 border border-slate-700">
-                        <p class="text-slate-400 text-sm mb-2">평균 만족도</p>
-                        <p class="text-3xl font-bold text-white">4.8★</p>
-                    </div>
-                </div>
-
-                <!-- Recommended Chefs -->
+        <div class="flex flex-1 flex-col overflow-hidden">
+            <header class="flex h-16 shrink-0 items-center justify-between border-b border-slate-800 bg-slate-900 px-6">
+                <button class="hamburger" aria-label="메뉴 열기" aria-expanded="false">
+                    <span></span><span></span><span></span>
+                </button>
                 <div>
-                    <h3 class="text-lg font-bold text-white mb-4">⭐ 추천 셰프</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4" id="chefsGrid">
-                        <div class="bg-slate-800 rounded-lg p-4 border border-slate-700 animate-pulse">
-                            <div class="h-6 bg-slate-700 rounded mb-4 w-3/4"></div>
-                            <div class="space-y-2">
-                                <div class="h-4 bg-slate-700 rounded"></div>
+                    <h2 class="text-xl font-bold text-white">CooCook 운영 홈</h2>
+                    <p class="text-xs text-slate-400">국가와 요리 흐름을 정한 뒤 레시피, 예약, 쇼핑리스트로 순차 이동합니다.</p>
+                </div>
+                <a id="headerCta" href="recipes.html" class="rounded-lg bg-orange-600 px-4 py-2 text-sm font-medium text-white hover:bg-orange-500">레시피 보기</a>
+            </header>
+
+            <main class="flex-1 overflow-y-auto p-6">
+                <section class="sf-page-intro">
+                    <div class="sf-page-intro-grid">
+                        <div class="sf-page-intro-head">
+                            <p class="sf-page-intro-kicker">CooCook Workflow</p>
+                            <h1 class="sf-page-intro-title">지금 필요한 요리 흐름을 먼저 고르고 다음 이동을 짧게 이어갑니다.</h1>
+                            <p class="sf-page-intro-copy">이 화면은 추천 흐름 입구입니다. 국가와 요리 기준을 정한 뒤 레시피 확인, 셰프 탐색, 쇼핑리스트 이동 순서가 위에서 아래로 이어집니다.</p>
+                            <div class="sf-inline-list">
+                                <span class="sf-inline-chip">국가 선택</span>
+                                <span class="sf-inline-chip">요리 확인</span>
+                                <span class="sf-inline-chip">레시피 이동</span>
+                            </div>
+                        </div>
+                        <article class="sf-primary-action-card">
+                            <p class="sf-primary-action-label">지금 해야 할 행동</p>
+                            <h2 class="sf-primary-action-title">현재 선택 기준으로 레시피부터 확인하세요.</h2>
+                            <p class="sf-primary-action-copy">레시피를 먼저 확인하면 이후 예약이나 쇼핑리스트 이동이 더 짧아집니다.</p>
+                            <a class="sf-primary-action-cta" href="recipes.html">레시피로 이동</a>
+                        </article>
+                    </div>
+                    <div class="sf-status-grid">
+                        <article class="sf-status-item">
+                            <span>현재 목적</span>
+                            <strong>탐색 시작</strong>
+                            <p>추천 흐름을 고르고 다음 화면으로 이동합니다.</p>
+                        </article>
+                        <article class="sf-status-item">
+                            <span>핵심 상태</span>
+                            <strong>레시피 우선</strong>
+                            <p>조리 흐름을 먼저 보면 선택 시간이 줄어듭니다.</p>
+                        </article>
+                        <article class="sf-status-item">
+                            <span>다음 단계</span>
+                            <strong>예약 또는 쇼핑리스트</strong>
+                            <p>필요한 후속 작업만 이어서 선택하면 됩니다.</p>
+                        </article>
+                    </div>
+                </section>
+
+                <section id="heroPanel" class="relative mt-6 overflow-hidden rounded-3xl border border-slate-800 p-6 lg:p-8">
+                    <div id="heroGradient" class="absolute inset-0 bg-gradient-to-br from-orange-500/20 via-amber-500/10 to-red-500/10 opacity-80"></div>
+                    <div class="relative grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
+                        <div class="space-y-4">
+                            <p id="heroBadge" class="inline-flex rounded-full px-3 py-1 text-xs font-semibold"></p>
+                            <div>
+                                <h1 id="heroTitle" class="text-3xl font-extrabold text-white lg:text-4xl"></h1>
+                                <p id="heroCopy" class="mt-3 max-w-2xl leading-7 text-slate-200"></p>
+                            </div>
+                            <div class="space-y-3">
+                                <div>
+                                    <p class="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Cuisine</p>
+                                    <div id="cuisineExplorer" class="flex flex-wrap gap-2"></div>
+                                </div>
+                                <div>
+                                    <p class="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Country</p>
+                                    <div id="countryExplorer" class="flex flex-wrap gap-2"></div>
+                                </div>
+                                <div>
+                                    <p class="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Menu</p>
+                                    <div id="menuExplorer" class="flex flex-wrap gap-2"></div>
+                                </div>
+                            </div>
+                            <div id="heroQuickLinks" class="grid gap-3 sm:grid-cols-3"></div>
+                        </div>
+                        <div class="glass-card overflow-hidden rounded-3xl border border-white/10">
+                            <img id="heroImage" src="" alt="" class="h-64 w-full object-cover">
+                            <div class="space-y-3 p-5">
+                                <div class="flex items-center justify-between">
+                                    <h3 class="font-semibold text-white">오늘의 추천 흐름</h3>
+                                    <span id="heroEmoji" class="text-3xl"></span>
+                                </div>
+                                <div id="heroHighlights" class="space-y-2 text-sm text-slate-300"></div>
                             </div>
                         </div>
                     </div>
-                </div>
+                </section>
+
+                <section class="mt-6 grid gap-4 md:grid-cols-3">
+                    <div class="glass-card rounded-2xl border border-slate-800 p-5">
+                        <p class="text-sm text-slate-400">현재 추천 요리</p>
+                        <p id="focusCuisine" class="mt-2 text-2xl font-bold text-white"></p>
+                        <p id="focusCuisineCopy" class="mt-2 text-sm text-slate-300"></p>
+                    </div>
+                    <div class="glass-card rounded-2xl border border-slate-800 p-5">
+                        <p class="text-sm text-slate-400">대표 카테고리</p>
+                        <div id="focusCategory" class="mt-2"></div>
+                        <p id="focusCategoryCopy" class="mt-2 text-sm text-slate-300"></p>
+                    </div>
+                    <div class="glass-card rounded-2xl border border-slate-800 p-5">
+                        <p class="text-sm text-slate-400">다음 이동</p>
+                        <div id="flowHint" class="mt-2 text-lg font-semibold text-white"></div>
+                        <p class="mt-2 text-sm text-slate-300">레시피, 피드, 쇼핑리스트를 같은 문맥으로 이어서 탐색합니다.</p>
+                    </div>
+                </section>
+
+                <section class="mt-6 space-y-4">
+                    <div>
+                        <h3 class="text-lg font-bold text-white">연결된 이동 경로</h3>
+                        <p class="text-sm text-slate-400">현재 선택 기준으로 바로 갈 수 있는 핵심 화면입니다.</p>
+                    </div>
+                    <div id="linkedRoutes" class="grid gap-4 lg:grid-cols-3"></div>
+                </section>
+
+                <section class="mt-6 space-y-4">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="text-lg font-bold text-white">추천 셰프</h3>
+                            <p class="text-sm text-slate-400">현재 요리 기준으로 바로 연결되는 셰프와 메뉴 카테고리입니다.</p>
+                        </div>
+                        <a id="browseChefsLink" href="explore.html" class="text-sm text-orange-300 hover:text-orange-200">셰프 전체 보기</a>
+                    </div>
+                    <div id="chefsGrid" class="grid gap-4 md:grid-cols-2 xl:grid-cols-4"></div>
+                </section>
+
+                <section class="mt-6 space-y-4">
+                    <div>
+                        <h3 class="text-lg font-bold text-white">메뉴 카테고리 묶음</h3>
+                        <p class="text-sm text-slate-400">같은 요리 안에서 어떤 메뉴 구성이 가능한지 빠르게 정리합니다.</p>
+                    </div>
+                    <div id="categoryMatrix" class="grid gap-4 md:grid-cols-2 xl:grid-cols-4"></div>
+                </section>
+
+                <section class="mt-6 space-y-4">
+                    <div>
+                        <h3 class="text-lg font-bold text-white">제휴 상품 연결</h3>
+                        <p class="text-sm text-slate-400">현재 국가와 요리 문맥에 맞춰 연결되는 쇼핑 링크를 제공합니다.</p>
+                    </div>
+                    <div id="affiliateShowcase" class="grid gap-4 md:grid-cols-2 xl:grid-cols-3"></div>
+                    <p id="affiliateDisclosure" class="text-xs text-slate-500"></p>
+                </section>
             </main>
         </div>
     </div>
-    <script>
-        requireAuth();
 
-        async function init() {
-            try {
-                const data = await getChefs();
-                renderChefs(data.chefs || []);
-            } catch (error) {
-                showError('셰프 로드 실패');
+    <script>
+        if (typeof hasAuthSession === "function" && hasAuthSession()) {
+            requireAuth();
+        }
+        if (typeof setupSessionActionButton === "function") {
+            setupSessionActionButton();
+        }
+
+        const taxonomy = window.CooCookTaxonomy;
+        const state = taxonomy.parseState();
+        let chefs = [];
+
+        function ensureBaseState() {
+            if (!state.country) state.country = "KR";
+            if (!state.cuisine || !taxonomy.cuisineMeta[state.cuisine]) {
+                state.cuisine = taxonomy.resolveDefaultCuisine(state.country);
             }
         }
 
-        function renderChefs(chefs) {
-            const grid = document.getElementById('chefsGrid');
-            grid.innerHTML = '';
-            (chefs || []).slice(0, 5).forEach(chef => {
-                const html = `
-                    <a href="chef-detail.html?id=${chef.id}" class="bg-gradient-to-br from-orange-900/30 to-orange-900/10 rounded-lg p-5 border-2 border-orange-600 hover:border-opacity-100 transition block">
-                        <div class="text-3xl mb-2">${chef.image || '👨‍🍳'}</div>
-                        <h4 class="font-semibold text-white">${chef.name}</h4>
-                        <p class="text-xs text-orange-400 mb-2">${chef.cuisine_type}</p>
-                        <p class="text-xs text-slate-400 mb-3">${formatKRW(chef.price_per_session)}</p>
-                        <p class="text-sm text-yellow-400">⭐ ${chef.rating} (${chef.rating_count})</p>
-                    </a>
-                `;
-                grid.innerHTML += html;
+        function getActiveCountry() {
+            return state.country || "KR";
+        }
+
+        function getActiveCuisine() {
+            return state.cuisine || taxonomy.resolveDefaultCuisine(getActiveCountry());
+        }
+
+        function getCountryMenus() {
+            return taxonomy.getCountryMenus(getActiveCountry());
+        }
+
+        function getRecipeMenuType(recipe) {
+            return taxonomy.getRecipeCategoryAsMenu(getCountryMenus(), recipe.category);
+        }
+
+        function getFocusRecipes() {
+            return taxonomy.queryRecipes({
+                country: getActiveCountry(),
+                cuisine: getActiveCuisine(),
+                menu: state.menu || "",
+                category: state.category || "",
             });
         }
 
-        document.addEventListener('DOMContentLoaded', init);
+        function getVisibleRecipes() {
+            const focusRecipes = getFocusRecipes();
+            if (!state.menu) return focusRecipes;
+            const menuFiltered = focusRecipes.filter(function (recipe) {
+                return getRecipeMenuType(recipe) === state.menu;
+            });
+            return menuFiltered.length ? menuFiltered : focusRecipes;
+        }
+
+        function setCuisine(cuisine) {
+            state.cuisine = cuisine;
+            state.category = "";
+            state.menu = "";
+            taxonomy.updateUrl(state);
+            render();
+        }
+
+        function setCountry(country) {
+            state.country = country;
+            state.cuisine = taxonomy.resolveDefaultCuisine(country);
+            state.category = "";
+            state.menu = "";
+            taxonomy.updateUrl(state);
+            render();
+        }
+
+        function setCountryMenu(menu) {
+            state.menu = state.menu === menu ? "" : menu;
+            state.category = "";
+            taxonomy.updateUrl(state);
+            render();
+        }
+
+        function setCategory(category) {
+            state.category = state.category === category ? "" : category;
+            taxonomy.updateUrl(state);
+            render();
+        }
+
+        function buildRouteHref(page, recipe) {
+            const params = {
+                country: getActiveCountry(),
+                cuisine: recipe && recipe.cuisine ? recipe.cuisine : getActiveCuisine(),
+                category: recipe && recipe.category ? recipe.category : (state.category || ""),
+                menu: state.menu || "",
+            };
+            if (recipe && recipe.id) params.recipe = recipe.id;
+            return taxonomy.buildHref(page, params);
+        }
+
+        function renderHero() {
+            const activeCountry = getActiveCountry();
+            const cuisine = getActiveCuisine();
+            const countryMeta = taxonomy.getCountryMeta(activeCountry);
+            const cuisineMeta = taxonomy.getCuisineMeta(cuisine);
+            const visibleRecipes = getVisibleRecipes();
+            const primaryRecipe = visibleRecipes[0] || taxonomy.recipeCatalog[0];
+            const categoryKey = state.category || (primaryRecipe && primaryRecipe.category) || "main";
+            const categoryMeta = taxonomy.getMenuCategoryMeta(categoryKey);
+
+            document.getElementById("heroGradient").className = "absolute inset-0 bg-gradient-to-br " + cuisineMeta.panelClass + " opacity-80";
+            document.getElementById("heroBadge").className = cuisineMeta.chipClass + " inline-flex rounded-full px-3 py-1 text-xs font-semibold";
+            document.getElementById("heroBadge").textContent = countryMeta.flag + " " + countryMeta.label + " | " + cuisineMeta.label;
+            document.getElementById("heroTitle").textContent = countryMeta.label + " " + cuisineMeta.label + " flow overview";
+            document.getElementById("heroCopy").textContent = cuisineMeta.promise + " Review the country, menu, recipe, feed, and shopping flow in one place.";
+            document.getElementById("heroImage").src = cuisineMeta.image;
+            document.getElementById("heroImage").alt = cuisineMeta.label + " featured image";
+            document.getElementById("heroEmoji").textContent = cuisineMeta.emoji;
+            document.getElementById("focusCuisine").textContent = cuisineMeta.flag + " " + cuisineMeta.label;
+            document.getElementById("focusCuisineCopy").textContent = countryMeta.label + " recommended set is loaded by default.";
+            document.getElementById("focusCategory").innerHTML = '<span class="inline-flex rounded-full px-3 py-1 text-sm font-medium ' + categoryMeta.chipClass + '">' + categoryMeta.emoji + " " + categoryMeta.label + "</span>";
+            document.getElementById("focusCategoryCopy").textContent = cuisineMeta.label + " best matching menu group for the next step.";
+            document.getElementById("flowHint").textContent = categoryMeta.emoji + " " + categoryMeta.label + " -> recipe -> feed -> shopping";
+            document.getElementById("headerCta").href = buildRouteHref("recipes.html", primaryRecipe);
+            document.getElementById("browseChefsLink").href = taxonomy.buildHref("explore.html", {
+                country: activeCountry,
+                cuisine: cuisine,
+                menu: state.menu || "",
+            });
+
+            document.getElementById("cuisineExplorer").innerHTML = taxonomy.getAvailableCuisineKeys().map(function (key) {
+                const item = taxonomy.getCuisineMeta(key);
+                const active = key === cuisine;
+                const className = active ? item.chipClass : "border border-slate-700 bg-slate-900/80 text-slate-300 hover:border-slate-500";
+                return '<button onclick="setCuisine(\'' + key + '\')" class="rounded-full px-4 py-2 text-sm font-medium transition ' + className + '">' + item.flag + " " + item.label + "</button>";
+            }).join("");
+
+            document.getElementById("countryExplorer").innerHTML = taxonomy.getAvailableCountries().map(function (key) {
+                const item = taxonomy.getCountryMeta(key);
+                const active = key === activeCountry;
+                const className = active ? "border-orange-600 bg-orange-600 text-white" : "border-slate-700 bg-slate-900/80 text-slate-300 hover:border-slate-500";
+                return '<button onclick="setCountry(\'' + key + '\')" class="rounded-full px-3 py-1.5 text-sm border ' + className + '">' + item.flag + " " + item.label + "</button>";
+            }).join("");
+
+            const defaultMenu = { key: "", label: "All menus", emoji: "Menu" };
+            document.getElementById("menuExplorer").innerHTML = [defaultMenu].concat(getCountryMenus()).map(function (menu) {
+                const active = state.menu === menu.key || (!state.menu && menu.key === "");
+                const className = active ? "border-emerald-500 bg-emerald-600 text-white" : "border-slate-700 bg-slate-900/80 text-slate-300 hover:border-slate-500";
+                return '<button onclick="setCountryMenu(\'' + menu.key + '\')" class="rounded-full px-3 py-1.5 text-sm border ' + className + '">' + menu.emoji + " " + menu.label + "</button>";
+            }).join("");
+
+            document.getElementById("heroHighlights").innerHTML = visibleRecipes.slice(0, 3).map(function (recipe) {
+                return '<div class="flex items-center justify-between rounded-2xl border border-white/10 bg-slate-950/40 px-4 py-3"><div><p class="font-medium text-white">' + recipe.image + " " + recipe.name + '</p><p class="text-xs text-slate-400">' + recipe.story + '</p></div><a href="' + buildRouteHref("recipes.html", recipe) + '" class="text-xs text-orange-300">Open</a></div>';
+            }).join("");
+
+            const quickLinks = [
+                { title: "Recipes", href: buildRouteHref("recipes.html", primaryRecipe), icon: "R", copy: "Check cooking flow first." },
+                { title: "Feed", href: buildRouteHref("feed.html", primaryRecipe), icon: "F", copy: "Review related posts and references." },
+                { title: "Shopping", href: buildRouteHref("shopping-list.html", primaryRecipe), icon: "S", copy: "Organize ingredients quickly." }
+            ];
+            document.getElementById("heroQuickLinks").innerHTML = quickLinks.map(function (link) {
+                return '<a href="' + link.href + '" class="interactive-card rounded-2xl border border-white/10 bg-slate-950/50 p-4"><p class="text-lg">' + link.icon + '</p><p class="mt-2 font-semibold text-white">' + link.title + '</p><p class="mt-1 text-xs text-slate-400">' + link.copy + '</p></a>';
+            }).join("");
+        }
+
+        function renderRoutes() {
+            const visibleRecipes = getVisibleRecipes();
+            const primaryRecipe = visibleRecipes[0] || taxonomy.recipeCatalog[0];
+            const cuisineMeta = taxonomy.getCuisineMeta(primaryRecipe.cuisine);
+            const categoryMeta = taxonomy.getMenuCategoryMeta(primaryRecipe.category);
+            const cards = [
+                { icon: "R", title: "Start with recipes", copy: cuisineMeta.label + " " + categoryMeta.label + " recipes first.", href: buildRouteHref("recipes.html", primaryRecipe) },
+                { icon: "F", title: "Check the feed", copy: "Review matching posts and shared references.", href: buildRouteHref("feed.html", primaryRecipe) },
+                { icon: "S", title: "Prepare ingredients", copy: "Sort ingredients into clear shopping groups.", href: buildRouteHref("shopping-list.html", primaryRecipe) }
+            ];
+            document.getElementById("linkedRoutes").innerHTML = cards.map(function (card) {
+                return '<a href="' + card.href + '" class="interactive-card glass-card rounded-2xl border border-slate-800 p-5"><p class="text-2xl">' + card.icon + '</p><p class="mt-4 text-lg font-semibold text-white">' + card.title + '</p><p class="mt-2 text-sm leading-6 text-slate-400">' + card.copy + '</p></a>';
+            }).join("");
+        }
+
+        function renderChefs() {
+            const cuisine = getActiveCuisine();
+            const list = chefs.filter(function (chef) { return chef.cuisine === cuisine; }).slice(0, 4);
+            const visibleChefs = list.length ? list : chefs.slice(0, 4);
+            document.getElementById("chefsGrid").innerHTML = visibleChefs.map(function (chef) {
+                return '<article class="interactive-card glass-card rounded-3xl border border-slate-800 p-5"><div class="flex items-start justify-between gap-4"><div><p class="text-4xl">' + chef.avatar + '</p><h4 class="mt-3 text-lg font-semibold text-white">' + chef.name + '</h4><p class="mt-1 text-sm ' + chef.cuisineMeta.accent + '">' + chef.cuisineMeta.flag + " " + chef.cuisineMeta.label + '</p></div><span class="inline-flex rounded-full px-3 py-1 text-xs font-medium ' + chef.categoryMeta.chipClass + '">' + chef.categoryMeta.emoji + " " + chef.categoryMeta.label + '</span></div><p class="mt-4 text-sm leading-6 text-slate-400">' + chef.bio + '</p><div class="mt-4 flex items-center justify-between text-sm"><span class="font-semibold text-white">' + taxonomy.formatCurrency(chef.price_per_session) + '</span><span class="text-amber-300">rating ' + chef.rating + " (" + chef.rating_count + ')</span></div><div class="mt-4 flex gap-2"><a href="' + buildRouteHref("recipes.html", { id: "", cuisine: chef.cuisine, category: chef.category }) + '" class="flex-1 rounded-xl bg-slate-800 px-3 py-2 text-center text-sm text-white hover:bg-slate-700">Recipes</a><a href="' + buildRouteHref("feed.html", { id: "", cuisine: chef.cuisine, category: chef.category }) + '" class="flex-1 rounded-xl bg-orange-600 px-3 py-2 text-center text-sm text-white hover:bg-orange-500">Feed</a></div></article>';
+            }).join("");
+        }
+
+        function renderCategoryMatrix() {
+            const cuisine = getActiveCuisine();
+            const recipes = taxonomy.queryRecipes({
+                country: getActiveCountry(),
+                cuisine: cuisine,
+                menu: state.menu || "",
+            });
+            const grouped = recipes.reduce(function (acc, recipe) {
+                const key = recipe.category;
+                if (!acc[key]) acc[key] = [];
+                acc[key].push(recipe);
+                return acc;
+            }, {});
+            document.getElementById("categoryMatrix").innerHTML = Object.entries(grouped).map(function (entry) {
+                const key = entry[0];
+                const items = entry[1];
+                const meta = taxonomy.getMenuCategoryMeta(key);
+                const active = state.category === key;
+                const borderClass = active ? "border-orange-400/70" : "border-slate-800";
+                return '<button onclick="setCategory(\'' + key + '\')" class="interactive-card glass-card rounded-2xl border p-5 text-left ' + borderClass + '"><div class="flex items-center justify-between"><span class="inline-flex rounded-full px-3 py-1 text-sm font-medium ' + meta.chipClass + '">' + meta.emoji + " " + meta.label + '</span><span class="text-xs text-slate-400">' + items.length + ' items</span></div><p class="mt-4 font-semibold text-white">' + items.map(function (item) { return item.name; }).slice(0, 2).join(", ") + '</p><p class="mt-2 text-sm text-slate-400">' + taxonomy.getCuisineMeta(cuisine).label + ' grouped options for faster comparison.</p></button>';
+            }).join("");
+        }
+
+        function renderAffiliateShowcase() {
+            const visibleRecipes = getVisibleRecipes();
+            const representative = visibleRecipes[0] || taxonomy.recipeCatalog[0];
+            const links = [
+                taxonomy.getCuisineAffiliate(representative.cuisine, { country: getActiveCountry(), menu: state.menu }),
+                taxonomy.getCategoryAffiliate(representative.category, representative.cuisine, { country: getActiveCountry(), menu: state.menu }),
+                taxonomy.getIngredientAffiliate((representative.ingredients[0] && representative.ingredients[0].category) || "produce", (representative.ingredients[0] && representative.ingredients[0].name) || "", { country: getActiveCountry(), menu: state.menu })
+            ];
+            document.getElementById("affiliateShowcase").innerHTML = links.map(function (item) {
+                return '<a href="' + item.url + '" target="_blank" rel="noopener noreferrer sponsored" class="interactive-card glass-card rounded-2xl border border-slate-800 p-5"><p class="text-2xl">' + item.emoji + '</p><p class="mt-4 text-lg font-semibold text-white">' + item.label + '</p><p class="mt-2 text-sm text-slate-400">Keyword: ' + item.keyword + '</p><p class="mt-4 text-xs text-orange-300">Open affiliate link</p></a>';
+            }).join("");
+            document.getElementById("affiliateDisclosure").textContent = taxonomy.affiliateMeta.disclosure;
+        }
+
+        function render() {
+            ensureBaseState();
+            renderHero();
+            renderRoutes();
+            renderChefs();
+            renderCategoryMatrix();
+            renderAffiliateShowcase();
+        }
+
+        async function init() {
+            ensureBaseState();
+            try {
+                const data = await getChefs();
+                const liveChefs = (data.chefs || []).map(function (chef) {
+                    return taxonomy.enrichChef(chef);
+                });
+                chefs = liveChefs.length ? liveChefs : taxonomy.getDefaultChefs();
+            } catch (error) {
+                chefs = taxonomy.getDefaultChefs();
+                if (typeof showWarning === "function") {
+                    showWarning("Fallback chef data is in use.");
+                }
+            }
+            render();
+        }
+
+        document.addEventListener("DOMContentLoaded", init);
     </script>
     <script src="../mobile-optimization.js" defer></script>
 </body>

@@ -175,10 +175,10 @@
 ### PF-016: Deployment Checklist Must Cover Docker Desktop Detection
 - **Date:** 2026-02-25
 - **Agent:** DevOps (M-002 Phase 4)
-- **Task:** DEPLOYMENT_CHECKLIST.md creation
+- **Task:** docs/checklists/DEPLOYMENT_CHECKLIST.md creation
 - **Pitfall:** Initial checklist assumed Docker Desktop was running. First time following it, user was confused why `docker ps` fails. Doesn't teach WHERE to start Docker.
 - **Prevention:** Include explicit "Check Docker Desktop is Running" as Step 0 in all deployment guides. Provide screenshots or CLI commands to verify daemon status.
-- **File Updated:** `DEPLOYMENT_CHECKLIST.md` Part 2 (includes GUI + CLI startup methods)
+- **File Updated:** `docs/checklists/DEPLOYMENT_CHECKLIST.md` Part 2 (includes GUI + CLI startup methods)
 
 ### PF-012: Database Verification Without Query Tool Requires Python Fallback
 - **Date:** 2026-02-25
@@ -329,8 +329,8 @@ for campaign in campaigns:
 - **Agent:** DevOps Engineer (Production Deployment)
 - **Task:** Dockerfile.prod creation for production workloads
 - **Pitfall:** Default Gunicorn configuration uses 1 worker, causing request queuing and high latency under load. Deployment with default settings causes P95 response times > 5 seconds.
-- **Prevention:** Always set `--workers` to at least 2 × CPU cores. For 2-core instance: 4 workers. Formula: `workers = (2 × cpu_count) + 1`. Set in docker-compose-prod.yml: `WORKERS=4` or pass via docker-entrypoint.
-- **Reference:** `Dockerfile.prod` line 52 uses 4 workers; `docker-compose-prod.yml` WORKERS env var
+- **Prevention:** Always set `--workers` to at least 2 × CPU cores. For 2-core instance: 4 workers. Formula: `workers = (2 × cpu_count) + 1`. Set in docker-compose.production.yml: `WORKERS=4` or pass via docker-entrypoint.
+- **Reference:** `Dockerfile.prod` line 52 uses 4 workers; `docker-compose.production.yml` WORKERS env var
 
 ### PF-022: Docker Multi-stage Build Layer Cache Invalidation
 - **Date:** 2026-02-25
@@ -343,7 +343,7 @@ for campaign in campaigns:
 ### PF-023: PostgreSQL InitDB Waits Not Respected in docker-compose
 - **Date:** 2026-02-25
 - **Agent:** DevOps Engineer (Production Deployment)
-- **Task:** docker-compose-prod.yml creation with db health checks
+- **Task:** docker-compose.production.yml creation with db health checks
 - **Pitfall:** Setting `depends_on: condition: service_healthy` does not guarantee DB is fully initialized. `pg_isready` returns true before `initdb` completes. Migrations fail with "database does not exist" or "relation does not exist".
 - **Prevention:** After `docker-compose up -d db`, always wait 15+ seconds. Use: `sleep 20` or loop with `docker logs` check for "ready to accept connections". Migrations should include retry logic with exponential backoff (3 attempts, 5s delays).
 - **Reference:** `scripts/deploy.sh` Phase 6 includes `sleep 30` before migrations
@@ -359,10 +359,10 @@ for campaign in campaigns:
 ### PF-025: Docker Compose Environment Variable Scope Issues
 - **Date:** 2026-02-25
 - **Agent:** DevOps Engineer (Production Deployment)
-- **Task:** .env-prod integration with docker-compose-prod.yml
+- **Task:** .env-prod integration with docker-compose.production.yml
 - **Pitfall:** Variables in .env-prod file are NOT automatically available inside containers. `docker-compose up` reads .env for Compose interpolation ONLY. Services receive environment vars only if explicitly listed in `environment:` section or via `--env-file` flag.
 - **Prevention:** Always use `docker-compose --env-file .env-prod up` OR reference variables explicitly in docker-compose.yml `environment:` section. Do NOT assume .env variables magically appear in container.
-- **Reference:** `docker-compose-prod.yml` line 35: `environment:` section explicitly lists all vars from .env-prod
+- **Reference:** `docker-compose.production.yml` line 35: `environment:` section explicitly lists all vars from .env-prod
 
 ### PF-026: Rate Limiting Configuration Without Burst Allowance
 - **Date:** 2026-02-25
@@ -375,10 +375,10 @@ for campaign in campaigns:
 ### PF-027: Database Connection Pool Exhaustion Without Limits
 - **Date:** 2026-02-25
 - **Agent:** DevOps Engineer (Production Deployment)
-- **Task:** docker-compose-prod.yml PostgreSQL pooling
+- **Task:** docker-compose.production.yml PostgreSQL pooling
 - **Pitfall:** Flask app creates new DB connection per request without pooling. With 4 Gunicorn workers × 50 requests/sec = 200 connections. PostgreSQL default `max_connections=100` → "too many connections" errors.
 - **Prevention:** (1) Increase `max_connections` in PostgreSQL: `POSTGRES_INITDB_ARGS` in docker-compose. (2) Better: Add PgBouncer or SQLAlchemy pooling in Flask. (3) Set connection timeouts: `connection_idle_time=300`.
-- **Reference:** `docker-compose-prod.yml` line 77: `max_connections=100` tuned for 4 workers
+- **Reference:** `docker-compose.production.yml` line 77: `max_connections=100` tuned for 4 workers
 
 ### PF-028: Backup Retention Policy Never Triggered Without Cron
 - **Date:** 2026-02-25
@@ -391,10 +391,10 @@ for campaign in campaigns:
 ### PF-029: Health Check Timeouts Cause Cascading Failures
 - **Date:** 2026-02-25
 - **Agent:** DevOps Engineer (Production Deployment)
-- **Task:** docker-compose-prod.yml healthcheck configuration
+- **Task:** docker-compose.production.yml healthcheck configuration
 - **Pitfall:** Health check interval 10s with timeout 5s means if any check takes >5s, container marked unhealthy. Under load, slow DB query causes health fail → Docker restarts container → connection reset → cascade restart loop.
 - **Prevention:** Set timeout generously (10-15s). Set interval to longer period (30s) for production. Add `start_period` buffer (30s) to allow app warmup before health checks start. Max retries should be 3-5 (not 1).
-- **Reference:** `docker-compose-prod.yml` line 43: `start-period: 5s` provides warmup buffer
+- **Reference:** `docker-compose.production.yml` line 43: `start-period: 5s` provides warmup buffer
 
 ### PF-030: Secrets in Docker Logs Compromise Security
 - **Date:** 2026-02-25
@@ -402,7 +402,7 @@ for campaign in campaigns:
 - **Task:** Production security review
 - **Pitfall:** Flask app logs DATABASE_URL which contains password in plaintext. Attacker with `docker logs` access gets credentials. Same issue: Redis password, JWT secret visible in startup logs.
 - **Prevention:** (1) Never log sensitive values. (2) Use Docker secrets (Swarm) or mounted secret files (Kubernetes). (3) Log only redacted versions: "DB=psql://***@host" (4) Enable log rotation immediately: `max-size: 10m` in docker-compose.
-- **Reference:** `docker-compose-prod.yml` logging configs include size limits; Flask app should not log DATABASE_URL
+- **Reference:** `docker-compose.production.yml` logging configs include size limits; Flask app should not log DATABASE_URL
 
 ---
 

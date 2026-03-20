@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
@@ -6,7 +6,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#111827">
-<title>SoftFactory - Demo Login</title>
+<title>SoftFactory - Demo 로그인</title>
     <link href="https://cdn.tailwindcss.com" rel="stylesheet">
     <script src="api.js"></script>
     <link rel="stylesheet" href="../responsive-framework.css">
@@ -19,39 +19,39 @@
             <p class="text-gray-400">One Platform, Many Services</p>
         </div>
 
-        <!-- Demo Mode Card -->
+        <!-- 데모 모드 Card -->
         <div class="bg-gray-800 rounded-lg p-8 text-white mb-6 border-2 border-blue-500">
-            <h2 class="text-2xl font-bold mb-4 text-blue-400">Demo Mode</h2>
+            <h2 class="text-2xl font-bold mb-4 text-blue-400">데모 모드</h2>
             <p class="text-gray-300 mb-6">Enter the demo passkey to access all features with mock data.</p>
 
             <form id="demoForm" class="space-y-4">
                 <div>
-                    <label class="block text-sm font-semibold mb-2">Passkey</label>
+                    <label class="block text-sm font-semibold mb-2">접근키</label>
                     <input type="password" id="passkey" required placeholder="Enter passkey"
                         class="w-full bg-gray-700 border border-gray-600 rounded px-4 py-2 text-white placeholder-gray-400 focus:border-blue-400 outline-none">
                     <p class="text-xs text-gray-500 mt-2">Hint: demo2026</p>
                 </div>
 
                 <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 rounded-lg transition">
-                    Enter Demo Mode
+                    Enter 데모 모드
                 </button>
             </form>
 
             <div class="mt-6 pt-6 border-t border-gray-700">
-                <h3 class="font-semibold mb-3 text-sm">Demo Features Available:</h3>
+                <h3 class="font-semibold mb-3 text-sm">데모 제공 항목:</h3>
                 <ul class="space-y-2 text-sm text-gray-300">
-                    <li>✓ CooCook - Chef booking marketplace</li>
-                    <li>✓ SNS Auto - Social media automation</li>
-                    <li>✓ Review Campaigns - Brand reviews</li>
-                    <li>✓ AI Automation - 24/7 AI employees</li>
-                    <li>✓ WebApp Builder - 8-week bootcamp</li>
+                    <li>✓ 쿠쿠크 - Chef booking marketplace</li>
+                    <li>✓ SNS 자동화 - Social media automation</li>
+                    <li>✓ 리뷰 캠페인s - Brand reviews</li>
+                    <li>✓ AI 자동화 - 24/7 AI employees</li>
+                    <li>✓ 웹앱 빌더 - 8-week bootcamp</li>
                 </ul>
             </div>
         </div>
 
-        <!-- Regular Login Card -->
+        <!-- Regular 로그인 Card -->
         <div class="bg-gray-800 rounded-lg p-8 text-white">
-            <h2 class="text-2xl font-bold mb-4">Real Login</h2>
+            <h2 class="text-2xl font-bold mb-4">실제 로그인</h2>
 
             <form id="loginForm" class="space-y-4">
                 <div>
@@ -64,22 +64,22 @@
                     <label class="block text-sm font-semibold mb-2">Password</label>
                     <input type="password" id="password" required placeholder="your password"
                         class="w-full bg-gray-700 border border-gray-600 rounded px-4 py-2 text-white placeholder-gray-400 focus:border-blue-400 outline-none">
-                    <p class="text-xs text-gray-500 mt-2">Demo: admin123</p>
+                    <p class="text-xs text-gray-500 mt-2">데모: admin123</p>
                 </div>
 
                 <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 rounded-lg transition">
-                    Login
+                    로그인
                 </button>
             </form>
 
             <div class="mt-6 pt-6 border-t border-gray-700 text-sm text-gray-400">
-                <p>Don't have an account? <a href="register.html" class="text-blue-400 hover:text-blue-300">Sign up</a></p>
+                <p>Don't have an account? <a href="register.html" class="text-blue-400 hover:text-blue-300">회원가입</a></p>
             </div>
         </div>
 
         <!-- Info -->
         <div class="mt-6 text-center text-sm text-gray-400">
-            <p>All systems operational</p>
+            <p>모든 시스템 정상</p>
             <p>Backend: http://localhost:8000</p>
         </div>
     </div>
@@ -91,7 +91,7 @@
 
             if (passkey === 'demo2026') {
                 enableDemoMode();
-                showToast('Demo mode enabled! Redirecting...', 'success');
+                showToast('데모 모드로 전환 중입니다.', 'success');
                 setTimeout(() => {
                     window.location.href = 'index.html';
                 }, 1000);
@@ -114,15 +114,15 @@
                     localStorage.setItem('refresh_token', result.refresh_token);
                     localStorage.setItem('user', JSON.stringify(result.user));
 
-                    showToast('Login successful!', 'success');
+                    showToast('로그인 successful!', 'success');
                     setTimeout(() => {
                         window.location.href = 'index.html';
                     }, 1000);
                 } else {
-                    showToast(result.error || 'Login failed', 'error');
+                    showToast(result.error || '로그인 failed', 'error');
                 }
             } catch (err) {
-                showToast('Login error: ' + err.message, 'error');
+                showToast('로그인 error: ' + err.message, 'error');
             }
         });
     </script>

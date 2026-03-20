@@ -6,10 +6,13 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#111827">
-<title>포스트 작성 — SNS Auto | SoftFactory</title>
+<title>포스트 작성 — SNS 자동화 | SoftFactory</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="../platform/api.js"></script>
+    <script src="../platform/workflow-contracts.js"></script>
+    <script src="../platform/approval-queue.js"></script>
+    <link rel="stylesheet" href="../responsive-framework.css">
     <style>
         body { font-family: 'Inter', sans-serif; }
         ::-webkit-scrollbar { width: 6px; }
@@ -167,6 +170,208 @@
             opacity: 1;
         }
 
+        .workflow-hero {
+            background:
+                radial-gradient(circle at top left, rgba(236, 72, 153, 0.18), transparent 42%),
+                radial-gradient(circle at top right, rgba(59, 130, 246, 0.14), transparent 38%),
+                linear-gradient(135deg, rgba(15, 23, 42, 0.98), rgba(30, 41, 59, 0.94));
+            border-bottom: 1px solid rgba(148, 163, 184, 0.18);
+        }
+        .workflow-card {
+            border: 1px solid rgba(148, 163, 184, 0.18);
+            background: rgba(15, 23, 42, 0.72);
+            border-radius: 16px;
+            padding: 16px;
+        }
+        .workflow-card strong {
+            display: block;
+            font-size: 14px;
+            color: #fff;
+            margin-bottom: 6px;
+        }
+        .workflow-card p {
+            margin: 0;
+            color: #cbd5e1;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+        .mode-guide {
+            border: 1px solid rgba(244, 114, 182, 0.24);
+            background: rgba(124, 58, 237, 0.08);
+            border-radius: 16px;
+            padding: 14px 16px;
+        }
+        .mode-guide-title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+        .mode-guide-title strong {
+            color: #fff;
+            font-size: 14px;
+        }
+        .mode-guide-title span {
+            color: #f9a8d4;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        .mode-guide-copy {
+            color: #cbd5e1;
+            font-size: 12px;
+            line-height: 1.65;
+        }
+        .mode-guide-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        .mode-guide-pills span {
+            border: 1px solid rgba(236, 72, 153, 0.25);
+            background: rgba(236, 72, 153, 0.12);
+            color: #fbcfe8;
+            border-radius: 999px;
+            padding: 5px 10px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        .preview-helper {
+            display: grid;
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+        .preview-helper-card {
+            border: 1px solid rgba(59, 130, 246, 0.18);
+            background: rgba(15, 23, 42, 0.56);
+            border-radius: 14px;
+            padding: 12px 14px;
+        }
+        .preview-helper-card strong {
+            display: block;
+            color: #fff;
+            font-size: 13px;
+            margin-bottom: 4px;
+        }
+        .preview-helper-card p {
+            margin: 0;
+            color: #cbd5e1;
+            font-size: 11px;
+            line-height: 1.55;
+        }
+        .creator-hub {
+            display: grid;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        .creator-hub-card {
+            border: 1px solid rgba(148, 163, 184, 0.18);
+            background: rgba(15, 23, 42, 0.78);
+            border-radius: 16px;
+            padding: 14px;
+        }
+        .creator-hub-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+        .creator-hub-head strong {
+            color: #fff;
+            font-size: 14px;
+        }
+        .creator-hub-head span,
+        .creator-hub-copy {
+            color: #94a3b8;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+        .sync-account-grid,
+        .template-preset-grid,
+        .distribution-grid,
+        .automation-engine-grid {
+            display: grid;
+            gap: 10px;
+        }
+        .sync-account-grid,
+        .distribution-grid {
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        }
+        .template-preset-grid {
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        }
+        .automation-engine-grid {
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        }
+        .sync-account-card,
+        .template-preset-card,
+        .distribution-card,
+        .automation-engine-card {
+            border: 1px solid rgba(71, 85, 105, 0.92);
+            border-radius: 14px;
+            background: rgba(2, 6, 23, 0.34);
+            padding: 12px;
+        }
+        .sync-account-card strong,
+        .template-preset-card strong,
+        .distribution-card strong,
+        .automation-engine-card strong {
+            display: block;
+            color: #f8fafc;
+            font-size: 13px;
+            margin-bottom: 4px;
+        }
+        .sync-account-card p,
+        .template-preset-card p,
+        .distribution-card p,
+        .automation-engine-card p {
+            margin: 0;
+            color: #94a3b8;
+            font-size: 11px;
+            line-height: 1.55;
+        }
+        .sync-account-card.active,
+        .distribution-card.active,
+        .automation-engine-card.active {
+            border-color: rgba(244, 114, 182, 0.7);
+            box-shadow: inset 0 0 0 1px rgba(244, 114, 182, 0.28);
+        }
+        .template-preset-card button,
+        .creator-link-btn {
+            margin-top: 10px;
+            border: 1px solid rgba(244, 114, 182, 0.34);
+            background: rgba(236, 72, 153, 0.12);
+            color: #fbcfe8;
+            border-radius: 10px;
+            padding: 8px 10px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        .creator-link-btn.secondary {
+            border-color: rgba(59, 130, 246, 0.35);
+            background: rgba(59, 130, 246, 0.12);
+            color: #bfdbfe;
+        }
+        .sync-summary-strip {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+        .sync-summary-strip span {
+            display: inline-flex;
+            align-items: center;
+            border-radius: 999px;
+            padding: 5px 10px;
+            background: rgba(30, 41, 59, 0.92);
+            color: #cbd5e1;
+            font-size: 11px;
+            border: 1px solid rgba(71, 85, 105, 0.92);
+        }
+
         /* Enhanced AI and Automation Styles */
         .ai-tips-box {
             background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(139, 92, 246, 0.05));
@@ -295,7 +500,7 @@
     </style>
     <link rel="stylesheet" href="../responsive-framework.css">
   </head>
-<body class="bg-slate-950 text-slate-100 antialiased">
+<body class="bg-slate-950 text-slate-100 antialiased soft-shell">
     <div class="flex h-screen overflow-hidden">
         <!-- Sidebar -->
         <aside class="w-64 bg-slate-900 border-r border-slate-800 flex flex-col shrink-0">
@@ -308,20 +513,20 @@
                     </div>
                 </a>
             </div>
-            <nav class="flex-1 p-6 space-y-2 overflow-y-auto">
+            <nav class="soft-nav-tree flex-1 p-6 space-y-2 overflow-y-auto">
                 <button class="hamburger" aria-label="Toggle navigation menu">
       <span></span>
       <span></span>
       <span></span>
     </button>
-<p class="text-xs font-semibold text-slate-400 uppercase px-4 mb-3">📱 SNS Auto</p>
-                <a href="index.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">📊 대시보드</a>
-                <a href="accounts.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">🔗 계정 연동</a>
-                <a href="create.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg bg-pink-600 text-white font-medium">✍️ 블로그 자동포스팅</a>
-                <a href="schedule.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">📅 스케줄 관리</a>
-                <a href="analytics.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">📈 분석</a>
-                <a href="templates.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">🎨 템플릿</a>
-                <a href="settings.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">⚙️ 설정</a>
+<p class="text-xs font-semibold text-slate-400 uppercase px-4 mb-3">📱 SNS 자동화</p>
+                <a href="index.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">📊 대시보드</a>
+                <a href="accounts.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">🔗 계정 연동</a>
+                <a href="create.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg bg-pink-600 text-white font-medium">✍️ 블로그 자동포스팅</a>
+                <a href="schedule.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">📅 스케줄 관리</a>
+                <a href="analytics.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">📈 분석</a>
+                <a href="templates.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">🎨 템플릿</a>
+                <a href="settings.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">⚙️ 설정</a>
             </nav>
             <div class="p-6 border-t border-slate-800">
                 <div class="flex items-center justify-between">
@@ -334,8 +539,8 @@
         <div class="flex-1 flex flex-col overflow-hidden">
             <header class="h-16 bg-slate-900 border-b border-slate-800 px-6 flex items-center justify-between shrink-0">
                 <div>
-                    <h2 class="text-xl font-bold text-white">✍️ 포스트 작성</h2>
-                    <p class="text-xs text-slate-400">3가지 방식으로 SNS 포스트를 작성하세요</p>
+                    <h2 class="text-xl font-bold text-white">포스트 작성</h2>
+                    <p class="text-xs text-slate-400">초안 작성, 검토, 발행까지 한 화면에서 순서대로 진행합니다.</p>
                 </div>
                 <div class="flex gap-2">
                     <button onclick="publishPost('draft')" class="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-slate-100 rounded-lg text-sm">
@@ -350,6 +555,46 @@
                 </div>
             </header>
 
+            <section class="px-6 pt-6">
+                <div class="sf-page-intro">
+                    <div class="sf-page-intro-grid">
+                        <div class="sf-page-intro-head">
+                            <p class="sf-page-intro-kicker">SNS Create</p>
+                            <h1 class="sf-page-intro-title">발행 계정부터 고르고 초안을 만든 뒤 미리보기에서 마무리합니다.</h1>
+                            <p class="sf-page-intro-copy">이 페이지의 목적은 빠른 작성입니다. 계정 선택, 작성 모드 선택, 문구 입력, 미리보기 확인, 발행 순서가 위에서 아래로 이어집니다.</p>
+                            <div class="sf-inline-list">
+                                <span class="sf-inline-chip">계정 선택</span>
+                                <span class="sf-inline-chip">초안 작성</span>
+                                <span class="sf-inline-chip">미리보기 확인</span>
+                            </div>
+                        </div>
+                        <article class="sf-primary-action-card">
+                            <p class="sf-primary-action-label">지금 해야 할 행동</p>
+                            <h2 class="sf-primary-action-title">발행 계정을 먼저 고른 뒤 작성 모드를 선택하세요.</h2>
+                            <p class="sf-primary-action-copy">계정이 정해지면 채널 규격과 미리보기가 바로 맞춰집니다.</p>
+                            <a class="sf-primary-action-cta" href="#accountId">계정 선택으로 이동</a>
+                        </article>
+                    </div>
+                    <div class="sf-status-grid">
+                        <article class="sf-status-item">
+                            <span>현재 목적</span>
+                            <strong>포스트 작성</strong>
+                            <p>초안 생성부터 발행 직전 검토까지 처리합니다.</p>
+                        </article>
+                        <article class="sf-status-item">
+                            <span>핵심 상태</span>
+                            <strong>모드 3종 지원</strong>
+                            <p>직접 작성, AI 생성, 자동화 중 하나를 선택합니다.</p>
+                        </article>
+                        <article class="sf-status-item">
+                            <span>다음 단계</span>
+                            <strong>저장 또는 예약발행</strong>
+                            <p>미리보기 확인 후 최종 액션만 고르면 됩니다.</p>
+                        </article>
+                    </div>
+                </div>
+            </section>
+
             <!-- 3-Mode Tab Navigation -->
             <div class="bg-slate-900 border-b border-slate-800 px-6 py-3 flex gap-3">
                 <button class="tab-btn active" onclick="switchMode('direct')">
@@ -363,11 +608,50 @@
                 </button>
             </div>
 
+            <section class="workflow-hero px-6 py-5">
+                <div class="grid gap-4 lg:grid-cols-[1.4fr,1fr]">
+                    <div>
+                        <p class="text-xs font-semibold tracking-[0.24em] text-pink-300 uppercase mb-2">현재 작업</p>
+                        <h3 class="text-2xl font-bold text-white leading-tight mb-2">오늘 올릴 포스트를 빠르게 만들고,<br>발행 전 검토까지 같은 흐름으로 마무리하세요</h3>
+                        <p class="text-sm text-slate-300 leading-relaxed max-w-2xl">
+                            생성 모드를 고르고, 계정을 선택하고, 채널별 미리보기로 최종 문구를 검토한 뒤 저장 또는 예약발행까지 이어집니다.
+                            처음 시작한다면 `AI 생성`, 반복 발행이 목적이라면 `자동화`, 직접 세밀하게 다듬고 싶다면 `직접 작성`이 가장 적합합니다.
+                        </p>
+                    </div>
+                    <div class="grid gap-3 md:grid-cols-2 lg:grid-cols-1">
+                        <div class="workflow-card">
+                            <strong>✨ 오늘 추천 흐름</strong>
+                            <p>AI로 초안을 만든 뒤 직접 작성 모드에서 첫 문장과 CTA만 다듬으면 속도와 완성도를 같이 챙길 수 있습니다.</p>
+                        </div>
+                        <div class="workflow-card">
+                            <strong>📌 발행 전 체크</strong>
+                            <p>계정, 톤, 해시태그 수, 마지막 행동 유도 문장만 점검해도 재작업과 수정 요청이 크게 줄어듭니다.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             <main class="flex-1 overflow-hidden grid grid-cols-2 gap-0">
                 <!-- Left: Editor -->
                 <div class="flex flex-col overflow-hidden border-r border-slate-800 p-6 bg-slate-950">
                     <h3 class="text-lg font-bold text-white mb-4">포스트 편집</h3>
                     <div class="flex-1 overflow-y-auto space-y-4">
+                    <div class="mode-guide">
+                            <div class="mode-guide-title">
+                                <strong id="modeGuideTitle">✍️ 직접 작성이 선택되었습니다</strong>
+                                <span id="modeGuideTag">빠르게 문구를 다듬고 싶을 때</span>
+                            </div>
+                            <p class="mode-guide-copy" id="modeGuideCopy">
+                                짧은 문장으로 핵심 메시지를 먼저 쓰고, 해시태그와 이미지를 붙이는 방식이 가장 안정적입니다.
+                            </p>
+                            <div class="mode-guide-pills" id="modeGuidePills">
+                                <span>핵심 메시지 먼저</span>
+                                <span>CTA 한 문장</span>
+                                <span>해시태그 3~5개</span>
+                            </div>
+                        </div>
+                        <p id="contextBadge" class="hidden text-xs text-emerald-300 bg-emerald-900/30 border border-emerald-700 rounded-lg px-3 py-2"></p>
+
                         <!-- Common Fields -->
                         <div>
                             <label class="block text-sm font-medium text-slate-300 mb-2">발행 계정 <span class="text-red-400">*</span></label>
@@ -375,6 +659,49 @@
                                 <option value="">선택하세요</option>
                             </select>
                         </div>
+                        <div id="modeFocusSummary" class="mode-guide" style="margin-top:-4px;">
+                            <div class="mode-guide-title">
+                                <strong>지금은 직접 작성에 집중합니다</strong>
+                                <span>핵심 카드만 표시</span>
+                            </div>
+                            <p class="mode-guide-copy">계정 선택, 템플릿 적용, 발행 액션 순서로만 진행하면 됩니다.</p>
+                        </div>
+                        <section class="creator-hub">
+                            <div class="creator-hub-card" id="accountSyncCard">
+                                <div class="creator-hub-head">
+                                    <div>
+                                        <strong>내 SNS 동기화 현황</strong>
+                                        <span>지금 연결된 계정만 골라 기본 반복 배포로 보냅니다.</span>
+                                    </div>
+                                    <div class="flex gap-2">
+                                        <a href="accounts.html" class="creator-link-btn secondary" style="text-decoration:none;">계정 연동 관리</a>
+                                        <button type="button" class="creator-link-btn" onclick="refreshCreatorWorkspace()">다시 동기화</button>
+                                    </div>
+                                </div>
+                                <div class="sync-summary-strip" id="accountSyncSummary"></div>
+                                <div class="sync-account-grid" id="accountSyncGrid"></div>
+                            </div>
+                            <div class="creator-hub-card" id="templatePresetCard">
+                                <div class="creator-hub-head">
+                                    <div>
+                                        <strong>내 템플릿 베이스</strong>
+                                        <span>카드뉴스, 사진, 숏폼 영상, 음성 티저까지 초안을 바로 찍어낼 수 있게 기본 프리셋을 제공합니다.</span>
+                                    </div>
+                                    <a href="templates.html" class="creator-link-btn secondary" style="text-decoration:none;">템플릿 전체 보기</a>
+                                </div>
+                                <div class="template-preset-grid" id="templatePresetGrid"></div>
+                            </div>
+                            <div class="creator-hub-card" id="distributionCardWrap">
+                                <div class="creator-hub-head">
+                                    <div>
+                                        <strong>멀티 채널 배포</strong>
+                                        <span>네이버, 인스타그램, Threads, TikTok, YouTube, 릴스용 계정을 한 번에 선택합니다.</span>
+                                    </div>
+                                    <span id="distributionSummary">선택된 배포 대상이 없습니다</span>
+                                </div>
+                                <div class="distribution-grid" id="distributionGrid"></div>
+                            </div>
+                        </section>
 
                         <!-- Mode 1: Direct Writing -->
                         <div class="mode-form active" id="directForm">
@@ -510,6 +837,12 @@
                                 <div class="grid grid-cols-2 gap-2 bg-slate-800 rounded-lg p-3" id="platformCheckboxes"></div>
                                 <p class="text-xs text-slate-400 mt-2">여러 플랫폼을 선택하면 각 플랫폼에 맞춰 자동으로 조정됩니다</p>
                             </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-300 mb-3 mt-3">배포 엔진</label>
+                                <div class="automation-engine-grid" id="automationEngineGrid"></div>
+                                <input type="url" id="automationWebhookUrl" placeholder="선택 사항: n8n webhook URL 또는 내부 큐 endpoint" class="w-full mt-3 bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white placeholder-slate-500 focus:border-pink-500 focus:outline-none">
+                                <p class="text-xs text-slate-400 mt-2">기본은 직접 API 배포입니다. 반복 작업이 커지면 n8n webhook을 연결해도 됩니다.</p>
+                            </div>
                             <button onclick="setupAutomation()" class="w-full mt-4 bg-green-600 hover:bg-green-700 text-white py-2.5 rounded-lg font-medium transition">
                                 ⚡ 자동화 설정하기
                             </button>
@@ -527,6 +860,16 @@
                     <div class="flex items-center justify-between mb-4">
                         <h3 class="text-lg font-bold text-white">미리보기</h3>
                         <span class="draft-saved-indicator" id="draftIndicator">&#x2714; 임시저장됨</span>
+                    </div>
+                    <div class="preview-helper">
+                        <div class="preview-helper-card">
+                            <strong>👀 미리보기 체크포인트</strong>
+                            <p id="previewChecklist">첫 문장에서 주제와 이득이 보이는지, 마지막 줄에 행동 유도가 들어가는지 먼저 확인하세요.</p>
+                        </div>
+                        <div class="preview-helper-card">
+                            <strong>📱 채널별 권장 읽기 흐름</strong>
+                            <p>Instagram은 감정과 비주얼, Twitter는 짧은 핵심, LinkedIn은 신뢰와 맥락 중심으로 읽힙니다.</p>
+                        </div>
                     </div>
                     <!-- Platform Preview Tabs -->
                     <div class="preview-platform-tabs" id="previewPlatformTabs">
@@ -659,6 +1002,22 @@
                 types: ['video', 'short'],
                 videoOnly: true
             },
+            naver_blog: {
+                name: 'Naver Blog',
+                icon: '🟢',
+                charLimit: 5000,
+                hashtagLimit: 20,
+                types: ['post', 'review'],
+                videoOnly: false
+            },
+            naver_cafe: {
+                name: 'Naver Cafe',
+                icon: '☕',
+                charLimit: 3000,
+                hashtagLimit: 10,
+                types: ['notice', 'post'],
+                videoOnly: false
+            },
             pinterest: {
                 name: 'Pinterest',
                 icon: 'P',
@@ -686,6 +1045,76 @@
         let uploadedMedia = [];
         let currentPreviewPlatform = 'instagram';
         let draftAutoSaveTimer = null;
+        let connectedAccounts = [];
+        let connectedTemplates = [];
+        let selectedTemplatePreset = '';
+        let selectedAutomationEngine = 'direct';
+        const MODE_GUIDES = {
+            direct: {
+                title: '✍️ 직접 작성이 선택되었습니다',
+                tag: '빠르게 문구를 다듬고 싶을 때',
+                copy: '짧은 문장으로 핵심 메시지를 먼저 쓰고, 해시태그와 이미지를 붙이는 방식이 가장 안정적입니다.',
+                pills: ['핵심 메시지 먼저', 'CTA 한 문장', '해시태그 3~5개'],
+                checklist: '첫 문장에서 주제와 이득이 보이는지, 마지막 줄에 행동 유도가 들어가는지 먼저 확인하세요.'
+            },
+            ai: {
+                title: '🤖 AI 생성이 선택되었습니다',
+                tag: '초안이 빠르게 필요할 때',
+                copy: '주제, 톤, 언어만 정하면 초안을 만든 뒤 편집 모드로 넘길 수 있습니다. 초안은 빠르게 만들고 마지막 20%만 직접 다듬는 흐름이 좋습니다.',
+                pills: ['주제는 구체적으로', '톤 먼저 결정', '생성 후 한 번 수정'],
+                checklist: '생성 결과에서 첫 문장과 CTA만 정리해도 완성도가 크게 올라갑니다.'
+            },
+            automate: {
+                title: '⚡ 자동화가 선택되었습니다',
+                tag: '반복 발행을 줄이고 싶을 때',
+                copy: '반복 주제와 목적을 고르면 플랫폼별로 자동 조정된 발행 흐름을 만들 수 있습니다. 설정 전에는 주기와 플랫폼 조합이 과하지 않은지 확인하세요.',
+                pills: ['주제는 반복 가능하게', '플랫폼 2개 이하부터', '주 1회부터 시작'],
+                checklist: '자동화는 주제, 목적, 주기, 플랫폼 조합이 자연스러운지 먼저 보세요.'
+            }
+        };
+        const CREATOR_TEMPLATE_PRESETS = [
+            {
+                id: 'card-news',
+                name: '카드뉴스 시리즈',
+                type: 'card_news',
+                description: '핵심 포인트를 슬라이드형으로 정리하고 Instagram/Threads/네이버 포스트로 확장하기 좋습니다.',
+                content: '1장 훅: 오늘 꼭 알아야 할 핵심 한 줄\n2장 문제: 왜 지금 이 주제가 중요한가\n3장 해법: 바로 적용할 수 있는 3가지 포인트\n4장 CTA: 저장하고 다음 게시물도 확인하세요.',
+                hashtags: '#카드뉴스 #브랜딩 #콘텐츠전략 #저장각',
+                platforms: ['instagram', 'threads', 'naver_blog']
+            },
+            {
+                id: 'photo-story',
+                name: '사진 중심 스토리',
+                type: 'photo',
+                description: '사진 1~3장과 짧은 감정선으로 Instagram 피드, Facebook, Naver Blog에 맞는 구조입니다.',
+                content: '사진 한 장으로 전달할 메시지를 먼저 적고, 두 번째 문장에서 맥락을 풀어주세요.\n마지막에는 공감 질문이나 경험 공유 요청을 넣으세요.',
+                hashtags: '#사진기록 #브랜드스토리 #데일리콘텐츠',
+                platforms: ['instagram', 'facebook', 'naver_blog']
+            },
+            {
+                id: 'short-video',
+                name: '숏폼 영상 스크립트',
+                type: 'video',
+                description: '릴스, TikTok, YouTube Shorts에 공통으로 돌릴 수 있는 3단 구성 스크립트입니다.',
+                content: '오프닝 3초: 시선을 멈추는 한 문장\n본론 15초: 팁 또는 전후 비교 2가지\n엔딩 5초: 저장/팔로우/링크 클릭 유도',
+                hashtags: '#숏폼 #릴스 #틱톡 #유튜브쇼츠',
+                platforms: ['instagram', 'tiktok', 'youtube']
+            },
+            {
+                id: 'voice-teaser',
+                name: '음성 티저',
+                type: 'voice',
+                description: '음성 스크립트와 썸네일 문구를 함께 준비해 영상·오디오 클립으로 재가공하기 좋습니다.',
+                content: '첫 5초에 질문형 훅을 넣고, 20초 안에 핵심 팁 2개를 전달한 뒤, 본문 링크나 전체 영상으로 이어지게 구성하세요.',
+                hashtags: '#오디오콘텐츠 #보이스마케팅 #짧은팁',
+                platforms: ['youtube', 'threads', 'naver_blog']
+            }
+        ];
+        const AUTOMATION_ENGINES = [
+            { id: 'direct', name: '직접 API', description: '가장 단순하고 빠른 기본 배포', recommended: true },
+            { id: 'n8n', name: 'n8n', description: '후처리나 승인 루틴이 필요할 때' },
+            { id: 'internal', name: '내부 큐', description: '대량 배포를 자체 큐로 넘길 때' }
+        ];
 
         // ============================================================================
         // Hashtag Suggestions (Mock Data)
@@ -701,25 +1130,572 @@
             beauty: ['#뷰티', '#메이크업', '#스킨케어', '#뷰티팁', '#코스메틱'],
             tech: ['#테크', '#IT', '#개발자', '#프로그래밍', '#AI', '#스타트업']
         };
+        const CONTEXT_COUNTRIES = {
+            kr: { code: 'KR', emoji: '🇰🇷', label: '대한민국' },
+            us: { code: 'US', emoji: '🇺🇸', label: '미국' },
+            jp: { code: 'JP', emoji: '🇯🇵', label: '일본' },
+            sg: { code: 'SG', emoji: '🇸🇬', label: '싱가포르' }
+        };
+        const CONTEXT_TAGS = {
+            country: {
+                KR: ['#국내브랜드', '#대한민국', '#한식', '#국내쇼핑', '#K콘텐츠'],
+                US: ['#미국트렌드', '#온라인쇼핑', '#라이프스타일', '#트래블'],
+                JP: ['#일본라이프', '#일본트렌드', '#메이드', '#아시아'],
+                SG: ['#싱가포르', '#아시아라이프', '#쇼핑']
+            },
+            category: {
+                마케팅: ['#브랜딩', '#퍼널', '#콘텐츠마케팅', '#퍼포먼스'],
+                콘텐츠: ['#콘텐츠제작', '#영상콘텐츠', '#리뷰'],
+                라이프: ['#데일리', '#루틴', '#삶의질', '#브이로그'],
+                리뷰: ['#리얼리뷰', '#제품체험', '#솔직후기'],
+                브랜딩: ['#브랜드스토리', '#USP', '#메시지'],
+                tech: ['#AI', '#AI툴', '#개발', '#기술블로그'],
+                beauty: ['#뷰티', '#헤어', '#메이크업', '#스킨케어'],
+                food: ['#레시피', '#식단', '#맛집']
+            }
+        };
+        const QUERY_MODE_MAP = {
+            direct: 'direct',
+            manual: 'direct',
+            writing: 'direct',
+            ai: 'ai',
+            gpt: 'ai',
+            auto: 'automate',
+            automate: 'automate',
+            자동화: 'automate'
+        };
 
         requireAuth();
 
         // ============================================================================
         // Initialization
         // ============================================================================
+        let queryContext = null;
+        let queryApplied = false;
+        let selectedCountry = '';
+        let selectedCategory = '';
+
+        function getQueryContext() {
+            const params = new URLSearchParams(window.location.search);
+            const normalizeText = (value) => String(value || '').trim();
+            const normalizeMode = (value) => {
+                const key = String(value || '').toLowerCase();
+                return QUERY_MODE_MAP[key] || '';
+            };
+            return {
+                mode: normalizeMode(params.get('mode')),
+                platform: normalizeText(params.get('platform')),
+                accountId: normalizeText(params.get('accountId')),
+                hashtag: normalizeText(params.get('hashtag')),
+                hashtags: normalizeText(params.get('hashtags')),
+                topic: normalizeText(params.get('topic')),
+                source: normalizeText(params.get('source')),
+                category: normalizeText(params.get('category')),
+                country: normalizeText(params.get('country')),
+                content: normalizeText(params.get('content')),
+                aiTopic: normalizeText(params.get('aiTopic')),
+                autoTopic: normalizeText(params.get('autoTopic')),
+                autoPurpose: normalizeText(params.get('autoPurpose')),
+                autoFrequency: normalizeText(params.get('autoFrequency')),
+                aiTone: normalizeText(params.get('aiTone')),
+                aiLanguage: normalizeText(params.get('aiLanguage') || params.get('lang')),
+                autoGenerate: params.get('autoGenerate') === '1' || params.get('autoGenerate') === 'true',
+                sourceHashtag: normalizeText(params.get('sourceHashtag')),
+                sourceCategory: normalizeText(params.get('sourceCategory')),
+                sourceCountry: normalizeText(params.get('sourceCountry')),
+                keywords: normalizeText(params.get('keywords') || params.get('keyword'))
+            };
+        }
+
+        function normalizeCategory(value) {
+            return String(value || '').trim().toLowerCase();
+        }
+
+        function normalizePlatformName(value) {
+            const normalized = String(value || '').toLowerCase().trim();
+            if (!normalized) return '';
+            if (normalized.includes('insta')) return 'instagram';
+            if (normalized.includes('twitter') || normalized.includes('x')) return 'twitter';
+            if (normalized.includes('facebook')) return 'facebook';
+            if (normalized.includes('youtube')) return 'youtube';
+            if (normalized.includes('tiktok')) return 'tiktok';
+            if (normalized.includes('linkedin')) return 'linkedin';
+            if (normalized.includes('pin')) return 'pinterest';
+            return normalized;
+        }
+
+        function normalizeCountryCode(value) {
+            const v = String(value || '').toUpperCase().trim();
+            if (!v) return '';
+            if (CONTEXT_COUNTRIES[v.toLowerCase()]) return v;
+            const matchByCode = Object.keys(CONTEXT_COUNTRIES).find((code) => CONTEXT_COUNTRIES[code].code === v);
+            if (matchByCode) {
+                return CONTEXT_COUNTRIES[matchByCode].code;
+            }
+            const matchByLabel = Object.keys(CONTEXT_COUNTRIES).find((code) => CONTEXT_COUNTRIES[code].label.toLowerCase() === v.toLowerCase());
+            if (matchByLabel) {
+                return CONTEXT_COUNTRIES[matchByLabel].code;
+            }
+            return v.slice(0, 2);
+        }
+
+        function updateContextBadge() {
+            const hint = document.getElementById('contextBadge');
+            if (!hint) return;
+
+            const parts = [];
+            if (selectedCategory) parts.push(`📌 ${selectedCategory}`);
+            if (selectedCountry) {
+                const country = CONTEXT_COUNTRIES[selectedCountry.toLowerCase()] || CONTEXT_COUNTRIES[selectedCountry.toUpperCase()];
+                if (country) {
+                    parts.push(`${country.emoji} ${country.label}`);
+                } else {
+                    parts.push(`🌍 ${selectedCountry}`);
+                }
+            }
+            if (queryContext?.source) parts.push(`요청: ${queryContext.source}`);
+
+            if (!parts.length) {
+                hint.classList.add('hidden');
+                return;
+            }
+
+            hint.textContent = `콘텍스트: ${parts.join(' · ')}`;
+            hint.classList.remove('hidden');
+        }
+
+        function parseContextCategoryFromHashtag(hashtag) {
+            const source = (hashtag || '').replace(/^#/, '').toLowerCase();
+            if (!source) return '';
+            if (source.includes('리뷰')) return '리뷰';
+            if (source.includes('마케팅') || source.includes('브랜딩')) return '마케팅';
+            if (source.includes('기술') || source.includes('테크')) return 'tech';
+            if (source.includes('뷰티') || source.includes('메이크업')) return 'beauty';
+            if (source.includes('요리') || source.includes('음식') || source.includes('레시피')) return 'food';
+            return '';
+        }
+
+        function buildContextHashtags() {
+            const result = new Set();
+            const countryConfig = CONTEXT_TAGS.country[selectedCountry] || [];
+            countryConfig.forEach((tag) => result.add(tag));
+
+            const categoryConfig = CONTEXT_TAGS.category[selectedCategory] || [];
+            categoryConfig.forEach((tag) => result.add(tag));
+
+            const hashtagContext = parseContextCategoryFromHashtag(document.getElementById('hashtags')?.value || '');
+            if (hashtagContext && CONTEXT_TAGS.category[hashtagContext]) {
+                CONTEXT_TAGS.category[hashtagContext].forEach((tag) => result.add(tag));
+            }
+
+            return Array.from(result);
+        }
+
+        async function applyQueryContext() {
+            queryContext = getQueryContext();
+            const hasContext = Object.values(queryContext).some((value) => Boolean(value) && value !== false);
+            if (!hasContext) return false;
+
+            queryApplied = true;
+
+            if (queryContext.country) {
+                const country = normalizeCountryCode(queryContext.country);
+                selectedCountry = country || queryContext.country;
+                queryContext.sourceCountry = selectedCountry;
+            } else if (queryContext.sourceCountry) {
+                const sourceCountry = normalizeCountryCode(queryContext.sourceCountry);
+                selectedCountry = sourceCountry || queryContext.sourceCountry;
+            }
+
+            if (queryContext.category) {
+                selectedCategory = normalizeCategory(queryContext.category);
+            }
+            if (queryContext.sourceCategory) {
+                selectedCategory = normalizeCategory(queryContext.sourceCategory);
+            }
+
+            if (queryContext.sourceCategory && !queryContext.category) {
+                selectedCategory = normalizeCategory(queryContext.sourceCategory);
+            }
+
+            if (queryContext.platform) {
+                selectedPlatform = normalizePlatformName(queryContext.platform);
+            }
+
+            if (queryContext.accountId) {
+                const accountSelect = document.getElementById('accountId');
+                if (accountSelect) {
+                    accountSelect.value = queryContext.accountId;
+                }
+            } else if (selectedPlatform) {
+                const accountSelect = document.getElementById('accountId');
+                if (accountSelect) {
+                    const candidate = Array.from(accountSelect.options).find((opt) => {
+                        return String(opt.dataset.platform || '').toLowerCase() === selectedPlatform;
+                    });
+                    if (candidate) accountSelect.value = candidate.value;
+                }
+            }
+
+            if (document.getElementById('accountId')?.value) {
+                updatePlatformSpecs();
+            }
+
+            if (queryContext.mode) {
+                const mode = queryContext.mode;
+                switchMode(mode);
+            } else if (queryContext.source === 'viral') {
+                switchMode('ai');
+            }
+
+            if (queryContext.aiTone && document.getElementById('aiTone')) {
+                document.getElementById('aiTone').value = queryContext.aiTone;
+            }
+            if (queryContext.aiLanguage && document.getElementById('aiLanguage')) {
+                document.getElementById('aiLanguage').value = queryContext.aiLanguage;
+            }
+
+            if (queryContext.autoPurpose && document.getElementById('autoPurpose')) {
+                document.getElementById('autoPurpose').value = queryContext.autoPurpose;
+            }
+            if (queryContext.autoFrequency && document.getElementById('autoFrequency')) {
+                document.getElementById('autoFrequency').value = queryContext.autoFrequency;
+            }
+
+            const hashtagText = queryContext.hashtag || queryContext.sourceHashtag || queryContext.keywords || '';
+            if (hashtagText) {
+                const normalizedHashtag = hashtagText.trim().replace(/^#?/, '#');
+                const hashtagsInput = document.getElementById('hashtags');
+                if (hashtagsInput) {
+                    const before = hashtagsInput.value.trim();
+                    hashtagsInput.value = before ? `${before} ${normalizedHashtag}`.trim() : normalizedHashtag;
+                }
+            } else if (queryContext.hashtags) {
+                const hashtagsInput = document.getElementById('hashtags');
+                if (hashtagsInput) {
+                    hashtagsInput.value = queryContext.hashtags;
+                }
+            }
+
+            const topicText = queryContext.topic || queryContext.autoTopic || queryContext.aiTopic || queryContext.keywords;
+            if (topicText) {
+                const direct = document.getElementById('content');
+                const ai = document.getElementById('aiTopic');
+                const automate = document.getElementById('autoTopic');
+                if (currentMode === 'ai' && ai) {
+                    ai.value = topicText;
+                } else if (currentMode === 'automate' && automate) {
+                    automate.value = topicText;
+                    if (queryContext.autoPurpose && document.getElementById('autoPurpose')) {
+                        document.getElementById('autoPurpose').value = queryContext.autoPurpose;
+                    }
+                    if (queryContext.autoFrequency && document.getElementById('autoFrequency')) {
+                        document.getElementById('autoFrequency').value = queryContext.autoFrequency;
+                    }
+                } else if (direct) {
+                    direct.value = queryContext.content || `${topicText}에 대한 초안입니다.`;
+                }
+
+                if (currentMode !== 'direct' && currentMode !== 'automate' && ai && !queryContext.content) {
+                    if (queryContext.source === 'viral') {
+                        ai.value = topicText;
+                    }
+                }
+            }
+
+            if (queryContext.content) {
+                const directInput = document.getElementById('content');
+                if (directInput) directInput.value = queryContext.content;
+            }
+
+            updateContextBadge();
+            filterHashtagSuggestions();
+            if (currentMode === 'direct') updatePreview();
+            if (currentMode === 'ai' && (queryContext.autoGenerate || queryContext.source === 'viral')) {
+                await generateWithAI();
+            } else if (currentMode === 'automate' && queryContext.autoTopic) {
+                updateAutomationPreview();
+            }
+
+            if (queryContext.source === 'viral') {
+                showInfo('바이럴 트렌드 기반으로 작성 환경을 프리필했습니다');
+            }
+            return true;
+        }
+
+        function shouldRestoreDraft() {
+            if (!queryContext) return true;
+            return !(queryContext.mode || queryContext.platform || queryContext.accountId || queryContext.hashtag ||
+                queryContext.hashtags || queryContext.topic || queryContext.content || queryContext.source);
+        }
+
+        function normalizeAccountsPayload(payload) {
+            if (Array.isArray(payload)) return payload;
+            if (Array.isArray(payload?.accounts)) return payload.accounts;
+            if (Array.isArray(payload?.data)) return payload.data;
+            return [];
+        }
+
+        function normalizeTemplatesPayload(payload) {
+            if (Array.isArray(payload)) return payload;
+            if (Array.isArray(payload?.templates)) return payload.templates;
+            if (Array.isArray(payload?.data)) return payload.data;
+            return [];
+        }
+
+        function getConnectedPlatforms() {
+            return new Set(connectedAccounts.map((account) => String(account.platform || '').toLowerCase()));
+        }
+
+        function getPlatformLabel(platform) {
+            return PLATFORM_SPECS[platform]?.name || platform;
+        }
+
+        function getAccountStatusLabel(account) {
+            return account?.is_active === false ? '연결 확인 필요' : '연동됨';
+        }
+
+        function renderAccountSyncHub() {
+            const summary = document.getElementById('accountSyncSummary');
+            const grid = document.getElementById('accountSyncGrid');
+            if (!summary || !grid) return;
+
+            if (!connectedAccounts.length) {
+                summary.innerHTML = '<span>연결된 계정 0개</span><span>멀티 채널 배포 비활성</span>';
+                grid.innerHTML = '<div class="sync-account-card"><strong>연동된 계정이 없습니다</strong><p>계정 연동 페이지에서 Instagram, Threads, TikTok, YouTube, Naver 계정을 먼저 연결하세요.</p></div>';
+                return;
+            }
+
+            const connectedPlatforms = [...new Set(connectedAccounts.map((account) => String(account.platform || '').toLowerCase()))];
+            summary.innerHTML = [
+                `<span>연결 계정 ${connectedAccounts.length}개</span>`,
+                `<span>활성 플랫폼 ${connectedPlatforms.length}개</span>`,
+                `<span>기본 배포는 선택된 계정으로만 진행</span>`
+            ].join('');
+
+            grid.innerHTML = connectedAccounts.map((account) => {
+                const platform = String(account.platform || '').toLowerCase();
+                const specs = PLATFORM_SPECS[platform] || {};
+                const isPrimary = document.getElementById('accountId')?.value === String(account.id);
+                return `
+                    <div class="sync-account-card ${isPrimary ? 'active' : ''}">
+                        <strong>${specs.icon || '📱'} ${account.account_name || '계정명 없음'}</strong>
+                        <p>${specs.name || platform || '플랫폼 미지정'} · ${getAccountStatusLabel(account)}</p>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderTemplatePresets() {
+            const grid = document.getElementById('templatePresetGrid');
+            if (!grid) return;
+
+            const apiTemplates = connectedTemplates.slice(0, 2).map((template, index) => ({
+                id: `api-template-${template.id || index}`,
+                name: template.name || `템플릿 ${index + 1}`,
+                type: template.type || 'custom',
+                description: template.description || '저장된 템플릿 기반으로 초안을 바로 시작합니다.',
+                content: template.content || template.body || '',
+                hashtags: template.hashtags || '',
+                platforms: Array.isArray(template.platforms) ? template.platforms : []
+            }));
+
+            const presets = [...CREATOR_TEMPLATE_PRESETS, ...apiTemplates];
+            grid.innerHTML = presets.map((preset) => `
+                <div class="template-preset-card ${selectedTemplatePreset === preset.id ? 'active' : ''}">
+                    <strong>${preset.name}</strong>
+                    <p>${preset.description}</p>
+                    <p style="margin-top:8px;color:#f9a8d4;">${(preset.platforms || []).map((platform) => getPlatformLabel(platform)).join(' · ') || '범용 템플릿'}</p>
+                    <button type="button" onclick="applyTemplatePreset('${preset.id}')">이 템플릿 적용</button>
+                </div>
+            `).join('');
+        }
+
+        function renderDistributionTargets() {
+            const grid = document.getElementById('distributionGrid');
+            const summary = document.getElementById('distributionSummary');
+            if (!grid || !summary) return;
+
+            if (!connectedAccounts.length) {
+                grid.innerHTML = '<div class="distribution-card"><strong>배포 대상을 구성할 수 없습니다</strong><p>연동된 계정이 있어야 반복 배포를 켤 수 있습니다.</p></div>';
+                summary.textContent = '선택 가능한 계정이 없습니다';
+                return;
+            }
+
+            const primaryId = document.getElementById('accountId')?.value || '';
+            grid.innerHTML = connectedAccounts.map((account) => {
+                const platform = String(account.platform || '').toLowerCase();
+                const specs = PLATFORM_SPECS[platform] || {};
+                const checked = String(account.id) === String(primaryId);
+                const label = `${specs.icon || '📱'} ${account.account_name || getPlatformLabel(platform)}`;
+                return `
+                    <label class="distribution-card ${checked ? 'active' : ''}">
+                        <div style="display:flex;align-items:flex-start;gap:10px;">
+                            <input type="checkbox" class="distribution-target mt-1" value="${account.id}" data-platform="${platform}" ${checked ? 'checked' : ''}>
+                            <div>
+                                <strong>${label}</strong>
+                                <p>${getPlatformLabel(platform)} · ${platform === 'instagram' ? '피드/릴스' : platform === 'youtube' ? '동영상/쇼츠' : '기본 배포'}</p>
+                            </div>
+                        </div>
+                    </label>
+                `;
+            }).join('');
+
+            grid.querySelectorAll('.distribution-target').forEach((checkbox) => {
+                checkbox.addEventListener('change', () => {
+                    checkbox.closest('.distribution-card')?.classList.toggle('active', checkbox.checked);
+                    updateDistributionSummary();
+                });
+            });
+
+            updateDistributionSummary();
+        }
+
+        function updateDistributionSummary() {
+            const summary = document.getElementById('distributionSummary');
+            if (!summary) return;
+            const selected = Array.from(document.querySelectorAll('.distribution-target:checked'));
+            if (!selected.length) {
+                summary.textContent = '선택된 배포 대상이 없습니다';
+                return;
+            }
+            summary.textContent = `${selected.length}개 계정으로 기본 반복 배포`;
+        }
+
+        function renderAutomationEngines() {
+            const grid = document.getElementById('automationEngineGrid');
+            if (!grid) return;
+            grid.innerHTML = AUTOMATION_ENGINES.map((engine) => `
+                <label class="automation-engine-card ${selectedAutomationEngine === engine.id ? 'active' : ''}">
+                    <div style="display:flex;align-items:flex-start;gap:10px;">
+                        <input type="radio" name="automationEngine" value="${engine.id}" ${selectedAutomationEngine === engine.id ? 'checked' : ''}>
+                        <div>
+                            <strong>${engine.name}${engine.recommended ? ' · 기본' : ''}</strong>
+                            <p>${engine.description}</p>
+                        </div>
+                    </div>
+                </label>
+            `).join('');
+
+            grid.querySelectorAll('input[name="automationEngine"]').forEach((input) => {
+                input.addEventListener('change', () => {
+                    selectedAutomationEngine = input.value;
+                    renderAutomationEngines();
+                });
+            });
+        }
+
+        function getTemplatePresetById(templateId) {
+            const apiTemplates = connectedTemplates.map((template, index) => ({
+                id: `api-template-${template.id || index}`,
+                name: template.name || `템플릿 ${index + 1}`,
+                type: template.type || 'custom',
+                description: template.description || '',
+                content: template.content || template.body || '',
+                hashtags: template.hashtags || '',
+                platforms: Array.isArray(template.platforms) ? template.platforms : []
+            }));
+            return [...CREATOR_TEMPLATE_PRESETS, ...apiTemplates].find((preset) => preset.id === templateId) || null;
+        }
+
+        function applyTemplatePreset(templateId) {
+            const preset = getTemplatePresetById(templateId);
+            if (!preset) return;
+
+            selectedTemplatePreset = templateId;
+            renderTemplatePresets();
+
+            document.getElementById('content').value = preset.content || '';
+            document.getElementById('hashtags').value = preset.hashtags || '';
+            document.getElementById('aiTopic').value = preset.name;
+            document.getElementById('autoTopic').value = preset.name;
+            switchMode('direct');
+
+            const connectedPlatforms = getConnectedPlatforms();
+            document.querySelectorAll('.distribution-target').forEach((checkbox) => {
+                const platform = checkbox.dataset.platform;
+                checkbox.checked = preset.platforms.includes(platform) && connectedPlatforms.has(platform);
+                checkbox.closest('.distribution-card')?.classList.toggle('active', checkbox.checked);
+            });
+
+            updateDistributionSummary();
+            filterHashtagSuggestions();
+            updatePreview();
+            showSuccess(`${preset.name} 템플릿을 적용했습니다.`);
+        }
+
+        function adaptContentForPlatform(platform, content) {
+            const normalizedPlatform = String(platform || '').toLowerCase();
+            const specs = PLATFORM_SPECS[normalizedPlatform] || {};
+            const limit = specs.charLimit || 2200;
+            let next = String(content || '').trim();
+
+            if (!next) return next;
+
+            if (normalizedPlatform === 'threads' && next.length > 480) {
+                next = `${next.slice(0, 477)}...`;
+            } else if (normalizedPlatform === 'twitter' && next.length > 275) {
+                next = `${next.slice(0, 272)}...`;
+            } else if ((normalizedPlatform === 'youtube' || normalizedPlatform === 'tiktok') && !uploadedMedia.length) {
+                next = `${next}\n\n[영상 또는 음성 클립 업로드 권장]`;
+            } else if (normalizedPlatform === 'naver_blog') {
+                next = `${next}\n\n자세한 내용은 본문에서 더 정리해보세요.`;
+            }
+
+            if (next.length > limit) {
+                return `${next.slice(0, Math.max(limit - 3, 0))}...`;
+            }
+            return next;
+        }
+
+        function collectPublishTargets(primaryAccountId) {
+            const selectedIds = Array.from(document.querySelectorAll('.distribution-target:checked')).map((input) => String(input.value));
+            if (!selectedIds.includes(String(primaryAccountId))) {
+                selectedIds.unshift(String(primaryAccountId));
+            }
+            const seen = new Set();
+            return selectedIds
+                .map((id) => connectedAccounts.find((account) => String(account.id) === String(id)))
+                .filter((account) => account && !seen.has(String(account.id)) && seen.add(String(account.id)));
+        }
+
+        async function refreshCreatorWorkspace() {
+            try {
+                const [accountsPayload, templatesPayload] = await Promise.all([
+                    getSNSAccounts(),
+                    getSNSTemplates().catch(() => ({ templates: [] }))
+                ]);
+                connectedAccounts = normalizeAccountsPayload(accountsPayload);
+                connectedTemplates = normalizeTemplatesPayload(templatesPayload);
+                renderAccountSyncHub();
+                renderTemplatePresets();
+                renderDistributionTargets();
+                renderAutomationEngines();
+                applyWorkspaceFocus();
+            } catch (error) {
+                console.warn('Workspace refresh failed', error);
+            }
+        }
+
         async function init() {
             try {
                 const accountsData = await getSNSAccounts();
                 const select = document.getElementById('accountId');
 
-                if (!accountsData.accounts || accountsData.accounts.length === 0) {
+                connectedAccounts = normalizeAccountsPayload(accountsData);
+                if (!connectedAccounts.length) {
                     showWarning('연동된 SNS 계정이 없습니다. 계정 연동 페이지로 이동해주세요.');
                     select.innerHTML = '<option value="">계정 연동 필요</option>';
+                    renderAccountSyncHub();
+                    renderTemplatePresets();
+                    renderDistributionTargets();
+                    renderAutomationEngines();
+                    applyWorkspaceFocus();
                     return;
                 }
 
                 select.innerHTML = '<option value="">계정을 선택하세요</option>';
-                (accountsData.accounts || []).forEach(acc => {
+                connectedAccounts.forEach(acc => {
                     const opt = document.createElement('option');
                     opt.value = acc.id;
                     opt.dataset.platform = acc.platform;
@@ -739,6 +1715,18 @@
                     `;
                     platformCheckboxes.appendChild(label);
                 });
+
+                try {
+                    const templatesPayload = await getSNSTemplates();
+                    connectedTemplates = normalizeTemplatesPayload(templatesPayload);
+                } catch (templateError) {
+                    connectedTemplates = [];
+                }
+
+                renderAccountSyncHub();
+                renderTemplatePresets();
+                renderDistributionTargets();
+                renderAutomationEngines();
             } catch (error) {
                 console.error('Init error:', error);
                 showError('계정 로드 실패: ' + error.message);
@@ -750,6 +1738,7 @@
         // ============================================================================
         function switchMode(mode) {
             currentMode = mode;
+            const activeEvent = typeof window !== 'undefined' ? window.event : null;
 
             // Smooth transition: remove visible class first
             document.querySelectorAll('.mode-form').forEach(f => {
@@ -775,9 +1764,19 @@
                 btn.classList.add('inactive');
             });
 
-            if (event && event.target) {
-                event.target.classList.remove('inactive');
-                event.target.classList.add('active');
+            if (activeEvent && activeEvent.target) {
+                activeEvent.target.classList.remove('inactive');
+                activeEvent.target.classList.add('active');
+            } else {
+                const fallbackTab = {
+                    direct: document.querySelector('.tab-btn:nth-child(1)'),
+                    ai: document.querySelector('.tab-btn:nth-child(2)'),
+                    automate: document.querySelector('.tab-btn:nth-child(3)')
+                }[mode];
+                if (fallbackTab) {
+                    fallbackTab.classList.remove('inactive');
+                    fallbackTab.classList.add('active');
+                }
             }
 
             // Render appropriate preview
@@ -788,6 +1787,68 @@
             } else if (mode === 'automate' && automationSchedule) {
                 updateAutomationPreview();
             }
+
+            updateModeGuide();
+            applyWorkspaceFocus();
+        }
+
+        function updateModeGuide() {
+            const guide = MODE_GUIDES[currentMode] || MODE_GUIDES.direct;
+            const title = document.getElementById('modeGuideTitle');
+            const tag = document.getElementById('modeGuideTag');
+            const copy = document.getElementById('modeGuideCopy');
+            const pills = document.getElementById('modeGuidePills');
+            const checklist = document.getElementById('previewChecklist');
+
+            if (title) title.textContent = guide.title;
+            if (tag) tag.textContent = guide.tag;
+            if (copy) copy.textContent = guide.copy;
+            if (checklist) checklist.textContent = guide.checklist;
+            if (pills) {
+                pills.innerHTML = guide.pills.map(item => `<span>${item}</span>`).join('');
+            }
+        }
+
+        function applyWorkspaceFocus() {
+            const summary = document.getElementById('modeFocusSummary');
+            const accountCard = document.getElementById('accountSyncCard');
+            const templateCard = document.getElementById('templatePresetCard');
+            const distributionCard = document.getElementById('distributionCardWrap');
+
+            if (accountCard) accountCard.classList.toggle('hidden', currentMode === 'ai');
+            if (templateCard) templateCard.classList.toggle('hidden', currentMode === 'automate');
+            if (distributionCard) distributionCard.classList.toggle('hidden', currentMode === 'direct');
+
+            if (!summary) return;
+            const modeCopy = {
+                direct: {
+                    title: '지금은 직접 작성에 집중합니다',
+                    tag: '핵심 카드만 표시',
+                    copy: '계정 선택, 템플릿 적용, 발행 액션 순서로만 진행하면 됩니다.',
+                },
+                ai: {
+                    title: '지금은 AI 초안 생성에 집중합니다',
+                    tag: '계정 카드 숨김',
+                    copy: '주제와 톤을 먼저 정하고, 생성 결과를 확인한 뒤 필요한 템플릿만 적용하면 됩니다.',
+                },
+                automate: {
+                    title: '지금은 반복 배포 설정에 집중합니다',
+                    tag: '배포 카드 우선',
+                    copy: '주제, 빈도, 대상 채널, 엔진만 정리하면 자동화 설정이 끝납니다.',
+                }
+            }[currentMode] || {
+                title: '지금은 직접 작성에 집중합니다',
+                tag: '핵심 카드만 표시',
+                copy: '계정 선택, 템플릿 적용, 발행 액션 순서로만 진행하면 됩니다.',
+            };
+
+            summary.innerHTML = `
+                <div class="mode-guide-title">
+                    <strong>${modeCopy.title}</strong>
+                    <span>${modeCopy.tag}</span>
+                </div>
+                <p class="mode-guide-copy">${modeCopy.copy}</p>
+            `;
         }
 
         // ============================================================================
@@ -801,6 +1862,8 @@
             if (!platform) {
                 document.getElementById('charLimit').textContent = '280';
                 selectedPlatform = null;
+                renderAccountSyncHub();
+                renderDistributionTargets();
                 return;
             }
 
@@ -820,6 +1883,8 @@
 
                 updateCharCount();
                 renderPlatformSettings(platform, specs);
+                renderAccountSyncHub();
+                renderDistributionTargets();
             }
         }
 
@@ -1328,12 +2393,60 @@
         // ============================================================================
         // Mode 3: Automation
         // ============================================================================
+        function buildAutomationContract(input) {
+            const contracts = window.SoftFactoryWorkflowContracts;
+            if (contracts?.buildAutomationContract) {
+                return contracts.buildAutomationContract({
+                    ...input,
+                    engine: selectedAutomationEngine || 'direct',
+                    payloadVersion: '2026-03-10'
+                });
+            }
+            return {
+                name: `${(input?.topic || 'Untitled').trim()} · ${(input?.purpose || 'engagement').trim()} · ${(input?.frequency || 'daily').trim()}`,
+                topic: (input?.topic || '').trim(),
+                purpose: (input?.purpose || 'engagement').trim(),
+                frequency: (input?.frequency || 'daily').trim(),
+                platforms: Array.isArray(input?.platforms) ? input.platforms.filter(Boolean) : [],
+                engine: selectedAutomationEngine || 'direct',
+                webhook_url: (input?.webhookUrl || '').trim() || null,
+                delivery_mode: (input?.webhookUrl || '').trim() ? 'webhook' : 'direct',
+                payload_version: '2026-03-10',
+                requested_at: new Date().toISOString(),
+            };
+        }
+
+        function validateAutomationWebhookUrl(rawValue) {
+            const value = String(rawValue || '').trim();
+            if (!value) {
+                return '';
+            }
+
+            try {
+                const parsed = new URL(value);
+                if (!['http:', 'https:'].includes(parsed.protocol)) {
+                    throw new Error('invalid protocol');
+                }
+                return parsed.toString();
+            } catch (error) {
+                throw new Error('Webhook URL은 http 또는 https 형식이어야 합니다.');
+            }
+        }
+
         async function setupAutomation() {
             try {
                 const topic = document.getElementById('autoTopic').value;
                 const purpose = document.getElementById('autoPurpose').value;
                 const frequency = document.getElementById('autoFrequency').value;
                 const platforms = Array.from(document.querySelectorAll('#platformCheckboxes input:checked')).map(cb => cb.value);
+                const webhookUrl = validateAutomationWebhookUrl(document.getElementById('automationWebhookUrl')?.value);
+                const automationContract = buildAutomationContract({
+                    topic,
+                    purpose,
+                    frequency,
+                    platforms,
+                    webhookUrl
+                });
 
                 if (!topic || platforms.length === 0) {
                     showWarning('주제와 플랫폼을 선택하세요');
@@ -1345,10 +2458,7 @@
                 // Call the API to create automation
                 try {
                     const result = await createAutomate({
-                        topic: topic,
-                        purpose: purpose,
-                        frequency: frequency,
-                        platforms: platforms,
+                        ...automationContract,
                         is_active: true
                     });
 
@@ -1370,10 +2480,7 @@
                     // Fallback for mock API
                     automationSchedule = {
                         id: 'auto_' + Date.now(),
-                        topic: topic,
-                        purpose: purpose,
-                        frequency: frequency,
-                        platforms: platforms,
+                        ...automationContract,
                         is_active: true,
                         created_at: new Date().toISOString()
                     };
@@ -1465,6 +2572,8 @@
                     return `${specs.icon} ${specs.name}`;
                 })
                 .join(', ') || '플랫폼 미선택';
+            const engine = AUTOMATION_ENGINES.find((item) => item.id === selectedAutomationEngine)?.name || '직접 API';
+            const webhook = document.getElementById('automationWebhookUrl')?.value?.trim() || '';
 
             // Update all preview panels with automation info
             const previewContent = document.getElementById('previewContent');
@@ -1478,6 +2587,7 @@
                             <p style="margin-bottom:8px;"><strong>🎯 목적:</strong> ${purpose}</p>
                             <p style="margin-bottom:8px;"><strong>🔄 주기:</strong> ${frequency}</p>
                             <p style="margin-bottom:0;"><strong>📱 플랫폼:</strong> ${platforms}</p>
+                            <p style="margin-top:8px;margin-bottom:0;"><strong>⚙️ 엔진:</strong> ${engine}${webhook ? ` · webhook 연결` : ''}</p>
                         </div>
                     </div>
                 `;
@@ -1505,26 +2615,79 @@
                     throw new Error('인증 토큰이 없습니다. 다시 로그인하세요.');
                 }
 
-                const result = await createSNSPost(accountId, content, {
-                    status: status === 'published' ? 'published' : 'draft'
+                const publishTargets = collectPublishTargets(accountId);
+                const scheduleTime = document.getElementById('scheduleTime').value;
+                const webhookUrl = validateAutomationWebhookUrl(document.getElementById('automationWebhookUrl')?.value);
+                const automationContract = buildAutomationContract({
+                    topic: document.getElementById('autoTopic')?.value || document.getElementById('postTitle')?.value || 'SNS 발행',
+                    purpose: document.getElementById('autoPurpose')?.value || 'publish',
+                    frequency: document.getElementById('autoFrequency')?.value || (status === 'scheduled' ? 'scheduled-once' : 'instant'),
+                    platforms: publishTargets.map((target) => String(target.platform || '').toLowerCase()),
+                    webhookUrl
                 });
+                const results = [];
 
-                if (status === 'scheduled') {
-                    const scheduleTime = document.getElementById('scheduleTime').value;
-                    if (scheduleTime) {
+                for (const target of publishTargets) {
+                    const platform = String(target.platform || '').toLowerCase();
+                    const adaptedContent = adaptContentForPlatform(platform, content);
+                    const result = await createSNSPost(target.id, adaptedContent, {
+                        status: status === 'published' ? 'published' : 'draft',
+                        template_type: selectedTemplatePreset || 'custom'
+                    });
+
+                    if (status === 'scheduled' && scheduleTime) {
                         await apiFetch(`/api/sns/posts/${result.id}/publish`, {
                             method: 'POST',
                             body: JSON.stringify({ scheduled_at: new Date(scheduleTime).toISOString() })
                         });
+                    } else if (status === 'published') {
+                        await apiFetch(`/api/sns/posts/${result.id}/publish`, {
+                            method: 'POST',
+                            body: JSON.stringify({})
+                        });
                     }
-                } else if (status === 'published') {
-                    await apiFetch(`/api/sns/posts/${result.id}/publish`, {
-                        method: 'POST',
-                        body: JSON.stringify({})
-                    });
+
+                    results.push(`${getPlatformLabel(platform)}:${target.account_name || target.id}`);
                 }
 
-                showSuccess(`포스트가 ${status === 'published' ? '발행' : status === 'scheduled' ? '예약' : '저장'}되었습니다!`);
+                const approvalQueue = window.SoftFactoryApprovalQueue;
+                const contracts = window.SoftFactoryWorkflowContracts;
+                if (approvalQueue) {
+                    const queueItem = contracts?.buildApprovalQueueEntry
+                        ? contracts.buildApprovalQueueEntry({
+                            id: `sns-auto:${Date.now()}`,
+                            service: 'sns-auto',
+                            title: document.getElementById('postTitle')?.value?.trim() || 'SNS 자동화 포스트',
+                            status: status === 'published' ? 'published' : status === 'scheduled' ? 'scheduled' : 'queued',
+                            approvalMode: status === 'published' ? 'publish-immediately' : 'approve-before-publish',
+                            owner: getAuthUser?.()?.email || 'demo@softfactory.com',
+                            channels: publishTargets.map((target) => String(target.platform || '').toLowerCase()),
+                            accountIds: publishTargets.map((target) => String(target.id)),
+                            scheduledAt: scheduleTime ? new Date(scheduleTime).toISOString() : null,
+                            sourceUrl: '/sns-auto/create.html',
+                            summary: `${results.length}개 채널 대상으로 ${status === 'published' ? '즉시 발행' : status === 'scheduled' ? '예약 발행' : '초안 저장'}`,
+                            contract: automationContract,
+                            metadata: { resultCount: results.length }
+                        })
+                        : {
+                            id: `sns-auto:${Date.now()}`,
+                            service: 'sns-auto',
+                            title: document.getElementById('postTitle')?.value?.trim() || 'SNS 자동화 포스트',
+                            status: status === 'published' ? 'published' : status === 'scheduled' ? 'scheduled' : 'queued',
+                            approvalMode: status === 'published' ? 'publish-immediately' : 'approve-before-publish',
+                            owner: getAuthUser?.()?.email || 'demo@softfactory.com',
+                            channels: publishTargets.map((target) => String(target.platform || '').toLowerCase()),
+                            accountIds: publishTargets.map((target) => String(target.id)),
+                            scheduledAt: scheduleTime ? new Date(scheduleTime).toISOString() : null,
+                            sourceUrl: '/sns-auto/create.html',
+                            summary: `${results.length}개 채널 대상으로 ${status === 'published' ? '즉시 발행' : status === 'scheduled' ? '예약 발행' : '초안 저장'}`,
+                            contract: automationContract,
+                            metadata: { resultCount: results.length }
+                        };
+                    await approvalQueue.enqueuePersist(queueItem);
+                }
+
+                showSuccess(`포스트가 ${results.length}개 채널에 ${status === 'published' ? '발행' : status === 'scheduled' ? '예약' : '저장'}되었습니다.`);
                 setTimeout(() => window.location.href = 'index.html', 1500);
             } catch (error) {
                 console.error('Publish error:', error);
@@ -1642,6 +2805,8 @@
             if (selectedPlatform && HASHTAG_SUGGESTIONS[selectedPlatform]) {
                 suggestions = [...HASHTAG_SUGGESTIONS[selectedPlatform], ...suggestions];
             }
+
+            buildContextHashtags().forEach(tag => suggestions.push(tag));
 
             // Detect topic hints from content and add smart suggestions
             const content = (document.getElementById('content')?.value || '').toLowerCase();
@@ -1794,25 +2959,26 @@
         // ============================================================================
         // Event Listeners
         // ============================================================================
-        document.addEventListener('DOMContentLoaded', () => {
-            init().then(() => {
-                // Apply visible class to initial active form
-                const activeForm = document.querySelector('.mode-form.active');
-                if (activeForm) {
-                    requestAnimationFrame(() => activeForm.classList.add('visible'));
-                }
-                // Load draft if available
+        document.addEventListener('DOMContentLoaded', async () => {
+            queryContext = getQueryContext();
+            await init();
+            const applied = await applyQueryContext();
+            const shouldLoadDraft = shouldRestoreDraft();
+            if (!applied && shouldLoadDraft) {
                 loadDraft();
-                // Setup auto-save
-                setupAutoSave();
-                // Render initial hashtag suggestions
-                filterHashtagSuggestions();
-            });
+            }
+            // Apply visible class to initial active form
+            const activeForm = document.querySelector('.mode-form.active');
+            if (activeForm) {
+                requestAnimationFrame(() => activeForm.classList.add('visible'));
+            }
+            // Setup auto-save
+            setupAutoSave();
+            // Render initial hashtag suggestions
+            filterHashtagSuggestions();
+            updateModeGuide();
         });
     </script>
     <script src="../mobile-optimization.js" defer></script>
 </body>
 </html>
-
-
-

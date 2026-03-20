@@ -3,395 +3,574 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#111827">
-    <title>레시피 탐색 — CooCook — SoftFactory</title>
+    <title>레시피 탐색 — CooCook</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="../platform/api.js"></script>
+    <script src="./coocook-taxonomy.js"></script>
+    <link rel="stylesheet" href="../responsive-framework.css">
     <style>
-        body { font-family: 'Inter', sans-serif; }
-        .recipe-card { transition: all 0.3s ease; }
-        .recipe-card:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(0,0,0,0.3); }
-        .star-rating { color: #fbbf24; }
-        .slider { width: 100%; }
+        body { font-family: "Inter", sans-serif; }
+        .glass-card { background: rgba(15, 23, 42, 0.82); backdrop-filter: blur(10px); }
+        .recipe-card { transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease; }
+        .recipe-card:hover { transform: translateY(-4px); box-shadow: 0 20px 40px rgba(2, 6, 23, 0.35); }
         .modal-overlay { backdrop-filter: blur(4px); }
     </style>
-    <link rel="stylesheet" href="../responsive-framework.css">
 </head>
 <body class="bg-slate-950 text-slate-100">
     <div class="flex h-screen overflow-hidden">
-        <!-- Sidebar Navigation -->
         <aside class="w-64 bg-slate-900 border-r border-slate-800 flex flex-col shrink-0 overflow-y-auto">
             <div class="p-6 border-b border-slate-800">
                 <a href="index.html" class="flex items-center gap-3">
                     <span class="text-2xl">🍳</span>
-                    <div><h1 class="font-bold text-white text-sm">CooCook</h1><p class="text-xs text-slate-400">레시피</p></div>
+                    <div>
+                        <h1 class="font-bold text-white text-sm">CooCook</h1>
+                        <p class="text-xs text-slate-400">요리 체험 플랫폼</p>
+                    </div>
                 </a>
             </div>
-            <nav class="flex-1 p-6 space-y-2">
-                <a href="index.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">🏠 홈</a>
-                <a href="recipes.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg bg-orange-600 text-white font-medium">📖 레시피</a>
-                <a href="shopping-list.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">🛒 쇼핑리스트</a>
-                <a href="feed.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">📱 피드</a>
+            <nav class="soft-nav-tree flex-1 p-6 space-y-5">
+                <a href="index.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">🏠 홈 허브</a>
+                <a href="recipes.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg bg-orange-600 text-white font-medium">📖 레시피</a>
+                <a href="shopping-list.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">🛒 쇼핑 리스트</a>
+                <a href="feed.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">📰 피드</a>
+
+                <div>
+                    <p class="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">국가</p>
+                    <div id="countryFilters" class="space-y-2"></div>
+                </div>
+
+                <div>
+                    <p class="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">요리</p>
+                    <div id="cuisineFilters" class="space-y-2"></div>
+                </div>
+
+                <div>
+                    <p class="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">국가 메뉴</p>
+                    <div id="menuFilters" class="space-y-2"></div>
+                </div>
+
+                <div>
+                    <p class="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">메뉴 카테고리</p>
+                    <div id="categoryFilters" class="space-y-2"></div>
+                </div>
+
+                <div>
+                    <p class="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">식재료</p>
+                    <div id="ingredientFilters" class="space-y-2"></div>
+                </div>
+
+                <div>
+                    <p class="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">난이도</p>
+                    <div id="difficultyFilters" class="space-y-2"></div>
+                </div>
             </nav>
-
-            <!-- Filters Section -->
-            <div class="p-6 border-t border-slate-800 space-y-6">
-                <div>
-                    <h4 class="font-semibold text-white mb-3 text-sm">🍜 요리 방식</h4>
-                    <div class="space-y-2">
-                        <label class="flex items-center gap-2 cursor-pointer">
-                            <input type="checkbox" class="cuisine-filter" value="Korean" class="rounded">
-                            <span class="text-sm text-slate-300">한식</span>
-                        </label>
-                        <label class="flex items-center gap-2 cursor-pointer">
-                            <input type="checkbox" class="cuisine-filter" value="Italian" class="rounded">
-                            <span class="text-sm text-slate-300">이탈리안</span>
-                        </label>
-                        <label class="flex items-center gap-2 cursor-pointer">
-                            <input type="checkbox" class="cuisine-filter" value="Japanese" class="rounded">
-                            <span class="text-sm text-slate-300">일식</span>
-                        </label>
-                        <label class="flex items-center gap-2 cursor-pointer">
-                            <input type="checkbox" class="cuisine-filter" value="French" class="rounded">
-                            <span class="text-sm text-slate-300">프렌치</span>
-                        </label>
-                        <label class="flex items-center gap-2 cursor-pointer">
-                            <input type="checkbox" class="cuisine-filter" value="Mexican" class="rounded">
-                            <span class="text-sm text-slate-300">멕시칸</span>
-                        </label>
-                    </div>
-                </div>
-
-                <div>
-                    <h4 class="font-semibold text-white mb-3 text-sm">⭐ 난이도</h4>
-                    <div class="space-y-2">
-                        <label class="flex items-center gap-2 cursor-pointer">
-                            <input type="checkbox" class="difficulty-filter" value="Easy" class="rounded">
-                            <span class="text-sm text-slate-300">쉬움</span>
-                        </label>
-                        <label class="flex items-center gap-2 cursor-pointer">
-                            <input type="checkbox" class="difficulty-filter" value="Medium" class="rounded">
-                            <span class="text-sm text-slate-300">중간</span>
-                        </label>
-                        <label class="flex items-center gap-2 cursor-pointer">
-                            <input type="checkbox" class="difficulty-filter" value="Hard" class="rounded">
-                            <span class="text-sm text-slate-300">어려움</span>
-                        </label>
-                    </div>
-                </div>
-
-                <div>
-                    <h4 class="font-semibold text-white mb-3 text-sm">⏱️ 준비시간</h4>
-                    <div class="space-y-3">
-                        <input type="range" id="timeSlider" class="slider" min="0" max="120" value="60">
-                        <p class="text-sm text-slate-400">최대 <span id="timeValue">60</span>분</p>
-                    </div>
-                </div>
-
-                <div>
-                    <h4 class="font-semibold text-white mb-3 text-sm">💰 가격 범위</h4>
-                    <div class="space-y-3">
-                        <input type="range" id="priceSlider" class="slider" min="0" max="100000" value="50000" step="1000">
-                        <p class="text-sm text-slate-400"><span id="priceValue">₩50,000</span> 이하</p>
-                    </div>
-                </div>
-            </div>
-
             <div class="p-6 border-t border-slate-800">
-                <button onclick="logout()" class="p-2 hover:bg-slate-800 rounded-lg w-full text-left">🚪 로그아웃</button>
+                <button id="sessionActionButton" class="w-full rounded-lg px-4 py-2 text-left hover:bg-slate-800">로그아웃</button>
             </div>
         </aside>
 
-        <!-- Main Content -->
         <div class="flex-1 flex flex-col overflow-hidden">
-            <!-- Header -->
             <header class="h-16 bg-slate-900 border-b border-slate-800 px-6 flex items-center justify-between shrink-0">
+                <button class="hamburger" aria-label="메뉴 토글" aria-expanded="false">
+                    <span></span><span></span><span></span>
+                </button>
                 <div>
                     <h2 class="text-xl font-bold text-white">📖 레시피 탐색</h2>
-                    <p class="text-xs text-slate-400">맛있는 레시피를 찾아보세요</p>
+                    <p class="text-xs text-slate-400">국가별, 카테고리별, 난이도별로 유기적으로 연결된 탐색</p>
                 </div>
-                <div class="flex items-center gap-3">
-                    <select id="sortBy" class="px-4 py-2 bg-slate-800 text-white rounded-lg border border-slate-700 text-sm">
-                        <option value="popular">인기도순</option>
-                        <option value="time">준비시간순</option>
-                        <option value="price">가격순</option>
-                        <option value="rating">평점순</option>
-                    </select>
-                </div>
+                <select id="sortBy" class="rounded-lg border border-slate-700 bg-slate-800 px-4 py-2 text-sm text-white">
+                    <option value="popular">인기도순</option>
+                    <option value="rating">평점순</option>
+                    <option value="time">준비시간순</option>
+                    <option value="price">가격순</option>
+                </select>
             </header>
 
-            <!-- Recipe Grid -->
-            <main class="flex-1 overflow-y-auto p-6">
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" id="recipeGrid">
-                    <!-- Loading Skeleton -->
-                    <div class="bg-slate-800 rounded-lg overflow-hidden animate-pulse border border-slate-700">
-                        <div class="h-40 bg-slate-700"></div>
-                        <div class="p-4 space-y-2">
-                            <div class="h-4 bg-slate-700 rounded w-3/4"></div>
-                            <div class="h-3 bg-slate-700 rounded w-1/2"></div>
+            <main class="flex-1 overflow-y-auto p-6 space-y-6">
+                <section class="grid gap-4 xl:grid-cols-[1.25fr_0.75fr]">
+                    <div id="heroBanner" class="overflow-hidden rounded-3xl border border-slate-800"></div>
+                    <div class="glass-card rounded-3xl border border-slate-800 p-5 space-y-4">
+                        <div>
+                            <p class="text-sm text-slate-400">현재 해석</p>
+                            <p id="resultHeadline" class="mt-2 text-2xl font-bold text-white"></p>
+                            <p id="resultCopy" class="mt-2 text-sm text-slate-300 leading-6"></p>
                         </div>
+                        <div class="grid gap-3 sm:grid-cols-3" id="resultStats"></div>
+                        <div id="routeLinks" class="space-y-3"></div>
                     </div>
-                </div>
+                </section>
+
+                <section>
+                    <div class="flex items-center justify-between gap-3">
+                        <div>
+                            <h3 class="text-lg font-bold text-white">🍽️ 추천 레시피</h3>
+                            <p class="text-sm text-slate-400">카드를 눌러 상세를 보고, 같은 맥락의 피드나 장보기로 바로 이어집니다.</p>
+                        </div>
+                        <div id="activeChips" class="flex flex-wrap gap-2"></div>
+                    </div>
+                    <div id="recipeGrid" class="mt-4 grid gap-5 md:grid-cols-2 xl:grid-cols-3"></div>
+                </section>
+
+                <section class="space-y-4">
+                    <div>
+                        <h3 class="text-lg font-bold text-white">🛍️ 제휴 상품 연결</h3>
+                        <p class="text-sm text-slate-400">현재 필터와 대표 레시피 기준으로 연결할 쿠팡 파트너스 위치입니다.</p>
+                    </div>
+                    <div id="affiliateShelf" class="grid gap-4 md:grid-cols-2 xl:grid-cols-3"></div>
+                    <p id="affiliateDisclosure" class="text-xs text-slate-500"></p>
+                </section>
             </main>
         </div>
     </div>
 
-    <!-- Recipe Detail Modal -->
-    <div id="detailModal" class="fixed inset-0 bg-black/50 modal-overlay hidden z-50 flex items-center justify-center p-4 overflow-y-auto">
-        <div class="bg-slate-800 rounded-xl border border-slate-700 max-w-2xl w-full my-8">
-            <div class="flex items-center justify-between p-6 border-b border-slate-700">
-                <h3 id="modalTitle" class="text-xl font-bold text-white">레시피 상세</h3>
-                <button onclick="closeModal()" class="text-slate-400 hover:text-white text-xl">✕</button>
+    <div id="detailModal" class="fixed inset-0 hidden items-center justify-center bg-black/60 p-4 modal-overlay z-50">
+        <div class="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-3xl border border-slate-700 bg-slate-900">
+            <div class="flex items-center justify-between border-b border-slate-800 px-6 py-4">
+                <div>
+                    <p id="modalBadge" class="text-xs text-slate-400"></p>
+                    <h3 id="modalTitle" class="mt-1 text-2xl font-bold text-white"></h3>
+                </div>
+                <button onclick="closeModal()" class="text-2xl text-slate-400 hover:text-white">✕</button>
             </div>
-            <div class="p-6 space-y-4 max-h-96 overflow-y-auto">
-                <div class="aspect-video bg-slate-700 rounded-lg flex items-center justify-center text-4xl" id="modalImage">🍽️</div>
-
-                <div class="grid grid-cols-3 gap-4">
-                    <div class="text-center">
-                        <p class="text-slate-400 text-sm">준비시간</p>
-                        <p id="modalTime" class="text-lg font-bold text-white">30분</p>
-                    </div>
-                    <div class="text-center">
-                        <p class="text-slate-400 text-sm">난이도</p>
-                        <p id="modalDifficulty" class="text-lg font-bold text-orange-400">중간</p>
-                    </div>
-                    <div class="text-center">
-                        <p class="text-slate-400 text-sm">평점</p>
-                        <p id="modalRating" class="text-lg font-bold text-yellow-400">⭐ 4.5</p>
-                    </div>
+            <div class="grid gap-6 p-6 lg:grid-cols-[1fr_0.9fr]">
+                <div class="space-y-4">
+                    <img id="modalImage" src="" alt="" class="h-64 w-full rounded-2xl object-cover">
+                    <p id="modalStory" class="text-sm leading-7 text-slate-300"></p>
+                    <div class="grid gap-3 sm:grid-cols-4" id="modalStats"></div>
                 </div>
-
-                <div>
-                    <h4 class="font-semibold text-white mb-2">👨‍🍳 셰프</h4>
-                    <p id="modalChef" class="text-slate-300">로딩 중...</p>
-                </div>
-
-                <div>
-                    <h4 class="font-semibold text-white mb-2">🥘 재료</h4>
-                    <ul id="modalIngredients" class="text-slate-300 text-sm space-y-1">
-                        <li class="text-slate-400">로딩 중...</li>
-                    </ul>
-                </div>
-
-                <div>
-                    <h4 class="font-semibold text-white mb-2">📋 영양정보</h4>
-                    <div class="grid grid-cols-2 gap-2 text-sm">
-                        <div class="bg-slate-700 p-2 rounded">
-                            <p class="text-slate-400">칼로리</p>
-                            <p id="modalCalories" class="font-bold text-white">480 kcal</p>
-                        </div>
-                        <div class="bg-slate-700 p-2 rounded">
-                            <p class="text-slate-400">단백질</p>
-                            <p id="modalProtein" class="font-bold text-white">25g</p>
-                        </div>
-                        <div class="bg-slate-700 p-2 rounded">
-                            <p class="text-slate-400">탄수화물</p>
-                            <p id="modalCarbs" class="font-bold text-white">45g</p>
-                        </div>
-                        <div class="bg-slate-700 p-2 rounded">
-                            <p class="text-slate-400">지방</p>
-                            <p id="modalFat" class="font-bold text-white">15g</p>
-                        </div>
+                <div class="space-y-4">
+                    <div>
+                        <h4 class="font-semibold text-white">재료 카테고리</h4>
+                        <div id="modalIngredients" class="mt-3 space-y-2"></div>
+                    </div>
+                    <div class="rounded-2xl border border-slate-800 bg-slate-950/70 p-4">
+                        <h4 class="font-semibold text-white">다음 동선</h4>
+                        <div id="modalRoutes" class="mt-3 space-y-2"></div>
+                    </div>
+                    <div class="grid gap-3 sm:grid-cols-2">
+                        <button id="likeBtn" onclick="toggleLike()" class="rounded-xl bg-slate-800 px-4 py-3 text-sm font-medium text-white hover:bg-slate-700">🤍 저장</button>
+                        <button onclick="goToShoppingList()" class="rounded-xl bg-orange-600 px-4 py-3 text-sm font-medium text-white hover:bg-orange-500">🛒 장보기 연결</button>
                     </div>
                 </div>
-
-                <div>
-                    <h4 class="font-semibold text-white mb-2">⭐ 리뷰</h4>
-                    <div id="modalReviews" class="space-y-2 text-sm max-h-32 overflow-y-auto">
-                        <p class="text-slate-400">리뷰 로딩 중...</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="p-6 border-t border-slate-700 flex gap-3">
-                <button onclick="closeModal()" class="flex-1 px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg font-medium">닫기</button>
-                <button id="likeBtn" onclick="toggleLike()" class="flex-1 px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-lg font-medium">❤️ 좋아요</button>
-                <button onclick="addToShoppingList()" class="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium">🛒 추가</button>
             </div>
         </div>
     </div>
 
     <script>
-        requireAuth();
+        if (typeof hasAuthSession === "function" && hasAuthSession()) {
+            requireAuth();
+        }
+        if (typeof setupSessionActionButton === "function") {
+            setupSessionActionButton();
+        }
 
-        let recipes = [];
-        let selectedRecipe = null;
-        const pageSize = 20;
-        let currentPage = 0;
-
-        // Mock recipe data
-        const mockRecipes = [
-            { id: 1, name: '김치찌개', cuisine: 'Korean', difficulty: 'Easy', prep_time: 20, rating: 4.8, reviews: 156, chef: '홍셀프', price: 25000, image: '🔥', ingredients: ['김치', '돼지고기', '두부', '파'], calories: 280, protein: 18, carbs: 35, fat: 12 },
-            { id: 2, name: '파스타 카르보나라', cuisine: 'Italian', difficulty: 'Medium', prep_time: 30, rating: 4.6, reviews: 98, chef: '마르코', price: 32000, image: '🍝', ingredients: ['파스타', '계란', '베이컨', '치즈'], calories: 520, protein: 28, carbs: 48, fat: 20 },
-            { id: 3, name: '초밥 롤', cuisine: 'Japanese', difficulty: 'Hard', prep_time: 45, rating: 4.9, reviews: 203, chef: '타로', price: 38000, image: '🍣', ingredients: ['쌀', '노리', '연어', '오이'], calories: 320, protein: 22, carbs: 42, fat: 8 },
-            { id: 4, name: '비프 스테이크', cuisine: 'French', difficulty: 'Hard', prep_time: 40, rating: 4.7, reviews: 145, chef: '피에르', price: 45000, image: '🥩', ingredients: ['소고기', '버터', '마늘', '로즈메리'], calories: 580, protein: 42, carbs: 15, fat: 38 },
-            { id: 5, name: '타코', cuisine: 'Mexican', difficulty: 'Easy', prep_time: 25, rating: 4.5, reviews: 87, chef: '카를로스', price: 20000, image: '🌮', ingredients: ['또띠야', '닭고기', '양파', '라임'], calories: 350, protein: 24, carbs: 38, fat: 14 },
-            { id: 6, name: '된장찌개', cuisine: 'Korean', difficulty: 'Easy', prep_time: 25, rating: 4.7, reviews: 134, chef: '홍셀프', price: 22000, image: '🍲', ingredients: ['된장', '두부', '팽이버섯', '고추'], calories: 240, protein: 15, carbs: 28, fat: 10 },
-            { id: 7, name: '리조또', cuisine: 'Italian', difficulty: 'Medium', prep_time: 35, rating: 4.4, reviews: 76, chef: '마르코', price: 35000, image: '🍚', ingredients: ['쌀', '화이트와인', '치즈', '버터'], calories: 480, protein: 16, carbs: 55, fat: 18 },
-            { id: 8, name: '텐동', cuisine: 'Japanese', difficulty: 'Medium', prep_time: 30, rating: 4.6, reviews: 112, chef: '타로', price: 28000, image: '🍱', ingredients: ['밥', '새우튀김', '계란', '간장'], calories: 420, protein: 18, carbs: 52, fat: 16 },
-            { id: 9, name: '크로와상', cuisine: 'French', difficulty: 'Hard', prep_time: 120, rating: 4.8, reviews: 89, chef: '피에르', price: 18000, image: '🥐', ingredients: ['밀가루', '버터', '우유', '소금'], calories: 380, protein: 8, carbs: 42, fat: 22 },
-            { id: 10, name: '엔칠라다', cuisine: 'Mexican', difficulty: 'Medium', prep_time: 40, rating: 4.5, reviews: 65, chef: '카를로스', price: 26000, image: '🌶️', ingredients: ['또띠야', '소고기', '치즈', '살사'], calories: 450, protein: 25, carbs: 45, fat: 20 },
+        const taxonomy = window.CooCookTaxonomy;
+        const state = taxonomy.parseState();
+        const difficulties = [
+            { key: "", label: "전체" },
+            { key: "Easy", label: "쉬움" },
+            { key: "Medium", label: "보통" },
+            { key: "Hard", label: "어려움" },
         ];
+        let recipes = [...taxonomy.recipeCatalog];
+        let filteredRecipes = [];
+        let selectedRecipe = null;
 
-        // Initialize
-        function init() {
-            loadRecipes();
-            setupEventListeners();
+        function getActiveCountry() {
+            return state.country || "KR";
         }
 
-        function setupEventListeners() {
-            document.querySelectorAll('.cuisine-filter').forEach(el => el.addEventListener('change', filterRecipes));
-            document.querySelectorAll('.difficulty-filter').forEach(el => el.addEventListener('change', filterRecipes));
-            document.getElementById('timeSlider').addEventListener('input', (e) => {
-                document.getElementById('timeValue').textContent = e.target.value;
-                filterRecipes();
-            });
-            document.getElementById('priceSlider').addEventListener('input', (e) => {
-                document.getElementById('priceValue').textContent = '₩' + parseInt(e.target.value).toLocaleString('ko-KR');
-                filterRecipes();
-            });
-            document.getElementById('sortBy').addEventListener('change', sortRecipes);
+        function resolveDefaultCuisine() {
+            return taxonomy.resolveDefaultCuisine(getActiveCountry());
         }
 
-        function loadRecipes() {
-            recipes = [...mockRecipes];
-            renderRecipes();
+        function getCountryMenus() {
+            return taxonomy.getCountryMenus(getActiveCountry());
         }
 
-        function filterRecipes() {
-            const cuisines = Array.from(document.querySelectorAll('.cuisine-filter:checked')).map(el => el.value);
-            const difficulties = Array.from(document.querySelectorAll('.difficulty-filter:checked')).map(el => el.value);
-            const maxTime = parseInt(document.getElementById('timeSlider').value);
-            const maxPrice = parseInt(document.getElementById('priceSlider').value);
-
-            recipes = mockRecipes.filter(r => {
-                const cuisineMatch = cuisines.length === 0 || cuisines.includes(r.cuisine);
-                const difficultyMatch = difficulties.length === 0 || difficulties.includes(r.difficulty);
-                const timeMatch = r.prep_time <= maxTime;
-                const priceMatch = r.price <= maxPrice;
-                return cuisineMatch && difficultyMatch && timeMatch && priceMatch;
-            });
-
-            sortRecipes();
-            renderRecipes();
+        function getRecipeMenu(recipe) {
+            return taxonomy.getRecipeCategoryAsMenu(getCountryMenus(), recipe.category);
         }
 
-        function sortRecipes() {
-            const sortBy = document.getElementById('sortBy').value;
-            switch(sortBy) {
-                case 'time':
-                    recipes.sort((a, b) => a.prep_time - b.prep_time);
-                    break;
-                case 'price':
-                    recipes.sort((a, b) => a.price - b.price);
-                    break;
-                case 'rating':
-                    recipes.sort((a, b) => b.rating - a.rating);
-                    break;
-                default:
-                    recipes.sort((a, b) => b.reviews - a.reviews);
+        function toggleFilter(key, value) {
+            state[key] = state[key] === value ? "" : value;
+            if (key === "country") {
+                state.cuisine = state[key] ? resolveDefaultCuisine() : "";
+                state.category = "";
+                state.menu = "";
             }
+            if (key === "cuisine") state.category = "";
+            if (key === "menu") state.category = "";
+            if (key === "category") state.menu = "";
+            taxonomy.updateUrl(state);
+            renderFilterLists();
+            applyFilters();
+        }
+
+        function resetRecipeFilters() {
+            state.country = "";
+            state.cuisine = "";
+            state.menu = "";
+            state.category = "";
+            state.ingredientCategory = "";
+            state.difficulty = "";
+            state.recipe = "";
+            taxonomy.updateUrl(state);
+            renderFilterLists();
+            applyFilters();
+        }
+
+        function simplifySidebar() {
+            state.ingredientCategory = "";
+            state.difficulty = "";
+            const ingredientSection = document.getElementById("ingredientFilters")?.parentElement;
+            const difficultySection = document.getElementById("difficultyFilters")?.parentElement;
+            if (ingredientSection) {
+                ingredientSection.innerHTML = `
+                    <div class="rounded-2xl border border-slate-700 bg-slate-800/70 p-4">
+                        <p class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">Quick Filters</p>
+                        <p class="mt-2 text-sm leading-6 text-slate-300">Start with country, menu, and category. Ingredient and difficulty details stay inside each recipe card.</p>
+                        <button onclick="resetRecipeFilters()" class="mt-3 w-full rounded-xl bg-orange-600 px-3 py-2 text-sm font-medium text-white hover:bg-orange-500">Reset Filters</button>
+                        <div id="ingredientFilters" class="hidden"></div>
+                    </div>
+                `;
+            }
+            if (difficultySection) {
+                difficultySection.classList.add("hidden");
+            }
+        }
+
+        function renderFilterLists() {
+            ["countryFilters", "cuisineFilters", "menuFilters", "categoryFilters", "ingredientFilters", "difficultyFilters"].forEach((id) => {
+                if (!document.getElementById(id)) {
+                    const fallback = document.createElement("div");
+                    fallback.id = id;
+                    fallback.className = "hidden";
+                    document.body.appendChild(fallback);
+                }
+            });
+            document.getElementById("countryFilters").innerHTML = [{ key: "", label: "전체 국가", icon: "🌍" }]
+                .concat(taxonomy.getAvailableCountries().map((key) => {
+                    const meta = taxonomy.getCountryMeta(key);
+                    return { key, label: meta.label, icon: meta.flag };
+                }))
+                .map((item) => {
+                    const active = getActiveCountry() === item.key && item.key !== "";
+                    return `<button onclick="toggleFilter('country', '${item.key}')" class="w-full rounded-xl border px-3 py-2 text-left text-sm ${active ? 'border-orange-400 bg-orange-500/10 text-white' : 'border-slate-700 bg-slate-800 text-slate-300 hover:border-slate-500'}">${item.icon} ${item.label}</button>`;
+                }).join("");
+
+            const menuOptions = getCountryMenus().map((menu) => ({
+                key: menu.key,
+                label: menu.label,
+                icon: menu.emoji,
+            }));
+            document.getElementById("cuisineFilters").innerHTML = [
+                { key: "", label: "전체 국가", icon: "🌍" },
+                ...taxonomy.getAvailableCuisineKeys().map((key) => ({ key, label: taxonomy.getCuisineMeta(key).label, icon: taxonomy.getCuisineMeta(key).flag })),
+            ].map((item) => {
+                const active = state.cuisine === item.key || (!state.cuisine && item.key === "");
+                return `<button onclick="toggleFilter('cuisine', '${item.key}')" class="w-full rounded-xl border px-3 py-2 text-left text-sm ${active ? 'border-orange-400 bg-orange-500/10 text-white' : 'border-slate-700 bg-slate-800 text-slate-300 hover:border-slate-500'}">${item.icon} ${item.label}</button>`;
+            }).join("");
+
+            document.getElementById("menuFilters").innerHTML = [
+                { key: "", label: "전체 메뉴", icon: "🗂" },
+                ...menuOptions,
+            ].map((item) => {
+                const active = state.menu === item.key;
+                return `<button onclick="toggleFilter('menu', '${item.key}')" class="w-full rounded-xl border px-3 py-2 text-left text-sm ${active ? 'border-emerald-400 bg-emerald-500/10 text-white' : 'border-slate-700 bg-slate-800 text-slate-300 hover:border-slate-500'}">${item.icon} ${item.label}</button>`;
+            }).join("");
+
+            document.getElementById("categoryFilters").innerHTML = [
+                { key: "", label: "전체 카테고리", icon: "🧭" },
+                ...taxonomy.getAvailableMenuCategoryKeys().map((key) => ({ key, label: taxonomy.getMenuCategoryMeta(key).label, icon: taxonomy.getMenuCategoryMeta(key).emoji })),
+            ].map((item) => {
+                const active = state.category === item.key || (!state.category && item.key === "");
+                return `<button onclick="toggleFilter('category', '${item.key}')" class="w-full rounded-xl border px-3 py-2 text-left text-sm ${active ? 'border-orange-400 bg-orange-500/10 text-white' : 'border-slate-700 bg-slate-800 text-slate-300 hover:border-slate-500'}">${item.icon} ${item.label}</button>`;
+            }).join("");
+
+            document.getElementById("ingredientFilters").innerHTML = [
+                { key: "", label: "전체 식재료", icon: "🧺" },
+                ...taxonomy.getAvailableIngredientCategoryKeys().map((key) => ({ key, label: taxonomy.getIngredientCategoryMeta(key).label, icon: taxonomy.getIngredientCategoryMeta(key).emoji })),
+            ].map((item) => {
+                const active = state.ingredientCategory === item.key || (!state.ingredientCategory && item.key === "");
+                return `<button onclick="toggleFilter('ingredientCategory', '${item.key}')" class="w-full rounded-xl border px-3 py-2 text-left text-sm ${active ? 'border-emerald-400 bg-emerald-500/10 text-white' : 'border-slate-700 bg-slate-800 text-slate-300 hover:border-slate-500'}">${item.icon} ${item.label}</button>`;
+            }).join("");
+
+            document.getElementById("difficultyFilters").innerHTML = difficulties.map((item) => {
+                const active = state.difficulty === item.key || (!state.difficulty && item.key === "");
+                return `<button onclick="toggleFilter('difficulty', '${item.key}')" class="w-full rounded-xl border px-3 py-2 text-left text-sm ${active ? 'border-orange-400 bg-orange-500/10 text-white' : 'border-slate-700 bg-slate-800 text-slate-300 hover:border-slate-500'}">${item.label}</button>`;
+            }).join("");
+            simplifySidebar();
+        }
+
+        function applyFilters() {
+            filteredRecipes = taxonomy.queryRecipes({
+                country: getActiveCountry(),
+                cuisine: state.cuisine || "",
+                category: state.category || "",
+                difficulty: state.difficulty || "",
+                menu: state.menu || "",
+                ingredientCategory: state.ingredientCategory || "",
+            });
+
+            const sortBy = document.getElementById("sortBy").value;
+            if (sortBy === "rating") filteredRecipes.sort((a, b) => b.rating - a.rating);
+            else if (sortBy === "time") filteredRecipes.sort((a, b) => a.prepTime - b.prepTime);
+            else if (sortBy === "price") filteredRecipes.sort((a, b) => a.price - b.price);
+            else filteredRecipes.sort((a, b) => b.reviews - a.reviews);
+
+            renderBanner();
+            renderActiveChips();
+            renderRecipes();
+            renderAffiliateShelf();
+
+            if (state.recipe) {
+                const target = filteredRecipes.find((recipe) => String(recipe.id) === String(state.recipe));
+                if (target) showDetailModal(target);
+            }
+        }
+
+        function renderBanner() {
+            const representative = filteredRecipes[0] || recipes[0];
+            const cuisineMeta = taxonomy.getCuisineMeta(representative.cuisine);
+            const categoryMeta = taxonomy.getMenuCategoryMeta(representative.category);
+            document.getElementById("heroBanner").innerHTML = `
+                <div class="grid h-full gap-0 lg:grid-cols-[0.95fr_1.05fr]">
+                    <img src="${representative.thumb}" alt="${representative.name}" class="h-72 w-full object-cover">
+                    <div class="bg-gradient-to-br ${cuisineMeta.panelClass} p-6 lg:p-8">
+                        <p class="inline-flex rounded-full px-3 py-1 text-xs font-semibold ${cuisineMeta.chipClass}">${cuisineMeta.flag} ${cuisineMeta.label}</p>
+                        <h1 class="mt-4 text-3xl font-extrabold text-white">${representative.name} 중심 탐색</h1>
+                        <p class="mt-3 max-w-xl text-sm leading-7 text-slate-100">${representative.story} ${categoryMeta.emoji} ${categoryMeta.label} 관점까지 묶어서 한 번에 비교할 수 있습니다.</p>
+                        <div class="mt-5 flex flex-wrap gap-2">
+                            <button onclick="toggleFilter('cuisine', '${representative.cuisine}')" class="rounded-full px-3 py-1 text-sm ${cuisineMeta.chipClass}">${cuisineMeta.emoji} ${cuisineMeta.label}</button>
+                            <button onclick="toggleFilter('category', '${representative.category}')" class="rounded-full px-3 py-1 text-sm ${categoryMeta.chipClass}">${categoryMeta.emoji} ${categoryMeta.label}</button>
+                            <button onclick="toggleFilter('difficulty', '${representative.difficulty}')" class="rounded-full border border-white/20 px-3 py-1 text-sm text-white">${representative.difficulty}</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById("resultHeadline").textContent = `${filteredRecipes.length}개의 레시피가 현재 맥락에 맞습니다`;
+            document.getElementById("resultCopy").textContent = `${cuisineMeta.promise} 레시피에서 본 메뉴를 피드 후기나 장보기 흐름으로 그대로 넘길 수 있습니다.`;
+            document.getElementById("resultStats").innerHTML = [
+                { label: "평균 평점", value: (filteredRecipes.reduce((sum, recipe) => sum + recipe.rating, 0) / Math.max(filteredRecipes.length, 1)).toFixed(1) + "★" },
+                { label: "평균 준비시간", value: Math.round(filteredRecipes.reduce((sum, recipe) => sum + recipe.prepTime, 0) / Math.max(filteredRecipes.length, 1)) + "분" },
+                { label: "대표 카테고리", value: `${categoryMeta.emoji} ${categoryMeta.label}` },
+            ].map((stat) => `
+                <div class="rounded-2xl border border-slate-800 bg-slate-950/70 p-4">
+                    <p class="text-xs text-slate-400">${stat.label}</p>
+                    <p class="mt-2 text-lg font-semibold text-white">${stat.value}</p>
+                </div>
+            `).join("");
+
+            document.getElementById("routeLinks").innerHTML = [
+                { title: "같은 피드 보기", href: taxonomy.buildHref("feed.html", { cuisine: representative.cuisine, category: representative.category, country: getActiveCountry(), menu: state.menu }), icon: "📰" },
+                { title: "같은 재료 묶기", href: taxonomy.buildHref("shopping-list.html", { cuisine: representative.cuisine, category: representative.category, country: getActiveCountry(), menu: state.menu, recipe: representative.id }), icon: "🛒" },
+                { title: "관련 상품 보기", href: taxonomy.getCategoryAffiliate(representative.category, representative.cuisine, { country: getActiveCountry(), menu: state.menu }).url, icon: "🛍️", external: true },
+            ].map((item) => `
+                <a href="${item.href}" ${item.external ? 'target="_blank" rel="noopener noreferrer sponsored"' : ""} class="flex items-center justify-between rounded-2xl border border-slate-800 bg-slate-950/70 px-4 py-3 text-sm">
+                    <span class="text-white">${item.icon} ${item.title}</span>
+                    <span class="text-slate-400">바로 이동</span>
+                </a>
+            `).join("");
+        }
+
+        function renderActiveChips() {
+            const chips = [];
+            if (state.country) {
+                const countryMeta = taxonomy.getCountryMeta(state.country);
+                chips.push(`<button onclick="toggleFilter('country', '${state.country}')" class="rounded-full px-3 py-1 text-sm border border-slate-700 bg-slate-800 text-white">${countryMeta.flag} ${countryMeta.label} ✕</button>`);
+            }
+            if (state.cuisine) {
+                const meta = taxonomy.getCuisineMeta(state.cuisine);
+                chips.push(`<button onclick="toggleFilter('cuisine', '${state.cuisine}')" class="rounded-full px-3 py-1 text-sm ${meta.chipClass}">${meta.flag} ${meta.label} ✕</button>`);
+            }
+            if (state.menu) {
+                const menu = getCountryMenus().find((item) => item.key === state.menu);
+                chips.push(`<button onclick="toggleFilter('menu', '${state.menu}')" class="rounded-full px-3 py-1 text-sm bg-emerald-600 text-white">${menu ? `${menu.emoji} ${menu.label}` : "메뉴"} ✕</button>`);
+            }
+            if (state.category) {
+                const meta = taxonomy.getMenuCategoryMeta(state.category);
+                chips.push(`<button onclick="toggleFilter('category', '${state.category}')" class="rounded-full px-3 py-1 text-sm ${meta.chipClass}">${meta.emoji} ${meta.label} ✕</button>`);
+            }
+            if (state.ingredientCategory) {
+                const meta = taxonomy.getIngredientCategoryMeta(state.ingredientCategory);
+                chips.push(`<button onclick="toggleFilter('ingredientCategory', '${state.ingredientCategory}')" class="rounded-full px-3 py-1 text-sm ${meta.chipClass}">${meta.emoji} ${meta.label} ✕</button>`);
+            }
+            if (state.difficulty) {
+                chips.push(`<button onclick="toggleFilter('difficulty', '${state.difficulty}')" class="rounded-full border border-slate-700 bg-slate-800 px-3 py-1 text-sm text-slate-200">${state.difficulty} ✕</button>`);
+            }
+            document.getElementById("activeChips").innerHTML = chips.join("");
         }
 
         function renderRecipes() {
-            const grid = document.getElementById('recipeGrid');
-            grid.innerHTML = '';
-
-            if (recipes.length === 0) {
-                grid.innerHTML = '<p class="col-span-full text-center text-slate-400 py-12">일치하는 레시피가 없습니다.</p>';
+            const grid = document.getElementById("recipeGrid");
+            if (!filteredRecipes.length) {
+                grid.innerHTML = `<div class="col-span-full rounded-3xl border border-slate-800 bg-slate-900 p-10 text-center">
+                    <p class="text-lg font-semibold text-white">일치하는 레시피가 없습니다.</p>
+                    <p class="mt-2 text-sm text-slate-400">국가나 카테고리를 하나만 해제해 보세요.</p>
+                </div>`;
                 return;
             }
 
-            recipes.forEach(recipe => {
-                const card = document.createElement('div');
-                card.className = 'recipe-card bg-slate-800 rounded-lg overflow-hidden border border-slate-700 cursor-pointer';
-                card.onclick = () => showDetailModal(recipe);
-                card.innerHTML = `
-                    <div class="aspect-video bg-gradient-to-br from-orange-900/30 to-orange-900/10 flex items-center justify-center text-4xl">
-                        ${recipe.image}
-                    </div>
-                    <div class="p-4">
-                        <h3 class="font-semibold text-white mb-1 line-clamp-2">${recipe.name}</h3>
-                        <p class="text-xs text-orange-400 mb-2">${recipe.cuisine} • ${recipe.difficulty}</p>
-                        <div class="flex justify-between items-center text-sm mb-3">
-                            <span class="text-slate-400">⏱️ ${recipe.prep_time}분</span>
-                            <span class="star-rating">⭐ ${recipe.rating}</span>
+            grid.innerHTML = filteredRecipes.map((recipe) => `
+                <article class="recipe-card overflow-hidden rounded-3xl border border-slate-800 bg-slate-900">
+                    <img src="${recipe.thumb}" alt="${recipe.name}" class="h-48 w-full object-cover">
+                    <div class="p-5">
+                        <div class="flex items-start justify-between gap-4">
+                            <div>
+                                <div class="flex flex-wrap gap-2">
+                                    <button onclick="event.stopPropagation(); toggleFilter('cuisine', '${recipe.cuisine}')" class="rounded-full px-3 py-1 text-xs font-medium ${recipe.cuisineMeta.chipClass}">${recipe.cuisineMeta.flag} ${recipe.cuisineMeta.label}</button>
+                                    <button onclick="event.stopPropagation(); toggleFilter('category', '${recipe.category}')" class="rounded-full px-3 py-1 text-xs font-medium ${recipe.categoryMeta.chipClass}">${recipe.categoryMeta.emoji} ${recipe.categoryMeta.label}</button>
+                                </div>
+                                <h3 class="mt-3 text-xl font-semibold text-white">${recipe.image} ${recipe.name}</h3>
+                            </div>
+                            <button onclick="event.stopPropagation(); quickLike(${recipe.id})" class="rounded-full bg-slate-800 px-3 py-2 text-sm text-white hover:bg-slate-700">${recipe.liked ? "❤️" : "🤍"}</button>
                         </div>
-                        <div class="flex justify-between items-center">
-                            <span class="font-semibold text-white">₩${recipe.price.toLocaleString('ko-KR')}</span>
-                            <button onclick="event.stopPropagation(); toggleLikeQuick(${recipe.id})" class="px-3 py-1 bg-orange-600 hover:bg-orange-700 text-white text-sm rounded-lg">♥️</button>
+                        <p class="mt-3 text-sm leading-6 text-slate-400">${recipe.story}</p>
+                        <div class="mt-4 grid grid-cols-2 gap-3 text-sm">
+                            <div class="rounded-2xl bg-slate-950/70 p-3">
+                                <p class="text-slate-500">준비시간</p>
+                                <p class="mt-1 font-semibold text-white">⏱️ ${recipe.prepTime}분</p>
+                            </div>
+                            <div class="rounded-2xl bg-slate-950/70 p-3">
+                                <p class="text-slate-500">가격</p>
+                                <p class="mt-1 font-semibold text-white">${taxonomy.formatCurrency(recipe.price)}</p>
+                            </div>
                         </div>
+                        <div class="mt-4 flex items-center justify-between text-sm">
+                            <span class="text-amber-300">⭐ ${recipe.rating} (${recipe.reviews})</span>
+                            <span class="text-slate-400">${recipe.chefLabel}</span>
+                        </div>
+                            <div class="mt-4 grid grid-cols-3 gap-2">
+                            <button onclick="showDetailById(${recipe.id})" class="rounded-xl bg-slate-800 px-3 py-2 text-sm text-white hover:bg-slate-700">상세</button>
+                            <a href="${taxonomy.buildHref('feed.html', { cuisine: recipe.cuisine, category: recipe.category, country: getActiveCountry(), menu: state.menu, recipe: recipe.id })}" class="rounded-xl bg-slate-800 px-3 py-2 text-center text-sm text-white hover:bg-slate-700">피드</a>
+                            <a href="${taxonomy.buildHref('shopping-list.html', { cuisine: recipe.cuisine, category: recipe.category, country: getActiveCountry(), menu: state.menu, recipe: recipe.id })}" class="rounded-xl bg-orange-600 px-3 py-2 text-center text-sm text-white hover:bg-orange-500">장보기</a>
+                        </div>
+                        <a href="${recipe.affiliateLinks[1].url}" target="_blank" rel="noopener noreferrer sponsored" class="mt-3 block rounded-xl border border-slate-800 bg-slate-950/70 px-3 py-2 text-center text-sm text-slate-200 hover:bg-slate-800">🛍️ ${recipe.affiliateLinks[1].keyword}</a>
                     </div>
-                `;
-                grid.appendChild(card);
-            });
+                </article>
+            `).join("");
+        }
+
+        function renderAffiliateShelf() {
+            const representative = filteredRecipes[0] || recipes[0];
+            const links = representative ? representative.affiliateLinks : [];
+            document.getElementById("affiliateShelf").innerHTML = links.map((item) => `
+                <a href="${item.url}" target="_blank" rel="noopener noreferrer sponsored" class="rounded-2xl border border-slate-800 bg-slate-900 p-5 hover:border-slate-600">
+                    <p class="text-2xl">${item.emoji}</p>
+                    <p class="mt-4 text-lg font-semibold text-white">${item.label}</p>
+                    <p class="mt-2 text-sm text-slate-400">키워드: ${item.keyword}</p>
+                    <p class="mt-4 text-xs text-orange-300">쿠팡에서 보기</p>
+                </a>
+            `).join("");
+            document.getElementById("affiliateDisclosure").textContent = taxonomy.affiliateMeta.disclosure;
+        }
+
+        function showDetailById(recipeId) {
+            const recipe = recipes.find((item) => item.id === recipeId);
+            if (recipe) showDetailModal(recipe);
         }
 
         function showDetailModal(recipe) {
             selectedRecipe = recipe;
-            document.getElementById('modalTitle').textContent = recipe.name;
-            document.getElementById('modalImage').textContent = recipe.image;
-            document.getElementById('modalTime').textContent = recipe.prep_time + '분';
-            document.getElementById('modalDifficulty').textContent = recipe.difficulty;
-            document.getElementById('modalRating').textContent = `⭐ ${recipe.rating} (${recipe.reviews}개)`;
-            document.getElementById('modalChef').textContent = recipe.chef;
-            document.getElementById('modalCalories').textContent = recipe.calories + ' kcal';
-            document.getElementById('modalProtein').textContent = recipe.protein + 'g';
-            document.getElementById('modalCarbs').textContent = recipe.carbs + 'g';
-            document.getElementById('modalFat').textContent = recipe.fat + 'g';
+            state.recipe = recipe.id;
+            taxonomy.updateUrl(state);
+            document.getElementById("detailModal").classList.remove("hidden");
+            document.getElementById("detailModal").classList.add("flex");
+            document.getElementById("modalBadge").textContent = `${recipe.cuisineMeta.flag} ${recipe.cuisineMeta.label} · ${recipe.categoryMeta.emoji} ${recipe.categoryMeta.label} · ${recipe.difficulty}`;
+            document.getElementById("modalTitle").textContent = `${recipe.image} ${recipe.name}`;
+            document.getElementById("modalImage").src = recipe.thumb;
+            document.getElementById("modalImage").alt = recipe.name;
+            document.getElementById("modalStory").textContent = recipe.story;
+            document.getElementById("modalStats").innerHTML = [
+                { label: "준비시간", value: `${recipe.prepTime}분` },
+                { label: "가격", value: taxonomy.formatCurrency(recipe.price) },
+                { label: "평점", value: `${recipe.rating}★` },
+                { label: "셰프", value: recipe.chefLabel },
+            ].map((stat) => `
+                <div class="rounded-2xl border border-slate-800 bg-slate-950/70 p-4">
+                    <p class="text-xs text-slate-400">${stat.label}</p>
+                    <p class="mt-2 font-semibold text-white">${stat.value}</p>
+                </div>
+            `).join("");
 
-            document.getElementById('modalIngredients').innerHTML = recipe.ingredients
-                .map(ing => `<li>✓ ${ing}</li>`)
-                .join('');
+            document.getElementById("modalIngredients").innerHTML = recipe.ingredients.map((ingredient) => {
+                const meta = taxonomy.getIngredientCategoryMeta(ingredient.category);
+                return `
+                    <div class="flex items-center justify-between rounded-2xl border border-slate-800 bg-slate-950/70 px-4 py-3">
+                        <div>
+                            <p class="font-medium text-white">${ingredient.name}</p>
+                            <p class="text-xs text-slate-400">${ingredient.quantity}${ingredient.unit} · ${taxonomy.formatCurrency(ingredient.price)}</p>
+                        </div>
+                        <span class="rounded-full px-3 py-1 text-xs font-medium ${meta.chipClass}">${meta.emoji} ${meta.label}</span>
+                    </div>
+                `;
+            }).join("");
 
-            const reviews = [
-                { user: '김정현', rating: 5, text: '정말 맛있었어요!' },
-                { user: '이준호', rating: 4, text: '레시피가 깔끔해요.' },
-                { user: '박민지', rating: 5, text: '셰프님 감사합니다!' }
-            ];
-            document.getElementById('modalReviews').innerHTML = reviews
-                .map(r => `<div class="bg-slate-700 p-2 rounded"><p class="font-semibold text-white">${r.user} ${'⭐'.repeat(r.rating)}</p><p class="text-slate-300 text-xs mt-1">${r.text}</p></div>`)
-                .join('');
+            document.getElementById("modalRoutes").innerHTML = [
+                { title: "같은 맥락 피드 보기", href: taxonomy.buildHref("feed.html", { cuisine: recipe.cuisine, category: recipe.category, country: getActiveCountry(), menu: state.menu, recipe: recipe.id }), icon: "📰" },
+                { title: "재료 자동 쇼핑리스트", href: taxonomy.buildHref("shopping-list.html", { cuisine: recipe.cuisine, category: recipe.category, country: getActiveCountry(), menu: state.menu, recipe: recipe.id }), icon: "🛒" },
+                { title: "관련 상품 보기", href: recipe.affiliateLinks[1].url, icon: "🛍️", external: true },
+            ].map((route) => `
+                <a href="${route.href}" ${route.external ? 'target="_blank" rel="noopener noreferrer sponsored"' : ""} class="flex items-center justify-between rounded-2xl bg-slate-900 px-4 py-3 text-sm text-white hover:bg-slate-800">
+                    <span>${route.icon} ${route.title}</span>
+                    <span class="text-slate-400">이동</span>
+                </a>
+            `).join("");
 
-            document.getElementById('detailModal').classList.remove('hidden');
+            document.getElementById("likeBtn").textContent = recipe.liked ? "❤️ 저장됨" : "🤍 저장";
         }
 
         function closeModal() {
-            document.getElementById('detailModal').classList.add('hidden');
+            document.getElementById("detailModal").classList.add("hidden");
+            document.getElementById("detailModal").classList.remove("flex");
+            state.recipe = "";
+            taxonomy.updateUrl(state);
             selectedRecipe = null;
         }
 
         function toggleLike() {
             if (!selectedRecipe) return;
             selectedRecipe.liked = !selectedRecipe.liked;
-            document.getElementById('likeBtn').textContent = selectedRecipe.liked ? '❤️ 좋아요 취소' : '❤️ 좋아요';
-            showSuccess(selectedRecipe.liked ? '좋아요 했습니다!' : '좋아요 취소했습니다.');
+            document.getElementById("likeBtn").textContent = selectedRecipe.liked ? "❤️ 저장됨" : "🤍 저장";
+            showSuccess(selectedRecipe.liked ? "레시피를 저장했습니다." : "저장을 해제했습니다.");
+            renderRecipes();
         }
 
-        function toggleLikeQuick(recipeId) {
-            const recipe = recipes.find(r => r.id === recipeId);
+        function quickLike(recipeId) {
+            const recipe = recipes.find((item) => item.id === recipeId);
             if (!recipe) return;
             recipe.liked = !recipe.liked;
-            showSuccess(recipe.liked ? '좋아요 했습니다!' : '좋아요 취소했습니다.');
+            renderRecipes();
         }
 
-        function addToShoppingList() {
+        function goToShoppingList() {
             if (!selectedRecipe) return;
-            showSuccess(`${selectedRecipe.name}의 재료가 쇼핑리스트에 추가되었습니다.`);
-            closeModal();
+            window.location.href = taxonomy.buildHref("shopping-list.html", {
+                cuisine: selectedRecipe.cuisine,
+                category: selectedRecipe.category,
+                country: getActiveCountry(),
+                menu: state.menu,
+                recipe: selectedRecipe.id,
+            });
         }
 
-        // Close modal when clicking outside
-        document.getElementById('detailModal').addEventListener('click', (e) => {
-            if (e.target === document.getElementById('detailModal')) {
-                closeModal();
+        function init() {
+            if (!state.cuisine || !taxonomy.cuisineMeta[state.cuisine]) {
+                state.cuisine = state.country ? resolveDefaultCuisine() : "";
             }
-        });
+            renderFilterLists();
+            document.getElementById("sortBy").addEventListener("change", applyFilters);
+            document.getElementById("detailModal").addEventListener("click", (event) => {
+                if (event.target.id === "detailModal") closeModal();
+            });
+            applyFilters();
+        }
 
-        document.addEventListener('DOMContentLoaded', init);
+        document.addEventListener("DOMContentLoaded", init);
     </script>
     <script src="../mobile-optimization.js" defer></script>
 </body>

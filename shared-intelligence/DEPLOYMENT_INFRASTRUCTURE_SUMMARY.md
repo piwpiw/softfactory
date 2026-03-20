@@ -38,7 +38,7 @@ Comprehensive production deployment infrastructure delivered for SoftFactory Pla
   - Minimal base image reduces startup time
   - Gunicorn workers configured for 2-core systems
 
-#### docker-compose-prod.yml (150 lines)
+#### docker-compose.production.yml (150 lines)
 - **Purpose:** Production service orchestration
 - **Services:** 5
   1. **nginx** — Reverse proxy, SSL/TLS termination, rate limiting
@@ -326,7 +326,7 @@ Comprehensive production deployment runbook with 10 major sections:
 **Solution:**
 Comprehensive production deployment stack with:
 - Multi-stage Dockerfile optimized for production
-- Complete docker-compose-prod.yml with 5 services
+- Complete docker-compose.production.yml with 5 services
 - Nginx reverse proxy with SSL/TLS, security headers, rate limiting
 - Automated deployment script with 7-phase process
 - Automated backup script with retention policy
@@ -432,7 +432,7 @@ Before deploying to production, verify:
 ### Created Files (9)
 ```
 D:/Project/Dockerfile.prod                             [125 lines]
-D:/Project/docker-compose-prod.yml                     [150 lines]
+D:/Project/docker-compose.production.yml                     [150 lines]
 D:/Project/.dockerignore                               [50 lines]
 D:/Project/nginx/nginx.conf                            [250 lines]
 D:/Project/docs/DEPLOYMENT-PRODUCTION.md               [6300+ lines]
@@ -485,7 +485,7 @@ watch -n 10 ./scripts/health-check.sh
 ./scripts/health-check.sh
 
 # 2. View recent logs
-docker-compose -f docker-compose-prod.yml logs -f web
+docker-compose -f docker-compose.production.yml logs -f web
 
 # 3. Access Prometheus metrics
 open http://localhost:9090
@@ -498,7 +498,7 @@ ls -lh backups/softfactory_db_*.sql.gz | tail -3
 
 # 2. Execute rollback (automated in deploy.sh)
 # Or manual: restore backup, git checkout previous commit, restart
-docker-compose -f docker-compose-prod.yml down
+docker-compose -f docker-compose.production.yml down
 # Restore database manually
 ./scripts/deploy.sh staging  # Redeploy previous version
 ```
@@ -508,7 +508,7 @@ docker-compose -f docker-compose-prod.yml down
 ## Integration Points
 
 ### With Existing Infrastructure
-- **Prometheus monitoring** — Integrated in docker-compose-prod.yml
+- **Prometheus monitoring** — Integrated in docker-compose.production.yml
 - **PostgreSQL database** — Handled by docker service with persistent volume
 - **Redis caching** — Separate container with password auth
 - **Nginx reverse proxy** — Central gateway for all traffic

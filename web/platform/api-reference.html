@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
@@ -6,8 +6,10 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#111827">
-<title>API 레퍼런스 — SoftFactory</title>
+    <meta name="description" content="SoftFactory API 참고 문서">
+    <title>API 참조 문서 - SoftFactory</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="api.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Inter', sans-serif; }
@@ -18,58 +20,48 @@
         pre { background: #0f172a; padding: 16px; border-radius: 8px; overflow-x: auto; }
     </style>
     <link rel="stylesheet" href="../responsive-framework.css">
-  </head>
+</head>
 <body class="bg-slate-950 text-slate-100 antialiased">
     <div class="max-w-6xl mx-auto px-6 py-12">
         <div class="mb-8">
-            <a href="api-keys.html" class="text-indigo-400 hover:text-indigo-300 transition">← API 키 관리로 돌아가기</a>
-            <h1 class="text-4xl font-bold text-white mt-4">📚 API 레퍼런스</h1>
-            <p class="text-slate-400 mt-2">SoftFactory API v1.0 완전 문서</p>
+            <a href="api-keys.html" class="text-indigo-400 hover:text-indigo-300 transition">API 키 관리로 이동</a>
+            <h1 class="text-4xl font-bold text-white mt-4">SoftFactory API 참조</h1>
+            <p class="text-slate-400 mt-2">SoftFactory API v1.0 공개 문서</p>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
-            <!-- Sidebar Navigation -->
             <aside class="lg:col-span-1">
                 <div class="bg-slate-800 rounded-xl p-4 border border-slate-700 sticky top-6">
-                    <h3 class="font-bold text-white mb-4">📖 목차</h3>
+                    <h3 class="font-bold text-white mb-4">목차</h3>
                     <nav class="space-y-2 text-sm">
-    <button class="hamburger" aria-label="Toggle navigation menu">
-      <span></span>
-      <span></span>
-      <span></span>
-    </button>
+                        <button class="hamburger" aria-label="메뉴 열기"><span></span><span></span><span></span></button>
                         <a href="#authentication" class="block px-3 py-2 rounded text-slate-300 hover:bg-slate-700 transition">인증</a>
-                        <a href="#sns-auto" class="block px-3 py-2 rounded text-slate-300 hover:bg-slate-700 transition">SNS Auto</a>
-                        <a href="#review" class="block px-3 py-2 rounded text-slate-300 hover:bg-slate-700 transition">Review API</a>
+                        <a href="#sns-auto" class="block px-3 py-2 rounded text-slate-300 hover:bg-slate-700 transition">SNS 자동화</a>
+                        <a href="#review" class="block px-3 py-2 rounded text-slate-300 hover:bg-slate-700 transition">리뷰 API</a>
                         <a href="#coocook" class="block px-3 py-2 rounded text-slate-300 hover:bg-slate-700 transition">CooCook API</a>
-                        <a href="#ai-automation" class="block px-3 py-2 rounded text-slate-300 hover:bg-slate-700 transition">AI Automation</a>
+                        <a href="#ai-automation" class="block px-3 py-2 rounded text-slate-300 hover:bg-slate-700 transition">AI 자동화</a>
                         <a href="#errors" class="block px-3 py-2 rounded text-slate-300 hover:bg-slate-700 transition">오류 코드</a>
                     </nav>
                 </div>
             </aside>
 
-            <!-- Main Content -->
             <main class="lg:col-span-3 space-y-8">
-                <!-- Authentication Section -->
                 <section id="authentication" class="bg-slate-800 rounded-xl p-8 border border-slate-700">
-                    <h2 class="text-2xl font-bold text-white mb-4">🔐 인증</h2>
-                    <p class="text-slate-300 mb-4">모든 API 요청은 Authorization 헤더에 API 키를 포함해야 합니다.</p>
+                    <h2 class="text-2xl font-bold text-white mb-4">인증</h2>
+                    <p class="text-slate-300 mb-4">모든 API 요청은 Authorization 헤더에 Bearer 토큰이 필요합니다.</p>
                     <pre class="bg-slate-950 rounded-lg p-4 text-sm overflow-x-auto"><code class="text-cyan-300">curl -H "Authorization: Bearer sk_prod_***8N2xL5q9" \
      https://api.softfactory.com/api/v1/dashboard</code></pre>
                 </section>
 
-                <!-- SNS Auto Section -->
                 <section id="sns-auto" class="bg-slate-800 rounded-xl p-8 border border-slate-700">
                     <div class="flex items-center gap-2 mb-4">
-                        <span class="px-2 py-1 bg-pink-900/50 text-pink-300 text-xs rounded-full">📱 SNS Auto</span>
+                        <span class="px-2 py-1 bg-pink-900/50 text-pink-300 text-xs rounded-full">📱 SNS 자동화</span>
                         <h2 class="text-2xl font-bold text-white">SNS 자동화 API</h2>
                     </div>
-
                     <div class="space-y-6">
-                        <!-- GET /api/v1/sns/posts -->
                         <div class="border-l-4 border-pink-500 pl-4">
                             <p class="font-mono text-pink-400 text-sm">GET /api/v1/sns/posts</p>
-                            <p class="text-slate-300 mt-1">사용자의 SNS 포스트 목록 조회</p>
+                            <p class="text-slate-300 mt-1">연동된 SNS 게시물 목록 조회</p>
                             <pre class="bg-slate-950 rounded-lg p-3 text-xs mt-2 overflow-x-auto"><code class="text-cyan-300">{
   "posts": [
     {
@@ -82,11 +74,9 @@
   ]
 }</code></pre>
                         </div>
-
-                        <!-- POST /api/v1/sns/posts -->
                         <div class="border-l-4 border-pink-500 pl-4">
                             <p class="font-mono text-pink-400 text-sm">POST /api/v1/sns/posts</p>
-                            <p class="text-slate-300 mt-1">새로운 SNS 포스트 생성</p>
+                            <p class="text-slate-300 mt-1">새 게시물 등록</p>
                             <pre class="bg-slate-950 rounded-lg p-3 text-xs mt-2 overflow-x-auto"><code class="text-cyan-300">Request:
 {
   "content": "New post",
@@ -103,18 +93,15 @@ Response: 201 Created
                     </div>
                 </section>
 
-                <!-- Review API Section -->
                 <section id="review" class="bg-slate-800 rounded-xl p-8 border border-slate-700">
                     <div class="flex items-center gap-2 mb-4">
-                        <span class="px-2 py-1 bg-amber-900/50 text-amber-300 text-xs rounded-full">⭐ Review</span>
-                        <h2 class="text-2xl font-bold text-white">리뷰 캠페인 API</h2>
+                        <span class="px-2 py-1 bg-amber-900/50 text-amber-300 text-xs rounded-full">⭐ 리뷰</span>
+                        <h2 class="text-2xl font-bold text-white">리뷰 API</h2>
                     </div>
-
                     <div class="space-y-6">
-                        <!-- GET /api/v1/review/campaigns -->
                         <div class="border-l-4 border-amber-500 pl-4">
                             <p class="font-mono text-amber-400 text-sm">GET /api/v1/review/campaigns</p>
-                            <p class="text-slate-300 mt-1">캠페인 목록 조회</p>
+                            <p class="text-slate-300 mt-1">리뷰 캠페인 목록 조회</p>
                             <pre class="bg-slate-950 rounded-lg p-3 text-xs mt-2 overflow-x-auto"><code class="text-cyan-300">{
   "campaigns": [
     {
@@ -122,32 +109,23 @@ Response: 201 Created
       "title": "Product Review",
       "category": "beauty",
       "available_slots": 10,
-      "reward": "₩50,000"
+      "reward": "60,000"
     }
   ]
 }</code></pre>
                         </div>
-
-                        <!-- POST /api/v1/review/apply -->
-                        <div class="border-l-4 border-amber-500 pl-4">
-                            <p class="font-mono text-amber-400 text-sm">POST /api/v1/review/apply</p>
-                            <p class="text-slate-300 mt-1">캠페인에 신청</p>
-                        </div>
                     </div>
                 </section>
 
-                <!-- CooCook API Section -->
                 <section id="coocook" class="bg-slate-800 rounded-xl p-8 border border-slate-700">
                     <div class="flex items-center gap-2 mb-4">
                         <span class="px-2 py-1 bg-orange-900/50 text-orange-300 text-xs rounded-full">🍳 CooCook</span>
-                        <h2 class="text-2xl font-bold text-white">쉐프 마켓플레이스 API</h2>
+                        <h2 class="text-2xl font-bold text-white">CooCook API</h2>
                     </div>
-
                     <div class="space-y-6">
-                        <!-- GET /api/v1/coocook/chefs -->
                         <div class="border-l-4 border-orange-500 pl-4">
                             <p class="font-mono text-orange-400 text-sm">GET /api/v1/coocook/chefs</p>
-                            <p class="text-slate-300 mt-1">쉐프 목록 조회</p>
+                            <p class="text-slate-300 mt-1">셰프 리스트 조회</p>
                             <pre class="bg-slate-950 rounded-lg p-3 text-xs mt-2 overflow-x-auto"><code class="text-cyan-300">{
   "chefs": [
     {
@@ -155,7 +133,7 @@ Response: 201 Created
       "name": "Chef Kim",
       "specialty": "Korean cuisine",
       "rating": 4.8,
-      "price_per_session": "₩150,000"
+      "price_per_session": "50,000"
     }
   ]
 }</code></pre>
@@ -163,59 +141,53 @@ Response: 201 Created
                     </div>
                 </section>
 
-                <!-- AI Automation API Section -->
                 <section id="ai-automation" class="bg-slate-800 rounded-xl p-8 border border-slate-700">
                     <div class="flex items-center gap-2 mb-4">
-                        <span class="px-2 py-1 bg-cyan-900/50 text-cyan-300 text-xs rounded-full">🤖 AI Auto</span>
+                        <span class="px-2 py-1 bg-cyan-900/50 text-cyan-300 text-xs rounded-full">🤖 AI 자동화</span>
                         <h2 class="text-2xl font-bold text-white">AI 자동화 API</h2>
                     </div>
-
                     <div class="space-y-6">
-                        <!-- GET /api/v1/ai/scenarios -->
                         <div class="border-l-4 border-cyan-500 pl-4">
                             <p class="font-mono text-cyan-400 text-sm">GET /api/v1/ai/scenarios</p>
-                            <p class="text-slate-300 mt-1">사용 가능한 AI 시나리오 조회</p>
+                            <p class="text-slate-300 mt-1">등록된 AI 시나리오 목록 조회</p>
                         </div>
-
-                        <!-- POST /api/v1/ai/employees -->
                         <div class="border-l-4 border-cyan-500 pl-4">
                             <p class="font-mono text-cyan-400 text-sm">POST /api/v1/ai/employees</p>
-                            <p class="text-slate-300 mt-1">새로운 AI 직원 생성</p>
+                            <p class="text-slate-300 mt-1">AI 작업자 생성</p>
                         </div>
                     </div>
                 </section>
 
-                <!-- Error Codes Section -->
                 <section id="errors" class="bg-slate-800 rounded-xl p-8 border border-slate-700">
-                    <h2 class="text-2xl font-bold text-white mb-4">⚠️ 오류 코드</h2>
+                    <h2 class="text-2xl font-bold text-white mb-4">오류 코드</h2>
                     <div class="space-y-3">
                         <div class="flex justify-between items-center p-3 bg-slate-700 rounded-lg">
                             <div>
                                 <p class="font-mono text-red-400">400</p>
                                 <p class="text-sm text-slate-400">Bad Request</p>
                             </div>
-                            <p class="text-slate-300">잘못된 요청 형식</p>
+                            <p class="text-slate-300">잘못된 요청</p>
                         </div>
                         <div class="flex justify-between items-center p-3 bg-slate-700 rounded-lg">
                             <div>
                                 <p class="font-mono text-red-400">401</p>
                                 <p class="text-sm text-slate-400">Unauthorized</p>
                             </div>
-                            <p class="text-slate-300">인증 필요</p>
+                            <p class="text-slate-300">인증 실패</p>
                         </div>
                         <div class="flex justify-between items-center p-3 bg-slate-700 rounded-lg">
                             <div>
                                 <p class="font-mono text-red-400">403</p>
                                 <p class="text-sm text-slate-400">Forbidden</p>
                             </div>
-                            <p class="text-slate-300">접근 권한 없음</p>
+                            <p class="text-slate-300">권한이 없습니다</p>
                         </div>
                         <div class="flex justify-between items-center p-3 bg-slate-700 rounded-lg">
                             <div>
                                 <p class="font-mono text-red-400">429</p>
                                 <p class="text-sm text-slate-400">Rate Limited</p>
                             </div>
-                            <p class="text-slate-300">너무 많은 요청</p>
+                            <p class="text-slate-300">요청 횟수 초과</p>
                         </div>
                         <div class="flex justify-between items-center p-3 bg-slate-700 rounded-lg">
                             <div>
@@ -227,20 +199,19 @@ Response: 201 Created
                     </div>
                 </section>
 
-                <!-- Rate Limits -->
                 <section class="bg-slate-800 rounded-xl p-8 border border-slate-700">
-                    <h2 class="text-2xl font-bold text-white mb-4">⏱️ 레이트 제한</h2>
+                    <h2 class="text-2xl font-bold text-white mb-4">지원 제한</h2>
                     <div class="grid grid-cols-2 gap-4">
                         <div class="bg-slate-700 rounded-lg p-4 border border-slate-600">
                             <p class="text-3xl font-bold text-indigo-400">2,000</p>
-                            <p class="text-sm text-slate-400 mt-1">월별 요청 제한</p>
+                            <p class="text-sm text-slate-400 mt-1">요청/분 제한</p>
                         </div>
                         <div class="bg-slate-700 rounded-lg p-4 border border-slate-600">
                             <p class="text-3xl font-bold text-cyan-400">100</p>
-                            <p class="text-sm text-slate-400 mt-1">분당 요청 제한</p>
+                            <p class="text-sm text-slate-400 mt-1">동시 연결 제한</p>
                         </div>
                     </div>
-                    <p class="text-slate-300 mt-4">더 높은 제한이 필요하신가요? <a href="contact.html" class="text-indigo-400 hover:text-indigo-300">영업팀에 문의</a>하세요.</p>
+                    <p class="text-slate-300 mt-4">추가 요청은 <a href="contact.html" class="text-indigo-400 hover:text-indigo-300">고객지원</a>으로 문의하세요.</p>
                 </section>
             </main>
         </div>

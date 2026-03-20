@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
@@ -6,111 +6,679 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#111827">
-<title>내 예약 — CooCook | SoftFactory</title>
+    <title>내 예약 — CooCook | SoftFactory</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="../platform/api.js"></script>
-    <style>body { font-family: 'Inter', sans-serif; }</style>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .status-chip { letter-spacing: 0.02em; text-transform: uppercase; }
+    </style>
     <link rel="stylesheet" href="../responsive-framework.css">
-  </head>
+</head>
 <body class="bg-slate-950 text-slate-100">
     <div class="flex h-screen overflow-hidden">
-        <aside class="w-64 bg-slate-900 border-r border-slate-800 flex flex-col shrink-0">
+                <aside class="w-64 bg-slate-900 border-r border-slate-800 flex flex-col shrink-0">
             <div class="p-6 border-b border-slate-800">
-                <a href="../platform/dashboard.html" class="flex items-center gap-3">
-                    <span class="text-2xl">🏭</span>
-                    <div><h1 class="font-bold text-white text-sm">SoftFactory</h1></div>
+                <a href="index.html" class="flex items-center gap-3">
+                    <span class="text-2xl">🍳</span>
+                    <div>
+                        <h1 class="font-bold text-white text-sm">CooCook</h1>
+                        <p class="text-xs text-slate-400">요리 체험 플랫폼</p>
+                    </div>
                 </a>
             </div>
-            <nav class="flex-1 p-6 space-y-2 overflow-y-auto">
-    <button class="hamburger" aria-label="Toggle navigation menu">
-      <span></span>
-      <span></span>
-      <span></span>
-    </button>
-                <p class="text-xs font-semibold text-slate-400 uppercase px-4 mb-3">🍳 CooCook</p>
-                <a href="index.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">🏠 홈</a>
-                <a href="explore.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">🔍 탐색</a>
-                <a href="my-bookings.html" class="flex items-center gap-3 px-4 py-2.5 rounded-lg bg-orange-600 text-white font-medium">📅 내 예약</a>
+            <nav class="soft-nav-tree flex-1 p-6 space-y-2 overflow-y-auto">
+                <p class="text-xs font-semibold text-slate-400 uppercase px-4 mb-3">서비스 메뉴</p>
+                <a href="index.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">🏠 홈</a>
+                <a href="explore.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">🔍 셰프 탐색</a>
+                <a href="my-bookings.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg bg-orange-600 text-white font-medium">📅 내 예약</a>
+                <a href="recipes.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">🍳 레시피</a>
+                <a href="shopping-list.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">🛒 쇼핑 리스트</a>
+                <a href="feed.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">📰 피드</a>
             </nav>
-            <div class="p-6 border-t border-slate-800">
-                <button onclick="logout()" class="p-2 hover:bg-slate-800 rounded-lg">🚪</button>
+            <div class="p-6 border-t border-slate-800 space-y-2">
+                <button onclick="logout()" class="w-full p-2 hover:bg-slate-800 rounded-lg">로그아웃</button>
             </div>
         </aside>
+
         <div class="flex-1 flex flex-col overflow-hidden">
             <header class="h-16 bg-slate-900 border-b border-slate-800 px-6 flex items-center justify-between shrink-0">
-                <h2 class="text-xl font-bold text-white">📅 내 예약</h2>
-                <a href="explore.html" class="px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-lg font-medium text-sm">새 예약하기</a>
-            </header>
-            <main class="flex-1 overflow-y-auto p-6">
-                <div class="mb-6 flex gap-2" id="tabs">
-                    <button onclick="filterBookings('upcoming')" class="px-4 py-2 bg-orange-600 text-white rounded-lg text-sm font-medium">⏳ 예정</button>
-                    <button onclick="filterBookings('completed')" class="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-slate-100 rounded-lg text-sm">✅ 완료</button>
-                    <button onclick="filterBookings('cancelled')" class="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-slate-100 rounded-lg text-sm">❌ 취소</button>
-                </div>
+                <button class="hamburger" aria-label="메뉴 토글" aria-expanded="false">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
 
-                <div class="space-y-4" id="bookingsGrid">
-                    <div class="bg-slate-800 rounded-lg p-6 border border-slate-700 animate-pulse">
-                        <div class="h-6 bg-slate-700 rounded mb-4 w-3/4"></div>
-                        <div class="space-y-3">
-                            <div class="h-4 bg-slate-700 rounded"></div>
-                            <div class="h-4 bg-slate-700 rounded w-5/6"></div>
-                        </div>
-                    </div>
+                <div>
+                    <h2 class="text-xl font-bold text-white">내 예약</h2>
+                    <p class="text-xs text-slate-400">예약 이력, 일정 관리, 결제·환불, 리뷰까지 한 화면에서</p>
                 </div>
+                <div class="flex items-center gap-2">
+                    <button id="syncBtn" onclick="refreshBookings(true)" class="px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm hover:bg-slate-700">데이터 동기화</button>
+                    <a href="explore.html" class="px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-lg font-medium text-sm">새 예약하기</a>
+                </div>
+            </header>
+
+            <main class="flex-1 overflow-y-auto p-6 space-y-6">
+                <section class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div class="bg-slate-900 rounded-xl p-5 border border-slate-800">
+                        <p class="text-xs text-slate-400 mb-1">전체 예약</p>
+                        <p id="metric-total" class="text-2xl font-black text-white">0</p>
+                        <p class="text-xs text-slate-400 mt-2">전체 기준</p>
+                    </div>
+                    <div class="bg-slate-900 rounded-xl p-5 border border-slate-800">
+                        <p class="text-xs text-slate-400 mb-1">예정</p>
+                        <p id="metric-upcoming" class="text-2xl font-black text-yellow-300">0</p>
+                    </div>
+                    <div class="bg-slate-900 rounded-xl p-5 border border-slate-800">
+                        <p class="text-xs text-slate-400 mb-1">완료</p>
+                        <p id="metric-completed" class="text-2xl font-black text-blue-300">0</p>
+                    </div>
+                    <div class="bg-slate-900 rounded-xl p-5 border border-slate-800">
+                        <p class="text-xs text-slate-400 mb-1">취소</p>
+                        <p id="metric-cancelled" class="text-2xl font-black text-rose-300">0</p>
+                    </div>
+                </section>
+
+                <section class="grid grid-cols-1 lg:grid-cols-[1.15fr,0.85fr] gap-4">
+                    <div class="bg-slate-900 border border-slate-800 rounded-xl p-5">
+                        <div class="flex items-center justify-between mb-4">
+                            <div>
+                                <h3 class="text-sm font-bold text-white">지금 처리할 예약</h3>
+                                <p class="text-xs text-slate-400 mt-1">결제, 일정 변경, 취소 대응이 필요한 예약을 먼저 보여줍니다.</p>
+                            </div>
+                            <a href="explore.html" class="text-xs text-orange-300 hover:text-orange-200">새 예약 추가</a>
+                        </div>
+                        <div id="bookingActionList" class="space-y-3"></div>
+                    </div>
+                    <div class="bg-slate-900 border border-slate-800 rounded-xl p-5">
+                        <div class="flex items-center justify-between mb-4">
+                            <div>
+                                <h3 class="text-sm font-bold text-white">운영 체크</h3>
+                                <p class="text-xs text-slate-400 mt-1">다가오는 일정과 상태 누락을 빠르게 점검합니다.</p>
+                            </div>
+                        </div>
+                        <div id="bookingOpsChecklist" class="space-y-3"></div>
+                    </div>
+                </section>
+
+                <section class="bg-slate-900 border border-slate-800 rounded-xl p-4 md:p-5">
+                    <div class="flex flex-wrap gap-3 mb-4 items-end">
+                        <div class="flex-1 min-w-[220px]">
+                            <label class="text-xs text-slate-400 block mb-2">검색</label>
+                            <div class="relative">
+                                <span class="absolute left-3 top-1/2 -translate-y-1/2">🔍</span>
+                                <input id="searchInput" oninput="applyFilters()" type="text" placeholder="셰프명, 위치, 메뉴로 검색" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-9 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-orange-500">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="text-xs text-slate-400 block mb-2">정렬</label>
+                            <select id="sortSelect" onchange="applyFilters()" class="bg-slate-800 border border-slate-700 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-orange-500">
+                                <option value="date_desc">날짜 최신순</option>
+                                <option value="date_asc">날짜 오래된 순</option>
+                                <option value="price_desc">금액 높은 순</option>
+                                <option value="price_asc">금액 낮은 순</option>
+                                <option value="chef_name">셰프명 가나다순</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="text-xs text-slate-400 block mb-2">상태</label>
+                            <div class="flex items-center gap-2" id="tabs">
+                                <button data-filter="all" onclick="setFilter('all', this)" class="px-3 py-2 text-xs rounded-lg bg-orange-600 text-white font-semibold">전체</button>
+                                <button data-filter="upcoming" onclick="setFilter('upcoming', this)" class="px-3 py-2 text-xs rounded-lg bg-slate-700 text-slate-100 hover:bg-slate-600">예정</button>
+                                <button data-filter="completed" onclick="setFilter('completed', this)" class="px-3 py-2 text-xs rounded-lg bg-slate-700 text-slate-100 hover:bg-slate-600">완료</button>
+                                <button data-filter="cancelled" onclick="setFilter('cancelled', this)" class="px-3 py-2 text-xs rounded-lg bg-slate-700 text-slate-100 hover:bg-slate-600">취소</button>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="text-xs text-slate-400 block mb-2">기간</label>
+                            <div class="flex gap-2">
+                                <input id="fromDate" type="date" onchange="applyFilters()" class="bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-orange-500">
+                                <input id="toDate" type="date" onchange="applyFilters()" class="bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-orange-500">
+                            </div>
+                        </div>
+                        <button onclick="exportCsv()" class="px-3 py-2 text-sm rounded-lg border border-slate-700 hover:border-slate-500">CSV 내보내기</button>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm min-w-[900px]">
+                            <thead class="bg-slate-800/40">
+                                <tr class="text-left text-slate-400">
+                                    <th class="py-3 px-3">예약 정보</th>
+                                    <th class="py-3 px-3">일시</th>
+                                    <th class="py-3 px-3">시간</th>
+                                    <th class="py-3 px-3">상태</th>
+                                    <th class="py-3 px-3">결제금액</th>
+                                    <th class="py-3 px-3">연락처</th>
+                                    <th class="py-3 px-3">액션</th>
+                                </tr>
+                            </thead>
+                            <tbody id="bookingsTableBody">
+                                <tr><td colspan="7" class="py-8"><div class="animate-pulse">데이터 로딩 중...</div></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <section id="bookingsMobile" class="space-y-4 md:hidden"></section>
+
+                <section class="bg-slate-900 border border-slate-800 rounded-xl p-5">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-sm font-bold text-white">7일 일정 미리보기</h3>
+                        <span class="text-xs text-slate-400" id="upcomingSummary">예정된 일정 집계</span>
+                    </div>
+                    <div class="grid grid-cols-7 gap-2" id="miniCalendar"></div>
+                </section>
             </main>
         </div>
     </div>
+
+    <div id="detailDrawer" class="fixed inset-0 z-50 hidden">
+        <div class="absolute inset-0 bg-black/70" onclick="closeDrawer()"></div>
+        <div class="absolute right-0 top-0 h-full w-full max-w-lg bg-slate-950 border-l border-slate-800 p-6 overflow-y-auto shadow-2xl">
+            <div class="flex items-center justify-between mb-5">
+                <h3 class="text-lg font-bold" id="drawerTitle">예약 상세</h3>
+                <button onclick="closeDrawer()" class="w-8 h-8 rounded-lg bg-slate-800">✕</button>
+            </div>
+            <div id="drawerBody" class="space-y-4 text-sm"></div>
+        </div>
+    </div>
+
     <script>
         requireAuth();
 
-        async function init() {
-            try {
-                const bookings = await getMyBookings();
-                renderBookings(bookings);
-            } catch (error) {
-                showError('예약 정보 로드 실패');
-            }
+        const STORAGE_KEY = 'coocook_booking_overrides_v1';
+        let allBookings = [];
+        let activeFilter = 'all';
+
+        const fallback = [
+            { id: 1001, chef_name: 'Chef Park', chef_avatar: '🍳', cuisine: '한식', location: '서울 종로구', booking_date: '2026-03-01T10:00:00', duration_hours: 2, status: 'confirmed', total_price: 300000, special_requests: '알레르기 없는 메뉴 선호', contact: '010-1000-1000', created_at: '2026-02-24T14:00:00' },
+            { id: 1002, chef_name: 'Chef Marco', chef_avatar: '🍝', cuisine: '이탈리아', location: '서울 강남구', booking_date: '2026-02-28T18:00:00', duration_hours: 3, status: 'completed', total_price: 540000, special_requests: '피크닉 스타일 플레이팅 요청', contact: '010-2000-2000', created_at: '2026-02-20T11:12:00' }
+        ];
+
+        function getOverrides() { try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); } catch (e) { return {}; } }
+        function setOverrides(next) { localStorage.setItem(STORAGE_KEY, JSON.stringify(next)); }
+        function normalizeStatus(status = 'confirmed') {
+            const s = (status || 'confirmed').toLowerCase();
+            const map = { confirmed: 'confirmed', scheduled: 'confirmed', pending: 'pending', completed: 'completed', cancelled: 'cancelled', canceled: 'cancelled', done: 'completed' };
+            return map[s] || 'confirmed';
         }
+        function getGroupByStatus(status) { if (status === 'completed') return 'completed'; if (status === 'cancelled') return 'cancelled'; return 'upcoming'; }
+        function statusText(status) { return { confirmed: '예정', pending: '결제대기', completed: '완료', cancelled: '취소' }[status] || '확인필요'; }
+        function statusColor(status) { return { confirmed: 'bg-yellow-900 text-yellow-200', pending: 'bg-amber-900 text-amber-200', completed: 'bg-blue-900 text-blue-200', cancelled: 'bg-rose-900 text-rose-200' }[status] || 'bg-slate-700 text-slate-200'; }
 
-        function renderBookings(bookings) {
-            const grid = document.getElementById('bookingsGrid');
-            grid.innerHTML = '';
-
-            const filteredBookings = bookings.filter(b => b.status === 'confirmed' || b.status === 'completed' || b.status === 'cancelled');
-
-            if (filteredBookings.length === 0) {
-                grid.innerHTML = emptyState('📅', '예약이 없습니다', '셰프를 탐색하여 새로운 예약을 만들어보세요', '탐색하기', 'explore.html');
-                return;
-            }
-
-            filteredBookings.forEach(b => {
-                const statusEmoji = b.status === 'completed' ? '✅' : b.status === 'cancelled' ? '❌' : '⏳';
-                const html = `
-                    <div class="bg-gradient-to-br from-orange-900/30 to-orange-900/10 rounded-lg p-6 border-2 border-orange-600">
-                        <div class="flex items-start justify-between mb-4">
-                            <div>
-                                <h3 class="text-lg font-bold text-white">${b.chef_name}</h3>
-                                <p class="text-sm text-orange-400">📅 ${formatDate(b.booking_date, 'short')}</p>
-                            </div>
-                            <span class="text-2xl">${statusEmoji}</span>
-                        </div>
-                        <div class="mb-4">
-                            <p class="text-sm text-slate-300"><span class="font-bold text-white">${b.duration_hours}</span>시간</p>
-                            <p class="text-lg font-bold text-white mt-2">${formatKRW(b.total_price)}</p>
-                        </div>
-                        <button class="w-full px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-lg font-medium text-sm transition">
-                            상세 보기
-                        </button>
-                    </div>
-                `;
-                grid.innerHTML += html;
+        function applyOverrides(bookings) {
+            const overrides = getOverrides();
+            return (bookings || []).map((booking, idx) => {
+                const patch = overrides[booking.id] || {};
+                const merged = { ...booking, ...patch, status: normalizeStatus(patch.status || booking.status) };
+                return {
+                    id: merged.id,
+                    chef_name: merged.chef_name || `미확인 셰프 ${idx + 1}`,
+                    chef_avatar: merged.chef_avatar || '🍽️',
+                    cuisine: merged.cuisine || merged.chef_cuisine || '미기재',
+                    location: merged.location || '미기재',
+                    booking_date: merged.booking_date || new Date().toISOString(),
+                    duration_hours: Number(merged.duration_hours || 1),
+                    status: normalizeStatus(merged.status),
+                    total_price: Number(merged.total_price || 0),
+                    special_requests: merged.special_requests || '특별 요청 없음',
+                    contact: merged.contact || '제공 안 함',
+                    created_at: merged.created_at || new Date().toISOString(),
+                    note: merged.note || '',
+                    payment_status: merged.payment_status || (merged.status === 'completed' ? 'paid' : (merged.status === 'confirmed' ? 'paid' : 'pending'))
+                };
             });
         }
 
-        function filterBookings(status) {
-            // This would filter bookings by status
-            // For now, just show all bookings
+        function toDateTimeInput(value) {
+            const dt = new Date(value);
+            if (Number.isNaN(dt.getTime())) return '';
+            const y = dt.getFullYear();
+            const m = String(dt.getMonth() + 1).padStart(2, '0');
+            const d = String(dt.getDate()).padStart(2, '0');
+            const hh = String(dt.getHours()).padStart(2, '0');
+            const mm = String(dt.getMinutes()).padStart(2, '0');
+            return `${y}-${m}-${d}T${hh}:${mm}`;
+        }
+
+        function formatDateForDisplay(value, withTime = true) {
+            const d = new Date(value);
+            if (Number.isNaN(d.getTime())) return value || '-';
+            const options = withTime ? { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' } : { year: 'numeric', month: 'short', day: 'numeric' };
+            return d.toLocaleDateString('ko-KR', options);
+        }
+
+        function buildStatusCounts(rows) {
+            document.getElementById('metric-total').textContent = rows.length.toString();
+            document.getElementById('metric-upcoming').textContent = rows.filter(r => getGroupByStatus(r.status) === 'upcoming').length;
+            document.getElementById('metric-completed').textContent = rows.filter(r => getGroupByStatus(r.status) === 'completed').length;
+            document.getElementById('metric-cancelled').textContent = rows.filter(r => getGroupByStatus(r.status) === 'cancelled').length;
+        }
+
+        function setActiveTab(filter) {
+            [...document.querySelectorAll('#tabs button')].forEach((btn) => {
+                const active = btn.dataset.filter === filter;
+                btn.classList.toggle('bg-orange-600', active);
+                btn.classList.toggle('text-white', active);
+                btn.classList.toggle('bg-slate-700', !active);
+                btn.classList.toggle('text-slate-100', !active);
+                btn.classList.toggle('hover:bg-slate-600', !active);
+            });
+        }
+
+        function setFilter(filter) { activeFilter = filter; setActiveTab(filter); applyFilters(); }
+
+        function shouldShow(booking, filter) {
+            if (filter === 'all') return true;
+            if (filter === 'upcoming') return getGroupByStatus(booking.status) === 'upcoming';
+            if (filter === 'completed') return booking.status === 'completed';
+            if (filter === 'cancelled') return booking.status === 'cancelled';
+            return true;
+        }
+
+        function inDateRange(bookingDate, from, to) {
+            if (!from && !to) return true;
+            const date = new Date(bookingDate);
+            const fromDate = from ? new Date(from) : null;
+            const toDate = to ? new Date(to) : null;
+            if (fromDate && date < fromDate) return false;
+            if (toDate) {
+                const end = new Date(toDate);
+                end.setHours(23, 59, 59, 999);
+                if (date > end) return false;
+            }
+            return true;
+        }
+
+        function filteredBookings() {
+            const q = (document.getElementById('searchInput')?.value || '').trim().toLowerCase();
+            const sort = document.getElementById('sortSelect').value;
+            const from = document.getElementById('fromDate').value;
+            const to = document.getElementById('toDate').value;
+            let rows = allBookings.filter((b) => shouldShow(b, activeFilter) && (!q || b.chef_name.toLowerCase().includes(q) || b.location.toLowerCase().includes(q) || b.cuisine.toLowerCase().includes(q) || String(b.id).includes(q)) && inDateRange(b.booking_date, from, to));
+
+            rows.sort((a, b) => {
+                if (sort === 'date_desc') return new Date(b.booking_date).getTime() - new Date(a.booking_date).getTime();
+                if (sort === 'date_asc') return new Date(a.booking_date).getTime() - new Date(b.booking_date).getTime();
+                if (sort === 'price_desc') return b.total_price - a.total_price;
+                if (sort === 'price_asc') return a.total_price - b.total_price;
+                if (sort === 'chef_name') return a.chef_name.localeCompare(b.chef_name, 'ko-KR');
+                return 0;
+            });
+            return rows;
+        }
+
+        function actionButtonsForRow(booking) {
+            const baseBtn = (label, fn) => `<button onclick="${fn}" class="px-3 py-1.5 rounded-lg text-xs bg-slate-800">${label}</button>`;
+            if (booking.status === 'completed') return `${baseBtn('리뷰 작성', `openReview(${booking.id})`)} ${baseBtn('다시 예약', `copyBooking(${booking.id})`)}`;
+            if (booking.status === 'pending') return `${baseBtn('결제', `goToPayment(${booking.id})`)} ${baseBtn('예약 취소', `cancelBooking(${booking.id})`)}`;
+            if (booking.status === 'confirmed') return `${baseBtn('일정 변경', `rescheduleBooking(${booking.id})`)} ${baseBtn('예약 취소', `cancelBooking(${booking.id})`)}`;
+            if (booking.status === 'cancelled') return `${baseBtn('다시 예약', `copyBooking(${booking.id})`)}`;
+            return `${baseBtn('상태 갱신', `refreshBookings(false)`)}`;
+        }
+
+        function renderTable(rows) {
+            const tbody = document.getElementById('bookingsTableBody');
+            const mobile = document.getElementById('bookingsMobile');
+            tbody.innerHTML = '';
+            mobile.innerHTML = '';
+
+            if (!rows.length) {
+                const empty = emptyState('📅', '예약 내역이 없습니다', '새로운 예약을 생성하면 즉시 여기에 표시됩니다.', '새로 탐색', 'explore.html');
+                tbody.innerHTML = `<tr><td colspan="7" class="py-10">${empty}</td></tr>`;
+                mobile.innerHTML = empty;
+                buildStatusCounts(rows);
+                renderActionBoard(allBookings);
+                renderMiniCalendar(rows);
+                return;
+            }
+
+            rows.forEach((b) => {
+                const tr = document.createElement('tr');
+                tr.className = 'border-b border-slate-800 hover:bg-slate-800/40';
+                tr.innerHTML = `
+                    <td class="py-3 px-3"><div class="flex items-center gap-3"><span class="text-xl">${b.chef_avatar}</span><div><p class="font-semibold text-white">${b.chef_name}</p><p class="text-xs text-slate-400">${b.cuisine} · ${b.location}</p></div></div></td>
+                    <td class="py-3 px-3 text-slate-200">${formatDateForDisplay(b.booking_date, true)}</td>
+                    <td class="py-3 px-3 text-slate-200">${b.duration_hours}시간</td>
+                    <td class="py-3 px-3"><span class="inline-flex items-center px-2 py-1 text-xs font-medium rounded-full status-chip ${statusColor(b.status)}">${statusText(b.status)}</span>${b.payment_status === 'pending' ? '<span class="ml-2 inline-flex items-center px-2 py-1 text-xs font-medium rounded-full bg-amber-900 text-amber-200">결제 대기</span>' : ' '}</td>
+                    <td class="py-3 px-3 text-slate-200">${formatKRW(b.total_price)}</td>
+                    <td class="py-3 px-3 text-slate-300">${b.contact}</td>
+                    <td class="py-3 px-3"><div class="flex flex-wrap gap-2"><button onclick="openBookingDetail(${b.id})" class="px-3 py-1.5 rounded-lg bg-slate-700 text-xs">상세</button>${actionButtonsForRow(b)}</div></td>
+                `;
+                tbody.appendChild(tr);
+
+                const card = document.createElement('div');
+                card.className = 'bg-slate-900 border border-slate-800 rounded-xl p-4';
+                card.innerHTML = `
+                    <div class="flex justify-between items-start gap-3"><div class="flex items-center gap-3"><span class="text-2xl">${b.chef_avatar}</span><div><p class="font-semibold text-white">${b.chef_name}</p><p class="text-xs text-slate-400">${b.location}</p></div></div><span class="inline-flex items-center px-2 py-1 text-xs font-medium rounded-full status-chip ${statusColor(b.status)}">${statusText(b.status)}</span></div>
+                    <div class="mt-3 text-sm text-slate-200 space-y-1"><p>날짜: ${formatDateForDisplay(b.booking_date, true)}</p><p>금액: ${formatKRW(b.total_price)} · ${b.duration_hours}시간</p><p>연락처: ${b.contact}</p></div>
+                    <div class="mt-4 flex gap-2 flex-wrap"><button onclick="openBookingDetail(${b.id})" class="px-3 py-2 rounded-lg bg-slate-700 text-xs">상세</button>${actionButtonsForRow(b)}</div>
+                `;
+                mobile.appendChild(card);
+            });
+
+            buildStatusCounts(rows);
+            renderActionBoard(allBookings);
+            renderMiniCalendar(allBookings);
+        }
+
+        function openBookingDetail(id) {
+            const booking = allBookings.find((b) => b.id === id);
+            if (!booking) return;
+            const drawer = document.getElementById('detailDrawer');
+            document.getElementById('drawerTitle').textContent = `${booking.chef_name} 예약 상세`;
+            document.getElementById('drawerBody').innerHTML = `
+                <div class="space-y-3">
+                    <div class="bg-slate-900 border border-slate-800 rounded-lg p-4"><p class="text-xs text-slate-400">예약 번호</p><p class="text-lg font-bold text-white">#${booking.id}</p></div>
+                    <div class="bg-slate-900 border border-slate-800 rounded-lg p-4 space-y-2"><p class="text-xs text-slate-400">예약 상태</p><p><span class="inline-flex items-center px-2 py-1 text-xs font-medium rounded-full ${statusColor(booking.status)} status-chip">${statusText(booking.status)}</span></p></div>
+                    <div class="bg-slate-900 border border-slate-800 rounded-lg p-4 space-y-1"><p class="text-xs text-slate-400">예약 정보</p><p>셰프: ${booking.chef_name} (${booking.cuisine})</p><p>장소: ${booking.location}</p><p>일시: ${formatDateForDisplay(booking.booking_date, true)}</p><p>소요시간: ${booking.duration_hours}시간</p><p>결제금액: ${formatKRW(booking.total_price)}</p></div>
+                    <div class="bg-slate-900 border border-slate-800 rounded-lg p-4 space-y-1"><p class="text-xs text-slate-400">특별요청</p><p>${booking.special_requests || '요청 없음'}</p></div>
+                    <div class="bg-slate-900 border border-slate-800 rounded-lg p-4 space-y-1"><p class="text-xs text-slate-400">메모</p><textarea id="noteField" rows="3" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-sm" placeholder="메모를 저장하세요">${booking.note || ''}</textarea></div>
+                    <div class="flex flex-wrap gap-2">
+                        <button onclick="saveNote(${booking.id})" class="px-3 py-2 rounded-lg bg-amber-600 text-white">메모 저장</button>
+                        ${booking.status === 'confirmed' ? `<button onclick="rescheduleBooking(${booking.id})" class="px-3 py-2 rounded-lg bg-slate-700">일정 변경</button>` : ''}
+                        ${booking.status === 'confirmed' || booking.status === 'pending' ? `<button onclick="cancelBooking(${booking.id})" class="px-3 py-2 rounded-lg bg-rose-700">예약 취소</button>` : ''}
+                        <button onclick="copyBooking(${booking.id})" class="px-3 py-2 rounded-lg bg-slate-700">재예약 준비</button>
+                    </div>
+                </div>
+            `;
+            drawer.classList.remove('hidden');
+        }
+
+        function closeDrawer() { document.getElementById('detailDrawer').classList.add('hidden'); }
+
+        function saveNote(id) {
+            const textarea = document.getElementById('noteField');
+            const overrides = getOverrides();
+            overrides[id] = { ...(overrides[id] || {}), note: textarea.value || '' };
+            setOverrides(overrides);
+            showSuccess('메모가 저장되었습니다.');
+            allBookings = applyOverrides(allBookings);
+            renderFromCurrentState();
+        }
+
+        function updateLocalBooking(id, patch, message) {
+            const overrides = getOverrides();
+            overrides[id] = { ...(overrides[id] || {}), ...patch };
+            setOverrides(overrides);
+            allBookings = applyOverrides(allBookings);
+            if (message) showSuccess(message);
+            renderFromCurrentState();
+        }
+
+        function appendBookingNote(id, noteLine) {
+            if (!noteLine) return;
+            const overrides = getOverrides();
+            const currentNote = overrides[id]?.note || allBookings.find((item) => item.id === id)?.note || '';
+            overrides[id] = {
+                ...(overrides[id] || {}),
+                note: currentNote ? `${currentNote}\n${noteLine}` : noteLine
+            };
+            setOverrides(overrides);
+            allBookings = applyOverrides(allBookings);
+        }
+
+        function upsertBooking(updatedBooking) {
+            if (!updatedBooking || !updatedBooking.id) return;
+            const normalized = applyOverrides([updatedBooking])[0];
+            const index = allBookings.findIndex((item) => item.id === normalized.id);
+            if (index >= 0) {
+                allBookings[index] = normalized;
+            } else {
+                allBookings.unshift(normalized);
+            }
+        }
+
+        function refreshOpenDrawer(id) {
+            const drawer = document.getElementById('detailDrawer');
+            if (drawer && !drawer.classList.contains('hidden')) {
+                openBookingDetail(id);
+            }
+        }
+
+        async function persistBookingUpdate(id, payload, successMessage, fallbackPatch = null) {
+            try {
+                const response = typeof updateCooCookBooking === 'function'
+                    ? await updateCooCookBooking(id, payload)
+                    : await apiFetch(`/api/coocook/bookings/${id}`, {
+                        method: 'PUT',
+                        body: JSON.stringify(payload)
+                    }).then((raw) => parseJsonOrThrow(raw, `/api/coocook/bookings/${id}`));
+                upsertBooking(response?.booking || response);
+                showSuccess(successMessage);
+                renderFromCurrentState();
+                refreshOpenDrawer(id);
+                return true;
+            } catch (error) {
+                if (fallbackPatch) {
+                    updateLocalBooking(id, fallbackPatch, successMessage);
+                    refreshOpenDrawer(id);
+                    return true;
+                }
+                showError('예약 저장 실패: ' + (error.message || '오류가 발생했습니다.'));
+                return false;
+            }
+        }
+
+        async function cancelBooking(id) {
+            const booking = allBookings.find((item) => item.id === id);
+            if (!booking) return;
+            if (!confirm(`[${booking.chef_name}] 예약을 취소할까요?`)) return;
+            const reason = prompt('취소 사유를 입력해 주세요', '일정 변경 및 개인 사유');
+            const noteLine = reason ? `[취소 사유] ${reason}` : '[취소 사유] 미기재';
+            appendBookingNote(id, noteLine);
+            const specialRequests = [booking.special_requests, reason ? `취소 사유: ${reason}` : ''].filter(Boolean).join('\n');
+            await persistBookingUpdate(
+                id,
+                { status: 'cancelled', special_requests: specialRequests },
+                '예약이 취소 처리되었습니다.',
+                { status: 'cancelled', special_requests: specialRequests }
+            );
+        }
+
+        async function rescheduleBooking(id) {
+            const booking = allBookings.find((item) => item.id === id);
+            if (!booking) return;
+            const target = prompt('새 예약 시간을 입력해 주세요. 예: 2026-03-10T15:30', toDateTimeInput(booking.booking_date));
+            if (!target) return;
+            const duration = Number(prompt('소요시간(시간)', String(booking.duration_hours)) || booking.duration_hours);
+            const date = new Date(target);
+            if (Number.isNaN(date.getTime())) { showError('유효하지 않은 날짜 형식입니다.'); return; }
+            const noteLine = `[변경] ${formatDateForDisplay(date.toISOString(), true)} / ${duration}시간`;
+            appendBookingNote(id, noteLine);
+            await persistBookingUpdate(
+                id,
+                { booking_date: date.toISOString(), duration_hours: duration },
+                '예약 일정을 변경했습니다.',
+                { booking_date: date.toISOString(), duration_hours: duration }
+            );
+        }
+
+        function goToPayment(id) { window.location.href = `payment.html?booking_id=${id}`; }
+
+        function copyBooking(id) {
+            const booking = allBookings.find((item) => item.id === id);
+            if (!booking) return;
+            sessionStorage.setItem('coocook_rebooking_prefill', JSON.stringify({ chefName: booking.chef_name, chefId: booking.chef_id || booking.id, duration_hours: booking.duration_hours }));
+            location.href = `booking.html?chef_id=${booking.chef_id || booking.id}`;
+        }
+
+        function openReview(id) {
+            const booking = allBookings.find((item) => item.id === id);
+            if (!booking) return;
+            if (booking.status !== 'completed') {
+                showWarning('완료된 예약만 리뷰 작성이 가능합니다.');
+                return;
+            }
+            window.location.href = `review.html?booking_id=${id}`;
+        }
+
+        function renderActionBoard(rows) {
+            const listEl = document.getElementById('bookingActionList');
+            const checklistEl = document.getElementById('bookingOpsChecklist');
+            if (!listEl || !checklistEl) return;
+
+            const upcoming = (rows || [])
+                .filter((item) => getGroupByStatus(item.status) === 'upcoming')
+                .sort((a, b) => new Date(a.booking_date).getTime() - new Date(b.booking_date).getTime());
+            const pending = upcoming.filter((item) => item.status === 'pending');
+            const nextBooking = upcoming[0] || null;
+            const within48Hours = upcoming.filter((item) => {
+                const diff = new Date(item.booking_date).getTime() - Date.now();
+                return diff >= 0 && diff <= 48 * 60 * 60 * 1000;
+            });
+            const cancelled = (rows || []).filter((item) => item.status === 'cancelled');
+
+            const actions = [];
+            if (pending.length) {
+                actions.push(`
+                    <div class="rounded-lg border border-amber-800 bg-amber-950/40 p-4">
+                        <div class="flex items-start justify-between gap-3">
+                            <div>
+                                <p class="text-sm font-semibold text-amber-200">결제 대기 예약 ${pending.length}건</p>
+                                <p class="text-xs text-amber-100/70 mt-1">가장 빠른 예약은 ${formatDateForDisplay(pending[0].booking_date, true)} 입니다.</p>
+                            </div>
+                            <button onclick="goToPayment(${pending[0].id})" class="px-3 py-2 rounded-lg bg-amber-500 text-slate-950 text-xs font-semibold">결제 이동</button>
+                        </div>
+                    </div>
+                `);
+            }
+            if (nextBooking) {
+                actions.push(`
+                    <div class="rounded-lg border border-slate-700 bg-slate-950/60 p-4">
+                        <div class="flex items-start justify-between gap-3">
+                            <div>
+                                <p class="text-sm font-semibold text-white">다음 일정: ${nextBooking.chef_name}</p>
+                                <p class="text-xs text-slate-400 mt-1">${formatDateForDisplay(nextBooking.booking_date, true)} · ${nextBooking.duration_hours}시간 · ${nextBooking.location}</p>
+                            </div>
+                            <div class="flex flex-wrap gap-2">
+                                <button onclick="openBookingDetail(${nextBooking.id})" class="px-3 py-2 rounded-lg bg-slate-800 text-xs">상세</button>
+                                ${nextBooking.status === 'confirmed' ? `<button onclick="rescheduleBooking(${nextBooking.id})" class="px-3 py-2 rounded-lg bg-slate-800 text-xs">일정 변경</button>` : ''}
+                            </div>
+                        </div>
+                    </div>
+                `);
+            }
+            if (!actions.length) {
+                actions.push(`
+                    <div class="rounded-lg border border-slate-800 bg-slate-950/60 p-4 text-sm text-slate-300">
+                        처리 대기 중인 예약이 없습니다. 새 예약을 만들거나 완료된 예약에서 재예약을 시작할 수 있습니다.
+                    </div>
+                `);
+            }
+            listEl.innerHTML = actions.join('');
+
+            const checks = [
+                {
+                    label: '결제 대기',
+                    value: `${pending.length}건`,
+                    tone: pending.length ? 'border-amber-800 text-amber-200' : 'border-emerald-800 text-emerald-200',
+                    hint: pending.length ? '결제 완료 전까지 예약이 확정되지 않습니다.' : '지금은 결제 확인이 필요한 예약이 없습니다.'
+                },
+                {
+                    label: '48시간 내 일정',
+                    value: `${within48Hours.length}건`,
+                    tone: within48Hours.length ? 'border-cyan-800 text-cyan-200' : 'border-slate-700 text-slate-300',
+                    hint: within48Hours.length ? '장소, 요청사항, 준비물을 다시 확인하세요.' : '임박한 일정이 없습니다.'
+                },
+                {
+                    label: '취소 이력',
+                    value: `${cancelled.length}건`,
+                    tone: cancelled.length ? 'border-rose-800 text-rose-200' : 'border-slate-700 text-slate-300',
+                    hint: cancelled.length ? '재예약 제안이 필요한 흐름을 다시 점검하세요.' : '최근 취소 이력이 없습니다.'
+                }
+            ];
+
+            checklistEl.innerHTML = checks.map((item) => `
+                <div class="rounded-lg border ${item.tone} bg-slate-950/60 p-4">
+                    <div class="flex items-center justify-between gap-3">
+                        <p class="text-sm font-semibold">${item.label}</p>
+                        <span class="text-sm font-bold">${item.value}</span>
+                    </div>
+                    <p class="text-xs text-slate-400 mt-2">${item.hint}</p>
+                </div>
+            `).join('');
+        }
+
+        function renderMiniCalendar(rows) {
+            const container = document.getElementById('miniCalendar');
+            const summary = document.getElementById('upcomingSummary');
+            const now = new Date();
+            container.innerHTML = '';
+            const byDate = {};
+            rows.filter((r) => getGroupByStatus(r.status) === 'upcoming').forEach((r) => { const day = new Date(r.booking_date).toLocaleDateString('en-CA'); byDate[day] = (byDate[day] || 0) + 1; });
+            for (let i = 0; i < 7; i++) {
+                const d = new Date(now);
+                d.setDate(d.getDate() + i);
+                const dayKey = d.toLocaleDateString('en-CA');
+                const count = byDate[dayKey] || 0;
+                const cell = document.createElement('div');
+                cell.className = 'bg-slate-900 border border-slate-800 rounded-lg p-3 text-center';
+                cell.innerHTML = `<p class="text-xs text-slate-400">${d.getMonth() + 1}/${d.getDate()}</p><p class="text-lg font-bold mt-1">${count}</p><p class="text-[10px] text-slate-500">건</p>`;
+                container.appendChild(cell);
+            }
+            const upcoming = rows.filter((r) => getGroupByStatus(r.status) === 'upcoming');
+            summary.textContent = `앞으로 7일: 총 ${upcoming.length}건`;
+        }
+
+        function renderFromCurrentState() {
+            renderTable(filteredBookings());
+        }
+
+        async function refreshBookings(silent = false) {
+            if (!silent) showLoading('예약 정보 갱신 중...');
+            try {
+                const data = await getMyBookings();
+                const sourceRows = Array.isArray(data) ? data : (data?.bookings || []);
+                allBookings = applyOverrides(sourceRows.length ? sourceRows : fallback);
+                renderFromCurrentState();
+                if (!silent && sourceRows.length) showSuccess('예약 정보를 최신 상태로 갱신했습니다.');
+            } catch (error) {
+                if (!silent) showError('예약 로드 실패: ' + (error.message || '오류가 발생했습니다.'));
+                const cached = getOverrides();
+                const data = fallback.map((item) => ({ ...item, ...cached[item.id] }));
+                allBookings = applyOverrides(data);
+                renderFromCurrentState();
+            } finally {
+                if (!silent) hideLoading();
+            }
+        }
+
+        function applyFilters() {
+            renderFromCurrentState();
+        }
+
+        function exportCsv() {
+            const rows = filteredBookings();
+            if (!rows.length) {
+                showWarning('내보낼 데이터가 없습니다.');
+                return;
+            }
+            const header = ['예약번호', '셰프', '요리유형', '위치', '일시', '시간', '상태', '금액'];
+            const lines = [header.join(',')];
+            rows.forEach((r) => {
+                lines.push([`#${r.id}`, `"${r.chef_name}"`, `"${r.cuisine}"`, `"${r.location}"`, `"${formatDateForDisplay(r.booking_date, true)}"`, `${r.duration_hours}`, statusText(r.status), `${r.total_price}`].join(','));
+            });
+            const blob = new Blob([lines.join('\n')], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `coocook_bookings_${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+        function init() {
+            const params = new URLSearchParams(window.location.search);
+            const paidBookingId = params.get('paid');
+            const filterFromQuery = params.get('filter');
+            if (filterFromQuery) {
+                activeFilter = filterFromQuery;
+                setActiveTab(activeFilter);
+            }
+            if (paidBookingId) showSuccess(`#${paidBookingId} 예약 결제가 완료되었습니다.`);
+            refreshBookings(false);
         }
 
         document.addEventListener('DOMContentLoaded', init);

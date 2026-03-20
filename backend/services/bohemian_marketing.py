@@ -205,3 +205,67 @@ def analytics_overview():
         }
     }), 200
 
+
+@bohemian_marketing_bp.route("/content/<int:content_id>/publish-wordpress", methods=["POST"])
+def publish_content_to_wordpress(content_id):
+    """
+    Publish a content item's blog draft directly to WordPress.
+
+    Request body (JSON):
+        site_url    : str  — WordPress site (e.g. "https://myblog.com")
+        wp_username : str  — WordPress username
+        access_token: str  — Application Password
+        status      : str  — 'publish' | 'draft' (default: 'publish')
+        categories  : list — optional WordPress category IDs
+        hashtags    : list — optional hashtag strings (converted to WP tags)
+
+    Returns:
+        {success, url, external_post_id, status}
+    """
+    item = next((c for c in _state["content"] if c["id"] == content_id), None)
+    if not item:
+        return jsonify({"error": "content item not found"}), 404
+
+    blog_draft = item.get("formats", {}).get("blog", "")
+    if not blog_draft:
+        return jsonify({"error": "No blog format available for this content item"}), 400
+
+    payload = request.get_json(silent=True) or {}
+    site_url = (payload.get("site_url") or "").strip().rstrip("/")
+    wp_username = (payload.get("wp_username") or "").strip()
+    access_token = (payload.get("access_token") or "").strip()
+    pub_status = payload.get("status", "publish")
+
+    if not site_url or not wp_username or not access_token:
+        return jsonify({"error": "site_url, wp_username, and access_token are required"}), 400
+
+    try:
+        from .sns_platforms import get_client as get_platform_client
+        client = get_platform_client(
+            "wordpress",
+            access_token=access_token,
+            simulation_mode=False,
+            site_url=site_url,
+            wp_username=wp_username,
+        )
+
+        result = client.post_content(
+            content=blog_draft,
+            title=item.get("topic", ""),
+            hashtags=payload.get("hashtags", []),
+            categories=payload.get("categories"),
+            status=pub_status,
+        )
+
+        if result.get("success"):
+            # Mark content item as published
+            with _lock:
+                item["status"] = "published"
+                item["published_url"] = result.get("url", "")
+                item["external_post_id"] = result.get("external_post_id", "")
+
+        return jsonify(result), 200 if result.get("success") else 502
+
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+

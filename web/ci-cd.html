@@ -1,95 +1,356 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="theme-color" content="#111827">
-<title>CI/CD - JARVIS</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="responsive-framework.css">
-  </head>
-<body class="bg-gray-900 text-white">
-    <nav class="bg-gray-800 border-b border-gray-700 px-6 py-4 flex justify-between items-center">
-    <button class="hamburger" aria-label="Toggle navigation menu">
-      <span></span>
-      <span></span>
-      <span></span>
-    </button>
-        <h1 class="text-2xl font-bold">09 DevOps: 배포 파이프라인</h1>
-        <a href="index.html" class="text-gray-400 hover:text-white">← 홈</a>
-    </nav>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CI/CD 운영</title>
+  <link rel="stylesheet" href="/unified-ui.css" />
+  <script src="/unified-ui.js" defer></script>
+  <style>
+    :root {
+      --line: #9fb0c4;
+      --text: #0b1627;
+      --muted: #334155;
+      --panel: rgba(255,255,255,0.98);
+      --surface-2: #dfeaf5;
+      --success: #16a34a;
+      --running: #d97706;
+      --failed: #dc2626;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", "Apple SD Gothic Neo", system-ui, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(80rem 80rem at 5% -30%, #e0f2fe 0%, transparent 45%),
+        radial-gradient(60rem 60rem at 95% -10%, #dcfce7 0%, transparent 38%),
+        #f8fafc;
+    }
+    .container { max-width: 1240px; margin: 0 auto; padding: 28px 24px 40px; }
+    .hero, .metric, .stage, .panel, .toolbar {
+      border: 1px solid #8da4bb;
+      border-radius: 18px;
+      background: var(--panel);
+      box-shadow: 0 14px 30px rgba(15,23,42,.08);
+    }
+    .hero, .panel, .toolbar { padding: 18px; }
+    .hero {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 16px;
+      margin-bottom: 16px;
+      background: linear-gradient(135deg, rgba(255,255,255,1), rgba(240,249,255,0.95));
+    }
+    .hero h1 { margin: 0; font-size: 2rem; }
+    .subtitle, .meta { color: var(--muted); line-height: 1.55; }
+    .eyebrow {
+      display: inline-flex;
+      padding: 5px 9px;
+      border-radius: 999px;
+      background: #dbeafe;
+      color: #1d4ed8;
+      font-size: .75rem;
+      font-weight: 800;
+      margin-bottom: 10px;
+    }
+    .grid { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 14px; margin-bottom: 16px; }
+    .metric { padding: 14px; background: linear-gradient(180deg,#fff,#f6faff); }
+    .metric .label { color: var(--muted); font-size: .88rem; font-weight: 700; }
+    .metric .value { font-size: 1.7rem; margin-top: 8px; font-weight: 900; }
+    .pipeline { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 14px; margin-bottom: 16px; }
+    .stage { padding: 14px; background: linear-gradient(180deg,#fff,#f6faff); }
+    .stage h3 { margin: 0 0 10px; font-size: 1rem; }
+    .status {
+      display: inline-flex;
+      border-radius: 999px;
+      padding: 4px 9px;
+      color: #fff;
+      font-size: .75rem;
+      font-weight: 800;
+    }
+    .status.success { background: var(--success); }
+    .status.fail { background: var(--failed); }
+    .status.running, .status.wait { background: var(--running); }
+    .toolbar {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+    .toolbar button, .toolbar select {
+      border: 1px solid #7f96ad;
+      border-radius: 10px;
+      padding: 9px 11px;
+      background: #fff;
+      color: var(--text);
+      font: inherit;
+    }
+    .toolbar button {
+      cursor: pointer;
+      font-weight: 800;
+      background: #0f172a;
+      color: #fff;
+      border-color: #0f172a;
+    }
+    .layout { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 16px; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { text-align: left; padding: 10px 8px; border-top: 1px solid #d7e2ee; font-size: .92rem; }
+    th { color: #1e293b; background: var(--surface-2); font-size: .84rem; font-weight: 800; }
+    .actions button {
+      border: 1px solid #b9cadb;
+      border-radius: 8px;
+      background: #eff6ff;
+      color: #1d4ed8;
+      padding: 6px 8px;
+      margin-right: 6px;
+      cursor: pointer;
+      font-weight: 700;
+    }
+    .log {
+      background: #0f172a;
+      color: #e2e8f0;
+      border-radius: 12px;
+      padding: 12px;
+      height: 260px;
+      overflow: auto;
+      white-space: pre-wrap;
+      font-size: .85rem;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    }
+    .decision-list { display: grid; gap: 10px; margin-top: 12px; }
+    .decision {
+      border: 1px solid #b9cadb;
+      border-radius: 16px;
+      padding: 13px;
+      background: linear-gradient(180deg,#fff,#f7fbff);
+    }
+    .decision strong { display: block; }
+    .decision p { margin: 8px 0 0; color: var(--muted); line-height: 1.55; }
+    @media (max-width: 1120px) {
+      .hero, .layout { grid-template-columns: 1fr; }
+      .grid, .pipeline { grid-template-columns: repeat(2,minmax(0,1fr)); }
+    }
+    @media (max-width: 680px) {
+      .container { padding: 20px 16px 32px; }
+      .grid, .pipeline { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <section class="hero">
+      <div>
+        <span class="eyebrow">Release Operations</span>
+        <h1>CI/CD 운영</h1>
+        <div class="subtitle">파이프라인 상태, 최근 실행 이력, 단계별 결과, 재실행 액션과 로그를 한 화면에서 추적합니다.</div>
+      </div>
+      <div class="meta" id="statusArea">최근 상태를 불러오는 중...</div>
+    </section>
 
-    <main class="p-6 max-w-6xl mx-auto">
-        <!-- 파이프라인 시각화 -->
-        <div class="mb-8 flex overflow-x-auto gap-4">
-            <div class="bg-green-600 p-6 rounded-lg min-w-max">
-                <h3 class="font-bold">Build</h3>
-                <p class="text-2xl mt-2">✅</p>
-                <p class="text-sm mt-2">2m 15s</p>
-            </div>
-            <div class="bg-yellow-600 p-6 rounded-lg min-w-max">
-                <h3 class="font-bold">Test</h3>
-                <p class="text-2xl mt-2">🔄</p>
-                <p class="text-sm mt-2">진행 중...</p>
-            </div>
-            <div class="bg-gray-600 p-6 rounded-lg min-w-max opacity-50">
-                <h3 class="font-bold">Deploy</h3>
-                <p class="text-2xl mt-2">⏳</p>
-                <p class="text-sm mt-2">대기</p>
-            </div>
-            <div class="bg-gray-600 p-6 rounded-lg min-w-max opacity-50">
-                <h3 class="font-bold">Production</h3>
-                <p class="text-2xl mt-2">⏳</p>
-                <p class="text-sm mt-2">대기</p>
-            </div>
-        </div>
+    <section class="grid">
+      <article class="metric"><div class="label">총 파이프라인</div><div class="value" id="metricTotal">0</div></article>
+      <article class="metric"><div class="label">성공</div><div class="value" id="metricSuccess">0</div></article>
+      <article class="metric"><div class="label">실패</div><div class="value" id="metricFail">0</div></article>
+      <article class="metric"><div class="label">실행 중</div><div class="value" id="metricRunning">0</div></article>
+    </section>
 
-        <!-- 배포 히스토리 -->
-        <div class="bg-gray-800 p-6 rounded-lg">
-            <h3 class="text-xl font-bold mb-4">배포 히스토리</h3>
-            <div class="space-y-3">
-                <div class="flex justify-between items-center bg-gray-700 p-3 rounded">
-                    <div>
-                        <p class="font-bold">v1.2.26</p>
-                        <p class="text-sm text-gray-400">2024-02-23 14:32</p>
-                    </div>
-                    <span class="bg-green-500 px-3 py-1 rounded text-sm">성공</span>
-                </div>
-                <div class="flex justify-between items-center bg-gray-700 p-3 rounded">
-                    <div>
-                        <p class="font-bold">v1.2.25</p>
-                        <p class="text-sm text-gray-400">2024-02-23 12:15</p>
-                    </div>
-                    <span class="bg-green-500 px-3 py-1 rounded text-sm">성공</span>
-                </div>
-                <div class="flex justify-between items-center bg-gray-700 p-3 rounded">
-                    <div>
-                        <p class="font-bold">v1.2.24</p>
-                        <p class="text-sm text-gray-400">2024-02-22 18:45</p>
-                    </div>
-                    <span class="bg-red-500 px-3 py-1 rounded text-sm">실패</span>
-                </div>
-            </div>
-        </div>
+    <section class="pipeline">
+      <article class="stage"><h3>Build</h3><div id="buildStatus">-</div><p id="buildTime" class="meta">-</p></article>
+      <article class="stage"><h3>Test</h3><div id="testStatus">-</div><p id="testTime" class="meta">-</p></article>
+      <article class="stage"><h3>Deploy</h3><div id="deployStatus">-</div><p id="deployTime" class="meta">-</p></article>
+      <article class="stage"><h3>Production</h3><div id="productionStatus">-</div><p id="productionTime" class="meta">-</p></article>
+    </section>
 
-        <!-- 액션 버튼 -->
-        <div class="mt-6 flex gap-4">
-            <button onclick="triggerDeploy()" class="bg-orange-600 hover:bg-orange-700 px-6 py-3 rounded font-bold">배포 트리거</button>
-            <button onclick="viewLogs()" class="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded font-bold">로그 보기</button>
-        </div>
-    </main>
+    <section class="toolbar">
+      <select id="envSelect">
+        <option value="production">production</option>
+        <option value="staging">staging</option>
+      </select>
+      <button id="runPipeline">파이프라인 실행</button>
+      <button id="refreshBtn">새로고침</button>
+      <button id="clearLog">로그 지우기</button>
+    </section>
 
-    <script>
-        function triggerDeploy() {
-            alert('v1.2.27 배포 시작!');
+    <section class="layout">
+      <section class="panel">
+        <h2>최근 실행 히스토리</h2>
+        <table>
+          <thead>
+            <tr><th>버전</th><th>브랜치</th><th>상태</th><th>시작</th><th>결과</th><th>액션</th></tr>
+          </thead>
+          <tbody id="historyRows"></tbody>
+        </table>
+      </section>
+
+      <section class="panel">
+        <h2>실행 로그</h2>
+        <div id="logText" class="log"></div>
+        <div class="decision-list" id="decisionList"></div>
+      </section>
+    </section>
+  </div>
+
+  <script src="shared-runtime.js"></script>
+  <script>
+    const state = { pipelines: [], logs: [] };
+    const fallbackPipelines = [
+      { id: "p-001", version: "v1.2.26", branch: "main", status: "fail", started_at: "2026-03-03T10:12:00Z", build: "success", test: "success", deploy: "fail", prod: "wait", message: "배포 환경 변수 누락" },
+      { id: "p-002", version: "v1.2.25", branch: "main", status: "success", started_at: "2026-03-02T18:00:00Z", build: "success", test: "success", deploy: "success", prod: "success", message: "정상 배포" },
+      { id: "p-003", version: "v1.2.24", branch: "release", status: "running", started_at: new Date(Date.now() - 120000).toISOString(), build: "running", test: "wait", deploy: "wait", prod: "wait", message: "배포 진행중" }
+    ];
+
+    function statusClass(status) {
+      if (status === "success") return "status success";
+      if (status === "running" || status === "wait") return "status running";
+      return "status fail";
+    }
+
+    function now() {
+      return new Date().toLocaleString("ko-KR", { hour12: false });
+    }
+
+    function appendLog(message) {
+      state.logs.unshift(`[${now()}] ${message}`);
+      state.logs = state.logs.slice(0, 80);
+      document.getElementById("logText").textContent = state.logs.join("\n");
+    }
+
+    function renderMetrics() {
+      document.getElementById("metricTotal").textContent = state.pipelines.length;
+      document.getElementById("metricSuccess").textContent = state.pipelines.filter((p) => p.status === "success").length;
+      document.getElementById("metricFail").textContent = state.pipelines.filter((p) => p.status === "fail").length;
+      document.getElementById("metricRunning").textContent = state.pipelines.filter((p) => p.status === "running").length;
+    }
+
+    function renderStages(sample) {
+      const stageMap = {
+        buildStatus: sample?.build || "wait",
+        testStatus: sample?.test || "wait",
+        deployStatus: sample?.deploy || "wait",
+        productionStatus: sample?.prod || "wait"
+      };
+      const started = sample?.started_at ? new Date(sample.started_at).toLocaleString("ko-KR", { hour12: false }) : "-";
+      document.getElementById("buildStatus").innerHTML = `<span class="${statusClass(stageMap.buildStatus)}">${stageMap.buildStatus}</span>`;
+      document.getElementById("testStatus").innerHTML = `<span class="${statusClass(stageMap.testStatus)}">${stageMap.testStatus}</span>`;
+      document.getElementById("deployStatus").innerHTML = `<span class="${statusClass(stageMap.deployStatus)}">${stageMap.deployStatus}</span>`;
+      document.getElementById("productionStatus").innerHTML = `<span class="${statusClass(stageMap.productionStatus)}">${stageMap.productionStatus}</span>`;
+      document.getElementById("buildTime").textContent = started;
+      document.getElementById("testTime").textContent = started;
+      document.getElementById("deployTime").textContent = started;
+      document.getElementById("productionTime").textContent = started;
+    }
+
+    function renderHistory() {
+      const tbody = document.getElementById("historyRows");
+      tbody.innerHTML = state.pipelines.map((p) => `
+        <tr>
+          <td>${p.version || "-"}</td>
+          <td>${p.branch || "-"}</td>
+          <td><span class="${statusClass(p.status)}">${p.status}</span></td>
+          <td>${new Date(p.started_at || Date.now()).toLocaleString("ko-KR", { hour12: false })}</td>
+          <td>${p.message || "-"}</td>
+          <td class="actions">
+            <button data-id="${p.id}" data-action="rerun">재실행</button>
+            <button data-id="${p.id}" data-action="detail">상세</button>
+          </td>
+        </tr>`).join("");
+    }
+
+    function renderDecisions() {
+      const latest = state.pipelines[0];
+      const items = [
+        {
+          title: "최근 파이프라인 해석",
+          text: latest ? `${latest.version} / ${latest.branch}의 현재 상태는 ${latest.status}입니다. ${latest.message || "메시지 없음"}` : "실행 이력이 없습니다."
+        },
+        {
+          title: "우선 액션",
+          text: state.pipelines.some((p) => p.status === "fail") ? "실패 파이프라인이 있어 재실행 전 로그와 환경 변수를 먼저 확인해야 합니다." : "실패 건이 없으므로 다음 릴리스 준비에 집중해도 됩니다."
         }
+      ];
+      document.getElementById("decisionList").innerHTML = items.map((item) => `<article class="decision"><strong>${item.title}</strong><p>${item.text}</p></article>`).join("");
+    }
 
-        function viewLogs() {
-            alert('배포 로그:\n[INFO] Building...\n[INFO] Running tests...\n[SUCCESS] All tests passed!');
+    async function fetchPipelines() {
+      try {
+        const res = await sfRuntime.apiFetch("/api/v1/automation/status");
+        if (!res.ok) throw new Error("automation status unavailable");
+        const payload = await res.json();
+        if (Array.isArray(payload.pipelines) && payload.pipelines.length) {
+          state.pipelines = payload.pipelines.map((p, index) => ({
+            id: p.id || `p-${index}`,
+            version: p.version || `v-${100 + index}`,
+            branch: p.branch || "main",
+            status: p.status || "running",
+            started_at: p.started_at || new Date().toISOString(),
+            message: p.message || "status from API",
+            build: p.build || p.status || "wait",
+            test: p.test || "wait",
+            deploy: p.deploy || "wait",
+            prod: p.prod || "wait"
+          }));
+        } else {
+          state.pipelines = fallbackPipelines.slice();
         }
-    </script>
-    <script src="mobile-optimization.js" defer></script>
+        document.getElementById("statusArea").textContent = `최근 동기화 ${now()} · 환경 ${document.getElementById("envSelect").value}`;
+      } catch {
+        state.pipelines = fallbackPipelines.slice();
+        document.getElementById("statusArea").textContent = `API 연결 실패로 기본 데이터 사용 · ${now()}`;
+      }
+      renderMetrics();
+      renderStages(state.pipelines[0]);
+      renderHistory();
+      renderDecisions();
+    }
+
+    function runPipeline() {
+      const env = document.getElementById("envSelect").value;
+      const next = {
+        id: `p-${Date.now()}`,
+        version: `v1.2.${Math.floor(Math.random() * 90 + 10)}`,
+        branch: env === "production" ? "main" : "staging",
+        status: "running",
+        started_at: new Date().toISOString(),
+        build: "running",
+        test: "wait",
+        deploy: "wait",
+        prod: "wait",
+        message: `${env} 파이프라인 실행 시작`
+      };
+      state.pipelines.unshift(next);
+      appendLog(`${env} 파이프라인 실행 요청`);
+      renderMetrics();
+      renderStages(next);
+      renderHistory();
+      renderDecisions();
+    }
+
+    document.getElementById("runPipeline").addEventListener("click", runPipeline);
+    document.getElementById("refreshBtn").addEventListener("click", fetchPipelines);
+    document.getElementById("clearLog").addEventListener("click", () => {
+      state.logs = [];
+      document.getElementById("logText").textContent = "";
+    });
+    document.getElementById("historyRows").addEventListener("click", (event) => {
+      const button = event.target;
+      if (!(button instanceof HTMLButtonElement)) return;
+      const id = button.getAttribute("data-id");
+      const action = button.getAttribute("data-action");
+      const pipeline = state.pipelines.find((item) => item.id === id);
+      if (!pipeline) return;
+      if (action === "rerun") {
+        appendLog(`${pipeline.version} 재실행 요청`);
+        runPipeline();
+      }
+      if (action === "detail") {
+        appendLog(`${pipeline.version} 상세 확인`);
+        renderStages(pipeline);
+      }
+    });
+
+    fetchPipelines();
+    appendLog("CI/CD 운영 화면 초기화");
+  </script>
 </body>
 </html>

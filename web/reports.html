@@ -1,90 +1,248 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="theme-color" content="#111827">
-<title>Reports - JARVIS</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="responsive-framework.css">
-  </head>
-<body class="bg-gray-900 text-white">
-    <nav class="bg-gray-800 border-b border-gray-700 px-6 py-4 flex justify-between items-center">
-    <button class="hamburger" aria-label="Toggle navigation menu">
-      <span></span>
-      <span></span>
-      <span></span>
-    </button>
-        <h1 class="text-2xl font-bold">10 Reporter: 일일 리포트</h1>
-        <a href="index.html" class="text-gray-400 hover:text-white">← 홈</a>
-    </nav>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>리포트 센터</title>
+  <link rel="stylesheet" href="/unified-ui.css" />
+  <script src="/unified-ui.js" defer></script>
+  <style>
+    :root { --line:#9fb0c4; --muted:#334155; --text:#0b1627; --panel:rgba(255,255,255,0.98); --surface-2:#dfeaf5; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", "Apple SD Gothic Neo", system-ui, sans-serif;
+      background:
+        radial-gradient(90rem 90rem at 0% -20%, #dbeafe 0%, transparent 40%),
+        radial-gradient(90rem 90rem at 100% 0%, #d9f99d 0%, transparent 35%),
+        #f8fafc;
+      color: var(--text);
+    }
+    .container { max-width: 1280px; margin: 0 auto; padding: 28px 24px 40px; }
+    .hero, .toolbar, .panel, .metric {
+      background: var(--panel);
+      border: 1px solid #8da4bb;
+      border-radius: 18px;
+      box-shadow: 0 14px 30px rgba(15,23,42,.08);
+    }
+    .hero, .toolbar, .panel { padding: 18px; }
+    .hero { display:grid; grid-template-columns:1.2fr 0.8fr; gap:16px; margin-bottom:16px; }
+    h1 { margin: 0; font-size: 2rem; }
+    .subtitle,.meta { color: var(--muted); line-height: 1.55; }
+    .metrics {
+      display:grid;
+      grid-template-columns:repeat(4,minmax(0,1fr));
+      gap:14px;
+      margin-bottom:16px;
+    }
+    .metric { padding:14px; }
+    .metric b { font-size:1.7rem; display:block; margin-top:8px; }
+    .toolbar {
+      margin-bottom:16px;
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+    .toolbar input, .toolbar select, .toolbar button {
+      border:1px solid #7f96ad;
+      border-radius:10px;
+      padding:9px 11px;
+      background:#fff;
+      font: inherit;
+      color: var(--text);
+    }
+    .toolbar button {
+      color:#fff;
+      background:#0f172a;
+      border-color:#0f172a;
+      cursor:pointer;
+      font-weight:800;
+    }
+    .grid { display:grid; grid-template-columns:1.5fr 1fr; gap:16px; }
+    table { width:100%; border-collapse:collapse; }
+    th, td { text-align:left; padding:10px 8px; border-top:1px solid #d7e2ee; }
+    th { font-size:.84rem; background:var(--surface-2); color:#1e293b; font-weight:800; }
+    .tag { display:inline-flex; padding:3px 8px; border-radius:999px; font-size:.75rem; font-weight:800; }
+    .tag.success { background:#dcfce7; color:#166534; }
+    .tag.warn { background:#fef3c7; color:#92400e; }
+    .tag.fail { background:#fee2e2; color:#b91c1c; }
+    .actions button {
+      border:1px solid #b9cadb;
+      border-radius:8px;
+      margin-right:4px;
+      background:#eff6ff;
+      color:#1d4ed8;
+      padding:6px 8px;
+      cursor:pointer;
+      font-weight:700;
+    }
+    .list { max-height: 620px; overflow: auto; }
+    @media (max-width:1120px){ .hero,.grid{grid-template-columns:1fr;} .metrics{grid-template-columns:repeat(2,minmax(0,1fr));} }
+    @media (max-width:700px){ .container{padding:20px 16px 32px;} .metrics{grid-template-columns:1fr;} }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <section class="hero">
+      <div>
+        <h1>리포트 센터</h1>
+        <div class="subtitle">부서 단위 보고서 생성, 배포, 아카이브 상태를 한 화면에서 운영합니다.</div>
+      </div>
+      <div class="meta" id="sync">동기화 중...</div>
+    </section>
 
-    <main class="p-6 max-w-6xl mx-auto">
-        <!-- 리포트 생성 -->
-        <div class="bg-gray-800 p-6 rounded-lg mb-8">
-            <h3 class="text-xl font-bold mb-4">리포트 생성</h3>
-            <div class="flex gap-4">
-                <select class="bg-gray-700 p-3 rounded border border-gray-600">
-                    <option>일일 리포트</option>
-                    <option>주간 리포트</option>
-                    <option>월간 리포트</option>
-                </select>
-                <input type="date" class="bg-gray-700 p-3 rounded border border-gray-600">
-                <button onclick="generateReport()" class="bg-orange-600 hover:bg-orange-700 px-6 py-3 rounded font-bold">생성</button>
-            </div>
+    <section class="metrics">
+      <article class="metric">전체 보고서<b id="metricTotal">0</b></article>
+      <article class="metric">성공<b id="metricSuccess">0</b></article>
+      <article class="metric">지연<b id="metricWarn">0</b></article>
+      <article class="metric">실패<b id="metricFail">0</b></article>
+    </section>
+
+    <section class="toolbar">
+      <input id="query" placeholder="보고서/팀 검색" />
+      <select id="statusFilter">
+        <option value="">전체</option>
+        <option value="success">성공</option>
+        <option value="warn">지연</option>
+        <option value="failed">실패</option>
+      </select>
+      <select id="formatFilter">
+        <option value="">전체</option>
+        <option value="pdf">PDF</option>
+        <option value="csv">CSV</option>
+        <option value="json">JSON</option>
+      </select>
+      <button id="create">보고서 생성</button>
+      <button id="refresh">새로고침</button>
+      <button id="export">현재 목록 CSV</button>
+    </section>
+
+    <section class="grid">
+      <div class="panel">
+        <h2>보고서 목록</h2>
+        <div class="list">
+          <table>
+            <thead>
+              <tr><th>이름</th><th>부서</th><th>주기</th><th>포맷</th><th>상태</th><th>마지막 생성</th><th>액션</th></tr>
+            </thead>
+            <tbody id="rows"></tbody>
+          </table>
         </div>
+      </div>
 
-        <!-- 최근 리포트 -->
-        <div class="space-y-4">
-            <div class="bg-gray-800 p-6 rounded-lg">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-lg font-bold">2024-02-23 일일 리포트</h3>
-                    <button onclick="downloadPDF()" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded text-sm">PDF</button>
-                </div>
-                <div class="space-y-3 text-sm">
-                    <p>✅ 배포: 2건 성공</p>
-                    <p>✅ 테스트: 156개 통과</p>
-                    <p>✅ 팀원: 33명 활성</p>
-                    <p>✅ 시간당 배포: 2.4건</p>
-                    <p>⚠️ 실패한 배포: 0건</p>
-                </div>
-            </div>
+      <div class="panel">
+        <h2>최근 생성 이벤트</h2>
+        <ul id="timeline" style="margin:0; padding-left: 16px;"></ul>
+      </div>
+    </section>
+  </div>
 
-            <div class="bg-gray-800 p-6 rounded-lg opacity-75">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-lg font-bold">2024-02-22 일일 리포트</h3>
-                    <button onclick="downloadPDF()" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded text-sm">PDF</button>
-                </div>
-                <div class="space-y-3 text-sm">
-                    <p>✅ 배포: 1건 성공</p>
-                    <p>✅ 테스트: 142개 통과</p>
-                    <p>✅ 팀원: 31명 활성</p>
-                    <p>✅ 시간당 배포: 1.8건</p>
-                    <p>⚠️ 실패한 배포: 1건</p>
-                </div>
-            </div>
-        </div>
+  <script src="shared-runtime.js"></script>
+  <script>
+    const state = { reports: [], logs: [] };
+    const defaultReports = [
+      { id: "r-1", name: "월간 운영 KPI", team: "Alpha", period: "monthly", format: "pdf", status: "success", lastRun: "2026-02-28T03:00:00Z" },
+      { id: "r-2", name: "주간 보안 감사", team: "Beta", period: "weekly", format: "csv", status: "warn", lastRun: "2026-03-03T08:13:00Z" },
+      { id: "r-3", name: "일간 거래 분석", team: "Gamma", period: "daily", format: "json", status: "failed", lastRun: "2026-03-03T03:00:00Z" },
+      { id: "r-4", name: "분기 리스크 리포트", team: "Delta", period: "quarterly", format: "pdf", status: "success", lastRun: "2026-02-24T08:00:00Z" }
+    ];
 
-        <button onclick="emailReport()" class="mt-6 bg-purple-600 hover:bg-purple-700 px-6 py-3 rounded font-bold">
-            이메일로 전송
-        </button>
-    </main>
+    function addLog(text) {
+      state.logs.unshift({ at: new Date().toLocaleString("ko-KR", { hour12: false }), text });
+      state.logs = state.logs.slice(0, 10);
+      renderTimeline();
+    }
 
-    <script>
-        function generateReport() {
-            alert('리포트 생성 중...\n이메일로 발송될 예정입니다.');
-        }
+    function statusTag(status) {
+      if (status === "success") return `<span class="tag success">성공</span>`;
+      if (status === "warn") return `<span class="tag warn">지연</span>`;
+      return `<span class="tag fail">실패</span>`;
+    }
 
-        function downloadPDF() {
-            alert('PDF 다운로드 시작');
-        }
+    function renderMetrics() {
+      document.getElementById("metricTotal").textContent = state.reports.length;
+      document.getElementById("metricSuccess").textContent = state.reports.filter((r) => r.status === "success").length;
+      document.getElementById("metricWarn").textContent = state.reports.filter((r) => r.status === "warn").length;
+      document.getElementById("metricFail").textContent = state.reports.filter((r) => r.status === "failed").length;
+    }
 
-        function emailReport() {
-            alert('리포트를 팀의 이메일로 전송했습니다.');
-        }
-    </script>
-    <script src="mobile-optimization.js" defer></script>
+    function renderRows() {
+      const q = (document.getElementById("query").value || "").trim().toLowerCase();
+      const sf = document.getElementById("statusFilter").value;
+      const ff = document.getElementById("formatFilter").value;
+      const target = state.reports.filter((r) => {
+        if (q && !(r.name.toLowerCase().includes(q) || r.team.toLowerCase().includes(q))) return false;
+        if (sf && r.status !== sf) return false;
+        if (ff && r.format !== ff) return false;
+        return true;
+      });
+      document.getElementById("rows").innerHTML = target.map((r) => `
+        <tr>
+          <td>${r.name}</td>
+          <td>${r.team}</td>
+          <td>${r.period}</td>
+          <td>${r.format.toUpperCase()}</td>
+          <td>${statusTag(r.status)}</td>
+          <td>${new Date(r.lastRun).toLocaleString("ko-KR", { hour12: false })}</td>
+          <td class="actions">
+            <button data-id="${r.id}" data-action="download">다운로드</button>
+            <button data-id="${r.id}" data-action="send">이메일</button>
+          </td>
+        </tr>
+      `).join("");
+      document.getElementById("sync").textContent = `조회 ${target.length}건 · ${new Date().toLocaleString("ko-KR", { hour12: false })}`;
+      renderMetrics();
+    }
+
+    function renderTimeline() {
+      const ul = document.getElementById("timeline");
+      ul.innerHTML = state.logs.map((log) => `<li>${log.at} - ${log.text}</li>`).join("") || "<li>이벤트가 없습니다.</li>";
+    }
+
+    async function loadReports() {
+      state.reports = defaultReports.slice();
+      addLog("기본 보고서 목록 로드");
+      renderRows();
+    }
+
+    function exportTable() {
+      const rows = [["name","team","period","format","status","lastRun"], ...state.reports.map((r) => [r.name, r.team, r.period, r.format, r.status, r.lastRun])];
+      const csv = rows.map((row) => row.map((cell) => `"${String(cell).replaceAll("\"", "\"\"")}"`).join(",")).join("\n");
+      sfRuntime.downloadText(`reports-${Date.now()}.csv`, csv, "text/csv;charset=utf-8;");
+      addLog("현재 목록 CSV 저장");
+    }
+
+    document.getElementById("create").addEventListener("click", () => {
+      const item = {
+        id: `r-${Date.now()}`,
+        name: "운영 커스텀 리포트",
+        team: "Ops",
+        period: "weekly",
+        format: "pdf",
+        status: "warn",
+        lastRun: new Date().toISOString()
+      };
+      state.reports.unshift(item);
+      addLog(`보고서 생성: ${item.name}`);
+      renderRows();
+    });
+    document.getElementById("refresh").addEventListener("click", loadReports);
+    document.getElementById("export").addEventListener("click", exportTable);
+    document.getElementById("query").addEventListener("input", renderRows);
+    document.getElementById("statusFilter").addEventListener("change", renderRows);
+    document.getElementById("formatFilter").addEventListener("change", renderRows);
+    document.getElementById("rows").addEventListener("click", (event) => {
+      const button = event.target;
+      if (!(button instanceof HTMLButtonElement)) return;
+      const id = button.getAttribute("data-id");
+      const action = button.getAttribute("data-action");
+      const report = state.reports.find((item) => item.id === id);
+      if (!report) return;
+      if (action === "download") addLog(`보고서 다운로드: ${report.name}`);
+      if (action === "send") addLog(`이메일 발송 요청: ${report.name}`);
+    });
+
+    loadReports();
+  </script>
 </body>
 </html>

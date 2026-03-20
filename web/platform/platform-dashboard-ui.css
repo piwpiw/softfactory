@@ -1,0 +1,118 @@
+:root {
+  --sf-shell-bg: #020617;
+  --sf-shell-panel: rgba(15, 23, 42, 0.92);
+  --sf-shell-border: rgba(71, 85, 105, 0.25);
+  --sf-text: #e2e8f0;
+  --sf-text-soft: #94a3b8;
+}
+
+.soft-sidebar,
+.sf-nav-shell {
+  background: var(--sf-shell-panel) !important;
+  border-right: 1px solid var(--sf-shell-border) !important;
+}
+
+.sidebar,
+aside.sf-nav-shell,
+aside.w-60,
+aside.w-72 {
+  background: var(--sf-shell-panel) !important;
+  border-right: 1px solid var(--sf-shell-border) !important;
+}
+
+.soft-topbar,
+.soft-main,
+.soft-card,
+.soft-table-wrap {
+  color: var(--sf-text);
+}
+
+.soft-nav-link,
+.sf-nav-link {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  border-radius: 0.75rem;
+  transition: all 0.2s ease;
+}
+
+.soft-btn,
+.soft-btn-primary {
+  border-radius: 0.7rem;
+  font-weight: 600;
+  border: 1px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.soft-btn {
+  background: rgba(148, 163, 184, 0.12);
+  color: #e2e8f0;
+}
+
+.soft-btn:hover {
+  background: rgba(148, 163, 184, 0.2);
+}
+
+.soft-btn-primary {
+  background: linear-gradient(90deg, #6366f1, #8b5cf6);
+  color: #fff;
+}
+
+.soft-btn-primary:hover {
+  filter: brightness(1.05);
+}
+
+.soft-kpi {
+  border-radius: 1.1rem;
+  border: 1px solid rgba(148, 163, 184, 0.18);
+}
+
+.soft-kpi .value {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: #f8fafc;
+}
+
+@media (max-width: 1024px) {
+  .soft-sidebar,
+  .sf-nav-shell {
+    position: sticky;
+    top: 0;
+  }
+}
+
+/* Platform sidebar tree consistency (injection fallback) */
+.sf-nav-shell .sf-menu-section { font-size: 11px; }
+.sf-nav-shell .nav-item { display:flex; gap:.65rem; align-items:center; }
+.sf-nav-shell .soft-topbar { line-height:1.5; }
+.sf-nav-shell .sf-nav-section { margin-bottom: .5rem; }
+.sf-nav-shell .sf-nav-link,
+.sf-nav-shell .nav-item {
+  padding-top: 0.62rem;
+  padding-bottom: 0.62rem;
+  min-height: 2.3rem;
+}
+.sf-nav-shell .sf-nav-child {
+  padding-left: 2.75rem !important;
+}
+
+.sf-nav-shell .sf-menu-section {
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 768px) {
+  .sf-nav-shell {
+    width: 78vw;
+    max-width: 320px;
+  }
+  .sf-nav-shell .sf-menu-section {
+    font-size: 0.62rem;
+  }
+  .sf-nav-shell .sf-nav-link,
+  .sf-nav-shell .nav-item {
+    font-size: 0.93rem;
+  }
+}
+

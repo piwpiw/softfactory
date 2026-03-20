@@ -7,11 +7,12 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#020617">
-    <title>The Alpha Aggregator ??ReviewEverything Platinum</title>
+    <title>알파 통합 리뷰 집계 — 리뷰 플랫폼</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap"
         rel="stylesheet">
     <script src="../platform/api.js"></script>
+    <link rel="stylesheet" href="../responsive-framework.css">
     <style>
         :root {
             --primary-amber: #f59e0b;
@@ -89,10 +90,33 @@
         .animate-card {
             animation: slide-in 0.5s ease backwards;
         }
+
+        @media (max-width: 1024px) {
+            body.overflow-hidden {
+                overflow: auto;
+            }
+
+            .w-72.glass-panel {
+                width: 16rem !important;
+            }
+
+            header.h-20 {
+                height: auto;
+                min-height: 5rem;
+                padding-left: 1.25rem;
+                padding-right: 1.25rem;
+                gap: 1rem;
+                flex-wrap: wrap;
+            }
+
+            .media-type-tab {
+                padding: 0.65rem 1rem;
+            }
+        }
     </style>
     <script src="../mobile-optimization.js" defer></script>
 </head>
-<body class="overflow-hidden bg-slate-950">
+<body class="overflow-hidden bg-slate-950 soft-shell">
     <div class="flex h-screen overflow-hidden">
         <!-- Advanced Sidebar Core -->
         <aside class="w-72 glass-panel border-r border-slate-800/50 flex flex-col z-50">
@@ -100,38 +124,39 @@
                 <div class="flex items-center gap-4">
                     <div
                         class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-amber-600 to-amber-400 p-0.5 shadow-lg shadow-amber-900/20">
-                        <div class="w-full h-full bg-slate-950 rounded-2xl flex items-center justify-center text-2xl">??
+                        <div class="w-full h-full bg-slate-950 rounded-2xl flex items-center justify-center text-2xl">✶
                         </div>
                     </div>
                     <div>
-                        <h1 class="font-black text-white text-lg tracking-tight uppercase">ReviewEngine</h1>
-                        <p class="text-[10px] text-amber-500 font-bold tracking-[0.2em]">PLATINUM EDITION</p>
+                    <h1 class="font-black text-white text-lg tracking-tight uppercase">리뷰 플랫폼</h1>
+                <p class="text-[10px] text-amber-500 font-bold tracking-[0.2em]">추천 캠페인 운영</p>
                     </div>
                 </div>
             </div>
 
-            <nav class="flex-1 p-6 space-y-1.5 overflow-y-auto scroll-hide">
-                <p class="text-[10px] font-black text-slate-500 uppercase px-4 mb-4 tracking-widest">Analysis Module</p>
-                <a href="index.html"
+            <nav class="soft-nav-tree flex-1 p-6 space-y-1.5 overflow-y-auto scroll-hide">
+                <button class="hamburger" aria-label="메뉴 열기/닫기"><span></span><span></span><span></span></button>
+                <p class="text-[10px] font-black text-slate-500 uppercase px-4 mb-4 tracking-widest">현재 서비스</p>
+                <a class="soft-nav-link" href="index.html"
                     class="flex items-center gap-4 px-5 py-3.5 rounded-xl text-slate-400 font-medium hover:bg-slate-800/50 hover:text-white transition-all group">
-                    <span>?렞</span>
-                    <span class="text-sm">AI ?먯깋</span>
+                    <span>🧠</span>
+                    <span class="text-sm">운영 홈</span>
                 </a>
-                <a href="aggregator.html"
+                <a class="soft-nav-link" href="aggregator.html"
                     class="flex items-center gap-4 px-5 py-3.5 rounded-xl sidebar-item-active bg-amber-500/10 text-amber-500 font-bold border-l-2 border-amber-500 transition-all">
-                    <span>?뵕</span>
-                    <span class="text-sm">?뚰뙆 ?꾩뭅?대툕 (Aggregator)</span>
+                    <span>🧩</span>
+                    <span class="text-sm">통합 집계</span>
                 </a>
-                <a href="auto-apply.html"
+                <a class="soft-nav-link" href="auto-apply.html"
                     class="flex items-center gap-4 px-5 py-3.5 rounded-xl text-slate-400 font-medium hover:bg-slate-800/50 hover:text-white transition-all">
-                    <span>?쨼</span>
-                    <span class="text-sm">?ㅽ넗?뚯씪??/span>
+                    <span>🤖</span>
+                    <span class="text-sm">자동 신청</span>
                 </a>
             </nav>
 
             <div class="p-6 border-t border-slate-800/50">
                 <div class="flex items-center justify-between">
-                    <button onclick="logout()" class="p-2 hover:bg-slate-800 rounded-lg text-slate-400">Door ?슞</button>
+                    <button onclick="logout()" class="p-2 hover:bg-slate-800 rounded-lg text-slate-400">로그아웃</button>
                     <span class="text-[10px] text-slate-600 font-black">v2.5.0-STAGE</span>
                 </div>
             </div>
@@ -142,11 +167,10 @@
             <header
                 class="h-20 glass-panel border-b border-white/5 px-10 flex items-center justify-between shrink-0 z-40 bg-slate-950/80">
                 <div class="flex items-center gap-8">
-                    <h2 class="text-2xl font-black text-white tracking-tight">The Alpha Aggregator</h2>
+                    <h2 class="text-2xl font-black text-white tracking-tight">통합 리뷰 집계</h2>
                     <div class="flex items-center gap-3">
                         <span
-                            class="text-[10px] text-slate-500 font-black uppercase tracking-widest leading-none">Scraper
-                            Status</span>
+                            class="text-[10px] text-slate-500 font-black uppercase tracking-widest leading-none">수집 상태</span>
                         <div class="flex gap-1.5 overflow-x-auto scroll-hide max-w-[400px]">
                             <div
                                 class="flex items-center gap-2 bg-slate-900 px-3 py-1.5 rounded-full border border-slate-700/50">
@@ -156,7 +180,7 @@
                             <div
                                 class="flex items-center gap-2 bg-slate-900 px-3 py-1.5 rounded-full border border-slate-700/50">
                                 <span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span><span
-                                    class="text-[10px] font-bold text-slate-300">ReviewNote</span>
+                                    class="text-[10px] font-bold text-slate-300">리뷰Note</span>
                             </div>
                             <div
                                 class="flex items-center gap-2 bg-slate-900 px-3 py-1.5 rounded-full border border-slate-700/50">
@@ -173,11 +197,11 @@
                 </div>
                 <div class="flex items-center gap-4">
                     <div class="relative group">
-                        <input type="text" id="global-search" placeholder="Search anything..."
+                        <input type="text" id="global-search" placeholder="통합 검색..."
                             class="bg-slate-900 border border-slate-800 rounded-2xl px-12 py-3 text-sm text-white focus:outline-none focus:border-amber-500 transition-all w-80">
-                        <span class="absolute left-4 top-3.5 text-slate-500">?뵇</span>
+                        <span class="absolute left-4 top-3.5 text-slate-500">🔍</span>
                         <kbd
-                            class="absolute right-4 top-3.5 px-1.5 py-0.5 rounded bg-slate-800 text-[10px] text-slate-500 border border-slate-700 font-mono">?쁊</kbd>
+                            class="absolute right-4 top-3.5 px-1.5 py-0.5 rounded bg-slate-800 text-[10px] text-slate-500 border border-slate-700 font-mono">⌘K</kbd>
                     </div>
                 </div>
             </header>
@@ -185,20 +209,99 @@
             <main class="flex-1 overflow-hidden flex flex-col">
                 <!-- Advanced Filtering Bar -->
                 <div class="shrink-0 p-8 pb-4 space-y-6">
+                    <section class="sf-page-intro">
+                        <div class="sf-page-intro-grid">
+                            <div class="sf-page-intro-head">
+                                <p class="sf-page-intro-kicker">Review Aggregator</p>
+                                <h1 class="sf-page-intro-title">추천 캠페인을 먼저 보고 바로 신청 판단을 내릴 수 있게 정리했습니다.</h1>
+                                <p class="sf-page-intro-copy">이 페이지의 목적은 빠른 선별입니다. 통합 목록 확인, 자격 검토, 우선순위 판단, 신청 이동 순서로 위에서 아래로 읽으면 됩니다.</p>
+                                <div class="sf-inline-list">
+                                    <span class="sf-inline-chip">목록 확인</span>
+                                    <span class="sf-inline-chip">자격 검토</span>
+                                    <span class="sf-inline-chip">빠른 신청</span>
+                                </div>
+                            </div>
+                            <article class="sf-primary-action-card">
+                                <p class="sf-primary-action-label">지금 해야 할 행동</p>
+                                <h2 class="sf-primary-action-title">마감 임박 캠페인부터 확인하고 신청 대상을 추리세요.</h2>
+                                <p class="sf-primary-action-copy">빠른 선별을 먼저 하면 뒤쪽 상세 검토 시간이 줄어듭니다.</p>
+                                <a class="sf-primary-action-cta" href="#listings-grid">캠페인 목록으로 이동</a>
+                            </article>
+                        </div>
+                        <div class="sf-status-grid">
+                            <article class="sf-status-item">
+                                <span>현재 목적</span>
+                                <strong>통합 선별</strong>
+                                <p>여러 소스의 캠페인을 한 번에 비교합니다.</p>
+                            </article>
+                            <article class="sf-status-item">
+                                <span>핵심 상태</span>
+                                <strong>추천 이유 표시</strong>
+                                <p>마감, 경쟁, 보상 정보를 같이 봅니다.</p>
+                            </article>
+                            <article class="sf-status-item">
+                                <span>다음 단계</span>
+                                <strong>신청 또는 보류</strong>
+                                <p>우선순위가 정해지면 바로 다음 액션으로 넘어갑니다.</p>
+                            </article>
+                        </div>
+                    </section>
+
+                    <section class="grid gap-4 lg:grid-cols-[1.4fr,1fr]">
+                        <div class="glass-panel rounded-[2rem] border-slate-800/50 p-6">
+                            <p class="text-[10px] font-black text-amber-500 uppercase tracking-[0.28em] mb-3">현재 작업</p>
+                            <h3 class="text-2xl font-black text-white leading-tight mb-2">오늘 신청할 캠페인을 먼저 추리고,<br>추천 이유까지 바로 확인하세요</h3>
+                            <p class="text-sm text-slate-400 leading-relaxed max-w-2xl">
+                                이 화면은 단순 목록이 아니라 `추천 캠페인 찾기 → 자격 확인 → 빠른 신청` 흐름을 위한 집계 콘솔입니다.
+                                마감 임박, 낮은 경쟁, 보상 수준을 같이 보고 우선순위를 정할 수 있습니다.
+                            </p>
+                        </div>
+                        <div class="grid gap-3 md:grid-cols-3 lg:grid-cols-1">
+                            <div class="glass-panel rounded-[1.5rem] border-slate-800/50 p-5">
+                                <p class="text-[10px] font-black text-slate-500 uppercase tracking-[0.24em] mb-2">오늘 추천</p>
+                                <strong class="block text-white text-base mb-1">⭐ 마감 임박 + 낮은 경쟁</strong>
+                                <p class="text-xs text-slate-400 leading-relaxed">먼저 처리할 캠페인을 위로 올리고, 나중에 볼 항목은 필터로 좁혀 보세요.</p>
+                            </div>
+                            <div class="glass-panel rounded-[1.5rem] border-slate-800/50 p-5">
+                                <p class="text-[10px] font-black text-slate-500 uppercase tracking-[0.24em] mb-2">빠른 판단 기준</p>
+                                <strong class="block text-white text-base mb-1">📝 추천 이유를 먼저 확인</strong>
+                                <p class="text-xs text-slate-400 leading-relaxed">보상만 보지 말고 브랜드 적합도와 제출 난이도를 같이 보세요.</p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="hero-metrics">
+                        <div class="glass-panel rounded-[1.5rem] border-slate-800/50 p-5">
+                            <p class="text-[10px] font-black text-slate-500 uppercase tracking-[0.24em] mb-2">추천 캠페인</p>
+                            <strong id="metricRecommended" class="block text-white text-2xl font-black">-</strong>
+                            <p class="text-xs text-slate-400">오늘 우선 검토할 후보 수</p>
+                        </div>
+                        <div class="glass-panel rounded-[1.5rem] border-slate-800/50 p-5">
+                            <p class="text-[10px] font-black text-slate-500 uppercase tracking-[0.24em] mb-2">마감 임박</p>
+                            <strong id="metricUrgent" class="block text-white text-2xl font-black">-</strong>
+                            <p class="text-xs text-slate-400">놓치기 쉬운 신청 마감 후보</p>
+                        </div>
+                        <div class="glass-panel rounded-[1.5rem] border-slate-800/50 p-5">
+                            <p class="text-[10px] font-black text-slate-500 uppercase tracking-[0.24em] mb-2">고보상 후보</p>
+                            <strong id="metricHighReward" class="block text-white text-2xl font-black">-</strong>
+                            <p class="text-xs text-slate-400">우선순위를 올려볼 만한 항목</p>
+                        </div>
+                    </div>
+
                     <div class="flex items-center justify-between">
                         <div class="flex gap-2 overflow-x-auto scroll-hide">
                             <button class="media-type-tab active" data-type=""
-                                onclick="setMediaType(this, '')">Total</button>
-                            <button class="media-type-tab" data-type="blog" onclick="setMediaType(this, 'blog')">?뱷
-                                Blog</button>
+                                onclick="setMediaType(this, '')">전체</button>
+                            <button class="media-type-tab" data-type="blog" onclick="setMediaType(this, 'blog')">📰
+                                블로그</button>
                             <button class="media-type-tab" data-type="instagram"
-                                onclick="setMediaType(this, 'instagram')">?벝 Instagram</button>
+                                onclick="setMediaType(this, 'instagram')">📷 인스타그램</button>
                             <button class="media-type-tab" data-type="youtube"
-                                onclick="setMediaType(this, 'youtube')">?렏 YouTube</button>
-                            <button class="media-type-tab" data-type="tiktok" onclick="setMediaType(this, 'tiktok')">?벑
-                                TikTok</button>
-                            <button class="media-type-tab" data-type="press" onclick="setMediaType(this, 'press')">?벐
-                                Press</button>
+                                onclick="setMediaType(this, 'youtube')">▶ 유튜브</button>
+                            <button class="media-type-tab" data-type="tiktok" onclick="setMediaType(this, 'tiktok')">📱
+                                틱톡</button>
+                            <button class="media-type-tab" data-type="press" onclick="setMediaType(this, 'press')">🗞
+                                보도자료</button>
                         </div>
                         <div class="flex items-center gap-3">
                             <label class="relative inline-flex items-center cursor-pointer">
@@ -207,16 +310,15 @@
                                 <div
                                     class="w-11 h-6 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-amber-500">
                                 </div>
-                                <span class="ml-3 text-xs font-black text-slate-400 uppercase tracking-widest">Today
-                                    Open</span>
+                                <span class="ml-3 text-xs font-black text-slate-400 uppercase tracking-widest">오늘 공개</span>
                             </label>
                             <div class="h-6 w-[1px] bg-slate-800 mx-2"></div>
                             <select id="primary-sort"
                                 class="bg-slate-900 border border-slate-800 rounded-xl px-4 py-2 text-xs font-bold text-slate-300 focus:outline-none focus:border-amber-500">
-                                <option value="latest">Latest Inbound</option>
-                                <option value="profit">Profit Score (AI)</option>
-                                <option value="dday">Near Deadline</option>
-                                <option value="comp">Low Competition</option>
+                                <option value="latest">최신 수집</option>
+                                <option value="profit">AI 수익 점수</option>
+                                <option value="dday">마감 임박</option>
+                                <option value="comp">낮은 경쟁</option>
                             </select>
                         </div>
                     </div>
@@ -224,31 +326,31 @@
                     <div class="grid grid-cols-5 gap-4">
                         <select id="region-filter"
                             class="bg-slate-900 border border-slate-800 rounded-2xl px-4 py-3 text-xs font-bold text-white focus:outline-none transition-all appearance-none cursor-pointer hover:bg-slate-850">
-                            <option value="">?뱧 All Regions</option>
-                            <option value="seoul">Seoul</option>
-                            <option value="gyeonggi">Gyeonggi/Incheon</option>
-                            <option value="busan">Busan/Gyeongnam</option>
+                            <option value="">🌐 전체 지역</option>
+                            <option value="seoul">수도권/서울</option>
+                            <option value="gyeonggi">경기권/인천</option>
+                            <option value="busan">부산/경남</option>
                         </select>
                         <select id="platform-filter"
                             class="bg-slate-900 border border-slate-800 rounded-2xl px-4 py-3 text-xs font-bold text-white focus:outline-none transition-all appearance-none cursor-pointer hover:bg-slate-850">
-                            <option value="">?룫 Unified Platforms</option>
+                            <option value="">🌐 통합 플랫폼</option>
                             <option value="revu">Revu</option>
-                            <option value="reviewnote">ReviewNote</option>
+                            <option value="reviewnote">리뷰Note</option>
                             <option value="gangnam">Gangnam</option>
                             <option value="dinnerqueen">Dinner Queen</option>
                         </select>
                         <select id="category-filter"
                             class="bg-slate-900 border border-slate-800 rounded-2xl px-4 py-3 text-xs font-bold text-white focus:outline-none transition-all appearance-none cursor-pointer hover:bg-slate-850">
-                            <option value="">?뱛 All Categories</option>
-                            <option value="food">?뜑 Food/Cafe</option>
-                            <option value="beauty">?뭵 Beauty</option>
-                            <option value="travel">?덌툘 Travel</option>
+                            <option value="">📚 전체 카테고리</option>
+                            <option value="food">🍽 Food/Cafe</option>
+                            <option value="beauty">💄 Beauty</option>
+                            <option value="travel">✈ Travel</option>
                         </select>
                         <div class="col-span-2 flex gap-4">
                             <div
                                 class="flex-1 glass-panel rounded-2xl px-4 py-3 flex items-center justify-between border-slate-800/50">
                                 <span class="text-[10px] text-slate-500 font-black uppercase">Reward Range</span>
-                                <span class="text-xs font-black text-amber-500">?? ~ ??M+</span>
+                                <span class="text-xs font-black text-amber-500">0M ~ 100M+</span>
                             </div>
                             <button onclick="applyFilters()"
                                 class="px-8 bg-gradient-to-r from-amber-600 to-amber-500 text-black font-black text-xs rounded-2xl shadow-lg shadow-amber-900/20 active:scale-95 transition-all">REFINE
@@ -274,12 +376,12 @@
                     <!-- Simplified Pagination -->
                     <div class="mt-12 py-12 flex justify-center items-center gap-4">
                         <button onclick="changePage(-1)"
-                            class="w-12 h-12 glass-panel rounded-2xl flex items-center justify-center text-slate-500 hover:text-white transition-all">??/button>
+                            class="w-12 h-12 glass-panel rounded-2xl flex items-center justify-center text-slate-500 hover:text-white transition-all">‹</button>
                         <div id="pagination-pages" class="flex gap-2">
                             <button class="w-12 h-12 bg-amber-500 text-black font-black rounded-2xl">1</button>
                         </div>
                         <button onclick="changePage(1)"
-                            class="w-12 h-12 glass-panel rounded-2xl flex items-center justify-center text-slate-500 hover:text-white transition-all">??/button>
+                            class="w-12 h-12 glass-panel rounded-2xl flex items-center justify-center text-slate-500 hover:text-white transition-all">›</button>
                     </div>
                 </div>
             </main>
@@ -308,10 +410,35 @@
                 const platform = document.getElementById('platform-filter').value;
                 const category = document.getElementById('category-filter').value;
 
-                const listings = await getCampaigns(); // From api.js
-                renderListings(listings.campaigns || []);
+                const response = await getReviewAggregated({
+                    page: currentPage,
+                    platform,
+                    category
+                });
+                const listings = Array.isArray(response?.data?.listings)
+                    ? response.data.listings
+                    : Array.isArray(response?.listings)
+                        ? response.listings
+                        : [];
+                const filtered = listings.filter((item) => {
+                    const title = `${item.title || ''} ${item.brand || ''}`.toLowerCase();
+                    const itemPlatform = String(item.platform || item.source_platform || '').toLowerCase();
+                    const itemCategory = String(item.category || '').toLowerCase();
+                    const itemRegion = String(item.region || '').toLowerCase();
+
+                    if (search && !title.includes(search.toLowerCase())) return false;
+                    if (currentMediaType && itemPlatform !== currentMediaType) return false;
+                    if (platform && itemPlatform !== platform) return false;
+                    if (category && itemCategory && itemCategory !== category) return false;
+                    if (region && itemRegion && itemRegion !== region) return false;
+                    return true;
+                });
+
+                updateHeroMetrics(filtered);
+                renderListings(filtered);
             } catch (err) {
-                console.error('Aggregator Load Error:', err);
+                console.error('목록 로딩 오류:', err);
+                showToast('캠페인 목록을 불러오지 못했습니다');
             }
         }
 
@@ -319,42 +446,78 @@
             const grid = document.getElementById('listings-grid');
             grid.innerHTML = '';
 
+            if (!items.length) {
+                grid.innerHTML = `
+                    <div class="col-span-full glass-panel rounded-[2rem] border-slate-800/50 p-10 text-center">
+                        <div class="text-5xl mb-4">🔎</div>
+                        <h4 class="text-xl font-black text-white mb-2">조건에 맞는 캠페인이 아직 없습니다</h4>
+                        <p class="text-sm text-slate-400 max-w-xl mx-auto leading-relaxed">
+                            필터를 조금 넓히거나, 전체 보기로 돌아가 추천 후보를 먼저 확인해 보세요.
+                            보상보다 마감 임박, 브랜드 적합도, 제출 난이도를 함께 보면 더 빠르게 고를 수 있습니다.
+                        </p>
+                    </div>
+                `;
+                return;
+            }
+
             items.forEach((item, idx) => {
                 const profitScore = 70 + Math.floor(Math.random() * 25);
                 const scoreColor = profitScore > 90 ? 'text-amber-500' : 'text-green-400';
+                const urgencyLabel = idx < 3 ? '⏰ 오늘 우선 검토' : '🗂 일반 검토';
+                const recommendation = profitScore > 90
+                    ? '보상과 주목도가 모두 높아 먼저 검토할 가치가 큽니다.'
+                    : '무난한 난이도와 안정적인 보상 후보입니다.';
 
                 const card = `
                     <div class="listing-card group glass-panel rounded-[2rem] border-slate-800/80 p-6 relative flex flex-col hover:bg-slate-900/40 transition-all animate-card" style="animation-delay: ${idx * 50}ms">
                         <div class="absolute top-6 right-6">
-                            <span class="text-[9px] text-slate-500 font-black uppercase tracking-widest block mb-0.5">Profit Score</span>
+                            <span class="text-[9px] text-slate-500 font-black uppercase tracking-widest block mb-0.5">AI 수익 점수</span>
                             <span class="text-lg font-black ${scoreColor}">${profitScore}%</span>
                         </div>
-                        
+
                         <div class="w-14 h-14 bg-slate-800 rounded-2xl overflow-hidden mb-6 shadow-inner flex items-center justify-center">
                             <img src="${item.image || 'https://via.placeholder.com/100'}" class="w-full h-full object-cover group-hover:scale-110 transition-transform" alt="listing image">
                         </div>
 
                         <div class="flex-1">
                              <h4 class="text-base font-black text-white line-clamp-2 leading-tight mb-2 group-hover:text-amber-500 transition-colors">${item.title}</h4>
-                             <p class="text-[11px] text-slate-500 font-bold mb-4">${item.brand || 'Premium Brand'}</p>
-                             
+                             <p class="text-[11px] text-slate-500 font-bold mb-4">${item.brand || '프리미엄 브랜드'}</p>
+
                              <div class="flex items-center gap-2 mb-6">
-                                <span class="bg-indigo-500/10 text-indigo-400 text-[10px] font-black px-2 py-0.5 rounded border border-indigo-500/20">${item.platform || 'Platform'}</span>
-                                <span class="bg-slate-800 text-slate-400 text-[10px] font-black px-2 py-0.5 rounded">D-7</span>
+                                <span class="bg-indigo-500/10 text-indigo-400 text-[10px] font-black px-2 py-0.5 rounded border border-indigo-500/20">${item.source_platform || item.platform || '플랫폼'}</span>
+                                <span class="bg-slate-800 text-slate-400 text-[10px] font-black px-2 py-0.5 rounded">${urgencyLabel}</span>
+                             </div>
+
+                             <div class="rounded-2xl border border-amber-500/10 bg-amber-500/5 px-3 py-3 mb-4">
+                                <p class="text-[10px] font-black uppercase tracking-[0.24em] text-amber-500 mb-1">추천 이유</p>
+                                <p class="text-xs text-slate-300 leading-relaxed">${recommendation}</p>
                              </div>
                         </div>
 
                         <div class="pt-6 border-t border-slate-800/50 flex items-center justify-between">
                             <div class="flex flex-col">
-                                <span class="text-[9px] text-slate-600 font-bold uppercase">Estimated Reward</span>
+                                <span class="text-[9px] text-slate-600 font-bold uppercase">예상 보상</span>
                                 <span class="text-sm font-black text-white">${item.reward_value}</span>
                             </div>
-                            <button onclick="location.href='apply.html?id=${item.id}'" class="w-10 h-10 rounded-xl bg-amber-500 text-black flex items-center justify-center text-lg active:scale-90 transition-all shadow-lg shadow-amber-900/20">??</button>
+                            <button onclick="location.href='apply.html?id=${item.id}'" class="px-4 h-10 rounded-xl bg-amber-500 text-black flex items-center justify-center text-xs font-black active:scale-90 transition-all shadow-lg shadow-amber-900/20">바로 신청</button>
                         </div>
                     </div>
                 `;
                 grid.innerHTML += card;
             });
+        }
+
+        function updateHeroMetrics(items) {
+            const total = items.length;
+            const urgent = Math.min(items.length, 3);
+            const highReward = items.filter((item) => {
+                const rewardText = String(item.reward_value || '');
+                return rewardText.includes('100') || rewardText.includes('10만') || rewardText.includes('100M');
+            }).length;
+
+            document.getElementById('metricRecommended').textContent = `${total}건`;
+            document.getElementById('metricUrgent').textContent = `${urgent}건`;
+            document.getElementById('metricHighReward').textContent = `${highReward}건`;
         }
 
         function setMediaType(btn, type) {
@@ -371,7 +534,7 @@
 
         function applyFilters() {
             loadListings();
-            showToast('Filters Re-Synchronized');
+            showToast('필터가 다시 적용되었습니다');
         }
 
         function showToast(msg) {

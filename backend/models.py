@@ -1,8 +1,9 @@
 """SoftFactory Database Models (v2.0 — Optimized with Indexes & Relationships)"""
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import Index, func
-from sqlalchemy.orm import joinedload, selectinload
+from sqlalchemy.orm import joinedload, selectinload, synonym
 from datetime import datetime, timedelta
+import uuid
 from werkzeug.security import generate_password_hash, check_password_hash
 
 db = SQLAlchemy()
@@ -291,6 +292,10 @@ class SNSAccount(db.Model):
     profile_picture_url = db.Column(db.String(500))
     account_type = db.Column(db.String(50), default='personal')  # 'personal' or 'business'
 
+    # WordPress / Blog-specific fields (v2.1 new)
+    site_url = db.Column(db.String(500))      # e.g. "https://myblog.com" — blog/wordpress only
+    wp_username = db.Column(db.String(120))   # WordPress username for Application Password auth
+
     # Analytics fields (v2.0 new)
     followers_count = db.Column(db.Integer, default=0)
     following_count = db.Column(db.Integer, default=0)
@@ -311,6 +316,8 @@ class SNSAccount(db.Model):
             'account_type': self.account_type,
             'followers_count': self.followers_count,
             'following_count': self.following_count,
+            'site_url': self.site_url,
+            'wp_username': self.wp_username,
             'token_expires_at': self.token_expires_at.isoformat() if self.token_expires_at else None,
             'created_at': self.created_at.isoformat(),
         }
@@ -598,6 +605,11 @@ class SNSAutomate(db.Model):
     purpose = db.Column(db.String(500))  # '홍보' (promotion), '판매' (sales), '커뮤니티' (community)
     platforms = db.Column(db.JSON, default=[])  # ['instagram', 'twitter', 'tiktok', ...]
     frequency = db.Column(db.String(50), default='daily')  # 'daily', 'weekly', 'custom'
+    engine = db.Column(db.String(50), default='direct')
+    webhook_url = db.Column(db.String(1000))
+    delivery_mode = db.Column(db.String(50), default='direct')
+    payload_version = db.Column(db.String(50), default='2026-03-10')
+    requested_at = db.Column(db.DateTime)
     next_run = db.Column(db.DateTime)
     is_active = db.Column(db.Boolean, default=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
@@ -611,6 +623,11 @@ class SNSAutomate(db.Model):
             'purpose': self.purpose,
             'platforms': self.platforms,
             'frequency': self.frequency,
+            'engine': self.engine,
+            'webhook_url': self.webhook_url,
+            'delivery_mode': self.delivery_mode,
+            'payload_version': self.payload_version,
+            'requested_at': self.requested_at.isoformat() if self.requested_at else None,
             'next_run': self.next_run.isoformat() if self.next_run else None,
             'is_active': self.is_active,
             'created_at': self.created_at.isoformat() if self.created_at else None,
@@ -968,6 +985,125 @@ class Scenario(db.Model):
         }
 
 
+# ============ INSTAGRAM CARDNEWS ============
+
+class InstagramCardNewsTemplate(db.Model):
+    """User/system templates for Instagram card news generation."""
+    __tablename__ = 'instagram_cardnews_templates'
+    __table_args__ = (
+        Index('idx_cardnews_template_user', 'user_id'),
+        Index('idx_cardnews_template_created', 'created_at'),
+    )
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)  # NULL = system template
+    name = db.Column(db.String(200), nullable=False)
+    tone = db.Column(db.String(50), default='balanced')
+    description = db.Column(db.Text, default='')
+    slides = db.Column(db.Integer, default=8)
+    structure_json = db.Column(db.JSON, default=list)
+    design_json = db.Column(db.JSON, default=dict)
+    format = db.Column(db.String(50), default='instagram-carousel-4-5')
+    tags_json = db.Column(db.JSON, default=list)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'tone': self.tone,
+            'description': self.description or '',
+            'slides': self.slides or 8,
+            'structure': self.structure_json or [],
+            'design': self.design_json or {},
+            'format': self.format or 'instagram-carousel-4-5',
+            'tags': self.tags_json or [],
+            'created_at': self.created_at.isoformat() if self.created_at else None,
+            'updated_at': self.updated_at.isoformat() if self.updated_at else None,
+        }
+
+
+class InstagramCardNewsRule(db.Model):
+    """DM auto-reply rules for cardnews workflows."""
+    __tablename__ = 'instagram_cardnews_rules'
+    __table_args__ = (
+        Index('idx_cardnews_rule_user', 'user_id'),
+        Index('idx_cardnews_rule_created', 'created_at'),
+    )
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    keyword = db.Column(db.String(120), nullable=False)
+    reply = db.Column(db.Text, nullable=False)
+    action = db.Column(db.String(50), default='notify')
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'keyword': self.keyword,
+            'reply': self.reply,
+            'action': self.action or 'notify',
+            'created_at': self.created_at.isoformat() if self.created_at else None,
+            'updated_at': self.updated_at.isoformat() if self.updated_at else None,
+        }
+
+
+class InstagramCardNewsProject(db.Model):
+    """Persisted cardnews project with internal publish state."""
+    __tablename__ = 'instagram_cardnews_projects'
+    __table_args__ = (
+        Index('idx_cardnews_project_user', 'user_id'),
+        Index('idx_cardnews_project_status', 'status'),
+        Index('idx_cardnews_project_created', 'created_at'),
+    )
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    template_id = db.Column(db.Integer, db.ForeignKey('instagram_cardnews_templates.id'), nullable=True)
+    title = db.Column(db.String(255), nullable=False)
+    topic = db.Column(db.String(255), nullable=False)
+    tone = db.Column(db.String(50), default='balanced')
+    slide_count = db.Column(db.Integer, default=8)
+    status = db.Column(db.String(50), default='ready')
+    account_ids_json = db.Column(db.JSON, default=list)
+    templates_json = db.Column(db.JSON, default=dict)
+    channels_json = db.Column(db.JSON, default=list)
+    preview_json = db.Column(db.JSON, default=list)
+    automation_json = db.Column(db.JSON, default=dict)
+    draft_json = db.Column(db.JSON, default=dict)
+    scheduled_at = db.Column(db.DateTime, nullable=True)
+    published_at = db.Column(db.DateTime, nullable=True)
+    last_post_url = db.Column(db.String(500), default='')
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    template = db.relationship('InstagramCardNewsTemplate', backref=db.backref('projects', lazy='select'))
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'title': self.title,
+            'accountIds': self.account_ids_json or [],
+            'topic': self.topic,
+            'tone': self.tone or 'balanced',
+            'slide_count': self.slide_count or 8,
+            'status': self.status or 'ready',
+            'scheduled_at': self.scheduled_at.isoformat() if self.scheduled_at else None,
+            'published_at': self.published_at.isoformat() if self.published_at else None,
+            'created_at': self.created_at.isoformat() if self.created_at else None,
+            'updated_at': self.updated_at.isoformat() if self.updated_at else None,
+            'last_post_url': self.last_post_url or '',
+            'templates': self.templates_json or {},
+            'channels': self.channels_json or [],
+            'preview': self.preview_json or [],
+            'automation': self.automation_json or {},
+            'draft': self.draft_json or {},
+        }
+
+
 # ============ WEBAPP BUILDER ============
 
 class BootcampEnrollment(db.Model):
@@ -1152,89 +1288,194 @@ class ErrorPattern(db.Model):
         }
 
 
+class ApprovalQueueItem(db.Model):
+    __tablename__ = 'approval_queue_items'
+    __table_args__ = (
+        Index('idx_approval_queue_user_status', 'user_id', 'status'),
+        Index('idx_approval_queue_service_status', 'service', 'status'),
+        Index('idx_approval_queue_created', 'created_at'),
+        db.UniqueConstraint('user_id', 'queue_key', name='uq_approval_queue_user_queue_key'),
+    )
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    queue_key = db.Column(db.String(160), nullable=False)
+    service = db.Column(db.String(80), nullable=False)
+    title = db.Column(db.String(255), nullable=False)
+    status = db.Column(db.String(32), default='queued', nullable=False)
+    owner = db.Column(db.String(255), nullable=True)
+    approval_mode = db.Column(db.String(80), default='approve-before-publish', nullable=False)
+    approver_role = db.Column(db.String(40), default='admin', nullable=False)
+    channels = db.Column(db.JSON, default=list)
+    account_ids = db.Column(db.JSON, default=list)
+    scheduled_at = db.Column(db.DateTime, nullable=True)
+    source_url = db.Column(db.String(255), nullable=True)
+    summary = db.Column(db.Text, nullable=True)
+    contract_json = db.Column(db.JSON, nullable=True)
+    metadata_json = db.Column(db.JSON, nullable=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
+
+    def to_dict(self):
+        return {
+            'id': self.queue_key,
+            'db_id': self.id,
+            'service': self.service,
+            'title': self.title,
+            'status': self.status,
+            'owner': self.owner,
+            'approvalMode': self.approval_mode,
+            'approverRole': self.approver_role,
+            'channels': self.channels or [],
+            'accountIds': self.account_ids or [],
+            'scheduledAt': self.scheduled_at.isoformat() if self.scheduled_at else None,
+            'sourceUrl': self.source_url or '',
+            'summary': self.summary or '',
+            'contract': self.contract_json or None,
+            'metadata': self.metadata_json or {},
+            'created_at': self.created_at.isoformat() if self.created_at else None,
+            'updated_at': self.updated_at.isoformat() if self.updated_at else None,
+        }
+
+
+class ApprovalQueueEvent(db.Model):
+    __tablename__ = 'approval_queue_events'
+    __table_args__ = (
+        Index('idx_approval_event_user_created', 'user_id', 'created_at'),
+        Index('idx_approval_event_queue_created', 'queue_key', 'created_at'),
+        Index('idx_approval_event_type_created', 'event_type', 'created_at'),
+    )
+
+    id = db.Column(db.Integer, primary_key=True)
+    queue_key = db.Column(db.String(160), nullable=False)
+    item_id = db.Column(db.Integer, db.ForeignKey('approval_queue_items.id'), nullable=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
+    actor_user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
+    service = db.Column(db.String(80), nullable=False)
+    title = db.Column(db.String(255), nullable=True)
+    event_type = db.Column(db.String(40), nullable=False)
+    status = db.Column(db.String(32), nullable=True)
+    approver_role = db.Column(db.String(40), nullable=True)
+    summary = db.Column(db.Text, nullable=True)
+    metadata_json = db.Column(db.JSON, nullable=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+
+    item = db.relationship('ApprovalQueueItem', foreign_keys=[item_id], lazy='joined')
+    user = db.relationship('User', foreign_keys=[user_id], lazy='joined')
+    actor = db.relationship('User', foreign_keys=[actor_user_id], lazy='joined')
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'queueKey': self.queue_key,
+            'itemId': self.item_id,
+            'userId': self.user_id,
+            'actorUserId': self.actor_user_id,
+            'actorName': self.actor.name if self.actor else None,
+            'service': self.service,
+            'title': self.title or '',
+            'eventType': self.event_type,
+            'status': self.status,
+            'approverRole': self.approver_role,
+            'summary': self.summary or '',
+            'metadata': self.metadata_json or {},
+            'created_at': self.created_at.isoformat() if self.created_at else None,
+        }
+
+
 def init_db(app):
     """Initialize database with tables and seed data"""
     with app.app_context():
-        db.create_all()
+        try:
+            db.create_all()
+        except Exception as exc:
+            message = str(exc).lower()
+            if 'already exists' not in message and 'unique constraint failed' not in message:
+                raise
+            db.session.rollback()
 
-        # Check if data already exists
+        expected_products = [
+            {'slug': 'coocook', 'name': 'CooCook', 'description': 'Local food experiences & chef booking', 'icon': 'cook', 'monthly_price': 29.0, 'annual_price': 290.0},
+            {'slug': 'sns-auto', 'name': 'SNS Auto', 'description': 'Auto-post to Instagram, Blog, TikTok, Shorts', 'icon': 'sns', 'monthly_price': 49.0, 'annual_price': 490.0},
+            {'slug': 'review', 'name': 'Review Campaign', 'description': 'Brand review & influencer campaigns', 'icon': 'review', 'monthly_price': 39.0, 'annual_price': 390.0},
+            {'slug': 'ai-automation', 'name': 'AI Automation', 'description': '24/7 AI employees for business automation', 'icon': 'ai', 'monthly_price': 89.0, 'annual_price': 890.0},
+            {'slug': 'webapp-builder', 'name': 'WebApp Builder', 'description': '8-week bootcamp: Learn automation + build your own web app', 'icon': 'webapp', 'monthly_price': 590000.0, 'annual_price': None},
+            {'slug': 'instagram-cardnews', 'name': 'Instagram Cardnews', 'description': 'Cardnews planning and publication workflow', 'icon': 'cardnews', 'monthly_price': 79.0, 'annual_price': 790.0},
+        ]
+        for payload in expected_products:
+            existing = Product.query.filter_by(slug=payload['slug']).first()
+            if existing:
+                existing.name = payload['name']
+                existing.description = payload['description']
+                existing.icon = payload['icon']
+                existing.monthly_price = payload['monthly_price']
+                existing.annual_price = payload['annual_price']
+            else:
+                db.session.add(Product(**payload))
+
+        if InstagramCardNewsTemplate.query.filter_by(user_id=None).count() == 0:
+            db.session.add_all([
+                InstagramCardNewsTemplate(
+                    user_id=None,
+                    name='Brand Trust',
+                    tone='professional',
+                    description='Structured brand messaging and evidence-first layout.',
+                    slides=8,
+                    structure_json=['Problem', 'Evidence', 'Value', 'CTA'],
+                    design_json={'fontFamily': 'Pretendard', 'titleSize': 18, 'bodySize': 13, 'titleAlign': 'left', 'bodyAlign': 'left', 'titlePosition': 'top', 'textColor': '#f8fafc', 'accentColor': '#6366f1', 'backgroundColor': '#0f172a'},
+                    format='instagram-carousel-4-5',
+                    tags_json=['brand', 'strategy', 'trust'],
+                ),
+                InstagramCardNewsTemplate(
+                    user_id=None,
+                    name='Trend Response',
+                    tone='dynamic',
+                    description='Hook-first layout for launches and campaigns.',
+                    slides=10,
+                    structure_json=['Hook', 'Problem', 'Solution', 'CTA'],
+                    design_json={'fontFamily': 'Pretendard', 'titleSize': 20, 'bodySize': 13, 'titleAlign': 'center', 'bodyAlign': 'center', 'titlePosition': 'middle', 'textColor': '#ffffff', 'accentColor': '#f59e0b', 'backgroundColor': '#312e81'},
+                    format='instagram-feed-1-1',
+                    tags_json=['trend', 'conversion', 'campaign'],
+                ),
+            ])
+        db.session.commit()
+
         if User.query.count() > 0:
             return
 
-        # Create admin user
         admin = User(email='admin@softfactory.com', name='Admin', role='admin')
         admin.set_password('admin123')
         db.session.add(admin)
 
-        # Create 5 products
-        products = [
-            Product(slug='coocook', name='CooCook', description='Local food experiences & chef booking',
-                   icon='🍳', monthly_price=29.0, annual_price=290.0),
-            Product(slug='sns-auto', name='SNS Auto', description='Auto-post to Instagram, Blog, TikTok, Shorts',
-                   icon='📱', monthly_price=49.0, annual_price=490.0),
-            Product(slug='review', name='Review Campaign', description='Brand review & influencer campaigns',
-                   icon='⭐', monthly_price=39.0, annual_price=390.0),
-            Product(slug='ai-automation', name='AI Automation', description='24/7 AI employees for business automation',
-                   icon='🤖', monthly_price=89.0, annual_price=890.0),
-            Product(slug='webapp-builder', name='WebApp Builder', description='8-week bootcamp: Learn automation + build your own web app',
-                   icon='💻', monthly_price=590000.0, annual_price=None),
-        ]
-        for product in products:
-            db.session.add(product)
-
-        # Create sample user
         user = User(email='demo@softfactory.com', name='Demo User', role='user')
         user.set_password('demo123')
         db.session.add(user)
-
         db.session.commit()
 
-        # Create sample chefs (after commit to get user_id)
         chefs = [
-            Chef(user_id=user.id, name='Chef Park', bio='Korean traditional cuisine',
-                cuisine_type='Korean', location='Seoul', price_per_session=120.0),
-            Chef(user_id=user.id, name='Chef Marco', bio='Italian pasta & risotto expert',
-                cuisine_type='Italian', location='Seoul', price_per_session=130.0),
-            Chef(user_id=user.id, name='Chef Tanaka', bio='Authentic Japanese sushi master',
-                cuisine_type='Japanese', location='Seoul', price_per_session=150.0),
-            Chef(user_id=user.id, name='Chef Dubois', bio='French culinary techniques',
-                cuisine_type='French', location='Seoul', price_per_session=140.0),
-            Chef(user_id=user.id, name='Chef Garcia', bio='Authentic Mexican street food',
-                cuisine_type='Mexican', location='Seoul', price_per_session=110.0),
+            Chef(user_id=user.id, name='Chef Park', bio='Korean traditional cuisine', cuisine_type='Korean', location='Seoul', price_per_session=120.0),
+            Chef(user_id=user.id, name='Chef Marco', bio='Italian pasta and risotto expert', cuisine_type='Italian', location='Seoul', price_per_session=130.0),
+            Chef(user_id=user.id, name='Chef Tanaka', bio='Authentic Japanese sushi master', cuisine_type='Japanese', location='Seoul', price_per_session=150.0),
+            Chef(user_id=user.id, name='Chef Dubois', bio='French culinary techniques', cuisine_type='French', location='Seoul', price_per_session=140.0),
+            Chef(user_id=user.id, name='Chef Garcia', bio='Authentic Mexican street food', cuisine_type='Mexican', location='Seoul', price_per_session=110.0),
         ]
         for chef in chefs:
             db.session.add(chef)
 
-        # Create sample campaigns
         campaigns = [
-            Campaign(creator_id=admin.id, title='New Skincare Product Launch',
-                    product_name='GlowSkin Pro', category='beauty',
-                    reward_type='product', reward_value='Free $150 skincare kit',
-                    max_reviewers=20, deadline=datetime.utcnow() + timedelta(days=30)),
-            Campaign(creator_id=admin.id, title='Organic Coffee Brand Review',
-                    product_name='BeanBliss Coffee', category='food',
-                    reward_type='cash', reward_value='$50 gift card',
-                    max_reviewers=15, deadline=datetime.utcnow() + timedelta(days=25)),
-            Campaign(creator_id=admin.id, title='Latest Tech Gadget Review',
-                    product_name='SmartHub X3', category='tech',
-                    reward_type='both', reward_value='Product + $75 bonus',
-                    max_reviewers=10, deadline=datetime.utcnow() + timedelta(days=20)),
+            Campaign(creator_id=admin.id, title='New Skincare Product Launch', product_name='GlowSkin Pro', category='beauty', reward_type='product', reward_value='Free $150 skincare kit', max_reviewers=20, deadline=datetime.utcnow() + timedelta(days=30)),
+            Campaign(creator_id=admin.id, title='Organic Coffee Brand Review', product_name='BeanBliss Coffee', category='food', reward_type='cash', reward_value='$50 gift card', max_reviewers=15, deadline=datetime.utcnow() + timedelta(days=25)),
+            Campaign(creator_id=admin.id, title='Latest Tech Gadget Review', product_name='SmartHub X3', category='tech', reward_type='both', reward_value='Product + $75 bonus', max_reviewers=10, deadline=datetime.utcnow() + timedelta(days=20)),
         ]
         for campaign in campaigns:
             db.session.add(campaign)
 
-        # Create sample automation scenarios
         scenarios = [
-            Scenario(name='Email Response Automation', category='email', complexity='easy',
-                    description='AI automatically responds to customer emails', estimated_savings=15, is_premium=False),
-            Scenario(name='Social Media Posting', category='social', complexity='medium',
-                    description='AI writes and posts content to social media', estimated_savings=20, is_premium=False),
-            Scenario(name='Customer Support Bot', category='customer_service', complexity='advanced',
-                    description='24/7 AI customer support with escalation to humans', estimated_savings=30, is_premium=True),
-            Scenario(name='Data Entry Automation', category='data_entry', complexity='medium',
-                    description='AI extracts and enters data from documents', estimated_savings=25, is_premium=False),
-            Scenario(name='Meeting Scheduling', category='scheduling', complexity='easy',
-                    description='AI manages calendar and schedules meetings', estimated_savings=10, is_premium=False),
+            Scenario(name='Email Response Automation', category='email', complexity='easy', description='AI automatically responds to customer emails', estimated_savings=15, is_premium=False),
+            Scenario(name='Social Media Posting', category='social', complexity='medium', description='AI writes and posts content to social media', estimated_savings=20, is_premium=False),
+            Scenario(name='Customer Support Bot', category='customer_service', complexity='advanced', description='24/7 AI customer support with escalation to humans', estimated_savings=30, is_premium=True),
+            Scenario(name='Data Entry Automation', category='data_entry', complexity='medium', description='AI extracts and enters data from documents', estimated_savings=25, is_premium=False),
+            Scenario(name='Meeting Scheduling', category='scheduling', complexity='easy', description='AI manages calendar and schedules meetings', estimated_savings=10, is_premium=False),
         ]
         for scenario in scenarios:
             db.session.add(scenario)
@@ -1588,7 +1829,14 @@ class EncryptionKeyRotation(db.Model):
 
     def is_complete(self):
         """Check if rotation is complete"""
-        return self.rotation_status == 'completed'
+        if self.rotation_status != 'completed':
+            return False
+        if (self.failed_records or 0) > 0:
+            return False
+        total = self.total_records or 0
+        if total <= 0:
+            return False
+        return (self.rotated_records or 0) >= total
 
 
 # ============ COOCOOK ============
@@ -1605,6 +1853,7 @@ class Recipe(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(255), nullable=False)
+    title = synonym('name')
     cuisine = db.Column(db.String(50), nullable=False)  # e.g., 'Korean', 'Italian', 'Thai'
     difficulty = db.Column(db.String(20), nullable=False)  # 'easy', 'medium', 'hard'
     prep_time = db.Column(db.Integer, nullable=False)  # minutes
@@ -2316,4 +2565,234 @@ class VideoProcessingJob(db.Model):
             'error_message': self.error_message,
             'retry_count': self.retry_count,
             'created_at': self.created_at.isoformat() if self.created_at else None,
+        }
+
+
+# ============ GROWTH AUTOMATION ============
+
+class MarketingContact(db.Model):
+    __tablename__ = 'marketing_contacts'
+    __table_args__ = (
+        Index('idx_marketing_contact_status', 'status'),
+        Index('idx_marketing_contact_lifecycle', 'lifecycle_stage'),
+        Index('idx_marketing_contact_created', 'created_at'),
+    )
+
+    id = db.Column(db.Integer, primary_key=True)
+    contact_uid = db.Column(
+        db.String(36),
+        unique=True,
+        nullable=False,
+        default=lambda: str(uuid.uuid4())
+    )
+    email = db.Column(db.String(255), unique=True, nullable=True)
+    phone = db.Column(db.String(32), unique=True, nullable=True)
+    status = db.Column(db.String(20), default='active', nullable=False)
+    lifecycle_stage = db.Column(db.String(30), default='lead', nullable=False)
+    locale = db.Column(db.String(16), default='ko-KR', nullable=False)
+    timezone = db.Column(db.String(64), default='Asia/Seoul', nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
+
+    consents = db.relationship('MarketingConsent', backref='contact', lazy='select', cascade='all, delete-orphan')
+    events = db.relationship('MarketingEvent', backref='contact', lazy='select', cascade='all, delete-orphan')
+    journey_states = db.relationship('MarketingJourneyState', backref='contact', lazy='select', cascade='all, delete-orphan')
+    message_logs = db.relationship('MarketingMessageLog', backref='contact', lazy='select', cascade='all, delete-orphan')
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'contact_uid': self.contact_uid,
+            'email': self.email,
+            'phone': self.phone,
+            'status': self.status,
+            'lifecycle_stage': self.lifecycle_stage,
+            'locale': self.locale,
+            'timezone': self.timezone,
+            'created_at': self.created_at.isoformat() if self.created_at else None,
+            'updated_at': self.updated_at.isoformat() if self.updated_at else None,
+        }
+
+
+class MarketingConsent(db.Model):
+    __tablename__ = 'marketing_consents'
+    __table_args__ = (
+        Index('idx_marketing_consent_contact_channel', 'contact_id', 'channel'),
+    )
+
+    id = db.Column(db.Integer, primary_key=True)
+    contact_id = db.Column(db.Integer, db.ForeignKey('marketing_contacts.id'), nullable=False)
+    channel = db.Column(db.String(20), nullable=False)
+    opt_in = db.Column(db.Boolean, default=True, nullable=False)
+    source = db.Column(db.String(120), nullable=True)
+    policy_version = db.Column(db.String(50), default='v1', nullable=False)
+    granted_at = db.Column(db.DateTime, nullable=True)
+    revoked_at = db.Column(db.DateTime, nullable=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'contact_id': self.contact_id,
+            'channel': self.channel,
+            'opt_in': self.opt_in,
+            'source': self.source,
+            'policy_version': self.policy_version,
+            'granted_at': self.granted_at.isoformat() if self.granted_at else None,
+            'revoked_at': self.revoked_at.isoformat() if self.revoked_at else None,
+            'created_at': self.created_at.isoformat() if self.created_at else None,
+            'updated_at': self.updated_at.isoformat() if self.updated_at else None,
+        }
+
+
+class MarketingEvent(db.Model):
+    __tablename__ = 'marketing_events'
+    __table_args__ = (
+        Index('idx_marketing_event_name_ts', 'event_name', 'event_ts'),
+        Index('idx_marketing_event_status', 'processing_status'),
+        Index('idx_marketing_event_contact_ts', 'contact_id', 'event_ts'),
+        Index('idx_marketing_event_anonymous', 'anonymous_id'),
+    )
+
+    id = db.Column(db.Integer, primary_key=True)
+    event_id = db.Column(db.String(64), unique=True, nullable=False)
+    event_name = db.Column(db.String(120), nullable=False)
+    event_ts = db.Column(db.DateTime, nullable=False)
+    contact_id = db.Column(db.Integer, db.ForeignKey('marketing_contacts.id'), nullable=True)
+    anonymous_id = db.Column(db.String(120), nullable=True)
+    context_json = db.Column(db.JSON, nullable=True)
+    props_json = db.Column(db.JSON, nullable=True)
+    idempotency_key = db.Column(db.String(180), unique=True, nullable=False)
+    processing_status = db.Column(db.String(20), default='pending', nullable=False)
+    processing_updated_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    workflow_run_id = db.Column(db.String(120), nullable=True)
+    error_code = db.Column(db.String(120), nullable=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'event_id': self.event_id,
+            'event_name': self.event_name,
+            'event_ts': self.event_ts.isoformat() if self.event_ts else None,
+            'contact_id': self.contact_id,
+            'anonymous_id': self.anonymous_id,
+            'context_json': self.context_json or {},
+            'props_json': self.props_json or {},
+            'idempotency_key': self.idempotency_key,
+            'processing_status': self.processing_status,
+            'processing_updated_at': self.processing_updated_at.isoformat() if self.processing_updated_at else None,
+            'workflow_run_id': self.workflow_run_id,
+            'error_code': self.error_code,
+            'created_at': self.created_at.isoformat() if self.created_at else None,
+        }
+
+
+class MarketingJourneyState(db.Model):
+    __tablename__ = 'marketing_journey_states'
+    __table_args__ = (
+        Index('idx_marketing_journey_state', 'journey_id', 'state'),
+        Index('idx_marketing_journey_contact', 'contact_id'),
+        db.UniqueConstraint('contact_id', 'journey_id', name='uq_marketing_journey_contact_journey'),
+    )
+
+    id = db.Column(db.Integer, primary_key=True)
+    contact_id = db.Column(db.Integer, db.ForeignKey('marketing_contacts.id'), nullable=False)
+    journey_id = db.Column(db.String(120), nullable=False)
+    state = db.Column(db.String(60), nullable=False)
+    entered_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    last_action_at = db.Column(db.DateTime, nullable=True)
+    cooldown_until = db.Column(db.DateTime, nullable=True)
+    version = db.Column(db.Integer, default=1, nullable=False)
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'contact_id': self.contact_id,
+            'journey_id': self.journey_id,
+            'state': self.state,
+            'entered_at': self.entered_at.isoformat() if self.entered_at else None,
+            'last_action_at': self.last_action_at.isoformat() if self.last_action_at else None,
+            'cooldown_until': self.cooldown_until.isoformat() if self.cooldown_until else None,
+            'version': self.version,
+        }
+
+
+class MarketingMessageLog(db.Model):
+    __tablename__ = 'marketing_message_logs'
+    __table_args__ = (
+        Index('idx_marketing_message_status', 'status'),
+        Index('idx_marketing_message_campaign', 'campaign_id'),
+        Index('idx_marketing_message_contact_sent', 'contact_id', 'sent_at'),
+    )
+
+    id = db.Column(db.Integer, primary_key=True)
+    message_uid = db.Column(
+        db.String(64),
+        unique=True,
+        nullable=False,
+        default=lambda: str(uuid.uuid4())
+    )
+    contact_id = db.Column(db.Integer, db.ForeignKey('marketing_contacts.id'), nullable=True)
+    channel = db.Column(db.String(20), nullable=False)
+    template_id = db.Column(db.String(120), nullable=True)
+    campaign_id = db.Column(db.String(120), nullable=True)
+    variant_id = db.Column(db.String(120), nullable=True)
+    status = db.Column(db.String(30), nullable=False)
+    provider_msg_id = db.Column(db.String(160), nullable=True)
+    error_code = db.Column(db.String(120), nullable=True)
+    sent_at = db.Column(db.DateTime, nullable=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'message_uid': self.message_uid,
+            'contact_id': self.contact_id,
+            'channel': self.channel,
+            'template_id': self.template_id,
+            'campaign_id': self.campaign_id,
+            'variant_id': self.variant_id,
+            'status': self.status,
+            'provider_msg_id': self.provider_msg_id,
+            'error_code': self.error_code,
+            'sent_at': self.sent_at.isoformat() if self.sent_at else None,
+            'created_at': self.created_at.isoformat() if self.created_at else None,
+        }
+
+
+class MarketingDLQ(db.Model):
+    __tablename__ = 'marketing_dlq'
+    __table_args__ = (
+        Index('idx_marketing_dlq_status', 'status'),
+        Index('idx_marketing_dlq_event_id', 'event_id'),
+        Index('idx_marketing_dlq_workflow_created', 'workflow_name', 'created_at'),
+    )
+
+    id = db.Column(db.Integer, primary_key=True)
+    event_id = db.Column(db.String(64), nullable=False)
+    workflow_name = db.Column(db.String(120), nullable=False)
+    step_name = db.Column(db.String(120), nullable=True)
+    error_summary = db.Column(db.Text, nullable=False)
+    payload_json = db.Column(db.JSON, nullable=True)
+    retry_count = db.Column(db.Integer, default=0, nullable=False)
+    status = db.Column(db.String(20), default='open', nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    resolved_at = db.Column(db.DateTime, nullable=True)
+    resolved_reason = db.Column(db.String(255), nullable=True)
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'event_id': self.event_id,
+            'workflow_name': self.workflow_name,
+            'step_name': self.step_name,
+            'error_summary': self.error_summary,
+            'payload_json': self.payload_json or {},
+            'retry_count': self.retry_count,
+            'status': self.status,
+            'created_at': self.created_at.isoformat() if self.created_at else None,
+            'resolved_at': self.resolved_at.isoformat() if self.resolved_at else None,
+            'resolved_reason': self.resolved_reason,
         }

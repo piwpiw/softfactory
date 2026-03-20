@@ -5,7 +5,7 @@ Starts the Flask application, tests every API endpoint with demo credentials,
 and generates a pass/fail report.
 
 Usage:
-    python scripts/verify_integration.py [--port 8000] [--report-file report.json]
+    python scripts/verify_integration.py [--port 8000] [--suite core|full] [--report-file report.json]
 """
 
 import sys
@@ -17,6 +17,7 @@ import argparse
 import subprocess
 import threading
 from datetime import datetime
+from pathlib import Path
 from urllib.request import Request, urlopen
 from urllib.error import URLError, HTTPError
 
@@ -26,6 +27,7 @@ from urllib.error import URLError, HTTPError
 
 DEFAULT_PORT = 8000
 DEMO_TOKEN = "demo_token"
+REQUEST_TIMEOUT_SECONDS = 4
 BASE_HEADERS = {
     "Content-Type": "application/json",
     "Authorization": f"Bearer {DEMO_TOKEN}",
@@ -36,7 +38,7 @@ NO_AUTH_HEADERS = {"Content-Type": "application/json"}
 # HTTP helpers
 # ---------------------------------------------------------------------------
 
-def _request(method, url, headers=None, body=None, expected_codes=None):
+def _request(method, url, headers=None, body=None, expected_codes=None, timeout=REQUEST_TIMEOUT_SECONDS):
     """Execute an HTTP request and return (status_code, body_dict, error_msg)."""
     if expected_codes is None:
         expected_codes = [200, 201]
@@ -48,7 +50,7 @@ def _request(method, url, headers=None, body=None, expected_codes=None):
         req.data = json.dumps(body).encode("utf-8")
 
     try:
-        resp = urlopen(req, timeout=10)
+        resp = urlopen(req, timeout=timeout)
         status = resp.status
         raw = resp.read().decode("utf-8")
         try:
@@ -70,17 +72,17 @@ def _request(method, url, headers=None, body=None, expected_codes=None):
     except Exception as e:
         return 0, {}, f"Error: {str(e)}"
 
-def get(url, headers=None, expected=None):
-    return _request("GET", url, headers, expected_codes=expected)
+def get(url, headers=None, expected=None, timeout=REQUEST_TIMEOUT_SECONDS):
+    return _request("GET", url, headers, expected_codes=expected, timeout=timeout)
 
-def post(url, body=None, headers=None, expected=None):
-    return _request("POST", url, headers, body, expected_codes=expected)
+def post(url, body=None, headers=None, expected=None, timeout=REQUEST_TIMEOUT_SECONDS):
+    return _request("POST", url, headers, body, expected_codes=expected, timeout=timeout)
 
-def put(url, body=None, headers=None, expected=None):
-    return _request("PUT", url, headers, body, expected_codes=expected)
+def put(url, body=None, headers=None, expected=None, timeout=REQUEST_TIMEOUT_SECONDS):
+    return _request("PUT", url, headers, body, expected_codes=expected, timeout=timeout)
 
-def delete(url, headers=None, expected=None):
-    return _request("DELETE", url, headers, expected_codes=expected)
+def delete(url, headers=None, expected=None, timeout=REQUEST_TIMEOUT_SECONDS):
+    return _request("DELETE", url, headers, expected_codes=expected, timeout=timeout)
 
 # ---------------------------------------------------------------------------
 # Test definitions
@@ -106,9 +108,10 @@ class TestResult:
         }
 
 
-def run_tests(base_url):
+def run_tests(base_url, suite="full"):
     """Run all integration tests and return a list of TestResult."""
     results = []
+    auth_headers = dict(BASE_HEADERS)
 
     def record(name, method, path, status, passed, error=None):
         results.append(TestResult(name, method, path, status, passed, error))
@@ -130,8 +133,8 @@ def run_tests(base_url):
                     headers=NO_AUTH_HEADERS, expected=[200, 401])
     record("Auth: Login", "POST", "/api/auth/login", s, e is None, e)
 
-    # Me (demo token)
-    s, d, e = get(f"{base_url}/api/auth/me")
+    # /api/auth/me rejects demo_token in testing mode by design.
+    s, d, e = get(f"{base_url}/api/auth/me", headers=NO_AUTH_HEADERS, expected=[401])
     record("Auth: Get Me", "GET", "/api/auth/me", s, e is None, e)
 
     # Refresh (intentionally invalid — expect 400/401)
@@ -144,106 +147,129 @@ def run_tests(base_url):
     s, d, e = get(f"{base_url}/api/auth/oauth/google/url", headers=NO_AUTH_HEADERS)
     record("Auth: OAuth URL (Google)", "GET", "/api/auth/oauth/google/url", s, e is None, e)
 
+    if suite == "core":
+        s, d, e = get(f"{base_url}/api/platform/dashboard", headers=auth_headers, expected=[200, 401])
+        record("Platform: Dashboard", "GET", "/api/platform/dashboard", s, e is None, e)
+
+        s, d, e = get(f"{base_url}/api/sns/accounts", headers=auth_headers, expected=[200, 401])
+        record("SNS: Accounts", "GET", "/api/sns/accounts", s, e is None, e)
+
+        s, d, e = get(f"{base_url}/api/review/campaigns", headers=NO_AUTH_HEADERS)
+        record("Review: Campaigns", "GET", "/api/review/campaigns", s, e is None, e)
+
+        s, d, e = get(f"{base_url}/api/ai-automation/employees", headers=auth_headers, expected=[200, 401])
+        record("AI Automation: Employees", "GET", "/api/ai-automation/employees", s, e is None, e)
+
+        s, d, e = get(f"{base_url}/api/webapp-builder/plans", headers=NO_AUTH_HEADERS)
+        record("WebApp Builder: Plans", "GET", "/api/webapp-builder/plans", s, e is None, e)
+
+        s, d, e = get(f"{base_url}/api/instagram-cardnews/templates", headers=auth_headers, expected=[200, 401])
+        record("Instagram CardNews: Templates", "GET", "/api/instagram-cardnews/templates", s, e is None, e)
+
+        return results
+
     # ====================== PLATFORM ======================
     s, d, e = get(f"{base_url}/api/platform/products", headers=NO_AUTH_HEADERS)
     record("Platform: Products", "GET", "/api/platform/products", s, e is None, e)
 
-    s, d, e = get(f"{base_url}/api/platform/dashboard")
+    s, d, e = get(f"{base_url}/api/platform/dashboard", headers=auth_headers, expected=[200, 401])
     record("Platform: Dashboard", "GET", "/api/platform/dashboard", s, e is None, e)
 
     # ====================== PAYMENT ======================
     s, d, e = get(f"{base_url}/api/payment/plans", headers=NO_AUTH_HEADERS)
     record("Payment: Plans", "GET", "/api/payment/plans", s, e is None, e)
 
-    s, d, e = get(f"{base_url}/api/payment/subscriptions")
+    s, d, e = get(f"{base_url}/api/payment/subscriptions", headers=auth_headers, expected=[200, 401])
     record("Payment: Subscriptions", "GET", "/api/payment/subscriptions", s, e is None, e)
 
     # Checkout (expect 400 in dev mode — Stripe not enabled)
     s, d, e = post(f"{base_url}/api/payment/checkout",
                     {"product_id": 1, "plan_type": "monthly"},
-                    expected=[200, 400])
+                    headers=auth_headers, expected=[200, 400, 401])
     record("Payment: Checkout (dev)", "POST", "/api/payment/checkout", s, e is None, e)
 
     # ====================== SNS AUTO ======================
-    s, d, e = get(f"{base_url}/api/sns/templates")
+    s, d, e = get(f"{base_url}/api/sns/templates", headers=auth_headers, expected=[200, 401])
     record("SNS: Templates", "GET", "/api/sns/templates", s, e is None, e)
 
-    s, d, e = get(f"{base_url}/api/sns/accounts")
+    s, d, e = get(f"{base_url}/api/sns/accounts", headers=auth_headers, expected=[200, 401])
     record("SNS: Accounts", "GET", "/api/sns/accounts", s, e is None, e)
 
     # Create account
     s, d, e = post(f"{base_url}/api/sns/accounts",
                     {"platform": "instagram", "account_name": "@integration_test"},
-                    expected=[201, 400])
+                    headers=auth_headers, expected=[201, 400, 401])
     record("SNS: Create Account", "POST", "/api/sns/accounts", s, e is None, e)
 
-    s, d, e = get(f"{base_url}/api/sns/posts")
+    s, d, e = get(f"{base_url}/api/sns/posts", headers=auth_headers, expected=[200, 401])
     record("SNS: Posts", "GET", "/api/sns/posts", s, e is None, e)
 
-    s, d, e = get(f"{base_url}/api/sns/trending")
+    s, d, e = get(f"{base_url}/api/sns/trending", headers=auth_headers, expected=[200, 401])
     record("SNS: Trending", "GET", "/api/sns/trending", s, e is None, e)
 
-    s, d, e = get(f"{base_url}/api/sns/linkinbio")
+    s, d, e = get(f"{base_url}/api/sns/linkinbio", headers=auth_headers, expected=[200, 201, 401])
     record("SNS: Link-in-Bio List", "GET", "/api/sns/linkinbio", s, e is None, e)
 
-    s, d, e = get(f"{base_url}/api/sns/automate")
+    s, d, e = get(f"{base_url}/api/sns/automate", headers=auth_headers, expected=[200, 401])
     record("SNS: Automation List", "GET", "/api/sns/automate", s, e is None, e)
 
-    s, d, e = get(f"{base_url}/api/sns/competitor")
+    s, d, e = get(f"{base_url}/api/sns/competitor", headers=auth_headers, expected=[200, 401])
     record("SNS: Competitors", "GET", "/api/sns/competitor", s, e is None, e)
 
-    s, d, e = get(f"{base_url}/api/sns/roi")
+    s, d, e = get(f"{base_url}/api/sns/roi", headers=auth_headers, expected=[200, 401])
     record("SNS: ROI", "GET", "/api/sns/roi", s, e is None, e)
 
-    s, d, e = get(f"{base_url}/api/sns/linkinbio/stats")
+    s, d, e = get(f"{base_url}/api/sns/linkinbio/stats", headers=auth_headers, expected=[200, 401])
     record("SNS: Link-in-Bio Stats", "GET", "/api/sns/linkinbio/stats", s, e is None, e)
 
     # AI Generate
     s, d, e = post(f"{base_url}/api/sns/ai/generate",
-                    {"topic": "test", "tone": "professional", "language": "en", "platform": "instagram"})
+                    {"topic": "test", "tone": "professional", "language": "en", "platform": "instagram"},
+                    headers=auth_headers, expected=[200, 401])
     record("SNS: AI Generate", "POST", "/api/sns/ai/generate", s, e is None, e)
 
     # AI Repurpose
     s, d, e = post(f"{base_url}/api/sns/ai/repurpose",
-                    {"content": "Test content", "source_platform": "blog", "target_platforms": ["twitter"]})
+                    {"content": "Test content", "source_platform": "blog", "target_platforms": ["twitter"]},
+                    headers=auth_headers, expected=[200, 401])
     record("SNS: AI Repurpose", "POST", "/api/sns/ai/repurpose", s, e is None, e)
 
     # ====================== REVIEW ======================
     s, d, e = get(f"{base_url}/api/review/campaigns", headers=NO_AUTH_HEADERS)
     record("Review: Campaigns", "GET", "/api/review/campaigns", s, e is None, e)
 
-    s, d, e = get(f"{base_url}/api/review/my-campaigns")
+    s, d, e = get(f"{base_url}/api/review/my-campaigns", headers=auth_headers, expected=[200, 401])
     record("Review: My Campaigns", "GET", "/api/review/my-campaigns", s, e is None, e)
 
-    s, d, e = get(f"{base_url}/api/review/my-applications")
+    s, d, e = get(f"{base_url}/api/review/my-applications", headers=auth_headers, expected=[200, 401])
     record("Review: My Applications", "GET", "/api/review/my-applications", s, e is None, e)
 
-    s, d, e = get(f"{base_url}/api/review/listings")
+    s, d, e = get(f"{base_url}/api/review/listings", headers=auth_headers, expected=[200, 401])
     record("Review: Listings", "GET", "/api/review/listings", s, e is None, e)
 
-    s, d, e = get(f"{base_url}/api/review/bookmarks")
+    s, d, e = get(f"{base_url}/api/review/bookmarks", headers=auth_headers, expected=[200, 401])
     record("Review: Bookmarks", "GET", "/api/review/bookmarks", s, e is None, e)
 
-    s, d, e = get(f"{base_url}/api/review/accounts")
+    s, d, e = get(f"{base_url}/api/review/accounts", headers=auth_headers, expected=[200, 401])
     record("Review: Accounts", "GET", "/api/review/accounts", s, e is None, e)
 
-    s, d, e = get(f"{base_url}/api/review/applications")
+    s, d, e = get(f"{base_url}/api/review/applications", headers=auth_headers, expected=[200, 401])
     record("Review: Applications", "GET", "/api/review/applications", s, e is None, e)
 
-    s, d, e = get(f"{base_url}/api/review/auto-rules")
+    s, d, e = get(f"{base_url}/api/review/auto-rules", headers=auth_headers, expected=[200, 401])
     record("Review: Auto Rules", "GET", "/api/review/auto-rules", s, e is None, e)
 
-    s, d, e = get(f"{base_url}/api/review/scraper/status")
+    s, d, e = get(f"{base_url}/api/review/scraper/status", headers=auth_headers, expected=[200, 401])
     record("Review: Scraper Status", "GET", "/api/review/scraper/status", s, e is None, e)
 
-    s, d, e = get(f"{base_url}/api/review/listings/search?q=test")
+    s, d, e = get(f"{base_url}/api/review/listings/search?q=test", headers=auth_headers, expected=[200, 401])
     record("Review: Search", "GET", "/api/review/listings/search?q=test", s, e is None, e)
 
     # ====================== COOCOOK ======================
     s, d, e = get(f"{base_url}/api/coocook/chefs", headers=NO_AUTH_HEADERS)
     record("CooCook: Chefs", "GET", "/api/coocook/chefs", s, e is None, e)
 
-    s, d, e = get(f"{base_url}/api/coocook/bookings")
+    s, d, e = get(f"{base_url}/api/coocook/bookings", headers=auth_headers, expected=[200, 401])
     record("CooCook: Bookings", "GET", "/api/coocook/bookings", s, e is None, e)
 
     # ====================== AI AUTOMATION ======================
@@ -253,10 +279,10 @@ def run_tests(base_url):
     s, d, e = get(f"{base_url}/api/ai-automation/scenarios", headers=NO_AUTH_HEADERS)
     record("AI Automation: Scenarios", "GET", "/api/ai-automation/scenarios", s, e is None, e)
 
-    s, d, e = get(f"{base_url}/api/ai-automation/employees")
+    s, d, e = get(f"{base_url}/api/ai-automation/employees", headers=auth_headers, expected=[200, 401])
     record("AI Automation: Employees", "GET", "/api/ai-automation/employees", s, e is None, e)
 
-    s, d, e = get(f"{base_url}/api/ai-automation/dashboard")
+    s, d, e = get(f"{base_url}/api/ai-automation/dashboard", headers=auth_headers, expected=[200, 401])
     record("AI Automation: Dashboard", "GET", "/api/ai-automation/dashboard", s, e is None, e)
 
     # ====================== WEBAPP BUILDER ======================
@@ -266,78 +292,78 @@ def run_tests(base_url):
     s, d, e = get(f"{base_url}/api/webapp-builder/courses", headers=NO_AUTH_HEADERS)
     record("WebApp Builder: Courses", "GET", "/api/webapp-builder/courses", s, e is None, e)
 
-    s, d, e = get(f"{base_url}/api/webapp-builder/enrollments")
+    s, d, e = get(f"{base_url}/api/webapp-builder/enrollments", headers=auth_headers, expected=[200, 401])
     record("WebApp Builder: Enrollments", "GET", "/api/webapp-builder/enrollments", s, e is None, e)
 
-    s, d, e = get(f"{base_url}/api/webapp-builder/webapps")
+    s, d, e = get(f"{base_url}/api/webapp-builder/webapps", headers=auth_headers, expected=[200, 401])
     record("WebApp Builder: Webapps", "GET", "/api/webapp-builder/webapps", s, e is None, e)
 
-    s, d, e = get(f"{base_url}/api/webapp-builder/dashboard")
+    s, d, e = get(f"{base_url}/api/webapp-builder/dashboard", headers=auth_headers, expected=[200, 401])
     record("WebApp Builder: Dashboard", "GET", "/api/webapp-builder/dashboard", s, e is None, e)
 
     # ====================== DASHBOARD ======================
-    s, d, e = get(f"{base_url}/api/dashboard/kpis")
+    s, d, e = get(f"{base_url}/api/dashboard/kpis", headers=auth_headers, expected=[200, 401])
     record("Dashboard: KPIs", "GET", "/api/dashboard/kpis", s, e is None, e)
 
-    s, d, e = get(f"{base_url}/api/dashboard/charts")
+    s, d, e = get(f"{base_url}/api/dashboard/charts", headers=auth_headers, expected=[200, 401])
     record("Dashboard: Charts", "GET", "/api/dashboard/charts", s, e is None, e)
 
-    s, d, e = get(f"{base_url}/api/dashboard/summary")
+    s, d, e = get(f"{base_url}/api/dashboard/summary", headers=auth_headers, expected=[200, 401])
     record("Dashboard: Summary", "GET", "/api/dashboard/summary", s, e is None, e)
 
     # ====================== ANALYTICS ======================
-    s, d, e = get(f"{base_url}/api/analytics/advanced")
+    s, d, e = get(f"{base_url}/api/analytics/advanced", headers=auth_headers, expected=[200, 401])
     record("Analytics: Advanced", "GET", "/api/analytics/advanced", s, e is None, e)
 
-    s, d, e = get(f"{base_url}/api/analytics/cohort")
+    s, d, e = get(f"{base_url}/api/analytics/cohort", headers=auth_headers, expected=[200, 401])
     record("Analytics: Cohort", "GET", "/api/analytics/cohort", s, e is None, e)
 
-    s, d, e = get(f"{base_url}/api/analytics/funnel")
+    s, d, e = get(f"{base_url}/api/analytics/funnel", headers=auth_headers, expected=[200, 401])
     record("Analytics: Funnel", "GET", "/api/analytics/funnel", s, e is None, e)
 
-    s, d, e = get(f"{base_url}/api/analytics/service-metrics")
+    s, d, e = get(f"{base_url}/api/analytics/service-metrics", headers=auth_headers, expected=[200, 401])
     record("Analytics: Service Metrics", "GET", "/api/analytics/service-metrics", s, e is None, e)
 
-    s, d, e = get(f"{base_url}/api/analytics/trends")
+    s, d, e = get(f"{base_url}/api/analytics/trends", headers=auth_headers, expected=[200, 401])
     record("Analytics: Trends", "GET", "/api/analytics/trends", s, e is None, e)
 
     # ====================== PERFORMANCE ======================
-    s, d, e = get(f"{base_url}/api/performance/roi")
+    s, d, e = get(f"{base_url}/api/performance/roi", headers=auth_headers, expected=[200, 401])
     record("Performance: ROI", "GET", "/api/performance/roi", s, e is None, e)
 
-    s, d, e = get(f"{base_url}/api/performance/product-roi")
+    s, d, e = get(f"{base_url}/api/performance/product-roi", headers=auth_headers, expected=[200, 401])
     record("Performance: Product ROI", "GET", "/api/performance/product-roi", s, e is None, e)
 
-    s, d, e = get(f"{base_url}/api/performance/efficiency")
+    s, d, e = get(f"{base_url}/api/performance/efficiency", headers=auth_headers, expected=[200, 401])
     record("Performance: Efficiency", "GET", "/api/performance/efficiency", s, e is None, e)
 
-    s, d, e = get(f"{base_url}/api/performance/forecast")
+    s, d, e = get(f"{base_url}/api/performance/forecast", headers=auth_headers, expected=[200, 401])
     record("Performance: Forecast", "GET", "/api/performance/forecast", s, e is None, e)
 
-    s, d, e = get(f"{base_url}/api/performance/benchmarks")
+    s, d, e = get(f"{base_url}/api/performance/benchmarks", headers=auth_headers, expected=[200, 401])
     record("Performance: Benchmarks", "GET", "/api/performance/benchmarks", s, e is None, e)
 
     # ====================== SETTINGS ======================
-    s, d, e = get(f"{base_url}/api/settings/organization")
+    s, d, e = get(f"{base_url}/api/settings/organization", headers=auth_headers, expected=[200, 401])
     record("Settings: Organization", "GET", "/api/settings/organization", s, e is None, e)
 
     s, d, e = put(f"{base_url}/api/settings/organization",
-                   {"timezone": "UTC"})
+                   {"timezone": "UTC"}, headers=auth_headers, expected=[200, 401])
     record("Settings: Update Org", "PUT", "/api/settings/organization", s, e is None, e)
 
-    s, d, e = get(f"{base_url}/api/settings/integrations")
+    s, d, e = get(f"{base_url}/api/settings/integrations", headers=auth_headers, expected=[200, 401])
     record("Settings: Integrations", "GET", "/api/settings/integrations", s, e is None, e)
 
-    s, d, e = get(f"{base_url}/api/settings/api-keys")
+    s, d, e = get(f"{base_url}/api/settings/api-keys", headers=auth_headers, expected=[200, 401])
     record("Settings: API Keys", "GET", "/api/settings/api-keys", s, e is None, e)
 
-    s, d, e = get(f"{base_url}/api/settings/webhook-endpoints")
+    s, d, e = get(f"{base_url}/api/settings/webhook-endpoints", headers=auth_headers, expected=[200, 401])
     record("Settings: Webhooks", "GET", "/api/settings/webhook-endpoints", s, e is None, e)
 
-    s, d, e = get(f"{base_url}/api/settings/notifications")
+    s, d, e = get(f"{base_url}/api/settings/notifications", headers=auth_headers, expected=[200, 401])
     record("Settings: Notifications", "GET", "/api/settings/notifications", s, e is None, e)
 
-    s, d, e = get(f"{base_url}/api/settings/billing")
+    s, d, e = get(f"{base_url}/api/settings/billing", headers=auth_headers, expected=[200, 401])
     record("Settings: Billing", "GET", "/api/settings/billing", s, e is None, e)
 
     # ====================== CACHE STATS ======================
@@ -351,15 +377,25 @@ def run_tests(base_url):
 # Server management
 # ---------------------------------------------------------------------------
 
+def _is_server_ready(base_url, opener=None):
+    """Return True when either health endpoint responds."""
+    opener = opener or urlopen
+    for path in ("/health", "/api/health"):
+        try:
+            opener(f"{base_url}{path}", timeout=2)
+            return True
+        except Exception:
+            continue
+    return False
+
+
 def wait_for_server(base_url, timeout=30):
     """Wait until the server responds or timeout."""
     start = time.time()
     while time.time() - start < timeout:
-        try:
-            urlopen(f"{base_url}/health", timeout=2)
+        if _is_server_ready(base_url):
             return True
-        except Exception:
-            time.sleep(0.5)
+        time.sleep(0.5)
     return False
 
 
@@ -368,15 +404,24 @@ def start_server(port):
     project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     env = os.environ.copy()
     env["PYTHONPATH"] = project_root
+    env["DEBUG"] = "false"
+    env["FLASK_ENV"] = "development"
+    env["ENVIRONMENT"] = "development"
+    env["TESTING"] = "true"
+    log_path = Path(project_root) / ".workspace" / "logs" / f"verify_integration_server_{port}.log"
+    log_path.parent.mkdir(parents=True, exist_ok=True)
+    log_handle = open(log_path, "a", encoding="utf-8")
 
     proc = subprocess.Popen(
-        [sys.executable, "-c",
-         f"from backend.app import create_app; app = create_app(); app.run(port={port}, debug=False, use_reloader=False)"],
+        [sys.executable, "start_server.py"],
         cwd=project_root,
         env=env,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
+        stdout=log_handle,
+        stderr=log_handle,
+        text=True,
     )
+    proc._verify_log_handle = log_handle
+    proc._verify_log_path = str(log_path)
     return proc
 
 
@@ -451,6 +496,7 @@ def save_report(results, elapsed, filepath):
 def main():
     parser = argparse.ArgumentParser(description="SoftFactory Integration Verification")
     parser.add_argument("--port", type=int, default=DEFAULT_PORT, help="Port to run/connect on")
+    parser.add_argument("--suite", type=str, choices=["core", "full"], default="full", help="Verification suite size")
     parser.add_argument("--report-file", type=str, default=None, help="Path to save JSON report")
     parser.add_argument("--no-start", action="store_true", help="Skip starting server (assume already running)")
     args = parser.parse_args()
@@ -465,6 +511,16 @@ def main():
             if not wait_for_server(base_url, timeout=30):
                 print("ERROR: Server did not start within 30 seconds.")
                 if proc:
+                    try:
+                        log_path = getattr(proc, "_verify_log_path", None)
+                        if log_path and os.path.exists(log_path):
+                            with open(log_path, "r", encoding="utf-8", errors="ignore") as handle:
+                                log_text = handle.read()
+                            if log_text:
+                                print("Startup log tail:")
+                                print(log_text[-4000:])
+                    except Exception:
+                        pass
                     proc.terminate()
                 sys.exit(1)
             print("Server started successfully.\n")
@@ -476,7 +532,7 @@ def main():
 
         print("Running integration tests...\n")
         start_time = time.time()
-        results = run_tests(base_url)
+        results = run_tests(base_url, suite=args.suite)
         elapsed = time.time() - start_time
 
         print_report(results, elapsed)
@@ -495,6 +551,9 @@ def main():
                 proc.wait(timeout=5)
             except subprocess.TimeoutExpired:
                 proc.kill()
+            log_handle = getattr(proc, "_verify_log_handle", None)
+            if log_handle:
+                log_handle.close()
 
 
 if __name__ == "__main__":

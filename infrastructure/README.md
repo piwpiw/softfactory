@@ -84,10 +84,13 @@ infrastructure/
 
 ```bash
 # Build image
-docker build -t softfactory:latest .
+docker build -t piwpiw99/softfactory:latest .
 
 # Run locally
-docker run -p 8000:8000 softfactory:latest
+docker run -d --name softfactory \
+  -p 8000:8000 \
+  -e APP_PORT=8000 \
+  piwpiw99/softfactory:latest
 
 # Run with compose
 docker-compose up -d
@@ -111,8 +114,9 @@ docker-compose up -d
 
 This directory is integrated with GitHub Actions:
 
-- **.github/workflows/build.yml** - Builds Docker images using Dockerfile in root
-- **.github/workflows/deploy.yml** - Deploys using Docker and runs health checks
+- **.github/workflows/ci.yml** - Builds/tests code and validates deployment artifacts
+- **.github/workflows/deploy-staging.yml** - Deploys staging environment
+- **.github/workflows/deploy-production.yml** - Deploys production environment with health checks
 - **.github/workflows/security.yml** - Scans images and code for vulnerabilities
 
 ---

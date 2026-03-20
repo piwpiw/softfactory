@@ -12,10 +12,11 @@
 #
 # Environment variables (override defaults):
 #   DEPLOY_DIR      Base directory on host  (default: /opt/softfactory)
+#   HOST_PORT       Published host port (default: 9001 for staging, 9000 for production)
 #   HEALTH_URL      Health check URL        (default: http://localhost:PORT/health)
 #   HEALTH_RETRIES  Max health-check tries  (default: 10)
 #   HEALTH_INTERVAL Seconds between retries (default: 6)
-#   DOCKER_IMAGE    Full image name         (default: softfactory/softfactory)
+#   DOCKER_IMAGE    Full image name         (default: piwpiw99/softfactory)
 # =============================================================================
 
 set -euo pipefail
@@ -34,26 +35,29 @@ log_step()  { echo -e "\n${BOLD}${BLUE}━━━ $1 ━━━${NC}"; }
 # ── Defaults ──────────────────────────────────────────────────────────────────
 ENVIRONMENT="${1:-staging}"
 IMAGE_TAG="${2:-latest}"
-DOCKER_IMAGE="${DOCKER_IMAGE:-softfactory/softfactory}"
+DEFAULT_DOCKER_IMAGE="piwpiw99/softfactory"
+DOCKER_IMAGE="${DOCKER_IMAGE:-$DEFAULT_DOCKER_IMAGE}"
 DEPLOY_DIR="${DEPLOY_DIR:-/opt/softfactory}"
 HEALTH_RETRIES="${HEALTH_RETRIES:-10}"
 HEALTH_INTERVAL="${HEALTH_INTERVAL:-6}"
 COMPOSE_FILE=""
-APP_PORT=""
+HOST_PORT=""
+HOST_PORT_DEFAULT=""
+APP_PORT="${APP_PORT:-8000}"  # container port (app internal bind target)
 CONTAINER_NAME=""
 CANARY_PORT=""
 
 case "$ENVIRONMENT" in
   staging)
     COMPOSE_FILE="$DEPLOY_DIR/staging/docker-compose.staging.yml"
-    APP_PORT=9001
+    HOST_PORT_DEFAULT=9001
     CANARY_PORT=9003
     CONTAINER_NAME="softfactory-staging"
     ENV_FILE="$DEPLOY_DIR/staging/.env"
     ;;
   production)
     COMPOSE_FILE="$DEPLOY_DIR/production/docker-compose.production.yml"
-    APP_PORT=9000
+    HOST_PORT_DEFAULT=9000
     CANARY_PORT=9002
     CONTAINER_NAME="softfactory-prod"
     ENV_FILE="$DEPLOY_DIR/production/.env"
@@ -64,7 +68,8 @@ case "$ENVIRONMENT" in
     ;;
 esac
 
-HEALTH_URL="${HEALTH_URL:-http://localhost:${APP_PORT}/health}"
+HOST_PORT="${HOST_PORT:-$HOST_PORT_DEFAULT}"
+HEALTH_URL="${HEALTH_URL:-http://localhost:${HOST_PORT}/health}"
 FULL_IMAGE="${DOCKER_IMAGE}:${IMAGE_TAG}"
 ROLLBACK_FILE="$DEPLOY_DIR/$ENVIRONMENT/rollback_image.txt"
 LOG_FILE="$DEPLOY_DIR/$ENVIRONMENT/deploy_$(date +%Y%m%d_%H%M%S).log"
@@ -134,7 +139,7 @@ docker rm   "${CONTAINER_NAME}-canary" 2>/dev/null || true
 docker run -d \
   --name "${CONTAINER_NAME}-canary" \
   --restart no \
-  -p "${CANARY_PORT}:9000" \
+  -p "${CANARY_PORT}:${APP_PORT}" \
   --env-file "$ENV_FILE" \
   "$FULL_IMAGE"
 
@@ -168,11 +173,11 @@ log_info "Stopping current container: $CONTAINER_NAME"
 docker stop "$CONTAINER_NAME" 2>/dev/null || true
 docker rm   "$CONTAINER_NAME" 2>/dev/null || true
 
-log_info "Starting new container on port $APP_PORT"
+log_info "Starting new container on host port $HOST_PORT (container port $APP_PORT)"
 docker run -d \
   --name "$CONTAINER_NAME" \
   --restart unless-stopped \
-  -p "${APP_PORT}:9000" \
+  -p "${HOST_PORT}:${APP_PORT}" \
   --env-file "$ENV_FILE" \
   -e GIT_SHA="${GIT_SHA:-}" \
   -e VERSION="$IMAGE_TAG" \

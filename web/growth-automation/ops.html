@@ -1,0 +1,309 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Growth Ops</title>
+  <link rel="stylesheet" href="/unified-ui.css" />
+  <script src="/unified-ui.js" defer></script>
+  <script src="/shared-runtime.js"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: "Segoe UI", "Apple SD Gothic Neo", sans-serif;
+      background:
+        radial-gradient(44rem 32rem at 0% -10%, rgba(254, 226, 226, 0.95) 0%, transparent 42%),
+        radial-gradient(38rem 28rem at 100% 0%, rgba(219, 234, 254, 0.95) 0%, transparent 38%),
+        #f8fafc;
+      color: #0f172a;
+    }
+    .wrap { max-width: 1160px; margin: 0 auto; padding: 24px; }
+    .hero,.panel {
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.98), rgba(248,250,252,0.95)),
+        #fff;
+      border: 1px solid #9fb0c4;
+      border-radius: 20px;
+      padding: 18px;
+      box-shadow: 0 16px 32px rgba(15, 23, 42, 0.09);
+    }
+    .hero {
+      border-color: rgba(220, 38, 38, 0.28);
+      background:
+        linear-gradient(135deg, rgba(255,255,255,0.98), rgba(254,242,242,0.94)),
+        #fff;
+    }
+    .hero h1 { margin: 0; }
+    .nav { display:flex; gap:10px; margin-top:10px; flex-wrap:wrap; }
+    .nav a { text-decoration:none; border:1px solid #9fb0c4; padding:7px 11px; border-radius:999px; color:#0f172a; font-weight:700; background:#fff; }
+    .nav a.active { background:#0f766e; color:#fff; border-color:#0f766e; }
+    .hero p {
+      margin: 8px 0 0;
+      max-width: 760px;
+      color: #526071;
+      line-height: 1.55;
+    }
+    .feedback {
+      margin-top: 14px;
+      padding: 12px 14px;
+      border-radius: 14px;
+      border: 1px solid rgba(220, 38, 38, 0.24);
+      background:
+        linear-gradient(180deg, rgba(254,242,242,0.92), rgba(255,255,255,0.96));
+      color: #991b1b;
+      font-weight: 600;
+    }
+    .section-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .severity-badge {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 4px 9px;
+      font-size: 0.76rem;
+      font-weight: 700;
+      background: #e2e8f0;
+      color: #334155;
+    }
+    .severity-low { background: #dcfce7; color: #166534; }
+    .severity-medium { background: #fef3c7; color: #92400e; }
+    .severity-high { background: #fee2e2; color: #b91c1c; }
+    .filter-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 14px;
+    }
+    .filter-chip {
+      border: 1px solid #9fb0c4;
+      border-radius: 999px;
+      background: #fff;
+      color: #0f172a;
+      padding: 8px 12px;
+      font-size: 0.84rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .filter-chip.is-active {
+      background: #fee2e2;
+      border-color: #fca5a5;
+      color: #991b1b;
+    }
+    .grid { margin-top: 14px; display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+    .table-wrap {
+      overflow: auto;
+      margin-top: 12px;
+      border: 1px solid #b9cadb;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.94);
+    }
+    .panel table { width:100%; border-collapse:collapse; min-width: 720px; }
+    th,td { border-top:1px solid #d7e2ee; text-align:left; padding:10px 9px; font-size:.92rem; vertical-align: top; }
+    th {
+      background: #dfeaf5;
+      color: #1e293b;
+      position: sticky;
+      top: 0;
+      text-transform: uppercase;
+      font-size: 0.78rem;
+      letter-spacing: 0.04em;
+      font-weight: 800;
+    }
+    button {
+      border:1px solid #cbd5e1;
+      border-radius:10px;
+      padding:7px 10px;
+      background:#0f172a;
+      color:#fff;
+      cursor:pointer;
+      font-weight: 700;
+    }
+    button:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+    .detail-panel {
+      margin-top: 14px;
+      padding: 14px;
+      border-radius: 16px;
+      border: 1px solid #fca5a5;
+      background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(254,242,242,0.7));
+    }
+    .compare-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 14px;
+    }
+    .trend-strip {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 14px;
+    }
+    .trend-card {
+      padding: 12px 14px;
+      border-radius: 16px;
+      border: 1px solid #b9cadb;
+      background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(254,242,242,0.84));
+    }
+    .trend-spark {
+      display: flex;
+      align-items: end;
+      height: 60px;
+      margin-top: 8px;
+    }
+    .trend-bar {
+      display: block;
+      width: 100%;
+      border-radius: 12px 12px 6px 6px;
+      background: linear-gradient(180deg, #16a34a 0%, #4ade80 100%);
+      min-height: 18px;
+    }
+    .trend-label {
+      color: #64748b;
+      font-size: 0.8rem;
+    }
+    .trend-value {
+      margin-top: 6px;
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: #0f172a;
+    }
+    .trend-meta {
+      margin-top: 6px;
+      font-size: 0.78rem;
+      font-weight: 700;
+    }
+    .compare-card {
+      padding: 14px;
+      border-radius: 16px;
+      border: 1px solid #b9cadb;
+      background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(254,242,242,0.72));
+    }
+    .compare-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .compare-card p {
+      margin: 8px 0 0;
+      color: #64748b;
+      font-size: 0.84rem;
+    }
+    .compare-trend {
+      margin-bottom: 8px;
+      font-size: 0.78rem;
+      font-weight: 700;
+    }
+    .trend-up { color: #166534; }
+    .trend-down { color: #b91c1c; }
+    .trend-bar.trend-down {
+      background: linear-gradient(180deg, #dc2626 0%, #fb7185 100%);
+    }
+    .compare-bar {
+      height: 8px;
+      border-radius: 999px;
+      background: #e5e7eb;
+      overflow: hidden;
+    }
+    .compare-fill {
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #dc2626 0%, #fb7185 100%);
+    }
+    .detail-panel h3 {
+      margin: 0 0 10px;
+      font-size: 0.98rem;
+    }
+    .detail-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .detail-item {
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid #c8d5e3;
+      background: rgba(255,255,255,0.94);
+    }
+    .detail-item strong {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 0.78rem;
+      color: #64748b;
+    }
+    .table-selectable tbody tr {
+      cursor: pointer;
+    }
+    .table-selectable tbody tr:hover {
+      background: #fff1f2;
+    }
+    .table-selectable tbody tr.is-selected {
+      background: #ffe4e6;
+    }
+    @media (max-width:960px){ .grid{ grid-template-columns:1fr; } }
+  </style>
+</head>
+<body data-page="ops">
+  <div class="wrap">
+    <section class="hero">
+      <h1>Growth Ops</h1>
+      <p>실패 이벤트, DLQ, replay 결과를 한 화면에서 판단하는 운영 콘솔입니다. 원인 파악과 복구 요청이 같은 흐름 안에서 보여야 합니다.</p>
+      <nav class="nav">
+        <a href="/growth-automation/">Hub</a>
+        <a href="/growth-automation/contacts.html">Contacts</a>
+        <a href="/growth-automation/journeys.html">Journeys</a>
+        <a class="active" href="/growth-automation/ops.html">Ops</a>
+      </nav>
+      <div class="feedback" id="opsFeedback">Open DLQ and replay feedback will appear here.</div>
+      <div class="filter-row" id="opsSavedFilters"></div>
+      <div class="trend-strip" id="opsTrendStrip"></div>
+      <div class="compare-grid" id="opsCompareGrid"></div>
+    </section>
+
+    <div class="grid">
+      <section class="panel">
+        <div class="section-head">
+          <h2>최근 이벤트</h2>
+          <span class="severity-badge severity-medium">Operational signals</span>
+        </div>
+        <div class="table-wrap">
+          <table class="table-selectable">
+            <thead><tr><th>Event</th><th>Status</th><th>Error Code</th><th>TS</th></tr></thead>
+            <tbody id="opsEventRows"></tbody>
+          </table>
+        </div>
+        <div class="detail-panel" id="opsEventDetailPanel">
+          <h3>선택한 이벤트 상세</h3>
+          <div class="detail-grid" id="opsEventDetailGrid"></div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="section-head">
+          <h2>DLQ</h2>
+          <span class="severity-badge severity-high">Recovery queue</span>
+        </div>
+        <div class="table-wrap">
+          <table class="table-selectable">
+            <thead><tr><th>ID</th><th>Workflow</th><th>Step</th><th>Error Summary</th><th>Retry</th><th>Status</th><th>Action</th></tr></thead>
+            <tbody id="dlqRows"></tbody>
+          </table>
+        </div>
+        <div class="detail-panel" id="dlqDetailPanel">
+          <h3>선택한 DLQ 상세</h3>
+          <div class="detail-grid" id="dlqDetailGrid"></div>
+        </div>
+      </section>
+    </div>
+  </div>
+  <script src="/growth-automation/app.js"></script>
+</body>
+</html>

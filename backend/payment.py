@@ -98,9 +98,21 @@ def generate_shipping_number():
 
 @payment_bp.route('/plans', methods=['GET'])
 def get_plans():
-    """Get all product plans"""
-    products = Product.query.filter_by(is_active=True).all()
-    return jsonify([p.to_dict() for p in products]), 200
+    """Get active subscription plans.
+
+    This route historically mixed products and plans, but the current billing UI
+    and test suite both treat `/api/payment/plans` as the canonical source for
+    subscription plan pricing.
+    """
+    plans = SubscriptionPlan.query.filter_by(is_active=True).all()
+    exchange_rate = ExchangeRateService.get_current_rate()
+    result = []
+    for plan in plans:
+        plan_dict = plan.to_dict()
+        plan_dict['monthly_price_usd'] = round(plan.monthly_price_krw / exchange_rate, 2)
+        plan_dict['annual_price_usd'] = round(plan.annual_price_krw / exchange_rate, 2)
+        result.append(plan_dict)
+    return jsonify(result), 200
 
 
 @payment_bp.route('/checkout', methods=['POST'])
@@ -632,6 +644,14 @@ def create_subscription():
         return jsonify({'error': 'Plan not found or inactive'}), 404
 
     try:
+        # Keep a single active plan for the account in the plan-based subscription flow.
+        existing_active = Subscription.query.filter_by(
+            user_id=g.user_id,
+            status='active',
+        ).all()
+        for existing in existing_active:
+            existing.status = 'canceled'
+
         stripe_subscription_id = None
         amount_krw = 0
 

@@ -4,9 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
     <meta name="theme-color" content="#111827">
-    <title>2?④퀎 ?몄쬆 ?ㅼ젙 ??SoftFactory</title>
+    <title>2FA 설정 - SoftFactory</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="api.js"></script>
+    <script src="../mobile-optimization.js" defer></script>
     <style>
         body {
             font-family: Inter, 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
@@ -15,19 +16,15 @@
             padding: 20px;
         }
         .container {
-            max-width: 500px;
+            max-width: 520px;
             margin: 0 auto;
             background: #fff;
             border-radius: 16px;
             padding: 38px;
             box-shadow: 0 22px 50px rgba(0, 0, 0, 0.32);
         }
-        .step {
-            display: none;
-        }
-        .step.active {
-            display: block;
-        }
+        .step { display: none; }
+        .step.active { display: block; }
         .step-dot {
             width: 9px;
             height: 9px;
@@ -81,27 +78,16 @@
             margin-bottom: 16px;
             display: none;
         }
-        .msg.show {
-            display: block;
-        }
-        .success {
-            border-color: #86efac;
-            background: #f0fdf4;
-            color: #166534;
-        }
-        .warning {
-            border-color: #c4b5fd;
-            background: #f5f3ff;
-            color: #5b21b6;
-        }
+        .msg.show { display: block; }
+        .success { border-color: #86efac; background: #f0fdf4; color: #166534; }
+        .warning { border-color: #c4b5fd; background: #f5f3ff; color: #5b21b6; }
     </style>
-    <script src="../mobile-optimization.js" defer></script>
 </head>
 <body>
     <div class="min-h-screen flex items-center justify-center">
         <div class="container">
-            <h1 class="text-2xl font-bold mb-1">2?④퀎 ?몄쬆 ?ㅼ젙</h1>
-            <p class="text-sm text-slate-500 mb-6">怨꾩젙 蹂댁븞???꾪빐 ?몄쬆 ?깆쓣 ?곌껐?섏꽭??</p>
+            <h1 class="text-2xl font-bold mb-1">2FA 설정</h1>
+            <p class="text-sm text-slate-500 mb-6">계정 보안을 위해 2단계 인증을 활성화합니다.</p>
 
             <div class="flex justify-between gap-3 mb-6">
                 <div class="step-dot active" id="dot1"></div>
@@ -112,61 +98,56 @@
             <div id="alert" class="msg"></div>
 
             <div id="step1" class="step active">
-                <h2 class="text-lg font-semibold mb-3">1?④퀎: QR ?ㅼ틪</h2>
-                <p class="text-sm text-slate-600 mb-4">Google Authenticator, Authy? 媛숈? ?깆쑝濡??꾨옒 QR???ㅼ틪?섏꽭??</p>
-
-                <img id="qrCode" class="qr-code" alt="2FA QR 肄붾뱶" />
-
-                <p class="text-sm text-slate-500 mb-2">?ㅼ틪???대젮?곕㈃ ?섎룞 ?깅줉 肄붾뱶瑜?蹂듭궗?섏꽭??</p>
-                <label class="block text-xs text-slate-500 mb-1">?쒗겕由???/label>
+                <h2 class="text-lg font-semibold mb-3">1단계: QR 등록</h2>
+                <p class="text-sm text-slate-600 mb-4">Google Authenticator 또는 Authy로 아래 QR 코드를 스캔하세요.</p>
+                <img id="qrCode" class="qr-code" alt="2FA QR 코드" />
+                <p class="text-sm text-slate-500 mb-2">앱에 등록할 수 있는 시크릿 키를 복사하세요.</p>
+                <label class="block text-xs text-slate-500 mb-1">복사할 키</label>
                 <div class="secret-box">
                     <span id="secretKey"></span>
-                    <button type="button" id="copy-secret" class="ml-2 text-indigo-600 underline text-xs">蹂듭궗</button>
+                    <button type="button" id="copy-secret" class="ml-2 text-indigo-600 underline text-xs">복사</button>
                 </div>
-
-                <button type="button" id="to-step2" class="w-full mt-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg">
-                    ?ㅼ쓬: ?몄쬆 肄붾뱶 ?뺤씤
-                </button>
+                <button type="button" id="to-step2" class="w-full mt-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg">다음: 인증 코드 입력</button>
             </div>
 
             <div id="step2" class="step">
-                <h2 class="text-lg font-semibold mb-3">2?④퀎: 肄붾뱶 ?뺤씤</h2>
-                <p class="text-sm text-slate-600 mb-4">?몄쬆 ?깆뿉 ?쒖떆??6?먮━ 肄붾뱶瑜??낅젰???꾨즺?섏꽭??</p>
+                <h2 class="text-lg font-semibold mb-3">2단계: 인증 코드 확인</h2>
+                <p class="text-sm text-slate-600 mb-4">앱에서 6자리 코드를 입력하고 확인을 누르세요.</p>
                 <div id="error2" class="msg"></div>
-                <label class="block text-sm font-medium text-slate-700 mb-2">?몄쬆 肄붾뱶</label>
+                <label class="block text-sm font-medium text-slate-700 mb-2">인증 코드</label>
                 <input type="text" id="totpCode" maxlength="6" inputmode="numeric" autocomplete="off" placeholder="000000"
                     class="w-full px-4 py-3 border border-slate-300 rounded-lg text-center tracking-[0.28em] text-lg">
                 <div class="flex gap-3 mt-5">
-                    <button type="button" id="back-to-step1" class="flex-1 py-3 bg-slate-200 hover:bg-slate-300 rounded-lg">?댁쟾</button>
-                    <button type="button" id="verifyBtn" class="flex-1 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg">?뺤씤 諛?吏꾪뻾</button>
+                    <button type="button" id="back-to-step1" class="flex-1 py-3 bg-slate-200 hover:bg-slate-300 rounded-lg">이전</button>
+                    <button type="button" id="verifyBtn" class="flex-1 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg">검증 시작</button>
                 </div>
             </div>
 
             <div id="step3" class="step">
-                <h2 class="text-lg font-semibold mb-3">3?④퀎: 諛깆뾽 肄붾뱶 蹂닿?</h2>
-                <p class="text-sm text-slate-600 mb-3">蹂듦뎄 肄붾뱶?ㅼ쓣 ?덉쟾??怨녹뿉 ??ν븯?몄슂.</p>
+                <h2 class="text-lg font-semibold mb-3">3단계: 백업 코드 저장</h2>
+                <p class="text-sm text-slate-600 mb-3">백업 코드는 비상시 계정 복구에 사용됩니다.</p>
                 <div class="bg-amber-50 border border-amber-300 text-amber-900 text-xs p-3 rounded-lg mb-4">
-                    ?몄쬆 ?깆쓣 遺꾩떎?대룄 濡쒓렇??媛?ν븳 諛깆뾽 肄붾뱶?낅땲??
+                    아래 코드는 한 번만 표시됩니다. 반드시 안전한 곳에 저장하세요.
                 </div>
                 <div id="backupCodesList" class="mb-4"></div>
                 <div class="flex gap-2 mb-4">
-                    <button type="button" id="copy-backups" class="flex-1 py-2.5 border border-slate-300 rounded-lg">?꾩껜 蹂듭궗</button>
-                    <button type="button" id="download-backups" class="flex-1 py-2.5 border border-slate-300 rounded-lg">?ㅼ슫濡쒕뱶</button>
+                    <button type="button" id="copy-backups" class="flex-1 py-2.5 border border-slate-300 rounded-lg">전체 복사</button>
+                    <button type="button" id="download-backups" class="flex-1 py-2.5 border border-slate-300 rounded-lg">다운로드</button>
                 </div>
                 <label class="inline-flex items-center gap-2 text-sm text-slate-700">
-                    <input type="checkbox" id="savedCheckbox"> 諛깆뾽 肄붾뱶瑜???ν뻽?듬땲??
+                    <input type="checkbox" id="savedCheckbox"> 백업 코드를 저장했습니다.
                 </label>
                 <button type="button" id="completeBtn" disabled class="w-full mt-5 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg disabled:opacity-50">
-                    ?ㅼ젙 ?꾨즺
+                    완료
                 </button>
             </div>
 
             <div id="step4" class="step text-center">
-                <div class="mx-auto mb-4 h-16 w-16 rounded-full bg-green-500 text-white text-3xl flex items-center justify-center">??/div>
-                <h2 class="text-xl font-bold mb-2">2FA ?ㅼ젙 ?꾨즺</h2>
-                <p class="text-sm text-slate-600 mb-6">怨꾩젙??2?④퀎 ?몄쬆?쇰줈 蹂댄샇?⑸땲??</p>
+                <div class="mx-auto mb-4 h-16 w-16 rounded-full bg-green-500 text-white text-3xl flex items-center justify-center">✓</div>
+                <h2 class="text-xl font-bold mb-2">2FA 설정 완료</h2>
+                <p class="text-sm text-slate-600 mb-6">설정한 계정에 대해 2단계 인증이 활성화되었습니다.</p>
                 <button type="button" id="go-settings" class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg">
-                    ?ㅼ젙?쇰줈 ?대룞
+                    설정으로 이동
                 </button>
             </div>
         </div>
@@ -205,29 +186,25 @@
             currentStep = step;
             setMessage('');
             if (step === 4) {
-                try {
-                    setMessage('2FA ?ㅼ젙???꾨즺?섏뿀?듬땲??', 'success');
-                } catch (_) {}
+                setMessage('2FA 설정이 완료되었습니다.', 'success');
             }
             window.scrollTo(0, 0);
         }
 
         function escapeText(value) {
-            return String(value || '').replace(/[&<>"']/g, (m) => ({
-                '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
-            })[m]);
+            return String(value || '').replace(/[&<>"']/g, (m) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
         }
 
         function renderBackupCodes() {
             const list = document.getElementById('backupCodesList');
             list.innerHTML = state.backupCodes
-                .map((code, idx) => `<div class="backup-code"><span>${String(idx + 1).padStart(2, '0')}. ${escapeText(code)}</span><button type="button" data-idx="${idx}" class="copy-one text-indigo-600 text-xs underline">蹂듭궗</button></div>`)
+                .map((code, idx) => `<div class="backup-code"><span>${String(idx + 1).padStart(2, '0')}. ${escapeText(code)}</span><button type="button" data-idx="${idx}" class="copy-one text-indigo-600 text-xs underline">복사</button></div>`)
                 .join('');
             list.querySelectorAll('button[data-idx]').forEach((btn) => {
                 btn.addEventListener('click', async () => {
                     const idx = Number(btn.getAttribute('data-idx'));
                     await copyText(state.backupCodes[idx]);
-                    setMessage(`肄붾뱶 #${idx + 1} 蹂듭궗??, 'warning');
+                    setMessage(`백업 코드 #${idx + 1} 복사됨`, 'warning');
                 });
             });
         }
@@ -253,9 +230,7 @@
         async function initSetup() {
             try {
                 const response = await apiFetch('/api/auth/2fa/setup', { method: 'GET' });
-                if (!response.ok) {
-                    throw new Error('setup request failed');
-                }
+                if (!response.ok) throw new Error('setup request failed');
                 const data = await response.json();
                 state.secret = data.secret || 'SOFT-SECRET-SAMPLE';
                 state.qrCode = data.qr_code || '';
@@ -266,7 +241,7 @@
                 document.getElementById('qrCode').src = state.qrCode || 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="250" height="250"><rect width="250" height="250" fill="%23f8fafc"/><text x="40" y="130" fill="%2364748b" font-size="16">QR unavailable</text></svg>';
                 document.getElementById('secretKey').textContent = state.secret;
             } catch (error) {
-                setMessage('2FA 珥덇린???ㅽ뙣. ?좎떆 ???ㅼ떆 ?쒕룄?섏꽭??', 'warning');
+                setMessage('2FA 설정 정보를 불러오지 못했습니다. 기본값으로 진행합니다.', 'warning');
                 state.secret = 'SOFT-DEMO-SECRET';
                 state.backupCodes = ['ABCD-1234', 'WXYZ-5678', 'QWER-9012', 'MNOP-3456'];
                 document.getElementById('qrCode').src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="250" height="250"><rect width="250" height="250" fill="%23f8fafc"/><text x="40" y="130" fill="%2364748b" font-size="16">Fallback QR</text></svg>';
@@ -282,12 +257,12 @@
             err.className = 'msg';
             if (!/^\\d{6}$/.test(raw)) {
                 err.className = 'msg show';
-                err.textContent = '6?먮━ ?レ옄 肄붾뱶瑜??낅젰?섏꽭??';
+                err.textContent = '인증 코드는 6자리 숫자여야 합니다.';
                 return;
             }
             const button = document.getElementById('verifyBtn');
             button.disabled = true;
-            button.textContent = '?뺤씤 以?..';
+            button.textContent = '확인 중';
 
             try {
                 const response = await apiFetch('/api/auth/2fa/verify-setup', {
@@ -308,17 +283,17 @@
                 setStep(3);
             } catch (error) {
                 err.className = 'msg show warning';
-                err.textContent = error.message || '肄붾뱶 ?뺤씤???ㅽ뙣?덉뒿?덈떎.';
+                err.textContent = error.message || '인증 코드 검증에 실패했습니다.';
             } finally {
                 button.disabled = false;
-                button.textContent = '?뺤씤 諛?吏꾪뻾';
+                button.textContent = '검증 시작';
             }
         }
 
         function bind() {
             document.getElementById('to-step2').addEventListener('click', () => {
                 if (!state.secret) {
-                    setMessage('?쒗겕由??ㅺ? ?놁뼱 珥덇린?붾릺吏 ?딆븯?듬땲?? ?ㅼ떆 遺덈윭?ㅼ꽭??', 'warning');
+                    setMessage('비밀키가 생성되지 않았습니다. 화면을 새로고침하세요.', 'warning');
                     return;
                 }
                 setStep(2);
@@ -333,14 +308,14 @@
             });
             document.getElementById('copy-secret').addEventListener('click', async () => {
                 await copyText(state.secret);
-                setMessage('?쒗겕由??ㅺ? 蹂듭궗?섏뿀?듬땲??');
+                setMessage('비밀키 복사 완료', 'success');
             });
             document.getElementById('copy-backups').addEventListener('click', async () => {
-                await copyText(state.backupCodes.join('\\n'));
-                setMessage('諛깆뾽 肄붾뱶瑜??꾩껜 蹂듭궗?덉뒿?덈떎.');
+                await copyText(state.backupCodes.join('\n'));
+                setMessage('백업 코드를 복사했습니다.', 'success');
             });
             document.getElementById('download-backups').addEventListener('click', () => {
-                const text = state.backupCodes.join('\\n');
+                const text = state.backupCodes.join('\n');
                 const href = `data:text/plain;charset=utf-8,${encodeURIComponent(text)}`;
                 const a = document.createElement('a');
                 a.href = href;
@@ -359,7 +334,7 @@
                         body: JSON.stringify({ backup_codes_saved: true })
                     });
                 } catch (_) {
-                    // fallback: local completion is still shown
+                    // 서버 연동 실패 시에도 사용자 플로우 유지를 위해 로컬 완료 처리
                 }
                 setStep(4);
             });
@@ -374,4 +349,3 @@
     </script>
 </body>
 </html>
-

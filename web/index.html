@@ -1,105 +1,513 @@
-﻿<!DOCTYPE html>
-<html lang="ko">
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-    <meta name="theme-color" content="#111827">
-    <title>SoftFactory</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="api.js"></script>
-    <link rel="stylesheet" href="responsive-framework.css">
-    <style>
-        body { font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; }
-    </style>
-    <script src="mobile-optimization.js" defer></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0f172a" />
+  <title>SoftFactory 운영 입구</title>
+  <link rel="stylesheet" href="/unified-ui.css" />
+  <script src="/unified-ui.js" defer></script>
+  <style>
+    :root {
+      --line: rgba(148, 163, 184, 0.24);
+      --text: #ecf3ff;
+      --muted: #9db2cf;
+      --panel: rgba(12, 20, 34, 0.92);
+      --accent: #38bdf8;
+      --accent-soft: rgba(56, 189, 248, 0.16);
+      --ok: #22c55e;
+      --warn: #f59e0b;
+      --danger: #ef4444;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--text);
+      font-family: "Pretendard Variable", "Pretendard", "SUIT Variable", "Noto Sans KR", "Segoe UI", sans-serif;
+      background:
+        radial-gradient(90rem 80rem at 0% -20%, rgba(37, 99, 235, 0.26) 0%, transparent 44%),
+        radial-gradient(72rem 72rem at 100% 0%, rgba(14, 165, 233, 0.16) 0%, transparent 36%),
+        linear-gradient(180deg, #08111f 0%, #0d1727 55%, #101a2c 100%);
+    }
+    a { color: inherit; }
+    .container { max-width: 1340px; margin: 0 auto; padding: 28px 24px 44px; }
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(300px, 0.8fr);
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+    .panel,
+    .service-card,
+    .status-card,
+    .detail-link {
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      background: var(--panel);
+      box-shadow: 0 18px 42px rgba(2, 6, 23, 0.34);
+    }
+    .intro {
+      padding: 24px;
+      background:
+        linear-gradient(135deg, rgba(10, 18, 31, 0.96), rgba(17, 28, 44, 0.9)),
+        radial-gradient(circle at top right, rgba(56, 189, 248, 0.14), transparent 42%);
+    }
+    .kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border-radius: 999px;
+      padding: 6px 11px;
+      background: var(--accent-soft);
+      color: #bae6fd;
+      font-size: 0.76rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    h1 {
+      margin: 14px 0 8px;
+      font-size: clamp(2rem, 1.4rem + 1vw, 2.8rem);
+      line-height: 1.04;
+      letter-spacing: -0.04em;
+    }
+    .subtitle {
+      max-width: 720px;
+      color: var(--muted);
+      font-size: 0.98rem;
+      line-height: 1.62;
+    }
+    .hero-links {
+      margin-top: 16px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .hero-links a,
+    .toolbar button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 42px;
+      border-radius: 12px;
+      border: 1px solid rgba(148, 163, 184, 0.28);
+      background: rgba(15, 23, 42, 0.7);
+      color: #eff6ff;
+      padding: 0 14px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      text-decoration: none;
+      cursor: pointer;
+    }
+    .hero-links a.primary,
+    .toolbar button.primary {
+      border-color: rgba(56, 189, 248, 0.36);
+      background: linear-gradient(135deg, rgba(14, 165, 233, 0.92), rgba(37, 99, 235, 0.92));
+    }
+    .focus { padding: 20px; background: linear-gradient(180deg, rgba(18, 34, 54, 0.92), rgba(9, 16, 28, 0.9)); }
+    .panel-label {
+      margin: 0 0 8px;
+      color: #93c5fd;
+      font-size: 0.74rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .focus strong { display: block; font-size: 1.08rem; line-height: 1.35; }
+    .focus p { margin: 9px 0 0; color: var(--muted); line-height: 1.58; }
+    .sync { margin-top: 16px; padding-top: 14px; border-top: 1px solid rgba(148, 163, 184, 0.16); color: var(--muted); font-size: 0.88rem; }
+    .status-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+    .status-card { padding: 16px; background: linear-gradient(180deg, rgba(10, 18, 31, 0.96), rgba(18, 30, 47, 0.86)); }
+    .status-card .label { color: var(--muted); font-size: 0.86rem; font-weight: 700; }
+    .status-card .value { margin-top: 8px; font-size: 1.9rem; font-weight: 900; letter-spacing: -0.04em; }
+    .status-card .hint { margin-top: 6px; color: var(--muted); font-size: 0.84rem; line-height: 1.45; }
+    .service-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+    .service-card {
+      padding: 18px;
+      text-decoration: none;
+      background: linear-gradient(180deg, rgba(10, 18, 31, 0.96), rgba(17, 28, 44, 0.88));
+      transition: transform 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease;
+    }
+    .service-card:hover { transform: translateY(-3px); border-color: rgba(125, 211, 252, 0.55); box-shadow: 0 20px 34px rgba(2, 6, 23, 0.36); }
+    .service-tag {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 5px 9px;
+      background: rgba(56, 189, 248, 0.14);
+      color: #bae6fd;
+      font-size: 0.74rem;
+      font-weight: 800;
+    }
+    .service-card h2 { margin: 10px 0 0; font-size: 1.06rem; }
+    .service-card p { margin: 8px 0 0; color: var(--muted); font-size: 0.9rem; line-height: 1.56; }
+    .service-card .meta { margin-top: 12px; display: flex; justify-content: space-between; gap: 10px; color: #d7e7ff; font-size: 0.82rem; font-weight: 700; }
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.08fr) minmax(300px, 0.92fr);
+      gap: 16px;
+    }
+    .panel { padding: 18px; background: linear-gradient(180deg, rgba(10, 18, 31, 0.96), rgba(15, 23, 42, 0.88)); }
+    .panel-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; margin-bottom: 12px; }
+    .panel-head h2 { margin: 0; font-size: 1.08rem; }
+    .meta { color: var(--muted); font-size: 0.9rem; line-height: 1.5; }
+    .toolbar { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td {
+      padding: 10px 8px;
+      border-top: 1px solid rgba(148, 163, 184, 0.14);
+      text-align: left;
+      vertical-align: top;
+      font-size: 0.92rem;
+    }
+    th { color: #e2ebf8; font-size: 0.82rem; font-weight: 800; background: rgba(51, 65, 85, 0.4); }
+    tbody tr:hover td { background: rgba(30, 41, 59, 0.5); }
+    .status-pill { display: inline-flex; align-items: center; border-radius: 999px; padding: 4px 8px; font-size: 0.76rem; font-weight: 800; color: #fff; }
+    .ok { background: var(--ok); }
+    .warn { background: var(--warn); }
+    .bad { background: var(--danger); }
+    .decision-list { display: grid; gap: 10px; }
+    .decision { padding: 14px; border: 1px solid rgba(148, 163, 184, 0.14); border-radius: 16px; background: linear-gradient(180deg, rgba(10, 18, 31, 0.96), rgba(18, 30, 47, 0.88)); }
+    .decision strong { display: block; font-size: 0.98rem; }
+    .decision p { margin: 8px 0 0; color: var(--muted); line-height: 1.56; }
+    .detail-links {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 16px;
+    }
+    .detail-link {
+      padding: 16px;
+      text-decoration: none;
+      background: linear-gradient(180deg, rgba(10, 18, 31, 0.94), rgba(13, 22, 39, 0.88));
+    }
+    .detail-link strong { display: block; font-size: 0.96rem; }
+    .detail-link p { margin: 8px 0 0; color: var(--muted); font-size: 0.88rem; line-height: 1.52; }
+    @media (max-width: 1160px) {
+      .hero, .layout { grid-template-columns: 1fr; }
+      .service-grid, .detail-links { grid-template-columns: 1fr 1fr; }
+      .status-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 760px) {
+      .container { padding: 20px 16px 30px; }
+      .service-grid, .status-grid, .detail-links { grid-template-columns: 1fr; }
+    }
+  </style>
 </head>
-<body class="bg-slate-950 text-slate-100">
-    <main class="min-h-screen flex items-center justify-center p-6">
-        <div class="w-full max-w-5xl">
-            <div class="rounded-2xl border border-slate-800 bg-slate-900 p-8 shadow-xl">
-                <div class="flex items-center gap-4">
-                    <span class="text-4xl">🏭</span>
-                    <div>
-                        <h1 class="text-2xl font-bold">SoftFactory</h1>
-                        <p class="text-slate-400">Premium SaaS 운영 콘솔</p>
-                    </div>
-                </div>
-
-                <div class="grid md:grid-cols-3 gap-6 mt-8">
-                    <a href="platform/index.html" class="rounded-xl border border-slate-800 bg-slate-800 p-5 hover:border-indigo-500 transition">
-                        <p class="text-sm text-slate-400">사용자 진입</p>
-                        <p class="text-xl font-bold mt-1">사용자 대시보드</p>
-                        <p class="text-slate-400 mt-2 text-sm">대시보드 · 결제 · 성능 · 계정</p>
-                    </a>
-                    <a href="platform/admin.html" class="rounded-xl border border-slate-800 bg-slate-800 p-5 hover:border-indigo-500 transition">
-                        <p class="text-sm text-slate-400">운영진</p>
-                        <p class="text-xl font-bold mt-1">관리자 대시보드</p>
-                        <p class="text-slate-400 mt-2 text-sm">매출, 사용자, 모니터링</p>
-                    </a>
-                    <a href="bohemian-marketing/index.html" class="rounded-xl border border-slate-800 bg-slate-800 p-5 hover:border-indigo-500 transition">
-                        <p class="text-sm text-slate-400">신규 서비스</p>
-                        <p class="text-xl font-bold mt-1">Bohemian Marketing AI</p>
-                        <p class="text-slate-400 mt-2 text-sm">Persona · Autopilot · Inbox · Analytics</p>
-                    </a>
-                </div>
-
-                <section class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-6" id="rootStats">
-                    <article class="bg-slate-800 rounded-lg p-4">
-                        <p class="text-slate-400 text-xs">활성 팀</p>
-                        <p id="activeTeams" class="text-2xl font-bold mt-2">-</p>
-                    </article>
-                    <article class="bg-slate-800 rounded-lg p-4">
-                        <p class="text-slate-400 text-xs">총 멤버</p>
-                        <p id="totalMembers" class="text-2xl font-bold mt-2">-</p>
-                    </article>
-                    <article class="bg-slate-800 rounded-lg p-4">
-                        <p class="text-slate-400 text-xs">평균 가동률</p>
-                        <p id="avgUtil" class="text-2xl font-bold mt-2">-</p>
-                    </article>
-                    <article class="bg-slate-800 rounded-lg p-4">
-                        <p class="text-slate-400 text-xs">시스템 상태</p>
-                        <p id="apiHealth" class="text-2xl font-bold mt-2">-</p>
-                    </article>
-                    <article class="bg-slate-800 rounded-lg p-4 md:col-span-2">
-                        <p class="text-slate-400 text-xs">플랫폼 통합 KPI</p>
-                        <p id="platformKpi" class="text-sm mt-2 text-slate-300">-</p>
-                    </article>
-                </section>
-            </div>
+<body>
+  <div class="container">
+    <section class="hero">
+      <article class="intro panel">
+        <span class="kicker">운영 입구</span>
+        <h1>SoftFactory 전체 운영을 한 번에 시작합니다.</h1>
+        <p class="subtitle">이 화면은 오늘의 우선순위와 주요 서비스 진입만 먼저 보여줍니다. 상세 운영 데이터는 아래 상태 요약과 서비스 허브에서 이어서 확인합니다.</p>
+        <div class="hero-links">
+          <a class="primary" href="/platform/index.html">플랫폼 홈 열기</a>
+          <a href="/platform/dashboard.html">운영 대시보드 보기</a>
+          <a href="/operations.html">운영 제어 열기</a>
         </div>
-    </main>
-    <script>
-        async function refreshRootStats() {
-            const teamFallback = { active: 5, members: 33, utilization: 83, kpi: '연동 대기' };
-            try {
-                const teams = await apiFetch('/api/v1/teams').then(r => r.ok ? r.json() : []);
-                const arr = Array.isArray(teams) ? teams : [];
-                document.getElementById('activeTeams').textContent = arr.length || 0;
-                document.getElementById('totalMembers').textContent = arr.reduce((s, t) => s + (t.members || 0), 0);
-                const avg = arr.length ? Math.round(arr.reduce((s, t) => s + (t.utilization || 0), 0) / arr.length) : 0;
-                document.getElementById('avgUtil').textContent = avg + '%';
-            } catch {
-                document.getElementById('activeTeams').textContent = teamFallback.active;
-                document.getElementById('totalMembers').textContent = teamFallback.members;
-                document.getElementById('avgUtil').textContent = teamFallback.utilization + '%';
-            }
+      </article>
 
-            try {
-                const h = await apiFetch('/api/platform/health').then(r => r.ok ? r.json() : null);
-                document.getElementById('apiHealth').textContent = h ? String(h.status || 'ok') : 'offline';
-                const dash = await apiFetch('/api/platform/dashboard').then(r => r.ok ? r.json() : null);
-                if (dash) {
-                    const kpi = `${dash.active_services || 0}개 서비스 · ${Number(dash.monthly_mrr || 0).toLocaleString('ko-KR')}원`;
-                    document.getElementById('platformKpi').textContent = kpi;
-                }
-            } catch {
-                document.getElementById('apiHealth').textContent = 'demo';
-                document.getElementById('platformKpi').textContent = 'demo-fallback 모드';
-            }
+      <article class="focus panel">
+        <p class="panel-label">지금 해야 할 일</p>
+        <strong>오늘 가장 먼저 확인할 항목</strong>
+        <p id="priorityFocus">서비스 상태를 기준으로 우선 확인이 필요한 화면을 계산 중입니다.</p>
+        <div class="sync">마지막 동기화: <span id="sync">-</span></div>
+      </article>
+    </section>
+
+    <section class="status-grid" aria-label="핵심 상태">
+      <article class="status-card">
+        <div class="label">운영 팀</div>
+        <div class="value" id="activeTeams">-</div>
+        <div class="hint">현재 운영 루프에 연결된 팀 수</div>
+      </article>
+      <article class="status-card">
+        <div class="label">활성 멤버</div>
+        <div class="value" id="totalMembers">-</div>
+        <div class="hint">전체 인력 현황</div>
+      </article>
+      <article class="status-card">
+        <div class="label">평균 가동률</div>
+        <div class="value" id="avgUtil">-</div>
+        <div class="hint">팀별 활용도 평균</div>
+      </article>
+      <article class="status-card">
+        <div class="label">플랫폼 상태</div>
+        <div class="value" id="apiHealth">-</div>
+        <div class="hint">API 응답 기준</div>
+      </article>
+    </section>
+
+    <section class="service-grid" aria-label="주요 서비스">
+      <a href="/platform/index.html" class="service-card">
+        <span class="service-tag">플랫폼</span>
+        <h2>플랫폼 홈</h2>
+        <p>서비스 전환, 오늘의 작업, 빠른 이동을 가장 먼저 확인합니다.</p>
+        <div class="meta"><span>요약</span><span>Open</span></div>
+      </a>
+      <a href="/platform/dashboard.html" class="service-card">
+        <span class="service-tag">운영</span>
+        <h2>운영 대시보드</h2>
+        <p>KPI, 알림, 세부 운영 데이터를 확인하고 조정합니다.</p>
+        <div class="meta"><span>KPI</span><span>Open</span></div>
+      </a>
+      <a href="/sns-auto/index.html" class="service-card">
+        <span class="service-tag">성장</span>
+        <h2>SNS 자동화</h2>
+        <p>계정 연결, 초안 생성, 예약 발행, 캠페인 관리를 이어갑니다.</p>
+        <div class="meta"><span>게시 흐름</span><span>Open</span></div>
+      </a>
+      <a href="/review/index.html" class="service-card">
+        <span class="service-tag">리뷰</span>
+        <h2>리뷰 허브</h2>
+        <p>추천 캠페인, 신청 대기, 계정 상태를 작업 순서대로 확인합니다.</p>
+        <div class="meta"><span>신청 흐름</span><span>Open</span></div>
+      </a>
+      <a href="/ai-automation/index.html" class="service-card">
+        <span class="service-tag">자동화</span>
+        <h2>AI 자동화</h2>
+        <p>실행 대기, 승인 큐, 다음 배포를 기준으로 운영 상태를 봅니다.</p>
+        <div class="meta"><span>승인 큐</span><span>Open</span></div>
+      </a>
+      <a href="/webapp-builder/index.html" class="service-card">
+        <span class="service-tag">빌드</span>
+        <h2>웹앱 빌더</h2>
+        <p>앱 생성, 배포 상태, 실행 로그를 한 화면에서 다룹니다.</p>
+        <div class="meta"><span>배포</span><span>Open</span></div>
+      </a>
+    </section>
+
+    <section class="layout">
+      <section class="panel">
+        <div class="panel-head">
+          <div>
+            <h2>시스템 전체 상태</h2>
+            <div class="meta" id="platformKpi">-</div>
+          </div>
+        </div>
+        <div class="toolbar">
+          <button class="primary" id="refreshBtn" type="button">상태 새로고침</button>
+          <button id="exportBtn" type="button">CSV 내보내기</button>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>영역</th>
+              <th>상태</th>
+              <th>현재 값</th>
+              <th>메모</th>
+            </tr>
+          </thead>
+          <tbody id="platformRows"></tbody>
+        </table>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head">
+          <div>
+            <h2>운영 메모</h2>
+            <div class="meta">다음 행동과 확인 순서를 짧게 정리합니다.</div>
+          </div>
+        </div>
+        <div class="decision-list" id="decisionList"></div>
+      </section>
+    </section>
+
+    <section class="detail-links" aria-label="보조 이동">
+      <a href="/growth-automation/index.html" class="detail-link">
+        <strong>Growth Automation</strong>
+        <p>이벤트, 리텐션, 메시지, DLQ 흐름을 상세 운영합니다.</p>
+      </a>
+      <a href="/analytics.html" class="detail-link">
+        <strong>데이터 분석</strong>
+        <p>트렌드와 KPI 비교를 기준으로 개선 우선순위를 정합니다.</p>
+      </a>
+      <a href="/operations.html" class="detail-link">
+        <strong>운영 제어</strong>
+        <p>경고, 상태 변경, 미션 로그를 한곳에서 관리합니다.</p>
+      </a>
+      <a href="/teams.html" class="detail-link">
+        <strong>팀 관리</strong>
+        <p>팀 상태, 가동률, 배치 현황을 확인합니다.</p>
+      </a>
+      <a href="/automation-dashboard.html" class="detail-link">
+        <strong>자동화 모니터링</strong>
+        <p>실패 루프, 재시도, 대기 큐를 추적합니다.</p>
+      </a>
+      <a href="/reports.html" class="detail-link">
+        <strong>리포트 센터</strong>
+        <p>생성, 보관, 공유 대상 리포트를 관리합니다.</p>
+      </a>
+    </section>
+  </div>
+
+  <script src="shared-runtime.js"></script>
+  <script>
+    const fallback = {
+      teams: [
+        { id: "t1", name: "Alpha", members: 11, utilization: 87 },
+        { id: "t2", name: "Beta", members: 9, utilization: 73 },
+        { id: "t3", name: "Gamma", members: 8, utilization: 66 }
+      ],
+      status: { status: "ok", active_services: 3, monthly_mrr: 2400000, uptime: 99.6, error_rate: 0.14, latency_ms: 135 },
+      platform: { active_services: 3, monthly_mrr: 2400000, error_rate: 0.14, latency_ms: 135 }
+    };
+
+    const TXT = {
+      ok: "\uC815\uC0C1",
+      warn: "\uC8FC\uC758",
+      bad: "\uC704\uD5D8",
+      healthTitle: "\uD50C\uB7AB\uD3FC \uAC74\uAC15\uB3C4",
+      utilTitle: "\uD300 \uAC00\uB3D9\uB960",
+      nextTitle: "\uB2E4\uC74C \uC774\uB3D9",
+      platformKpi: "\uD65C\uC131 \uC11C\uBE44\uC2A4 {count}\uAC1C \u00B7 \uC6D4 \uB9E4\uCD9C {amount}\uC6D0",
+      priorityBad: "\uC624\uB958\uC728\uC774 \uAE30\uC900\uBCF4\uB2E4 \uB192\uC2B5\uB2C8\uB2E4. \uC6B4\uC601 \uC81C\uC5B4\uC640 CI/CD\uC5D0\uC11C \uCD5C\uADFC \uC2E4\uD328 \uC6D0\uC778\uACFC \uC7AC\uC2DC\uB3C4 \uC0C1\uD0DC\uB97C \uBA3C\uC800 \uD655\uC778\uD558\uC138\uC694.",
+      priorityOk: "\uAE34\uAE09 \uC7A5\uC560\uB294 \uC5C6\uC2B5\uB2C8\uB2E4. \uD50C\uB7AB\uD3FC \uD648\uC5D0\uC11C \uC624\uB298\uC758 \uC791\uC5C5\uC744 \uD655\uC778\uD55C \uB4A4 \uB370\uC774\uD130 \uBD84\uC11D\uC774\uB098 Growth Automation\uC73C\uB85C \uC774\uB3D9\uD558\uBA74 \uB429\uB2C8\uB2E4.",
+      healthText: "\uD604\uC7AC \uC0C1\uD0DC\uB294 {status}\uC785\uB2C8\uB2E4. \uC624\uB958\uC728 {error}%\uC640 \uC9C0\uC5F0 {latency}ms\uB97C \uAE30\uC900\uC73C\uB85C \uBA3C\uC800 \uC810\uAC80\uD558\uC138\uC694.",
+      utilText: "\uD3C9\uADE0 \uAC00\uB3D9\uB960\uC740 {util}%\uC785\uB2C8\uB2E4. 70% \uC774\uD558 \uD300\uC774 \uC788\uC73C\uBA74 \uD300 \uAD00\uB9AC \uD654\uBA74\uC5D0\uC11C \uBCD1\uBAA9\uACFC \uBC30\uCE58 \uC0C1\uD0DC\uB97C \uBA3C\uC800 \uD655\uC778\uD558\uC138\uC694.",
+      nextBad: "\uC624\uB958\uC728\uC774 \uAE30\uC900\uBCF4\uB2E4 \uB192\uC2B5\uB2C8\uB2E4. \uC6B4\uC601 \uC81C\uC5B4 \uB610\uB294 CI/CD \uD654\uBA74\uC5D0\uC11C \uCD5C\uADFC \uC2E4\uD328 \uC6D0\uC778\uACFC \uC7AC\uC2DC\uB3C4 \uC0C1\uD0DC\uB97C \uBA3C\uC800 \uBCF4\uC138\uC694.",
+      nextOk: "\uAE34\uAE09 \uC7A5\uC560\uB294 \uC5C6\uC2B5\uB2C8\uB2E4. \uD50C\uB7AB\uD3FC \uD648\uC774\uB098 \uB370\uC774\uD130 \uBD84\uC11D \uD654\uBA74\uC5D0\uC11C \uB2E4\uC74C \uAC1C\uC120 \uC6B0\uC120\uC21C\uC704\uB97C \uC815\uD558\uBA74 \uB429\uB2C8\uB2E4.",
+      rowTeam: "\uD300 API",
+      rowStatus: "\uC0C1\uD0DC API",
+      rowSla: "\uD50C\uB7AB\uD3FC SLA",
+      rowRoute: "\uC6B4\uC601 \uB8E8\uD2B8",
+      noteMembers: "\uD300/\uBA64\uBC84 \uC9D1\uACC4",
+      noteAccess: "\uBA54\uC778 \uD654\uBA74 \uC811\uADFC \uAC00\uB2A5"
+    };
+
+    function fill(template, values) {
+      return template.replace(/\{(\w+)\}/g, (_, key) => values[key] ?? "");
+    }
+
+    function csvEscape(value) {
+      return `"${String(value).replaceAll("\"", "\"\"")}"`;
+    }
+
+    function pill(status) {
+      if (status === TXT.ok) return '<span class="status-pill ok">\uC815\uC0C1</span>';
+      if (status === TXT.warn) return '<span class="status-pill warn">\uC8FC\uC758</span>';
+      return '<span class="status-pill bad">\uC704\uD5D8</span>';
+    }
+
+    function buildDecisions(teams, status) {
+      const avgUtil = teams.length
+        ? Math.round(teams.reduce((sum, item) => sum + (Number(item.utilization) || 0), 0) / teams.length)
+        : 0;
+      return [
+        {
+          title: TXT.healthTitle,
+          text: fill(TXT.healthText, {
+            status: status.status || "unknown",
+            error: (status.error_rate || 0).toFixed(2),
+            latency: status.latency_ms || 0
+          })
+        },
+        {
+          title: TXT.utilTitle,
+          text: fill(TXT.utilText, { util: avgUtil })
+        },
+        {
+          title: TXT.nextTitle,
+          text: (status.error_rate || 0) > 0.2 ? TXT.nextBad : TXT.nextOk
         }
-        refreshRootStats();
-        setInterval(refreshRootStats, 30000);
-    </script>
+      ];
+    }
+
+    async function refreshRootStats() {
+      let teams = [];
+      let status = { status: "unknown", uptime: 0 };
+      let platform = fallback.platform;
+      let source = "demo";
+
+      try {
+        const teamRes = await sfRuntime.apiFetch("/api/v1/teams");
+        if (!teamRes.ok) throw new Error("teams api fail");
+        const payload = await teamRes.json();
+        teams = Array.isArray(payload) ? payload : (Array.isArray(payload.teams) ? payload.teams : []);
+        source = "api";
+      } catch {
+        teams = fallback.teams;
+      }
+
+      try {
+        const statusRes = await sfRuntime.apiFetch("/api/v1/status");
+        if (!statusRes.ok) throw new Error("status api fail");
+        status = await statusRes.json();
+        source = "api";
+      } catch {
+        status = fallback.status;
+      }
+
+      platform = {
+        active_services: teams.length || fallback.platform.active_services,
+        monthly_mrr: fallback.platform.monthly_mrr,
+        error_rate: typeof status.error_rate === "number" ? status.error_rate : fallback.platform.error_rate,
+        latency_ms: typeof status.latency_ms === "number" ? status.latency_ms : fallback.platform.latency_ms
+      };
+
+      const activeTeams = teams.length;
+      const totalMembers = teams.reduce((sum, item) => sum + (Number(item.members) || 0), 0);
+      const avgUtil = activeTeams
+        ? Math.round(teams.reduce((sum, item) => sum + (Number(item.utilization) || 0), 0) / activeTeams)
+        : 0;
+
+      document.getElementById("activeTeams").textContent = String(activeTeams);
+      document.getElementById("totalMembers").textContent = String(totalMembers);
+      document.getElementById("avgUtil").textContent = `${avgUtil}%`;
+      document.getElementById("apiHealth").textContent = status.status || "unknown";
+      document.getElementById("sync").textContent = `${new Date().toLocaleString("ko-KR", { hour12: false })} (${source})`;
+      document.getElementById("platformKpi").textContent = fill(TXT.platformKpi, {
+        count: platform.active_services || 0,
+        amount: (platform.monthly_mrr || 0).toLocaleString("ko-KR")
+      });
+      document.getElementById("priorityFocus").textContent = (status.error_rate || 0) > 0.2 ? TXT.priorityBad : TXT.priorityOk;
+
+      const uptime = Number(status.uptime) || 0;
+      status.uptime = uptime;
+      const rows = [
+        [TXT.rowTeam, activeTeams > 0 ? TXT.ok : TXT.warn, `${totalMembers}\uBA85`, TXT.noteMembers],
+        [TXT.rowStatus, uptime > 95 ? TXT.ok : TXT.warn, `${status.status || "unknown"}`, `\uAC00\uC6A9\uC131 ${uptime.toFixed(1)}%`],
+        [TXT.rowSla, (platform.error_rate || 0) < 0.3 ? TXT.ok : TXT.bad, `\uC624\uB958\uC728 ${(platform.error_rate || 0).toFixed(2)}%`, `\uC9C0\uC5F0 ${platform.latency_ms || 0}ms`],
+        [TXT.rowRoute, TXT.ok, `${platform.active_services || 0}\uAC1C \uC11C\uBE44\uC2A4`, TXT.noteAccess]
+      ];
+
+      document.getElementById("platformRows").innerHTML = rows.map(([service, state, current, note]) => (
+        `<tr><td>${service}</td><td>${pill(state)}</td><td>${current}</td><td>${note}</td></tr>`
+      )).join("");
+
+      const decisions = buildDecisions(teams, status);
+      document.getElementById("decisionList").innerHTML = decisions.map((item) => (
+        `<article class="decision"><strong>${item.title}</strong><p>${item.text}</p></article>`
+      )).join("");
+    }
+
+    function exportCSV() {
+      const rows = [
+        ["activeTeams", document.getElementById("activeTeams").textContent, new Date().toISOString()],
+        ["totalMembers", document.getElementById("totalMembers").textContent, new Date().toISOString()],
+        ["avgUtil", document.getElementById("avgUtil").textContent, new Date().toISOString()],
+        ["apiHealth", document.getElementById("apiHealth").textContent, new Date().toISOString()]
+      ];
+      const header = ["item", "value", "timestamp"];
+      const csv = [header, ...rows].map((row) => row.map(csvEscape).join(",")).join("\n");
+      sfRuntime.downloadText(`root-stats-${Date.now()}.csv`, csv, "text/csv;charset=utf-8;");
+    }
+
+    document.getElementById("refreshBtn").addEventListener("click", refreshRootStats);
+    document.getElementById("exportBtn").addEventListener("click", exportCSV);
+    refreshRootStats();
+    setInterval(refreshRootStats, 30000);
+  </script>
 </body>
 </html>
-

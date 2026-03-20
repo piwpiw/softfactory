@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>아키텍처 개요 - SoftFactory</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../responsive-framework.css">
+    <style>
+        body { font-family: "Inter", sans-serif; background: #0d1422; color: #ecf3ff; }
+        .panel { background: rgba(18, 29, 49, 0.9); border: 1px solid rgba(148, 169, 201, 0.2); }
+    </style>
+</head>
+<body class="min-h-screen p-6 lg:p-10">
+    <div class="mx-auto max-w-4xl space-y-6">
+        <a href="/infrastructure/monitor.html" class="inline-flex text-sm text-indigo-300 hover:text-indigo-200">← 인프라 모니터로 돌아가기</a>
+        <div class="panel rounded-3xl p-8">
+            <p class="text-xs uppercase tracking-[0.2em] text-slate-500">Docs</p>
+            <h1 class="mt-3 text-3xl font-extrabold text-white">아키텍처 개요</h1>
+            <p class="mt-4 text-sm leading-7 text-slate-300">현재 구조는 `backend/`, `web/`, `tests/`, `api/`를 제품 축으로 두고, 운영 제어는 `scripts/`, 문서 기준은 `docs/`, 로컬 산출물은 `.workspace/`로 격리하는 형태입니다. CooCook 같은 서비스 페이지는 정적 HTML/JS와 taxonomy 기반 클라이언트 상태로 동작합니다.</p>
+        </div>
+        <div class="grid gap-5 md:grid-cols-2">
+            <div class="panel rounded-2xl p-5"><h2 class="font-semibold text-white">프론트엔드</h2><p class="mt-2 text-sm text-slate-400">정적 HTML과 공용 JS가 Vercel 정적 출력으로 배포됩니다.</p></div>
+            <div class="panel rounded-2xl p-5"><h2 class="font-semibold text-white">API 연결</h2><p class="mt-2 text-sm text-slate-400">`/api/*`는 proxy 경유로 백엔드로 전달됩니다.</p></div>
+            <div class="panel rounded-2xl p-5"><h2 class="font-semibold text-white">문서 구조</h2><p class="mt-2 text-sm text-slate-400">정식 기준 문서는 `docs/INDEX.md`에서 시작하며, status/reference/runbooks/checklists로 분리됩니다.</p></div>
+            <div class="panel rounded-2xl p-5"><h2 class="font-semibold text-white">운영 원칙</h2><p class="mt-2 text-sm text-slate-400">루트는 진입점만 유지하고, 로그·임시 파일·레거시 보고서는 루트에 두지 않습니다.</p></div>
+        </div>
+    </div>
+</body>
+</html>

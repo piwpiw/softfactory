@@ -6,13 +6,17 @@ from flask import request, g
 from functools import wraps
 import os
 from pathlib import Path
+import tempfile
 
 class CacheManager:
     """Simple in-memory and file-based cache with TTL support"""
 
     def __init__(self):
         self.memory_cache = {}
-        self.cache_dir = Path(__file__).parent.parent / '.cache'
+        if os.getenv('VERCEL', '').strip() == '1':
+            self.cache_dir = Path(tempfile.gettempdir()) / 'softfactory-cache'
+        else:
+            self.cache_dir = Path(__file__).parent.parent / '.cache'
         self.cache_dir.mkdir(exist_ok=True)
         self.hit_count = 0
         self.miss_count = 0

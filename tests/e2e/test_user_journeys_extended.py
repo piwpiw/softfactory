@@ -16,6 +16,8 @@ from backend.models import (
     ReviewAutoRule, ReviewApplication, SNSAccount
 )
 
+pytestmark = pytest.mark.e2e
+
 
 @pytest.fixture
 def app():

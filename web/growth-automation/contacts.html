@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Growth Contacts</title>
+  <link rel="stylesheet" href="/unified-ui.css" />
+  <script src="/unified-ui.js" defer></script>
+  <script src="/shared-runtime.js"></script>
+  <style>
+    :root {
+      --line: #9fb0c4;
+      --text: #0b1627;
+      --muted: #334155;
+      --card: rgba(255, 255, 255, 0.98);
+      --accent: #0f766e;
+      --surface: #edf6ff;
+      --surface-2: #dfeaf5;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--text);
+      font-family: "Segoe UI", "Apple SD Gothic Neo", sans-serif;
+      background:
+        radial-gradient(46rem 32rem at 0% -10%, #d9f99d 0%, transparent 40%),
+        radial-gradient(40rem 30rem at 100% 0%, #dbeafe 0%, transparent 38%),
+        #f3f8fd;
+    }
+    .wrap { max-width: 1200px; margin: 0 auto; padding: 28px 24px 40px; }
+    .hero, .panel, .composer, .stat {
+      background: var(--card);
+      border: 1px solid #8da4bb;
+      border-radius: 18px;
+      box-shadow: 0 14px 30px rgba(15, 23, 42, 0.09);
+    }
+    .hero {
+      padding: 22px;
+      border-color: rgba(15, 118, 110, 0.32);
+      border-radius: 24px;
+      background: linear-gradient(135deg, rgba(255,255,255,1), rgba(240,253,250,0.95));
+    }
+    .hero h1 { margin: 0; font-size: 1.95rem; letter-spacing: -0.02em; }
+    .hero p { margin: 10px 0 0; color: var(--muted); line-height: 1.6; max-width: 760px; }
+    .nav { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+    .nav a {
+      text-decoration: none;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 8px 12px;
+      background: #fff;
+      color: var(--text);
+      font-weight: 700;
+    }
+    .nav a.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+    .stats { margin-top: 18px; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+    .stat {
+      padding: 14px 14px 16px;
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(180deg, rgba(255,255,255,1), rgba(248,251,255,0.95));
+    }
+    .stat::before {
+      content: "";
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 6px;
+      background: #94a3b8;
+    }
+    .stat .k { color: var(--muted); font-size: 0.82rem; font-weight: 700; }
+    .stat .v { margin-top: 8px; font-weight: 900; font-size: 1.35rem; color: var(--text); }
+    .stat-neutral::before { background: #64748b; }
+    .stat-ok::before { background: #16a34a; }
+    .stat-warning::before { background: #d97706; }
+    .stat-danger::before { background: #dc2626; }
+    .stat-accent::before { background: var(--accent); }
+    .content { margin-top: 16px; display: grid; grid-template-columns: 0.95fr 1.35fr; gap: 16px; }
+    .composer, .panel {
+      padding: 20px;
+      border-radius: 22px;
+      background: linear-gradient(180deg, rgba(255,255,255,1), rgba(248,251,255,0.96));
+    }
+    .composer h2, .panel h2 { margin: 0 0 10px; font-size: 1.08rem; }
+    .field { margin-bottom: 10px; }
+    label { display: block; margin-bottom: 6px; color: var(--muted); font-size: 0.86rem; font-weight: 700; }
+    input {
+      width: 100%;
+      border: 1px solid #7f96ad;
+      border-radius: 12px;
+      padding: 11px 12px;
+      font: inherit;
+      background: #fff;
+      color: var(--text);
+    }
+    .btn-row { display: flex; gap: 10px; flex-wrap: wrap; }
+    button {
+      border: 1px solid transparent;
+      border-radius: 12px;
+      padding: 11px 14px;
+      background: var(--accent);
+      color: #fff;
+      font: inherit;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 8px 18px rgba(15, 118, 110, 0.18);
+    }
+    button.ghost { background: #d8f3ee; color: #0b4f49; border-color: #8fd3c7; box-shadow: none; }
+    .feedback {
+      margin-top: 14px;
+      padding: 13px 15px;
+      border-radius: 14px;
+      border: 1px solid rgba(15, 118, 110, 0.26);
+      background: linear-gradient(180deg, rgba(217,243,239,0.92), rgba(240,253,250,1));
+      color: #0f4d48;
+      font-weight: 700;
+      line-height: 1.55;
+    }
+    .segment-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+    .filter-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0 14px; }
+    .filter-chip {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #fff;
+      color: var(--text);
+      padding: 8px 12px;
+      font-size: 0.84rem;
+      font-weight: 800;
+      cursor: pointer;
+    }
+    .filter-chip.is-active {
+      background: #d8f3ee;
+      border-color: #7bc8bb;
+      color: #0f5f59;
+    }
+    .segment-chip {
+      border: 1px solid #b9cadb;
+      border-radius: 999px;
+      padding: 7px 10px;
+      background: #fff;
+      font-size: 0.84rem;
+      color: #1e293b;
+      font-weight: 700;
+    }
+    .toolbar {
+      display: flex;
+      gap: 10px;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+    .detail-panel {
+      margin-top: 16px;
+      padding: 14px;
+      border: 1px solid #8fd3c7;
+      border-radius: 16px;
+      background: linear-gradient(180deg, rgba(255,255,255,1), rgba(240,253,250,0.82));
+    }
+    .compare-grid, .trend-strip {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 16px;
+    }
+    .trend-card, .compare-card {
+      padding: 14px;
+      border-radius: 18px;
+      border: 1px solid #b9cadb;
+      background: linear-gradient(180deg, rgba(255,255,255,1), rgba(248,251,255,0.96));
+      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.05);
+    }
+    .trend-spark { display: flex; align-items: end; height: 60px; margin-top: 8px; }
+    .trend-bar {
+      display: block;
+      width: 100%;
+      border-radius: 12px 12px 6px 6px;
+      background: linear-gradient(180deg, #0f766e 0%, #34d399 100%);
+      min-height: 18px;
+    }
+    .trend-label { color: var(--muted); font-size: 0.8rem; font-weight: 700; }
+    .trend-value { margin-top: 6px; font-size: 1.05rem; font-weight: 900; color: var(--text); }
+    .trend-meta { margin-top: 6px; font-size: 0.78rem; font-weight: 800; }
+    .compare-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .compare-card p { margin: 8px 0 0; color: var(--muted); font-size: 0.84rem; line-height: 1.5; }
+    .compare-trend { margin-bottom: 8px; font-size: 0.78rem; font-weight: 800; }
+    .trend-up { color: #166534; }
+    .trend-down { color: #b45309; }
+    .trend-bar.trend-down { background: linear-gradient(180deg, #f59e0b 0%, #fbbf24 100%); }
+    .compare-bar { height: 8px; border-radius: 999px; background: #dbe7ef; overflow: hidden; }
+    .compare-fill { height: 100%; border-radius: inherit; background: linear-gradient(90deg, #0f766e 0%, #34d399 100%); }
+    .detail-panel h3 { margin: 0 0 10px; font-size: 1rem; }
+    .detail-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+    .detail-item {
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.98);
+      border: 1px solid #c8d5e3;
+    }
+    .detail-item strong { display: block; margin-bottom: 4px; font-size: 0.78rem; color: var(--muted); }
+    .table-selectable tbody tr { cursor: pointer; }
+    .table-selectable tbody tr:hover td { background: var(--surface); }
+    .table-selectable tbody tr.is-selected td { background: #d8f3ee; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { text-align: left; border-top: 1px solid #d7e2ee; padding: 10px 9px; font-size: 0.92rem; }
+    td { background: rgba(255,255,255,0.82); color: #132238; }
+    th {
+      background: var(--surface-2);
+      color: #1e293b;
+      position: sticky;
+      top: 0;
+      font-weight: 800;
+      border-bottom: 1px solid #b9cadb;
+    }
+    .muted { color: var(--muted); line-height: 1.55; }
+    @media (max-width: 980px) {
+      .content { grid-template-columns: 1fr; }
+      .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 720px) {
+      .wrap { padding: 20px 16px 32px; }
+      .stats, .compare-grid, .trend-strip { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body data-page="contacts">
+  <div class="wrap">
+    <section class="hero">
+      <h1>Contacts</h1>
+      <p>단순 조회 화면이 아니라 리드 생성, 세그먼트 변화, 최근 유입 품질을 한 번에 판단하는 운영 화면입니다.</p>
+      <nav class="nav">
+        <a href="/growth-automation/">Hub</a>
+        <a class="active" href="/growth-automation/contacts.html">Contacts</a>
+        <a href="/growth-automation/journeys.html">Journeys</a>
+        <a href="/growth-automation/ops.html">Ops</a>
+      </nav>
+    </section>
+
+    <section class="stats" id="contactSummaryCards"></section>
+    <section class="trend-strip" id="contactTrendStrip"></section>
+    <section class="compare-grid" id="contactCompareGrid"></section>
+
+    <section class="content">
+      <article class="composer">
+        <h2>빠른 리드 생성</h2>
+        <p class="muted">버튼을 누르면 `lead_captured` 이벤트가 생성되고, 연락처 등록과 초기 여정 진입 여부를 바로 확인할 수 있습니다.</p>
+        <div class="field">
+          <label for="leadEmail">이메일</label>
+          <input id="leadEmail" placeholder="lead@example.com" />
+        </div>
+        <div class="field">
+          <label for="leadPhone">전화번호</label>
+          <input id="leadPhone" placeholder="01012345678" />
+        </div>
+        <div class="btn-row">
+          <button id="leadCreateBtn">리드 생성</button>
+          <button class="ghost" id="contactSearchBtn">목록 새로고침</button>
+        </div>
+        <div class="feedback" id="contactsFeedback">Lead creation and search feedback will appear here.</div>
+        <div class="filter-row" id="contactSavedFilters"></div>
+        <div class="segment-row" id="contactSegments"></div>
+      </article>
+
+      <article class="panel">
+        <div class="toolbar">
+          <div>
+            <h2>연락처 목록</h2>
+            <p class="muted">최근 생성 순으로 정렬됩니다. 리드 생성 직후 결과를 같은 화면에서 바로 검증할 수 있습니다.</p>
+          </div>
+          <input id="contactKeyword" placeholder="email / phone / contact_uid 검색" />
+        </div>
+        <table class="table-selectable">
+          <thead>
+            <tr><th>Contact UID</th><th>Email</th><th>Phone</th><th>Status</th><th>Lifecycle</th><th>Created</th></tr>
+          </thead>
+          <tbody id="contactRows"></tbody>
+        </table>
+        <div class="detail-panel" id="contactDetailPanel">
+          <h3>선택한 연락처 상세</h3>
+          <div class="detail-grid" id="contactDetailGrid"></div>
+        </div>
+      </article>
+    </section>
+  </div>
+  <script src="/growth-automation/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,26 @@
+{
+  "contacts": {
+    "total": 12,
+    "lifecycle_counts": {
+      "lead": 5,
+      "active": 4,
+      "at_risk": 3
+    }
+  },
+  "events": {
+    "total": 18,
+    "failed": 2
+  },
+  "errors": {
+    "dlq_open": 1
+  },
+  "queue": {
+    "pending": 2
+  },
+  "journey_counts": {
+    "lead": 4,
+    "signed_up": 2,
+    "active": 4,
+    "at_risk": 2
+  }
+}

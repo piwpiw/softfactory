@@ -361,8 +361,9 @@ if __name__ == "__main__":
     # Generate report
     report = generate_report()
 
-    # Write report
-    report_path = Path(__file__).parent.parent / "extended-test-report.md"
+    # Write report under local workspace output instead of repository root.
+    report_path = Path(__file__).parent.parent / ".workspace/reports/extended-test-report.md"
+    report_path.parent.mkdir(parents=True, exist_ok=True)
     report_path.write_text(report)
     print()
     print(f"Report written to: {report_path}")

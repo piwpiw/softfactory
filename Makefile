@@ -7,7 +7,7 @@
 
 help:
 	@echo "SoftFactory Management Commands"
-	@echo "  make run-dev      - Run development server (run.py)"
+	@echo "  make run-dev      - Run development server (start_server.py)"
 	@echo "  make run-demo     - Run platform in demo mode (Port 9000)"
 	@echo "  make run-docker   - Run full stack using Docker Compose"
 	@echo "  make stop-docker  - Stop Docker services"
@@ -19,7 +19,7 @@ help:
 
 run-dev:
 	@echo "Starting development server on http://localhost:8000"
-	python run.py
+	python start_server.py
 
 run-demo:
 	@echo "Starting Demo Platform (Port 9000)..."

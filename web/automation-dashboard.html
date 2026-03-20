@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>자동화 고도화 대시보드</title>
+  <link rel="stylesheet" href="/unified-ui.css" />
+  <script src="/unified-ui.js" defer></script>
+  <script src="/shared-runtime.js"></script>
+  <style>
+    :root {
+      --line: #9fb0c4;
+      --text: #0b1627;
+      --muted: #334155;
+      --panel: rgba(255,255,255,0.98);
+      --surface-2: #dfeaf5;
+      --surface: #edf6ff;
+    }
+    * { box-sizing: border-box; }
+    body { margin:0; font-family:"Segoe UI","Apple SD Gothic Neo",sans-serif; color:var(--text); background:#f3f8fd; }
+    .wrap { max-width:1240px; margin:0 auto; padding:28px 24px 40px; }
+    .hero,.panel,.stat,.memo {
+      background:var(--panel);
+      border:1px solid #8da4bb;
+      border-radius:18px;
+      box-shadow:0 14px 30px rgba(15,23,42,.08);
+    }
+    .hero,.panel { padding:18px; }
+    .hero { display:grid; grid-template-columns:1.2fr 0.8fr; gap:16px; margin-bottom:16px; background:linear-gradient(135deg,#fff,#eefcf8); }
+    .hero h1 { margin:0; font-size:2rem; }
+    .hero p,.meta { color:var(--muted); line-height:1.55; }
+    .nav { margin-top:12px; display:flex; gap:8px; flex-wrap:wrap; }
+    .nav a { text-decoration:none; border:1px solid var(--line); border-radius:999px; padding:7px 11px; color:var(--text); background:#fff; font-weight:700; }
+    .stats { margin-top:12px; display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); gap:12px; margin-bottom:16px; }
+    .stat { padding:12px; position:relative; overflow:hidden; }
+    .stat::before { content:""; position:absolute; inset:0 auto 0 0; width:6px; background:#64748b; }
+    .stat .k { color:var(--muted); font-size:.82rem; font-weight:700; }
+    .stat .v { margin-top:6px; font-weight:900; font-size:1.1rem; }
+    .grid { display:grid; grid-template-columns:1.2fr 0.8fr; gap:16px; }
+    table { width:100%; border-collapse:collapse; }
+    th,td { border-top:1px solid #d7e2ee; text-align:left; padding:10px 8px; font-size:.92rem; }
+    th { background:var(--surface-2); color:#1e293b; font-weight:800; }
+    tbody tr:hover td { background:var(--surface); }
+    .memo { padding:14px; background:linear-gradient(180deg,#fff,#f8fafc); }
+    .memo ul { margin:10px 0 0; padding-left:18px; }
+    @media (max-width:1100px){ .hero,.grid{grid-template-columns:1fr;} .stats{grid-template-columns:repeat(3,minmax(0,1fr));} }
+    @media (max-width:720px){ .wrap{padding:20px 16px 32px;} .stats{grid-template-columns:1fr;} }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="hero">
+      <div>
+        <h1>자동화 고도화 대시보드</h1>
+        <p>기존 자동화 상태, 최근 사이클, 실패 부서, Growth Automation 핵심 수치를 한 화면에서 보고 다음 조치를 결정합니다.</p>
+        <nav class="nav">
+          <a href="/index.html">콘솔 홈</a>
+          <a href="/growth-automation/">Growth Hub</a>
+          <a href="/operations.html">운영 제어</a>
+        </nav>
+      </div>
+      <div class="meta" id="memoLine">최근 갱신: 동기화 중...</div>
+    </section>
+
+    <section class="stats" id="stats"></section>
+
+    <section class="grid">
+      <article class="panel">
+        <h2>자동화 사이클</h2>
+        <table>
+          <thead><tr><th>시간</th><th>Iteration</th><th>상태</th><th>실패 부서</th></tr></thead>
+          <tbody id="cycleRows"></tbody>
+        </table>
+      </article>
+
+      <article class="memo">
+        <h2 style="margin:0;">운영 메모</h2>
+        <div class="meta">자동화 고도화에서 지금 가장 먼저 확인할 체크포인트</div>
+        <ul>
+          <li>DLQ open 건수 급증 시 Ops 페이지에서 재처리</li>
+          <li>중복률 상승 시 idempotency_key 생성 로직 점검</li>
+          <li>처리 지연 상승 시 queue limit와 worker concurrency 확인</li>
+          <li>Growth 이벤트 실패가 증가하면 Growth Hub와 같이 확인</li>
+        </ul>
+      </article>
+    </section>
+  </div>
+
+  <script>
+    function safe(v, f = "-") { return v === undefined || v === null || v === "" ? f : String(v); }
+    function dt(v) { if (!v) return "-"; const d = new Date(v); return Number.isNaN(d.getTime()) ? String(v) : d.toLocaleString("ko-KR"); }
+
+    async function json(path) {
+      const res = await sfRuntime.apiFetch(path);
+      if (!res.ok) throw new Error("request failed");
+      return res.json();
+    }
+
+    async function refresh() {
+      try {
+        const [autoStatus, cyclesPayload, growthSummary] = await Promise.all([
+          json("/api/v1/automation/status"),
+          json("/api/v1/automation/cycles?limit=10"),
+          json("/api/v1/growth/dashboard/summary")
+        ]);
+
+        const cycles = Array.isArray(cyclesPayload.cycles) ? cyclesPayload.cycles : [];
+        const stats = [
+          ["Automation Running", autoStatus?.status?.running ? "YES" : "NO"],
+          ["Pipelines", autoStatus?.total_pipelines ?? 0],
+          ["Alerts", autoStatus?.total_alerts ?? 0],
+          ["Growth Contacts", growthSummary?.contacts?.total ?? 0],
+          ["Growth Events", growthSummary?.events?.total ?? 0],
+          ["Growth DLQ Open", growthSummary?.errors?.dlq_open ?? 0]
+        ];
+        document.getElementById("stats").innerHTML = stats.map(([k,v]) => `<article class="stat"><div class="k">${k}</div><div class="v">${safe(v)}</div></article>`).join("");
+        document.getElementById("cycleRows").innerHTML = cycles.map((row) => `<tr><td>${dt(row.timestamp)}</td><td>${safe(row.iteration)}</td><td>${safe(row.validation_status)}</td><td>${safe(row.failed_departments_in_runner)}</td></tr>`).join("") || `<tr><td colspan="4" class="meta">사이클 데이터 없음</td></tr>`;
+        document.getElementById("memoLine").textContent = `최근 갱신: ${new Date().toLocaleString("ko-KR", { hour12: false })}`;
+      } catch (error) {
+        console.error(error);
+        document.getElementById("memoLine").textContent = "API 조회 실패";
+      }
+    }
+
+    refresh();
+    setInterval(refresh, 30000);
+  </script>
+</body>
+</html>

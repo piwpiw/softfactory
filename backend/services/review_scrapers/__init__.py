@@ -17,7 +17,7 @@ Error isolation ensures one failing scraper does not affect others.
 import logging
 import traceback
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from typing import List, Dict
+from typing import List, Dict, Optional, Type
 
 from .base_scraper import BaseScraper
 from .revu_scraper import RevuScraper
@@ -28,10 +28,17 @@ from .seoulouba_scraper import SeouloubaScraper
 from .naver_scraper import NaverScraper
 from .moaview_scraper import MoaviewScraper
 from .inflexer_scraper import InflexerScraper
-from .reviewnote_scraper import ReviewNoteScraper
-from .gangnam_scraper import GangnamScraper
 
 logger = logging.getLogger('review.scrapers')
+
+
+def _optional_scraper(module_name: str, class_name: str) -> Optional[Type[BaseScraper]]:
+    try:
+        module = __import__(f'{__name__}.{module_name}', fromlist=[class_name])
+        return getattr(module, class_name)
+    except Exception as exc:
+        logger.warning("Optional scraper unavailable: %s.%s (%s)", module_name, class_name, exc)
+        return None
 
 
 def _create_scrapers() -> List[BaseScraper]:
@@ -44,7 +51,7 @@ def _create_scrapers() -> List[BaseScraper]:
     Returns:
         List of scraper instances
     """
-    return [
+    scraper_classes = [
         RevuScraper(),           # revu.net (via Naver index)
         ReviewPlaceScraper(),    # reviewplace.co.kr (direct)
         SeouloubaScraper(),      # seoulouba.co.kr (direct)
@@ -53,9 +60,17 @@ def _create_scrapers() -> List[BaseScraper]:
         MiblScraper(),           # mibl.kr
         MoaviewScraper(),        # moaview.co.kr
         InflexerScraper(),       # inflexer.net
-        ReviewNoteScraper(),     # reviewnote.co.kr
-        GangnamScraper(),        # gangnammatjip.co.kr
     ]
+
+    reviewnote_class = _optional_scraper('reviewnote_scraper', 'ReviewNoteScraper')
+    if reviewnote_class:
+        scraper_classes.append(reviewnote_class())
+
+    gangnam_class = _optional_scraper('gangnam_scraper', 'GangnamScraper')
+    if gangnam_class:
+        scraper_classes.append(gangnam_class())
+
+    return scraper_classes
 
 
 # Registry of all scrapers (8 platforms)

@@ -1,93 +1,231 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="theme-color" content="#111827">
-<title>AI 직원 상세 — AI Auto | SoftFactory</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <script src="../platform/api.js"></script>
-    <style>body { font-family: 'Inter', sans-serif; }</style>
-    <link rel="stylesheet" href="../responsive-framework.css">
-  </head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#111827">
+  <title>AI 직원 상세 | SoftFactory</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="../platform/api.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../responsive-framework.css">
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+  </style>
+</head>
 <body class="bg-slate-950 text-slate-100">
-    <div class="flex h-screen overflow-hidden">
-        <div class="flex-1 flex flex-col overflow-hidden">
-            <header class="h-16 bg-slate-900 border-b border-slate-800 px-6 flex items-center justify-between shrink-0">
-                <h2 class="text-xl font-bold text-white" id="empName">AI 직원 상세</h2>
-                <a href="index.html" class="text-slate-400 hover:text-white">← 돌아가기</a>
-            </header>
-            <main class="flex-1 overflow-y-auto p-6">
-                <div class="grid grid-cols-3 gap-6">
-                    <div class="col-span-2 space-y-6">
-                        <div class="bg-slate-800 rounded-xl p-8 border border-slate-700">
-                            <div class="flex items-start justify-between mb-6">
-                                <div>
-                                    <h1 class="text-3xl font-bold text-white mb-2" id="empName2">Email Bot</h1>
-                                    <p class="text-cyan-400">📧 이메일 자동 응답</p>
-                                </div>
-                                <span class="px-4 py-2 bg-green-900 text-green-200 rounded-lg font-semibold">✅ 활성</span>
-                            </div>
-                            <div class="grid grid-cols-3 gap-4">
-                                <div>
-                                    <p class="text-slate-400 text-sm mb-1">상태</p>
-                                    <p class="font-bold text-white">활성</p>
-                                </div>
-                                <div>
-                                    <p class="text-slate-400 text-sm mb-1">절약 시간</p>
-                                    <p class="font-bold text-white">15시간/월</p>
-                                </div>
-                                <div>
-                                    <p class="text-slate-400 text-sm mb-1">절약 비용</p>
-                                    <p class="font-bold text-white">₩150만/연</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="bg-slate-800 rounded-xl p-8 border border-slate-700">
-                            <h3 class="text-lg font-bold text-white mb-4">⚙️ 설정</h3>
-                            <div class="space-y-4">
-                                <div>
-                                    <label class="block text-sm font-medium text-slate-300 mb-2">직원명</label>
-                                    <input type="text" value="Email Bot" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white focus:border-cyan-500 focus:outline-none">
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-slate-300 mb-2">설명</label>
-                                    <textarea class="w-full h-24 bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white focus:border-cyan-500 focus:outline-none resize-none">자동 이메일 응답 설정</textarea>
-                                </div>
-                                <button class="w-full px-4 py-3 bg-cyan-600 hover:bg-cyan-700 text-white rounded-lg font-medium transition">💾 저장</button>
-                                <button class="w-full px-4 py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition">🗑️ 삭제</button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="space-y-6">
-                        <div class="bg-gradient-to-br from-cyan-900/30 to-cyan-900/10 rounded-xl p-6 border-2 border-cyan-600">
-                            <h3 class="text-lg font-bold text-white mb-4">📊 통계</h3>
-                            <div class="space-y-4">
-                                <div>
-                                    <p class="text-slate-400 text-sm">실행 횟수</p>
-                                    <p class="text-2xl font-bold text-cyan-400">1,245</p>
-                                </div>
-                                <div>
-                                    <p class="text-slate-400 text-sm">성공률</p>
-                                    <p class="text-2xl font-bold text-cyan-400">99.2%</p>
-                                </div>
-                                <div>
-                                    <p class="text-slate-400 text-sm">작업 중</p>
-                                    <p class="text-2xl font-bold text-white">24</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </main>
+  <div class="flex h-screen overflow-hidden">
+    <aside class="w-64 bg-slate-900 border-r border-slate-800 flex flex-col shrink-0">
+      <div class="p-6 border-b border-slate-800">
+        <a href="index.html" class="flex items-center gap-3">
+          <span class="text-2xl">🤖</span>
+          <div>
+            <h1 class="font-bold text-white text-sm">AI 자동화</h1>
+            <p class="text-xs text-slate-400">직원 운영 상태</p>
+          </div>
+        </a>
+      </div>
+      <nav class="soft-nav-tree flex-1 p-6 space-y-2 overflow-y-auto">
+        <button class="hamburger" aria-label="메뉴 열기/닫기"><span></span><span></span><span></span></button>
+        <a href="index.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">대시보드</a>
+        <a href="create.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">AI 직원 생성</a>
+        <a href="analytics.html" class="soft-nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800">분석</a>
+      </nav>
+      <div class="p-6 border-t border-slate-800">
+        <button onclick="logout()" class="p-2 hover:bg-slate-800 rounded-lg text-slate-300">로그아웃</button>
+      </div>
+    </aside>
+
+    <div class="flex-1 flex flex-col overflow-hidden">
+      <header class="bg-slate-900 border-b border-slate-800 px-6 py-4 flex items-center justify-between shrink-0">
+        <div>
+          <h2 class="text-xl font-bold text-white" id="headerTitle">AI 직원 상세</h2>
+          <p class="text-xs text-slate-400" id="headerMeta">직원 정보를 불러오는 중입니다.</p>
         </div>
+        <div class="flex gap-2">
+          <a href="create.html" class="px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm hover:bg-slate-700">새 직원 생성</a>
+          <a href="index.html" class="px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm hover:bg-slate-700">대시보드</a>
+        </div>
+      </header>
+
+      <main class="flex-1 overflow-y-auto p-6">
+        <div class="max-w-6xl mx-auto grid gap-6 xl:grid-cols-[1.2fr,0.8fr]">
+          <section class="space-y-6">
+            <article class="rounded-2xl border border-cyan-700/30 bg-gradient-to-br from-cyan-950/70 to-slate-900 p-6">
+              <div class="flex items-start justify-between gap-4">
+                <div>
+                  <p class="text-xs font-semibold tracking-[0.24em] text-cyan-300 uppercase">Runtime</p>
+                  <h1 class="text-3xl font-bold text-white mt-2" id="employeeName">AI 직원</h1>
+                  <p class="text-sm text-slate-300 mt-2" id="employeeScenario">시나리오 로딩 중</p>
+                </div>
+                <span id="statusBadge" class="rounded-full border border-slate-700 bg-slate-800 px-3 py-1 text-xs text-slate-200">draft</span>
+              </div>
+
+              <div class="grid gap-4 md:grid-cols-3 mt-6">
+                <div class="rounded-xl border border-slate-800 bg-slate-950 p-4">
+                  <p class="text-slate-400 text-xs">월 절약 시간</p>
+                  <p class="text-2xl font-bold text-cyan-300 mt-1" id="metricSavings">0h</p>
+                </div>
+                <div class="rounded-xl border border-slate-800 bg-slate-950 p-4">
+                  <p class="text-slate-400 text-xs">생성 시각</p>
+                  <p class="text-base font-semibold text-white mt-1" id="metricCreated">-</p>
+                </div>
+                <div class="rounded-xl border border-slate-800 bg-slate-950 p-4">
+                  <p class="text-slate-400 text-xs">배포 시각</p>
+                  <p class="text-base font-semibold text-white mt-1" id="metricDeployed">-</p>
+                </div>
+              </div>
+            </article>
+
+            <article class="rounded-2xl border border-slate-800 bg-slate-900 p-6">
+              <h3 class="text-xl font-bold text-white">운영 설명</h3>
+              <pre id="employeeDescription" class="mt-4 whitespace-pre-wrap text-sm leading-7 text-slate-300"></pre>
+            </article>
+          </section>
+
+          <aside class="space-y-6">
+            <article class="rounded-2xl border border-slate-800 bg-slate-900 p-6">
+              <h3 class="text-lg font-bold text-white">실행 액션</h3>
+              <div class="grid gap-3 mt-4">
+                <button id="deployBtn" class="w-full rounded-xl bg-cyan-600 px-4 py-3 text-sm font-medium text-white hover:bg-cyan-500">배포 준비</button>
+                <button id="activateBtn" class="w-full rounded-xl bg-emerald-600 px-4 py-3 text-sm font-medium text-white hover:bg-emerald-500">즉시 활성화</button>
+                <button id="deleteBtn" class="w-full rounded-xl bg-rose-600 px-4 py-3 text-sm font-medium text-white hover:bg-rose-500">삭제</button>
+              </div>
+              <div id="actionResult" class="hidden mt-4 rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-4 text-sm"></div>
+            </article>
+
+            <article class="rounded-2xl border border-slate-800 bg-slate-900 p-6">
+              <h3 class="text-lg font-bold text-white">운영 가이드</h3>
+              <div class="mt-4 space-y-3 text-sm text-slate-300" id="guideList"></div>
+            </article>
+          </aside>
+        </div>
+      </main>
     </div>
-    <script>
-        requireAuth();
-    </script>
-    <script src="../mobile-optimization.js" defer></script>
+  </div>
+
+  <script>
+    requireAuth();
+
+    let employeeId = null;
+    let employeeState = null;
+
+    function scenarioLabel(key) {
+      return {
+        email: '이메일 자동 응답',
+        social: 'SNS 댓글 대응',
+        customer_service: '상담 지원',
+        data_entry: '데이터 입력 자동화',
+        scheduling: '일정 운영 자동화'
+      }[key] || key || '미지정';
+    }
+
+    function statusLabel(status) {
+      return {
+        draft: 'draft',
+        training: 'training',
+        active: 'active',
+        paused: 'paused'
+      }[status] || status || 'draft';
+    }
+
+    function formatDate(value) {
+      if (!value) return '-';
+      const parsed = new Date(value);
+      if (Number.isNaN(parsed.getTime())) return value;
+      return parsed.toLocaleString('ko-KR');
+    }
+
+    function renderGuide(employee) {
+      const guides = [];
+      if ((employee.status || '') === 'draft') {
+        guides.push('초안 상태입니다. 실제 반복 실행을 원하면 먼저 배포 준비를 수행하세요.');
+      }
+      if ((employee.status || '') === 'training') {
+        guides.push('배포 준비가 끝났습니다. 운영에 바로 투입하려면 활성화를 실행하세요.');
+      }
+      if ((employee.status || '') === 'active') {
+        guides.push('활성 상태입니다. 대시보드에서 승인 큐와 연결 채널 상태를 함께 보는 것이 좋습니다.');
+      }
+      if (!employee.monthly_savings_hours) {
+        guides.push('월 절약 시간이 비어 있으면 배포 시 예상 절감 시간을 다시 설정하세요.');
+      }
+      document.getElementById('guideList').innerHTML = guides.map((item) => `<div class="rounded-xl border border-slate-800 bg-slate-950 px-4 py-3">${item}</div>`).join('');
+    }
+
+    function renderEmployee(employee) {
+      employeeState = employee;
+      document.getElementById('headerTitle').textContent = employee.name || 'AI 직원';
+      document.getElementById('headerMeta').textContent = `${scenarioLabel(employee.scenario_type)} · ${statusLabel(employee.status)}`;
+      document.getElementById('employeeName').textContent = employee.name || 'AI 직원';
+      document.getElementById('employeeScenario').textContent = scenarioLabel(employee.scenario_type);
+      document.getElementById('statusBadge').textContent = statusLabel(employee.status);
+      document.getElementById('employeeDescription').textContent = employee.description || '운영 설명이 없습니다.';
+      document.getElementById('metricSavings').textContent = `${employee.monthly_savings_hours || 0}h`;
+      document.getElementById('metricCreated').textContent = formatDate(employee.created_at);
+      document.getElementById('metricDeployed').textContent = formatDate(employee.deployed_at);
+      renderGuide(employee);
+    }
+
+    async function refreshEmployee() {
+      const employee = await getAIEmployeeDetail(employeeId);
+      renderEmployee(employee);
+    }
+
+    async function runAction(handler, messageBuilder) {
+      try {
+        showLoading('작업을 수행하는 중입니다...');
+        const result = await handler();
+        await refreshEmployee();
+        const panel = document.getElementById('actionResult');
+        panel.classList.remove('hidden');
+        panel.innerHTML = `<p class="font-semibold text-emerald-200">${messageBuilder(result)}</p>`;
+        showSuccess('작업이 반영되었습니다.');
+      } catch (error) {
+        showError(error.message || '작업 중 오류가 발생했습니다.');
+      } finally {
+        hideLoading();
+      }
+    }
+
+    async function init() {
+      const params = new URLSearchParams(window.location.search);
+      employeeId = params.get('id');
+      if (!employeeId) {
+        showError('직원 ID가 없습니다.');
+        location.href = 'index.html';
+        return;
+      }
+      await refreshEmployee();
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      init();
+      document.getElementById('deployBtn').addEventListener('click', () => runAction(
+        () => deployAIEmployee(employeeId, employeeState?.monthly_savings_hours || 10),
+        () => '배포 준비를 완료했습니다.'
+      ));
+      document.getElementById('activateBtn').addEventListener('click', () => runAction(
+        () => activateAIEmployee(employeeId),
+        () => '직원을 활성화했습니다.'
+      ));
+      document.getElementById('deleteBtn').addEventListener('click', async () => {
+        if (!confirm('이 AI 직원을 삭제할까요?')) return;
+        try {
+          showLoading('직원을 삭제하는 중입니다...');
+          await deleteAIEmployee(employeeId);
+          showSuccess('AI 직원을 삭제했습니다.');
+          location.href = 'index.html';
+        } catch (error) {
+          showError(error.message || '삭제 중 오류가 발생했습니다.');
+        } finally {
+          hideLoading();
+        }
+      });
+    });
+  </script>
+  <script src="../mobile-optimization.js" defer></script>
 </body>
 </html>

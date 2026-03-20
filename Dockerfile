@@ -22,12 +22,15 @@ COPY . .
 RUN useradd -m -u 1000 appuser && chown -R appuser:appuser /app
 USER appuser
 
+# Keep default runtime port aligned with start_server/run.py
+ENV APP_PORT=8000
+
 # Expose port
 EXPOSE 8000
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
-    CMD curl -f http://localhost:8000/health || exit 1
+    CMD sh -c 'curl -f "http://localhost:${APP_PORT:-8000}/health" || exit 1'
 
 # Run Flask app
 CMD ["python", "start_server.py"]

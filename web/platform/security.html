@@ -3,226 +3,129 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#111827">
-<title>보안 & 준수 — SoftFactory</title>
+    <meta name="description" content="SoftFactory 보안 운영 센터">
+    <title>보안 센터 — SoftFactory</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="api.js"></script>
+    <link rel="stylesheet" href="../responsive-framework.css">
+    <link rel="stylesheet" href="../accessibility.css">
+    <link rel="stylesheet" href="platform-dashboard-ui.css">
     <style>
         body { font-family: 'Inter', sans-serif; }
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #0f172a; }
-        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+        .soft-stat { border: 1px solid rgba(71, 85, 105, 0.45); background: rgba(15, 23, 42, 0.88); border-radius: 1rem; padding: 1.1rem; }
+        .soft-pill { display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.25rem 0.65rem; border-radius: 999px; font-size: 0.72rem; font-weight: 700; }
+        .soft-pill.ok { background: rgba(34, 197, 94, 0.18); color: #86efac; }
+        .soft-pill.warn { background: rgba(245, 158, 11, 0.16); color: #fcd34d; }
+        .soft-pill.critical { background: rgba(248, 113, 113, 0.18); color: #fda4af; }
+        .control-row + .control-row, .audit-row + .audit-row { border-top: 1px solid rgba(51, 65, 85, 0.75); }
     </style>
-    <link rel="stylesheet" href="../responsive-framework.css">
-  </head>
-<body class="bg-slate-950 text-slate-100 antialiased">
-    <div class="max-w-4xl mx-auto px-6 py-12">
-        <div class="mb-8">
-            <a href="privacy.html" class="text-indigo-400 hover:text-indigo-300 transition">← 개인정보처리방침으로 돌아가기</a>
-            <h1 class="text-4xl font-bold text-white mt-4">🔐 보안 & 준수</h1>
-            <p class="text-slate-400 mt-2">데이터 보안 및 규정 준수 정보</p>
-        </div>
-
-        <div class="space-y-8">
-            <!-- Security Standards -->
-            <div class="bg-slate-800 rounded-xl p-8 border border-slate-700">
-                <h2 class="text-2xl font-bold text-white mb-6">🛡️ 보안 표준</h2>
-                <div class="space-y-4">
-                    <div class="flex items-start gap-4 p-4 bg-slate-700 rounded-lg">
-                        <span class="text-2xl">✅</span>
-                        <div>
-                            <p class="font-bold text-white">256-bit AES 암호화</p>
-                            <p class="text-sm text-slate-400">모든 전송 데이터는 TLS 1.3으로 암호화됩니다</p>
-                        </div>
-                    </div>
-                    <div class="flex items-start gap-4 p-4 bg-slate-700 rounded-lg">
-                        <span class="text-2xl">✅</span>
-                        <div>
-                            <p class="font-bold text-white">SHA-256 해싱</p>
-                            <p class="text-sm text-slate-400">모든 암호는 솔트 처리되고 해시됩니다</p>
-                        </div>
-                    </div>
-                    <div class="flex items-start gap-4 p-4 bg-slate-700 rounded-lg">
-                        <span class="text-2xl">✅</span>
-                        <div>
-                            <p class="font-bold text-white">JWT 토큰 인증</p>
-                            <p class="text-sm text-slate-400">안전한 세션 관리 및 API 인증</p>
-                        </div>
-                    </div>
-                    <div class="flex items-start gap-4 p-4 bg-slate-700 rounded-lg">
-                        <span class="text-2xl">✅</span>
-                        <div>
-                            <p class="font-bold text-white">이중 인증 (2FA)</p>
-                            <p class="text-sm text-slate-400">선택적 2FA 설정으로 보안 강화</p>
-                        </div>
-                    </div>
-                </div>
+</head>
+<body class="bg-slate-950 text-slate-100 antialiased soft-shell">
+    <a href="#main" class="skip-to-main sr-only">메인 콘텐츠로 이동</a>
+    <div class="flex h-screen overflow-hidden">
+        <aside class="w-72 soft-sidebar border-r border-slate-800 flex flex-col shrink-0">
+            <div class="p-6 border-b border-slate-800">
+                <div class="flex items-center gap-3"><span class="text-2xl" aria-hidden="true">🏭</span><div><h1 class="font-bold text-white">SoftFactory</h1><p class="text-xs text-slate-400">Platform Workspace</p></div></div>
             </div>
-
-            <!-- Compliance -->
-            <div class="bg-slate-800 rounded-xl p-8 border border-slate-700">
-                <h2 class="text-2xl font-bold text-white mb-6">📋 규정 준수</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="bg-slate-700 rounded-lg p-4 border border-green-600/30">
-                        <div class="flex items-center gap-2 mb-2">
-                            <span class="text-green-400">✓</span>
-                            <p class="font-bold text-white">GDPR</p>
+            <nav class="soft-nav-tree flex-1 p-6 space-y-2 overflow-y-auto" aria-label="플랫폼 네비게이션">
+                <button class="hamburger" aria-label="네비게이션 메뉴 열기" type="button"><span></span><span></span><span></span></button>
+                <details class="soft-nav-group" open><summary class="soft-nav-summary"><span>플랫폼 개요</span></summary><div class="soft-nav-sub">
+                    <a href="index.html" class="soft-nav-link px-4 py-2.5 rounded-lg">🏠 플랫폼 홈</a>
+                    <a href="dashboard.html" class="soft-nav-link px-4 py-2.5 rounded-lg">📊 KPI 대시보드</a>
+                    <a href="analytics.html" class="soft-nav-link px-4 py-2.5 rounded-lg">📈 분석</a>
+                    <a href="usage.html" class="soft-nav-link px-4 py-2.5 rounded-lg">🧮 사용량</a>
+                    <a href="performance.html" class="soft-nav-link px-4 py-2.5 rounded-lg">⚡ 성능</a>
+                    <a href="billing.html" class="soft-nav-link px-4 py-2.5 rounded-lg">💳 결제</a>
+                    <a href="invoices.html" class="soft-nav-link px-4 py-2.5 rounded-lg">🧾 인보이스</a>
+                </div></details>
+                <details class="soft-nav-group" open><summary class="soft-nav-summary"><span>워크스페이스</span></summary><div class="soft-nav-sub">
+                    <a href="profile.html" class="soft-nav-link px-4 py-2.5 rounded-lg">👤 프로필</a>
+                    <a href="notifications.html" class="soft-nav-link px-4 py-2.5 rounded-lg">🔔 알림</a>
+                    <a href="integrations.html" class="soft-nav-link px-4 py-2.5 rounded-lg">🔌 통합</a>
+                    <a href="security.html" class="soft-nav-link px-4 py-2.5 rounded-lg bg-indigo-600/20 border-l-2 border-indigo-500 text-white">🛡️ 보안 센터</a>
+                    <a href="settings.html" class="soft-nav-link px-4 py-2.5 rounded-lg">⚙️ 설정</a>
+                    <a href="help.html" class="soft-nav-link px-4 py-2.5 rounded-lg">❓ 도움말</a>
+                </div></details>
+                <details class="soft-nav-group" open><summary class="soft-nav-summary"><span>운영 연결</span></summary><div class="soft-nav-sub">
+                    <a href="admin.html" class="soft-nav-link px-4 py-2.5 rounded-lg">🧰 관리자</a>
+                    <a href="team.html" class="soft-nav-link px-4 py-2.5 rounded-lg">👥 팀</a>
+                </div></details>
+            </nav>
+            <div class="p-6 border-t border-slate-800 soft-user-panel"><div class="flex items-center justify-between"><div><p class="text-sm font-medium text-white" id="userName">사용자</p><p class="text-xs text-slate-400" id="userEmail">demo@softfactory.com</p></div><button onclick="logout()" class="p-2 hover:bg-slate-800 rounded-lg transition" title="로그아웃" type="button">🚪</button></div></div>
+        </aside>
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <header class="soft-topbar px-6 py-4 flex items-start justify-between gap-4 shrink-0">
+                <div><p class="text-xs uppercase tracking-[0.2em] text-slate-500 mb-2">Security</p><h2 class="text-xl font-bold text-white">보안 센터</h2><p class="text-sm text-slate-400 mt-1">권한, 탐지, 감사 로그, 대응 절차를 한 화면에서 운영합니다.</p></div>
+                <div class="flex flex-wrap gap-2"><button type="button" class="soft-btn px-3 py-2 rounded-lg text-sm" onclick="runSecurityCheck()">점검 실행</button><button type="button" class="soft-btn soft-btn-primary px-3 py-2 rounded-lg text-sm" onclick="exportAudit()">감사 로그 내보내기</button></div>
+            </header>
+            <main id="main" class="flex-1 overflow-y-auto soft-main space-y-6">
+                <section class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+                    <article class="soft-stat"><p class="text-xs uppercase tracking-[0.16em] text-slate-500">보안 점수</p><p class="text-3xl font-extrabold text-white mt-2">92</p><p class="text-xs text-emerald-300 mt-2">지난 주 대비 +4</p></article>
+                    <article class="soft-stat"><p class="text-xs uppercase tracking-[0.16em] text-slate-500">열린 이슈</p><p class="text-3xl font-extrabold text-white mt-2">3</p><p class="text-xs text-amber-300 mt-2">중요 1건, 보통 2건</p></article>
+                    <article class="soft-stat"><p class="text-xs uppercase tracking-[0.16em] text-slate-500">MFA 적용률</p><p class="text-3xl font-extrabold text-white mt-2">86%</p><p class="text-xs text-slate-400 mt-2">관리자 전원 적용 완료</p></article>
+                    <article class="soft-stat"><p class="text-xs uppercase tracking-[0.16em] text-slate-500">최근 감사</p><p class="text-3xl font-extrabold text-white mt-2">2시간 전</p><p class="text-xs text-slate-400 mt-2">권한 변경 추적 동기화 완료</p></article>
+                </section>
+                <section class="grid grid-cols-1 xl:grid-cols-[1.35fr_0.95fr] gap-6">
+                    <article class="soft-card p-6">
+                        <div class="flex items-start justify-between gap-4 mb-5"><div><h3 class="text-lg font-bold text-white">보안 통제 현황</h3><p class="text-sm text-slate-400 mt-1">실서비스에서 바로 확인해야 하는 핵심 통제만 남겼습니다.</p></div><span class="soft-pill ok">정상 운영</span></div>
+                        <div class="space-y-1">
+                            <div class="control-row py-4 flex items-start justify-between gap-4"><div><p class="font-semibold text-white">관리자 MFA</p><p class="text-sm text-slate-400 mt-1">관리자 6명 중 6명 등록. 다음 검토일 2026-03-14.</p></div><span class="soft-pill ok">적용 완료</span></div>
+                            <div class="control-row py-4 flex items-start justify-between gap-4"><div><p class="font-semibold text-white">API 키 순환 정책</p><p class="text-sm text-slate-400 mt-1">31일 이상 경과한 키 2개. 이번 주 회전 필요.</p></div><span class="soft-pill warn">조치 필요</span></div>
+                            <div class="control-row py-4 flex items-start justify-between gap-4"><div><p class="font-semibold text-white">권한 승격 승인</p><p class="text-sm text-slate-400 mt-1">긴급 권한 승격 1건이 24시간 이상 유지 중입니다.</p></div><span class="soft-pill critical">즉시 확인</span></div>
+                            <div class="control-row py-4 flex items-start justify-between gap-4"><div><p class="font-semibold text-white">데이터 반출 감시</p><p class="text-sm text-slate-400 mt-1">지난 7일 기준 비정상 대량 다운로드는 탐지되지 않았습니다.</p></div><span class="soft-pill ok">정상</span></div>
                         </div>
-                        <p class="text-sm text-slate-400">유럽연합 개인정보 보호 규칙 완전 준수</p>
-                    </div>
-                    <div class="bg-slate-700 rounded-lg p-4 border border-green-600/30">
-                        <div class="flex items-center gap-2 mb-2">
-                            <span class="text-green-400">✓</span>
-                            <p class="font-bold text-white">CCPA</p>
+                    </article>
+                    <article class="soft-card p-6">
+                        <h3 class="text-lg font-bold text-white mb-4">즉시 판단 포인트</h3>
+                        <div class="space-y-4">
+                            <div class="rounded-2xl border border-rose-500/35 bg-rose-950/20 p-4"><p class="text-xs uppercase tracking-[0.16em] text-rose-300">Critical</p><p class="font-semibold text-white mt-2">권한 승격 세션이 만료되지 않았습니다.</p><p class="text-sm text-slate-300 mt-2">배포 계정 `release-bot`이 긴급 권한 모드로 남아 있습니다. 오늘 안에 회수 여부를 확인해야 합니다.</p></div>
+                            <div class="rounded-2xl border border-amber-500/35 bg-amber-950/20 p-4"><p class="text-xs uppercase tracking-[0.16em] text-amber-300">Warning</p><p class="font-semibold text-white mt-2">API 키 2개가 회전 주기를 초과했습니다.</p><p class="text-sm text-slate-300 mt-2">Slack webhook, growth export key를 새 키로 교체한 뒤 이전 키를 폐기해야 합니다.</p></div>
+                            <div class="rounded-2xl border border-emerald-500/35 bg-emerald-950/20 p-4"><p class="text-xs uppercase tracking-[0.16em] text-emerald-300">Healthy</p><p class="font-semibold text-white mt-2">감사 로그 지연은 해소되었습니다.</p><p class="text-sm text-slate-300 mt-2">최근 2시간 동안 감사 적재 지연 없이 동기화되고 있습니다.</p></div>
                         </div>
-                        <p class="text-sm text-slate-400">캘리포니아 개인정보보호법 준수</p>
-                    </div>
-                    <div class="bg-slate-700 rounded-lg p-4 border border-green-600/30">
-                        <div class="flex items-center gap-2 mb-2">
-                            <span class="text-green-400">✓</span>
-                            <p class="font-bold text-white">개인정보보호법</p>
+                    </article>
+                </section>
+                <section class="grid grid-cols-1 xl:grid-cols-[1.15fr_0.85fr] gap-6">
+                    <article class="soft-card p-6">
+                        <div class="flex items-center justify-between mb-4"><h3 class="text-lg font-bold text-white">최근 감사 로그</h3><span class="text-xs text-slate-500">최근 4건</span></div>
+                        <div class="space-y-1">
+                            <div class="audit-row py-4 flex items-start justify-between gap-4"><div><p class="font-semibold text-white">권한 승격 요청 승인</p><p class="text-sm text-slate-400 mt-1">`ops-admin@softfactory.com` 가 `release-bot`의 배포 권한을 2시간 연장했습니다.</p></div><p class="text-xs text-slate-500 whitespace-nowrap">14:20</p></div>
+                            <div class="audit-row py-4 flex items-start justify-between gap-4"><div><p class="font-semibold text-white">새 API 키 발급</p><p class="text-sm text-slate-400 mt-1">Growth export 통합용 키가 생성됐습니다.</p></div><p class="text-xs text-slate-500 whitespace-nowrap">12:40</p></div>
+                            <div class="audit-row py-4 flex items-start justify-between gap-4"><div><p class="font-semibold text-white">MFA 등록 완료</p><p class="text-sm text-slate-400 mt-1">신규 운영자 `kim.ops@softfactory.com` 이 MFA 등록을 마쳤습니다.</p></div><p class="text-xs text-slate-500 whitespace-nowrap">11:05</p></div>
+                            <div class="audit-row py-4 flex items-start justify-between gap-4"><div><p class="font-semibold text-white">외부 로그인 차단</p><p class="text-sm text-slate-400 mt-1">허용되지 않은 국가의 로그인 시도가 자동 차단되었습니다.</p></div><p class="text-xs text-slate-500 whitespace-nowrap">09:32</p></div>
                         </div>
-                        <p class="text-sm text-slate-400">대한민국 개인정보보호법 준수</p>
-                    </div>
-                    <div class="bg-slate-700 rounded-lg p-4 border border-green-600/30">
-                        <div class="flex items-center gap-2 mb-2">
-                            <span class="text-green-400">✓</span>
-                            <p class="font-bold text-white">OWASP Top 10</p>
+                    </article>
+                    <article class="soft-card p-6">
+                        <h3 class="text-lg font-bold text-white mb-4">대응 런북</h3>
+                        <div class="space-y-3">
+                            <button type="button" class="w-full rounded-xl border border-slate-700 bg-slate-900/85 p-4 text-left hover:border-indigo-500/60 transition" onclick="showRunbook('account')"><p class="font-semibold text-white">계정 침해 의심 대응</p><p class="text-sm text-slate-400 mt-1">세션 회수, 암호 재설정, 감사 로그 보존</p></button>
+                            <button type="button" class="w-full rounded-xl border border-slate-700 bg-slate-900/85 p-4 text-left hover:border-indigo-500/60 transition" onclick="showRunbook('key')"><p class="font-semibold text-white">API 키 유출 대응</p><p class="text-sm text-slate-400 mt-1">키 폐기, 회전, 영향 범위 점검</p></button>
+                            <button type="button" class="w-full rounded-xl border border-slate-700 bg-slate-900/85 p-4 text-left hover:border-indigo-500/60 transition" onclick="showRunbook('dlp')"><p class="font-semibold text-white">대량 반출 의심 대응</p><p class="text-sm text-slate-400 mt-1">다운로드 중지, 팀 리드 승인, 법무 공유</p></button>
                         </div>
-                        <p class="text-sm text-slate-400">웹 보안 취약점 방지 기준 준수</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Infrastructure Security -->
-            <div class="bg-slate-800 rounded-xl p-8 border border-slate-700">
-                <h2 class="text-2xl font-bold text-white mb-6">🏗️ 인프라 보안</h2>
-                <div class="space-y-4">
-                    <div class="bg-slate-700 rounded-lg p-4">
-                        <p class="font-bold text-white mb-2">AWS 클라우드 인프라</p>
-                        <p class="text-sm text-slate-400">엔터프라이즈급 데이터센터에서 호스팅</p>
-                        <div class="mt-3 text-xs text-slate-500">
-                            <div class="flex items-center gap-2">
-                                <span>🔹</span> <span>AWS Security Groups 및 WAF 적용</span>
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <span>🔹</span> <span>자동 DDoS 방어</span>
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <span>🔹</span> <span>99.99% 가용성 SLA</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="bg-slate-700 rounded-lg p-4">
-                        <p class="font-bold text-white mb-2">자동 백업</p>
-                        <p class="text-sm text-slate-400">매시간 자동 백업 및 지리적 복제</p>
-                        <div class="mt-3 text-xs text-slate-500">
-                            <div class="flex items-center gap-2">
-                                <span>🔹</span> <span>일일 스냅샷 저장</span>
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <span>🔹</span> <span>30일 이전 버전 복구 가능</span>
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <span>🔹</span> <span>RPO: 1시간 / RTO: 4시간</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="bg-slate-700 rounded-lg p-4">
-                        <p class="font-bold text-white mb-2">접근 제어</p>
-                        <p class="text-sm text-slate-400">최소 권한 원칙 적용</p>
-                        <div class="mt-3 text-xs text-slate-500">
-                            <div class="flex items-center gap-2">
-                                <span>🔹</span> <span>역할 기반 접근 제어 (RBAC)</span>
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <span>🔹</span> <span>VPN 필수 접근</span>
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <span>🔹</span> <span>모든 관리자 활동 기록</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Monitoring & Incident Response -->
-            <div class="bg-slate-800 rounded-xl p-8 border border-slate-700">
-                <h2 class="text-2xl font-bold text-white mb-6">📊 모니터링 & 대응</h2>
-                <div class="space-y-4">
-                    <div class="bg-slate-700 rounded-lg p-4">
-                        <p class="font-bold text-white mb-2">24/7 모니터링</p>
-                        <p class="text-sm text-slate-400">실시간 보안 이벤트 감지 및 분석</p>
-                    </div>
-                    <div class="bg-slate-700 rounded-lg p-4">
-                        <p class="font-bold text-white mb-2">침입 탐지 시스템 (IDS)</p>
-                        <p class="text-sm text-slate-400">비정상 활동 자동 감지</p>
-                    </div>
-                    <div class="bg-slate-700 rounded-lg p-4">
-                        <p class="font-bold text-white mb-2">정기적인 보안 감사</p>
-                        <p class="text-sm text-slate-400">분기마다 외부 보안 전문가와 함께 진행</p>
-                    </div>
-                    <div class="bg-slate-700 rounded-lg p-4">
-                        <p class="font-bold text-white mb-2">사건 대응 계획</p>
-                        <p class="text-sm text-slate-400">신속한 대응 및 통지 절차 수립</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Certifications -->
-            <div class="bg-slate-800 rounded-xl p-8 border border-slate-700">
-                <h2 class="text-2xl font-bold text-white mb-6">🏆 인증</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="bg-slate-700 rounded-lg p-4 text-center">
-                        <p class="text-3xl mb-2">🔒</p>
-                        <p class="font-bold text-white text-sm">ISO/IEC 27001</p>
-                        <p class="text-xs text-slate-400 mt-1">정보보안관리시스템 인증</p>
-                    </div>
-                    <div class="bg-slate-700 rounded-lg p-4 text-center">
-                        <p class="text-3xl mb-2">☁️</p>
-                        <p class="font-bold text-white text-sm">SOC 2 Type II</p>
-                        <p class="text-xs text-slate-400 mt-1">보안, 가용성, 처리 무결성</p>
-                    </div>
-                    <div class="bg-slate-700 rounded-lg p-4 text-center">
-                        <p class="text-3xl mb-2">🛡️</p>
-                        <p class="font-bold text-white text-sm">PCI DSS</p>
-                        <p class="text-xs text-slate-400 mt-1">결제 카드 산업 데이터 보안</p>
-                    </div>
-                    <div class="bg-slate-700 rounded-lg p-4 text-center">
-                        <p class="text-3xl mb-2">📋</p>
-                        <p class="font-bold text-white text-sm">HIPAA</p>
-                        <p class="text-xs text-slate-400 mt-1">건강정보 개인정보보호</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Bug Bounty Program -->
-            <div class="bg-gradient-to-r from-amber-900/30 to-amber-900/10 rounded-xl p-8 border border-amber-600/30">
-                <h2 class="text-2xl font-bold text-white mb-4">🐛 버그 바운티 프로그램</h2>
-                <p class="text-slate-300 mb-6">보안 취약점을 발견하셨나요? 우리는 책임감 있는 공개를 장려합니다.</p>
-                <a href="mailto:security@softfactory.com" class="px-6 py-3 bg-amber-600 hover:bg-amber-700 text-white rounded-lg font-medium transition inline-block">security@softfactory.com으로 신고</a>
-            </div>
-
-            <!-- Security Updates -->
-            <div class="bg-slate-800 rounded-xl p-8 border border-slate-700">
-                <h2 class="text-2xl font-bold text-white mb-4">📢 보안 업데이트</h2>
-                <p class="text-slate-300 mb-6">최신 보안 업데이트 및 패치 정보를 받아보세요.</p>
-                <div class="flex gap-2">
-                    <input type="email" placeholder="이메일 주소" class="flex-1 px-4 py-2.5 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-slate-500 focus:border-indigo-500 focus:outline-none">
-                    <button onclick="subscribeSecurity()" class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition">구독</button>
-                </div>
-            </div>
+                        <div id="runbookOutput" class="mt-4 rounded-xl border border-slate-800 bg-slate-950/90 p-4 text-sm text-slate-300">대응 절차를 선택하면 우선 액션을 이곳에 표시합니다.</div>
+                    </article>
+                </section>
+            </main>
         </div>
     </div>
-
     <script>
-        function subscribeSecurity() {
-            alert('보안 업데이트 구독이 완료되었습니다!');
+        function safeText(id, value) { const el = document.getElementById(id); if (el) el.textContent = value; }
+        function notify(message) { if (typeof showToast === 'function') { showToast(message); return; } window.alert(message); }
+        function setUserInfo() { if (typeof getUser !== 'function') return; const user = getUser(); if (!user) return; safeText('userName', user.name || '사용자'); safeText('userEmail', user.email || 'demo@softfactory.com'); }
+        function runSecurityCheck() { notify('보안 점검을 다시 실행했습니다. 1분 내로 최신 결과가 반영됩니다.'); }
+        function exportAudit() { notify('감사 로그 CSV 내보내기를 시작했습니다.'); }
+        function showRunbook(type) {
+            const output = document.getElementById('runbookOutput');
+            const messages = {
+                account: '1. 계정 세션을 즉시 폐기합니다. 2. 비밀번호와 MFA를 재등록합니다. 3. 최근 24시간 감사 로그를 보존하고 팀 리드에게 에스컬레이션합니다.',
+                key: '1. 노출된 API 키를 폐기합니다. 2. 신규 키 발급 후 서비스 설정을 교체합니다. 3. 지난 호출 로그를 확인해 비정상 사용 여부를 검토합니다.',
+                dlp: '1. 대량 다운로드 세션을 중지합니다. 2. 사용자와 승인 이력을 확인합니다. 3. 법무와 데이터 오너에게 즉시 공유합니다.'
+            };
+            output.textContent = messages[type] || '대응 절차를 선택하면 우선 액션을 이곳에 표시합니다.';
         }
+        if (typeof requireAuth === 'function') requireAuth();
+        setUserInfo();
     </script>
     <script src="../mobile-optimization.js" defer></script>
 </body>

@@ -1,0 +1,32 @@
+{
+  "items": [
+    {
+      "event_name": "key_action_completed",
+      "event_ts": "2026-03-07T02:20:00Z",
+      "processing_status": "processed",
+      "idempotency_key": "evt_1001",
+      "contact_id": "contact_1001",
+      "error_code": null
+    },
+    {
+      "event_name": "signup_completed",
+      "event_ts": "2026-03-07T01:58:00Z",
+      "processing_status": "processed",
+      "idempotency_key": "evt_1002",
+      "contact_id": "contact_1001",
+      "error_code": null
+    },
+    {
+      "event_name": "payment_failed",
+      "event_ts": "2026-03-07T00:15:00Z",
+      "processing_status": "failed",
+      "idempotency_key": "evt_1003",
+      "contact_id": "contact_1003",
+      "error_code": "billing_timeout"
+    }
+  ],
+  "total": 3,
+  "page": 1,
+  "per_page": 20,
+  "pages": 1
+}

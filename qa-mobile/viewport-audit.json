@@ -1,0 +1,587 @@
+[
+  {
+    "path": "/",
+    "viewport": "mobile-360",
+    "viewportPx": "360x800",
+    "status": "ok",
+    "httpStatus": 200,
+    "title": "SoftFactory",
+    "metrics": {
+      "overflowPx": 0,
+      "scrollHeight": 1112,
+      "viewportWidth": 360,
+      "viewportHeight": 800
+    },
+    "screenshot": "qa-mobile/mobile-360-_.png"
+  },
+  {
+    "path": "/platform/index.html",
+    "viewport": "mobile-360",
+    "viewportPx": "360x800",
+    "status": "ok",
+    "httpStatus": 200,
+    "title": "로그인 — SoftFactory",
+    "metrics": {
+      "overflowPx": 0,
+      "scrollHeight": 1574,
+      "viewportWidth": 360,
+      "viewportHeight": 800
+    },
+    "screenshot": "qa-mobile/mobile-360-_platform_index.png"
+  },
+  {
+    "path": "/analytics",
+    "viewport": "mobile-360",
+    "viewportPx": "360x800",
+    "status": "ok",
+    "httpStatus": 200,
+    "title": "로그인 — SoftFactory",
+    "metrics": {
+      "overflowPx": 0,
+      "scrollHeight": 1574,
+      "viewportWidth": 360,
+      "viewportHeight": 800
+    },
+    "screenshot": "qa-mobile/mobile-360-_analytics.png"
+  },
+  {
+    "path": "/videos",
+    "viewport": "mobile-360",
+    "viewportPx": "360x800",
+    "status": "ok",
+    "httpStatus": 200,
+    "title": "Video Player - SoftFactory",
+    "metrics": {
+      "overflowPx": 0,
+      "scrollHeight": 800,
+      "viewportWidth": 360,
+      "viewportHeight": 800
+    },
+    "screenshot": "qa-mobile/mobile-360-_videos.png"
+  },
+  {
+    "path": "/review",
+    "viewport": "mobile-360",
+    "viewportPx": "360x800",
+    "status": "ok",
+    "httpStatus": 200,
+    "title": "로그인 — SoftFactory",
+    "metrics": {
+      "overflowPx": 0,
+      "scrollHeight": 1574,
+      "viewportWidth": 360,
+      "viewportHeight": 800
+    },
+    "screenshot": "qa-mobile/mobile-360-_review.png"
+  },
+  {
+    "path": "/platform/dashboard.html",
+    "viewport": "mobile-360",
+    "viewportPx": "360x800",
+    "status": "ok",
+    "httpStatus": 200,
+    "title": "Platinum Dashboard — SoftFactory",
+    "metrics": {
+      "overflowPx": 0,
+      "scrollHeight": 800,
+      "viewportWidth": 360,
+      "viewportHeight": 800
+    },
+    "screenshot": "qa-mobile/mobile-360-_platform_dashboard.png"
+  },
+  {
+    "path": "/platform/settings.html",
+    "viewport": "mobile-360",
+    "viewportPx": "360x800",
+    "status": "ok",
+    "httpStatus": 200,
+    "title": "로그인 — SoftFactory",
+    "metrics": {
+      "overflowPx": 0,
+      "scrollHeight": 1574,
+      "viewportWidth": 360,
+      "viewportHeight": 800
+    },
+    "screenshot": "qa-mobile/mobile-360-_platform_settings.png"
+  },
+  {
+    "path": "/platform/login.html",
+    "viewport": "mobile-360",
+    "viewportPx": "360x800",
+    "status": "ok",
+    "httpStatus": 200,
+    "title": "로그인 — SoftFactory",
+    "metrics": {
+      "overflowPx": 0,
+      "scrollHeight": 1574,
+      "viewportWidth": 360,
+      "viewportHeight": 800
+    },
+    "screenshot": "qa-mobile/mobile-360-_platform_login.png"
+  },
+  {
+    "path": "/bohemian-marketing/index.html",
+    "viewport": "mobile-360",
+    "viewportPx": "360x800",
+    "status": "ok",
+    "httpStatus": 200,
+    "title": "Bohemian Marketing AI | SoftFactory",
+    "metrics": {
+      "overflowPx": 0,
+      "scrollHeight": 1526,
+      "viewportWidth": 360,
+      "viewportHeight": 800
+    },
+    "screenshot": "qa-mobile/mobile-360-_bohemian-marketing_index.png"
+  },
+  {
+    "path": "/sns-auto/index.html",
+    "viewport": "mobile-360",
+    "viewportPx": "360x800",
+    "status": "ok",
+    "httpStatus": 200,
+    "title": "로그인 — SoftFactory",
+    "metrics": {
+      "overflowPx": 0,
+      "scrollHeight": 1574,
+      "viewportWidth": 360,
+      "viewportHeight": 800
+    },
+    "screenshot": "qa-mobile/mobile-360-_sns-auto_index.png"
+  },
+  {
+    "path": "/coocook/index.html",
+    "viewport": "mobile-360",
+    "viewportPx": "360x800",
+    "status": "ok",
+    "httpStatus": 200,
+    "title": "로그인 — SoftFactory",
+    "metrics": {
+      "overflowPx": 0,
+      "scrollHeight": 1574,
+      "viewportWidth": 360,
+      "viewportHeight": 800
+    },
+    "screenshot": "qa-mobile/mobile-360-_coocook_index.png"
+  },
+  {
+    "path": "/jarvis/dashboard.html",
+    "viewport": "mobile-360",
+    "viewportPx": "360x800",
+    "status": "ok",
+    "httpStatus": 200,
+    "title": "JARVIS 대시보드 — 10 팀 / 70 스킬",
+    "metrics": {
+      "overflowPx": 0,
+      "scrollHeight": 1947,
+      "viewportWidth": 360,
+      "viewportHeight": 800
+    },
+    "screenshot": "qa-mobile/mobile-360-_jarvis_dashboard.png"
+  },
+  {
+    "path": "/webapp-builder/index.html",
+    "viewport": "mobile-360",
+    "viewportPx": "360x800",
+    "status": "ok",
+    "httpStatus": 200,
+    "title": "로그인 — SoftFactory",
+    "metrics": {
+      "overflowPx": 0,
+      "scrollHeight": 1574,
+      "viewportWidth": 360,
+      "viewportHeight": 800
+    },
+    "screenshot": "qa-mobile/mobile-360-_webapp-builder_index.png"
+  },
+  {
+    "path": "/",
+    "viewport": "mobile-390",
+    "viewportPx": "390x844",
+    "status": "ok",
+    "httpStatus": 200,
+    "title": "SoftFactory",
+    "metrics": {
+      "overflowPx": 0,
+      "scrollHeight": 1092,
+      "viewportWidth": 390,
+      "viewportHeight": 844
+    },
+    "screenshot": "qa-mobile/mobile-390-_.png"
+  },
+  {
+    "path": "/platform/index.html",
+    "viewport": "mobile-390",
+    "viewportPx": "390x844",
+    "status": "ok",
+    "httpStatus": 200,
+    "title": "로그인 — SoftFactory",
+    "metrics": {
+      "overflowPx": 0,
+      "scrollHeight": 1557,
+      "viewportWidth": 390,
+      "viewportHeight": 844
+    },
+    "screenshot": "qa-mobile/mobile-390-_platform_index.png"
+  },
+  {
+    "path": "/analytics",
+    "viewport": "mobile-390",
+    "viewportPx": "390x844",
+    "status": "ok",
+    "httpStatus": 200,
+    "title": "로그인 — SoftFactory",
+    "metrics": {
+      "overflowPx": 0,
+      "scrollHeight": 1557,
+      "viewportWidth": 390,
+      "viewportHeight": 844
+    },
+    "screenshot": "qa-mobile/mobile-390-_analytics.png"
+  },
+  {
+    "path": "/videos",
+    "viewport": "mobile-390",
+    "viewportPx": "390x844",
+    "status": "ok",
+    "httpStatus": 200,
+    "title": "Video Player - SoftFactory",
+    "metrics": {
+      "overflowPx": 0,
+      "scrollHeight": 844,
+      "viewportWidth": 390,
+      "viewportHeight": 844
+    },
+    "screenshot": "qa-mobile/mobile-390-_videos.png"
+  },
+  {
+    "path": "/review",
+    "viewport": "mobile-390",
+    "viewportPx": "390x844",
+    "status": "ok",
+    "httpStatus": 200,
+    "title": "로그인 — SoftFactory",
+    "metrics": {
+      "overflowPx": 0,
+      "scrollHeight": 1557,
+      "viewportWidth": 390,
+      "viewportHeight": 844
+    },
+    "screenshot": "qa-mobile/mobile-390-_review.png"
+  },
+  {
+    "path": "/platform/dashboard.html",
+    "viewport": "mobile-390",
+    "viewportPx": "390x844",
+    "status": "ok",
+    "httpStatus": 200,
+    "title": "Platinum Dashboard — SoftFactory",
+    "metrics": {
+      "overflowPx": 0,
+      "scrollHeight": 844,
+      "viewportWidth": 390,
+      "viewportHeight": 844
+    },
+    "screenshot": "qa-mobile/mobile-390-_platform_dashboard.png"
+  },
+  {
+    "path": "/platform/settings.html",
+    "viewport": "mobile-390",
+    "viewportPx": "390x844",
+    "status": "ok",
+    "httpStatus": 200,
+    "title": "로그인 — SoftFactory",
+    "metrics": {
+      "overflowPx": 0,
+      "scrollHeight": 1557,
+      "viewportWidth": 390,
+      "viewportHeight": 844
+    },
+    "screenshot": "qa-mobile/mobile-390-_platform_settings.png"
+  },
+  {
+    "path": "/platform/login.html",
+    "viewport": "mobile-390",
+    "viewportPx": "390x844",
+    "status": "ok",
+    "httpStatus": 200,
+    "title": "로그인 — SoftFactory",
+    "metrics": {
+      "overflowPx": 0,
+      "scrollHeight": 1557,
+      "viewportWidth": 390,
+      "viewportHeight": 844
+    },
+    "screenshot": "qa-mobile/mobile-390-_platform_login.png"
+  },
+  {
+    "path": "/bohemian-marketing/index.html",
+    "viewport": "mobile-390",
+    "viewportPx": "390x844",
+    "status": "ok",
+    "httpStatus": 200,
+    "title": "Bohemian Marketing AI | SoftFactory",
+    "metrics": {
+      "overflowPx": 0,
+      "scrollHeight": 1526,
+      "viewportWidth": 390,
+      "viewportHeight": 844
+    },
+    "screenshot": "qa-mobile/mobile-390-_bohemian-marketing_index.png"
+  },
+  {
+    "path": "/sns-auto/index.html",
+    "viewport": "mobile-390",
+    "viewportPx": "390x844",
+    "status": "ok",
+    "httpStatus": 200,
+    "title": "로그인 — SoftFactory",
+    "metrics": {
+      "overflowPx": 0,
+      "scrollHeight": 1557,
+      "viewportWidth": 390,
+      "viewportHeight": 844
+    },
+    "screenshot": "qa-mobile/mobile-390-_sns-auto_index.png"
+  },
+  {
+    "path": "/coocook/index.html",
+    "viewport": "mobile-390",
+    "viewportPx": "390x844",
+    "status": "ok",
+    "httpStatus": 200,
+    "title": "로그인 — SoftFactory",
+    "metrics": {
+      "overflowPx": 0,
+      "scrollHeight": 1557,
+      "viewportWidth": 390,
+      "viewportHeight": 844
+    },
+    "screenshot": "qa-mobile/mobile-390-_coocook_index.png"
+  },
+  {
+    "path": "/jarvis/dashboard.html",
+    "viewport": "mobile-390",
+    "viewportPx": "390x844",
+    "status": "ok",
+    "httpStatus": 200,
+    "title": "JARVIS 대시보드 — 10 팀 / 70 스킬",
+    "metrics": {
+      "overflowPx": 0,
+      "scrollHeight": 1947,
+      "viewportWidth": 390,
+      "viewportHeight": 844
+    },
+    "screenshot": "qa-mobile/mobile-390-_jarvis_dashboard.png"
+  },
+  {
+    "path": "/webapp-builder/index.html",
+    "viewport": "mobile-390",
+    "viewportPx": "390x844",
+    "status": "ok",
+    "httpStatus": 200,
+    "title": "로그인 — SoftFactory",
+    "metrics": {
+      "overflowPx": 0,
+      "scrollHeight": 1557,
+      "viewportWidth": 390,
+      "viewportHeight": 844
+    },
+    "screenshot": "qa-mobile/mobile-390-_webapp-builder_index.png"
+  },
+  {
+    "path": "/",
+    "viewport": "tablet-768",
+    "viewportPx": "768x1024",
+    "status": "ok",
+    "httpStatus": 200,
+    "title": "SoftFactory",
+    "metrics": {
+      "overflowPx": 0,
+      "scrollHeight": 1024,
+      "viewportWidth": 768,
+      "viewportHeight": 1024
+    },
+    "screenshot": "qa-mobile/tablet-768-_.png"
+  },
+  {
+    "path": "/platform/index.html",
+    "viewport": "tablet-768",
+    "viewportPx": "768x1024",
+    "status": "ok",
+    "httpStatus": 200,
+    "title": "로그인 — SoftFactory",
+    "metrics": {
+      "overflowPx": 0,
+      "scrollHeight": 1447,
+      "viewportWidth": 768,
+      "viewportHeight": 1024
+    },
+    "screenshot": "qa-mobile/tablet-768-_platform_index.png"
+  },
+  {
+    "path": "/analytics",
+    "viewport": "tablet-768",
+    "viewportPx": "768x1024",
+    "status": "ok",
+    "httpStatus": 200,
+    "title": "로그인 — SoftFactory",
+    "metrics": {
+      "overflowPx": 0,
+      "scrollHeight": 1447,
+      "viewportWidth": 768,
+      "viewportHeight": 1024
+    },
+    "screenshot": "qa-mobile/tablet-768-_analytics.png"
+  },
+  {
+    "path": "/videos",
+    "viewport": "tablet-768",
+    "viewportPx": "768x1024",
+    "status": "ok",
+    "httpStatus": 200,
+    "title": "Video Player - SoftFactory",
+    "metrics": {
+      "overflowPx": 0,
+      "scrollHeight": 1024,
+      "viewportWidth": 768,
+      "viewportHeight": 1024
+    },
+    "screenshot": "qa-mobile/tablet-768-_videos.png"
+  },
+  {
+    "path": "/review",
+    "viewport": "tablet-768",
+    "viewportPx": "768x1024",
+    "status": "ok",
+    "httpStatus": 200,
+    "title": "로그인 — SoftFactory",
+    "metrics": {
+      "overflowPx": 0,
+      "scrollHeight": 1447,
+      "viewportWidth": 768,
+      "viewportHeight": 1024
+    },
+    "screenshot": "qa-mobile/tablet-768-_review.png"
+  },
+  {
+    "path": "/platform/dashboard.html",
+    "viewport": "tablet-768",
+    "viewportPx": "768x1024",
+    "status": "ok",
+    "httpStatus": 200,
+    "title": "Platinum Dashboard — SoftFactory",
+    "metrics": {
+      "overflowPx": 0,
+      "scrollHeight": 1024,
+      "viewportWidth": 768,
+      "viewportHeight": 1024
+    },
+    "screenshot": "qa-mobile/tablet-768-_platform_dashboard.png"
+  },
+  {
+    "path": "/platform/settings.html",
+    "viewport": "tablet-768",
+    "viewportPx": "768x1024",
+    "status": "ok",
+    "httpStatus": 200,
+    "title": "로그인 — SoftFactory",
+    "metrics": {
+      "overflowPx": 0,
+      "scrollHeight": 1447,
+      "viewportWidth": 768,
+      "viewportHeight": 1024
+    },
+    "screenshot": "qa-mobile/tablet-768-_platform_settings.png"
+  },
+  {
+    "path": "/platform/login.html",
+    "viewport": "tablet-768",
+    "viewportPx": "768x1024",
+    "status": "ok",
+    "httpStatus": 200,
+    "title": "로그인 — SoftFactory",
+    "metrics": {
+      "overflowPx": 0,
+      "scrollHeight": 1447,
+      "viewportWidth": 768,
+      "viewportHeight": 1024
+    },
+    "screenshot": "qa-mobile/tablet-768-_platform_login.png"
+  },
+  {
+    "path": "/bohemian-marketing/index.html",
+    "viewport": "tablet-768",
+    "viewportPx": "768x1024",
+    "status": "ok",
+    "httpStatus": 200,
+    "title": "Bohemian Marketing AI | SoftFactory",
+    "metrics": {
+      "overflowPx": 0,
+      "scrollHeight": 1024,
+      "viewportWidth": 768,
+      "viewportHeight": 1024
+    },
+    "screenshot": "qa-mobile/tablet-768-_bohemian-marketing_index.png"
+  },
+  {
+    "path": "/sns-auto/index.html",
+    "viewport": "tablet-768",
+    "viewportPx": "768x1024",
+    "status": "ok",
+    "httpStatus": 200,
+    "title": "로그인 — SoftFactory",
+    "metrics": {
+      "overflowPx": 0,
+      "scrollHeight": 1447,
+      "viewportWidth": 768,
+      "viewportHeight": 1024
+    },
+    "screenshot": "qa-mobile/tablet-768-_sns-auto_index.png"
+  },
+  {
+    "path": "/coocook/index.html",
+    "viewport": "tablet-768",
+    "viewportPx": "768x1024",
+    "status": "ok",
+    "httpStatus": 200,
+    "title": "로그인 — SoftFactory",
+    "metrics": {
+      "overflowPx": 0,
+      "scrollHeight": 1447,
+      "viewportWidth": 768,
+      "viewportHeight": 1024
+    },
+    "screenshot": "qa-mobile/tablet-768-_coocook_index.png"
+  },
+  {
+    "path": "/jarvis/dashboard.html",
+    "viewport": "tablet-768",
+    "viewportPx": "768x1024",
+    "status": "ok",
+    "httpStatus": 200,
+    "title": "JARVIS 대시보드 — 10 팀 / 70 스킬",
+    "metrics": {
+      "overflowPx": 0,
+      "scrollHeight": 1619,
+      "viewportWidth": 768,
+      "viewportHeight": 1024
+    },
+    "screenshot": "qa-mobile/tablet-768-_jarvis_dashboard.png"
+  },
+  {
+    "path": "/webapp-builder/index.html",
+    "viewport": "tablet-768",
+    "viewportPx": "768x1024",
+    "status": "ok",
+    "httpStatus": 200,
+    "title": "로그인 — SoftFactory",
+    "metrics": {
+      "overflowPx": 0,
+      "scrollHeight": 1447,
+      "viewportWidth": 768,
+      "viewportHeight": 1024
+    },
+    "screenshot": "qa-mobile/tablet-768-_webapp-builder_index.png"
+  }
+]

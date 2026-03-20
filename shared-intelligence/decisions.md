@@ -141,7 +141,7 @@
 
 **Verification:** All 16 API tests pass with PostgreSQL; row counts match SQLite source.
 
-**Docs:** `DEPLOYMENT_CHECKLIST.md`, `DOCKER_QUICK_START.md`
+**Docs:** `docs/checklists/DEPLOYMENT_CHECKLIST.md`, `docs/runbooks/DOCKER_QUICK_START.md`
 
 ---
 
@@ -640,7 +640,7 @@ All documentation and code examples provided:
 
 **Decision:** Implement comprehensive production deployment stack with:
 1. **Dockerfile.prod** — Multi-stage build with security hardening
-2. **docker-compose-prod.yml** — Production services: Nginx + Flask + PostgreSQL + Redis + Prometheus
+2. **docker-compose.production.yml** — Production services: Nginx + Flask + PostgreSQL + Redis + Prometheus
 3. **Nginx Configuration** — SSL/TLS termination, reverse proxy, rate limiting, security headers
 4. **Deployment Scripts** — Automated deploy.sh, backup.sh, health-check.sh with rollback
 5. **Production Runbook** — DEPLOYMENT-PRODUCTION.md with step-by-step procedures
@@ -666,7 +666,7 @@ All documentation and code examples provided:
    - Non-root appuser for security
    - Health checks built-in
 
-2. **D:/Project/docker-compose-prod.yml** (5 services)
+2. **D:/Project/docker-compose.production.yml** (5 services)
    - nginx (Reverse proxy, SSL/TLS, rate limiting)
    - web (Flask API with Gunicorn)
    - db (PostgreSQL 15-alpine with performance tuning)
@@ -780,7 +780,7 @@ All documentation and code examples provided:
 
 **Files Modified/Created:**
 - Created: `Dockerfile.prod`
-- Created: `docker-compose-prod.yml`
+- Created: `docker-compose.production.yml`
 - Created: `.dockerignore`
 - Created: `nginx/nginx.conf`
 - Created: `nginx/ssl/` (SSL certs go here)
@@ -799,7 +799,7 @@ All documentation and code examples provided:
 
 **References:**
 - `/D/Project/docs/DEPLOYMENT-PRODUCTION.md` — Complete runbook
-- `/D/Project/docker-compose-prod.yml` — Production services definition
+- `/D/Project/docker-compose.production.yml` — Production services definition
 - `/D/Project/Dockerfile.prod` — Optimized production image
 - `/D/Project/scripts/deploy.sh` — Automated deployment
 - `/D/Project/scripts/health-check.sh` — System verification
@@ -1136,7 +1136,7 @@ ROI: 34x (engagement revenue >> API costs)
 **Status:** ACCEPTED
 **Date:** 2026-02-25
 **Decided by:** 09-DevOps (Team E)
-**References:** CLAUDE.md Phase 4, DEPLOYMENT_CHECKLIST.md
+**References:** CLAUDE.md Phase 4, docs/checklists/DEPLOYMENT_CHECKLIST.md
 
 **Context:**
 SoftFactory platform needs production-grade CI/CD pipelines with multiple quality gates, comprehensive testing, and automated validation. Previous deployments lacked health checks and failed silently.
@@ -1158,7 +1158,7 @@ Implement multi-workflow CI/CD architecture with:
 5. **security.yml** — Existing + enhanced
 6. **validate_project_structure.sh** — Pre-commit + CI validation
 7. **Prometheus config** — Metrics export + scraping
-8. **DEPLOYMENT_CHECKLIST.md** — Human-verified checklist
+8. **docs/checklists/DEPLOYMENT_CHECKLIST.md** — Human-verified checklist
 
 **Rationale:**
 - **Separation of concerns:** Each workflow has single responsibility (SOLID)

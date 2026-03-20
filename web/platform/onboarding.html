@@ -1,535 +1,427 @@
 ﻿<!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="theme-color" content="#111827">
-    <meta name="description" content="SoftFactory ?⑤낫??>
-    <title>?⑤낫????SoftFactory</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="api.js"></script>
-    <style>
-        body {
-            font-family: Inter, 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
-        }
-        .step {
-            display: none;
-        }
-        .step.active {
-            display: block;
-        }
-        .step-progress {
-            transition: width 0.35s cubic-bezier(.4, 0, .2, 1);
-        }
-        .service-card {
-            border: 1px solid rgba(148, 163, 184, 0.25);
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .service-card:hover {
-            border-color: #8b5cf6;
-            background: rgba(139, 92, 246, 0.08);
-            transform: translateY(-1px);
-        }
-        .service-card.selected {
-            border-color: #8b5cf6;
-            background: rgba(139, 92, 246, 0.14);
-        }
-        .check-circle {
-            opacity: 0;
-            transform: scale(0.7);
-            transition: all 0.2s;
-        }
-        .service-card.selected .check-circle {
-            opacity: 1;
-            transform: scale(1);
-        }
-        .avatar {
-            width: 76px;
-            height: 76px;
-            border-radius: 9999px;
-            background: #6d28d9;
-            color: #fff;
-            font-size: 1.8rem;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-        }
-        .avatar img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        .avatar-wrap {
-            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.25);
-            position: relative;
-            cursor: pointer;
-        }
-        .avatar-wrap:after {
-            content: '?몄쭛';
-            position: absolute;
-            right: 0;
-            bottom: 0;
-            transform: translate(25%, 25%);
-            font-size: 0.66rem;
-            background: #1e293b;
-            border: 1px solid #475569;
-            color: #f1f5f9;
-            border-radius: 9999px;
-            padding: 2px 6px;
-        }
-        .confetti {
-            position: fixed;
-            top: -12px;
-            width: 8px;
-            height: 8px;
-            z-index: 9999;
-            pointer-events: none;
-            border-radius: 2px;
-            animation: fall 3.4s linear forwards;
-        }
-        @keyframes fall {
-            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
-            100% { transform: translateY(110vh) rotate(720deg); opacity: 0.1; }
-        }
-        @media (max-width: 680px) {
-            .wizard {
-                padding: 1.4rem !important;
-            }
-        }
-    </style>
-    <script src="../mobile-optimization.js" defer></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#111827">
+  <title>온보딩 시작 | SoftFactory</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="../platform/api.js"></script>
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .step { display: none; }
+    .step.active { display: block; }
+    .service-card { border: 1px solid rgb(51 65 85); cursor: pointer; transition: all .2s ease; }
+    .service-card.selected { border-color: rgb(139 92 246); background-color: rgba(139, 92, 246, .12); }
+    .confetti { position: fixed; top: -10px; width: 8px; height: 12px; border-radius: 2px; pointer-events: none; animation: fall linear forwards; z-index: 9999; }
+    @keyframes fall { to { transform: translateY(110vh) rotate(720deg); opacity: .2; } }
+    .step-progress { transition: width .3s; }
+    .avatar { width: 68px; height: 68px; border-radius: 9999px; background: #4f46e5; color: #fff; font-weight: 800; display:flex;align-items:center;justify-content:center; font-size: 28px; }
+    .avatar-wrap { display:inline-block; position:relative; cursor:pointer; overflow:hidden; }
+    .avatar img { width:100%; height:100%; object-fit:cover; }
+  </style>
+  <link rel="stylesheet" href="../responsive-framework.css">
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen flex items-center justify-center p-4">
-    <div class="w-full max-w-lg">
-        <div class="flex justify-end mb-4">
-            <button id="skip-btn" type="button" class="text-xs px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300 hover:text-white hover:bg-slate-700 transition">
-                嫄대꼫?곌린 ??
-            </button>
+<body class="bg-slate-950 text-slate-100">
+  <div class="min-h-screen flex items-center justify-center p-6">
+    <div class="w-full max-w-3xl bg-slate-900 border border-slate-800 rounded-3xl shadow-2xl wizard">
+      <div class="px-8 py-8 border-b border-slate-800">
+        <div class="text-center">
+          <p class="text-xs uppercase tracking-[0.25em] text-violet-300 mb-3">환영합니다</p>
+          <h1 class="text-2xl font-bold text-white">SoftFactory 시작하기</h1>
+          <p class="text-slate-400 mt-2">필요한 서비스만 선택해 계정을 맞춤 구성하세요.</p>
+        </div>
+        <div class="mt-6">
+          <div class="flex items-center justify-between text-xs text-slate-400 mb-2">
+            <span id="step-label">Step 1 / 5</span>
+            <span id="step-pct">20%</span>
+          </div>
+          <div class="h-1.5 bg-slate-800 rounded-full overflow-hidden">
+            <div id="progress-bar" class="h-1.5 bg-violet-500 rounded-full step-progress" style="width:20%"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="p-8">
+        <div id="step-1" class="step active">
+          <div class="text-center">
+            <div class="grid grid-cols-3 gap-3 text-sm mb-8">
+              <div class="bg-slate-800 rounded-lg p-3 text-center"><p class="text-xl">[SNS]</p><p class="mt-1 text-slate-300">SNS 자동화</p></div>
+              <div class="bg-slate-800 rounded-lg p-3 text-center"><p class="text-xl">[리뷰]</p><p class="mt-1 text-slate-300">리뷰</p></div>
+              <div class="bg-slate-800 rounded-lg p-3 text-center"><p class="text-xl">[AI]</p><p class="mt-1 text-slate-300">AI 자동화</p></div>
+            </div>
+            <button id="start-btn" type="button" class="w-full py-3 bg-violet-600 hover:bg-violet-700 text-white rounded-xl font-semibold">시작하기</button>
+          </div>
         </div>
 
-        <div class="mb-6">
-            <div class="flex items-center justify-between text-xs text-slate-400 mb-2">
-                <span id="step-label">Step 1 / 5</span>
-                <span id="step-pct">20%</span>
-            </div>
-            <div class="h-1.5 bg-slate-800 rounded-full overflow-hidden">
-                <div id="progress-bar" class="h-1.5 bg-violet-500 rounded-full step-progress" style="width: 20%"></div>
-            </div>
+        <div id="step-2" class="step">
+          <h2 class="text-xl font-bold text-white mb-1">우선 사용할 서비스를 골라주세요</h2>
+          <p class="text-slate-400 text-sm mb-6">관심 있는 서비스만 선택하면 바로 연결 화면으로 이동합니다.</p>
+          <div id="service-list" class="space-y-3 mb-8">
+            <label class="service-card p-4 rounded-xl bg-slate-800 flex items-center gap-4" data-service="sns">
+              <input type="checkbox" class="service-checkbox sr-only" value="sns">
+              <span class="text-3xl">[SNS]</span>
+              <div class="flex-1">
+                <p class="font-semibold text-white">SNS 자동화</p>
+                <p class="text-xs text-slate-400">콘텐츠 일정, 발행, 반응 수집까지 원스톱 운영</p>
+              </div>
+              <span class="check-circle text-violet-300">완료</span>
+            </label>
+            <label class="service-card p-4 rounded-xl bg-slate-800 flex items-center gap-4" data-service="review">
+              <input type="checkbox" class="service-checkbox sr-only" value="review">
+              <span class="text-3xl">[리뷰]</span>
+              <div class="flex-1">
+                <p class="font-semibold text-white">리뷰</p>
+                <p class="text-xs text-slate-400">리뷰어 모집, 캠페인 관리, 성과 분석</p>
+              </div>
+              <span class="check-circle text-violet-300">완료</span>
+            </label>
+            <label class="service-card p-4 rounded-xl bg-slate-800 flex items-center gap-4" data-service="coocook">
+              <span class="text-3xl">[쿠쿠크]</span>
+              <div class="flex-1">
+                <p class="font-semibold text-white">쿠쿠크</p>
+                <p class="text-xs text-slate-400">식사/운영 워크플로우를 위한 맞춤 도구</p>
+              </div>
+              <span class="check-circle text-violet-300">완료</span>
+            </label>
+            <label class="service-card p-4 rounded-xl bg-slate-800 flex items-center gap-4" data-service="instagram-cardnews">
+              <span class="text-3xl">[📸]</span>
+              <div class="flex-1">
+                <p class="font-semibold text-white">인스타그램 카드뉴스 자동화</p>
+                <p class="text-xs text-slate-400">브랜드 이미지·텍스트 톤으로 카드뉴스를 자동 생성하고 다중 계정 발행</p>
+              </div>
+              <span class="check-circle text-violet-300">완료</span>
+            </label>
+            <label class="service-card p-4 rounded-xl bg-slate-800 flex items-center gap-4" data-service="ai">
+              <span class="text-3xl">[AI]</span>
+              <div class="flex-1">
+                <p class="font-semibold text-white">AI 자동화</p>
+                <p class="text-xs text-slate-400">AI 직원, 시나리오, 자동 실행까지 운영 자동화</p>
+              </div>
+              <span class="check-circle text-violet-300">완료</span>
+            </label>
+          </div>
+          <div class="flex gap-3">
+            <button data-prev type="button" class="prev-btn flex-1 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl">이전</button>
+            <button id="step2-next" type="button" class="flex-1 py-2.5 bg-violet-600 hover:bg-violet-700 text-white rounded-xl">다음</button>
+          </div>
         </div>
 
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-8 shadow-2xl wizard">
-            <div id="step-1" class="step active">
-                <div class="text-center">
-                    <p class="text-xs uppercase tracking-[0.25em] text-violet-300 mb-3">Welcome</p>
-                    <h1 class="text-2xl font-bold text-white mb-2">?쒕퉬???쒖옉 ?덈궡</h1>
-                    <p id="welcome-message" class="text-slate-400 mb-6">
-                        SoftFactory???ㅼ떊 寃껋쓣 ?섏쁺?⑸땲?? 怨꾩젙 ?섍꼍??諛붾줈 ?ㅼ젙?섍퀬 諛붾줈 ?쒖옉?섏꽭??
-                    </p>
-                    <div class="grid grid-cols-3 gap-3 text-sm mb-8">
-                        <div class="bg-slate-800 rounded-lg p-3 text-center">
-                            <p class="text-xl">?벑</p>
-                            <p class="mt-1 text-slate-300">SNS Auto</p>
-                        </div>
-                        <div class="bg-slate-800 rounded-lg p-3 text-center">
-                            <p class="text-xl">狩?/p>
-                            <p class="mt-1 text-slate-300">Review</p>
-                        </div>
-                        <div class="bg-slate-800 rounded-lg p-3 text-center">
-                            <p class="text-xl">?쨼</p>
-                            <p class="mt-1 text-slate-300">AI Automation</p>
-                        </div>
-                    </div>
-                    <button id="start-btn" type="button" class="w-full py-3 bg-violet-600 hover:bg-violet-700 text-white rounded-xl font-semibold">
-                        ?쒖옉?섍린 ??
-                    </button>
-                </div>
+        <div id="step-3" class="step">
+          <h2 class="text-xl font-bold text-white mb-1">기본 프로필 설정</h2>
+          <p class="text-slate-400 text-sm mb-6">사용자명과 업종을 등록하면 추천 화면이 더 정확해집니다.</p>
+          <div class="flex flex-col items-center mb-6">
+            <label class="avatar-wrap rounded-full">
+              <div id="avatar-preview" class="avatar">S</div>
+              <input type="file" id="avatar-input" accept="image/*" class="hidden">
+            </label>
+            <p class="text-xs text-slate-500 mt-2">클릭해 프로필 이미지를 변경하세요.</p>
+          </div>
+          <div class="space-y-4 mb-8">
+            <div>
+              <label for="profile-name" class="block text-sm font-medium text-slate-300 mb-1.5">이름</label>
+              <input id="profile-name" type="text" placeholder="예: 홍길동" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-white">
             </div>
-
-            <div id="step-2" class="step">
-                <h2 class="text-xl font-bold text-white mb-1">?쒕퉬???좏깮</h2>
-                <p class="text-slate-400 text-sm mb-6">媛?낇븳 怨꾩젙?먯꽌 ?ъ슜???쒕퉬?ㅻ? 癒쇱? ?좏깮?섏꽭??</p>
-                <div id="service-list" class="space-y-3 mb-8">
-                    <label class="service-card p-4 rounded-xl bg-slate-800 flex items-center gap-4" data-service="sns">
-                        <input type="checkbox" class="service-checkbox sr-only" value="sns">
-                        <span class="text-3xl">?벑</span>
-                        <div class="flex-1">
-                            <p class="font-semibold text-white">SNS Auto</p>
-                            <p class="text-xs text-slate-400">寃뚯떆臾?諛쒗뻾, ?먮룞?? 由ы룷??/p>
-                        </div>
-                        <span class="check-circle text-violet-300">??/span>
-                    </label>
-                    <label class="service-card p-4 rounded-xl bg-slate-800 flex items-center gap-4" data-service="review">
-                        <input type="checkbox" class="service-checkbox sr-only" value="review">
-                        <span class="text-3xl">狩?/span>
-                        <div class="flex-1">
-                            <p class="font-semibold text-white">Review</p>
-                            <p class="text-xs text-slate-400">由щ럭 ?섏쭛, 諛섏쓳 遺꾩꽍, ?댁쁺 理쒖쟻??/p>
-                        </div>
-                        <span class="check-circle text-violet-300">??/span>
-                    </label>
-                    <label class="service-card p-4 rounded-xl bg-slate-800 flex items-center gap-4" data-service="coocook">
-                        <input type="checkbox" class="service-checkbox sr-only" value="coocook">
-                        <span class="text-3xl">?뜵</span>
-                        <div class="flex-1">
-                            <p class="font-semibold text-white">CooCook</p>
-                            <p class="text-xs text-slate-400">肄섑뀗痢??쒖옉, ?먮젅?댁뀡, ?묒뾽 ?뚰겕?뚮줈??/p>
-                        </div>
-                        <span class="check-circle text-violet-300">??/span>
-                    </label>
-                    <label class="service-card p-4 rounded-xl bg-slate-800 flex items-center gap-4" data-service="ai">
-                        <input type="checkbox" class="service-checkbox sr-only" value="ai">
-                        <span class="text-3xl">?쨼</span>
-                        <div class="flex-1">
-                            <p class="font-semibold text-white">AI Automation</p>
-                            <p class="text-xs text-slate-400">AI 湲곕컲 ?먮룞?? ?띿뒪???앹꽦</p>
-                        </div>
-                        <span class="check-circle text-violet-300">??/span>
-                    </label>
-                </div>
-                <div class="flex gap-3">
-                    <button data-prev type="button" class="prev-btn flex-1 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl">?댁쟾</button>
-                    <button id="step2-next" type="button" class="flex-1 py-2.5 bg-violet-600 hover:bg-violet-700 text-white rounded-xl">?ㅼ쓬 ??/button>
-                </div>
+            <div>
+              <label for="profile-industry" class="block text-sm font-medium text-slate-300 mb-1.5">업종</label>
+              <select id="profile-industry" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-white">
+                <option value="" disabled selected>선택해주세요</option>
+                <option value="ecommerce">이커머스 / 쇼핑몰</option>
+                <option value="food">음식/식음료</option>
+                <option value="beauty">뷰티 / 헬스</option>
+                <option value="it">IT / SaaS</option>
+                <option value="marketing">마케팅 / 에이전시</option>
+                <option value="media">미디어 / 콘텐츠</option>
+                <option value="education">교육 / 강의</option>
+                <option value="health">헬스케어</option>
+                <option value="other">기타</option>
+              </select>
             </div>
-
-            <div id="step-3" class="step">
-                <h2 class="text-xl font-bold text-white mb-1">?꾨줈???ㅼ젙</h2>
-                <p class="text-slate-400 text-sm mb-6">?대쫫怨??낆쥌????ν븯怨?諛붾줈 ?ㅼ쓬 ?④퀎濡??대룞?섏꽭??</p>
-
-                <div class="flex flex-col items-center mb-6">
-                    <label class="avatar-wrap rounded-full">
-                        <div id="avatar-preview" class="avatar">S</div>
-                        <input type="file" id="avatar-input" accept="image/*" class="hidden">
-                    </label>
-                    <p class="text-xs text-slate-500 mt-2">?대┃???꾨컮?瑜??낅줈?쒗븯?몄슂</p>
-                </div>
-
-                <div class="space-y-4 mb-8">
-                    <div>
-                        <label for="profile-name" class="block text-sm font-medium text-slate-300 mb-1.5">?대쫫</label>
-                        <input id="profile-name" type="text" placeholder="?띻만?? class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-white">
-                    </div>
-                    <div>
-                        <label for="profile-industry" class="block text-sm font-medium text-slate-300 mb-1.5">?낆쥌</label>
-                        <select id="profile-industry" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-white">
-                            <option value="" disabled selected>?좏깮?섏꽭??/option>
-                            <option value="ecommerce">?댁빱癒몄뒪 / ?⑤씪?몃ぐ</option>
-                            <option value="food">?앹쓬猷?/option>
-                            <option value="beauty">酉고떚 / ?⑥뀡</option>
-                            <option value="it">IT / SaaS</option>
-                            <option value="marketing">留덉???/ 愿묎퀬</option>
-                            <option value="media">誘몃뵒??/ 而ㅻ??덊떚</option>
-                            <option value="education">援먯쑁</option>
-                            <option value="health">?ъ뒪耳??/option>
-                            <option value="other">湲고?</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="flex gap-3">
-                    <button data-prev type="button" class="prev-btn flex-1 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl">?댁쟾</button>
-                    <button id="step3-next" type="button" class="flex-1 py-2.5 bg-violet-600 hover:bg-violet-700 text-white rounded-xl">?ㅼ쓬 ??/button>
-                </div>
-            </div>
-
-            <div id="step-4" class="step">
-                <h2 class="text-xl font-bold text-white mb-1">諛붾줈媛湲?異붿쿇</h2>
-                <p class="text-slate-400 text-sm mb-6">?좏깮???쒕퉬?ㅼ쓽 吏꾩엯 寃쎈줈瑜?以鍮꾪뻽?듬땲??</p>
-                <div id="action-cards" class="space-y-3 mb-8"></div>
-                <div class="flex gap-3">
-                    <button data-prev type="button" class="prev-btn flex-1 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl">?댁쟾</button>
-                    <button id="step4-next" type="button" class="flex-1 py-2.5 bg-violet-600 hover:bg-violet-700 text-white rounded-xl">?ㅼ쓬 ??/button>
-                </div>
-            </div>
-
-            <div id="step-5" class="step">
-                <div class="text-center py-3">
-                    <div class="mx-auto w-24 h-24 rounded-full bg-violet-900/40 border border-violet-500/50 flex items-center justify-center text-4xl mb-6">??/div>
-                    <h2 class="text-2xl font-bold text-white mb-2">?⑤낫???꾨즺</h2>
-                    <p class="text-slate-400 mb-8 text-sm leading-relaxed">
-                        ?ㅼ젙???꾨즺?섏뿀?듬땲?? ?댁젣 諛붾줈 ??쒕낫?쒖뿉???쒖옉?????덉뒿?덈떎.
-                    </p>
-                    <div id="finish-summary" class="bg-slate-800 border border-slate-700 rounded-xl p-4 mb-8 text-left text-sm space-y-2"></div>
-                    <div class="flex flex-col gap-3">
-                        <button id="go-dashboard" type="button" class="w-full py-3 bg-violet-600 hover:bg-violet-700 text-white rounded-xl">??쒕낫??諛붾줈媛湲?/button>
-                        <a href="help.html" class="w-full py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-center">?꾩?留?蹂닿린</a>
-                    </div>
-                </div>
-            </div>
+          </div>
+          <div class="flex gap-3">
+            <button data-prev type="button" class="prev-btn flex-1 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl">이전</button>
+            <button id="step3-next" type="button" class="flex-1 py-2.5 bg-violet-600 hover:bg-violet-700 text-white rounded-xl">다음</button>
+          </div>
         </div>
+
+        <div id="step-4" class="step">
+          <h2 class="text-xl font-bold text-white mb-1">서비스 연결 가이드</h2>
+          <p class="text-slate-400 text-sm mb-6">선택한 서비스의 대표 화면으로 바로 연결할 수 있습니다.</p>
+          <div id="action-cards" class="space-y-3 mb-8"></div>
+          <div class="flex gap-3">
+            <button data-prev type="button" class="prev-btn flex-1 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl">이전</button>
+            <button id="step4-next" type="button" class="flex-1 py-2.5 bg-violet-600 hover:bg-violet-700 text-white rounded-xl">다음</button>
+          </div>
+        </div>
+
+        <div id="step-5" class="step">
+          <div class="text-center py-3">
+            <div class="mx-auto w-24 h-24 rounded-full bg-violet-900/40 border border-violet-500/50 flex items-center justify-center text-4xl mb-6">✓</div>
+            <h2 class="text-2xl font-bold text-white mb-2">온보딩 완료</h2>
+            <p class="text-slate-400 mb-8 text-sm leading-relaxed">설정이 완료되었습니다. 이제 대시보드에서 바로 업무를 시작할 수 있습니다.</p>
+            <div id="finish-summary" class="bg-slate-800 border border-slate-700 rounded-xl p-4 mb-8 text-left text-sm space-y-2"></div>
+            <div class="flex flex-col gap-3">
+              <button id="go-dashboard" type="button" class="w-full py-3 bg-violet-600 hover:bg-violet-700 text-white rounded-xl">대시보드로 이동</button>
+              <a href="help.html" class="w-full py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-center">도움말 보기</a>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
+  </div>
 
-    <script>
-        (function () {
-            const STORAGE_KEY = 'sf_onboarding_state_v2';
-            const state = {
-                currentStep: 1,
-                totalSteps: 5,
-                selectedServices: [],
-                name: '',
-                industry: '',
-                avatarDataUrl: ''
-            };
+  <script>
+    (() => {
+      const STORAGE_KEY = 'sf_onboarding_v2';
+      const state = {
+        currentStep: 1,
+        totalSteps: 5,
+        selectedServices: [],
+        name: '',
+        industry: '',
+        avatarDataUrl: ''
+      };
 
-            const serviceMap = {
-                sns: { icon: '?벑', label: 'SNS Auto', desc: '寃뚯떆臾??먮룞?? 遺꾩꽍, 由ы룷??, href: '../sns-auto/index.html' },
-                review: { icon: '狩?, label: 'Review', desc: '由щ럭 ?섏쭛/遺꾩꽍/?뚮┝', href: '../review/index.html' },
-                coocook: { icon: '?뜵', label: 'CooCook', desc: '肄섑뀗痢??쒖옉 ?뚰겕?뚮줈??, href: '../coocook/index.html' },
-                ai: { icon: '?쨼', label: 'AI Automation', desc: '臾몄븞 ?앹꽦, ?먮룞??洹쒖튃', href: '../ai-automation/index.html' }
-            };
+      const serviceMap = {
+        sns: { icon: '[SNS]', label: 'SNS 자동화', desc: '게시 자동화, 응답 수집, 성과 분석을 한 곳에서 관리', href: '../sns-auto/index.html' },
+        review: { icon: '[리뷰]', label: '리뷰', desc: '리뷰어 모집, 캠페인 운영, 보상 정산', href: '../review/index.html' },
+        coocook: { icon: '[쿠쿠크]', label: '쿠쿠크', desc: '운영 일정, 상품 기획, 프로세스 관리', href: '../coocook/index.html' },
+        'instagram-cardnews': { icon: '[📸]', label: '인스타그램 카드뉴스', desc: '브랜드 톤 일치형 카드뉴스 자동 생성, 다중 계정 발행, DM 응답 규칙 지원', href: '../instagram-cardnews/index.html' },
+        ai: { icon: '[AI]', label: 'AI 자동화', desc: 'AI 시나리오, AI 직원, 자동화 워크플로우', href: '../ai-automation/index.html' }
+      };
 
-            function loadState() {
-                try {
-                    const saved = localStorage.getItem(STORAGE_KEY);
-                    if (!saved) return;
-                    const parsed = JSON.parse(saved);
-                    Object.assign(state, parsed || {});
-                } catch (_) {}
-            }
+      function loadState() {
+        try {
+          const saved = localStorage.getItem(STORAGE_KEY);
+          if (!saved) return;
+          const parsed = JSON.parse(saved);
+          Object.assign(state, parsed || {});
+        } catch (_) {}
+      }
 
-            function saveState() {
-                localStorage.setItem(STORAGE_KEY, JSON.stringify({
-                    currentStep: state.currentStep,
-                    selectedServices: state.selectedServices,
-                    name: state.name,
-                    industry: state.industry
-                }));
-            }
+      function saveState() {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({
+          currentStep: state.currentStep,
+          selectedServices: state.selectedServices,
+          name: state.name,
+          industry: state.industry,
+          avatarDataUrl: state.avatarDataUrl
+        }));
+      }
 
-            function renderStep(step) {
-                for (let i = 1; i <= state.totalSteps; i++) {
-                    const target = document.getElementById(`step-${i}`);
-                    if (target) target.classList.toggle('active', i === step);
-                }
-                updateProgress();
-                if (step === 1) renderStep1();
-                if (step === 3) renderStep3();
-                if (step === 4) renderStep4();
-                if (step === 5) renderStep5();
-            }
+      function renderStep(step) {
+        for (let i = 1; i <= state.totalSteps; i++) {
+          const target = document.getElementById(`step-${i}`);
+          if (target) target.classList.toggle('active', i === step);
+        }
+        updateProgress();
+        if (step === 1) renderStep1();
+        if (step === 3) renderStep3();
+        if (step === 4) renderStep4();
+        if (step === 5) renderStep5();
+      }
 
-            function updateProgress() {
-                const pct = Math.max(1, Math.round((state.currentStep / state.totalSteps) * 100));
-                const bar = document.getElementById('progress-bar');
-                const label = document.getElementById('step-label');
-                const pctEl = document.getElementById('step-pct');
-                if (bar) bar.style.width = pct + '%';
-                if (label) label.textContent = `Step ${state.currentStep} / ${state.totalSteps}`;
-                if (pctEl) pctEl.textContent = `${pct}%`;
-            }
+      function updateProgress() {
+        const pct = Math.max(1, Math.round((state.currentStep / state.totalSteps) * 100));
+        const bar = document.getElementById('progress-bar');
+        const label = document.getElementById('step-label');
+        const pctEl = document.getElementById('step-pct');
+        if (bar) bar.style.width = `${pct}%`;
+        if (label) label.textContent = `Step ${state.currentStep} / ${state.totalSteps}`;
+        if (pctEl) pctEl.textContent = `${pct}%`;
+      }
 
-            function collectStepData() {
-                if (state.currentStep === 2) {
-                    state.selectedServices = Array.from(document.querySelectorAll('.service-checkbox:checked')).map((cb) => cb.value);
-                }
-                if (state.currentStep === 3) {
-                    const nameInput = document.getElementById('profile-name');
-                    const industryInput = document.getElementById('profile-industry');
-                    state.name = (nameInput && nameInput.value.trim()) || '';
-                    state.industry = (industryInput && industryInput.value) || '';
-                }
-            }
+      function collectStepData() {
+        if (state.currentStep === 2) {
+          state.selectedServices = Array.from(document.querySelectorAll('.service-checkbox:checked')).map((cb) => cb.value);
+        }
+        if (state.currentStep === 3) {
+          const nameInput = document.getElementById('profile-name');
+          const industryInput = document.getElementById('profile-industry');
+          state.name = (nameInput && nameInput.value.trim()) || '';
+          state.industry = (industryInput && industryInput.value) || '';
+        }
+      }
 
-            function showError(el, message) {
-                if (!el) return;
-                el.textContent = message;
-                el.classList.remove('hidden');
-                clearTimeout(showError.tid);
-                showError.tid = setTimeout(() => { el.classList.add('hidden'); }, 2500);
-            }
+      function showError(el, message) {
+        if (!el) return;
+        el.textContent = message;
+        el.classList.remove('hidden');
+        clearTimeout(showError.tid);
+        showError.tid = setTimeout(() => {
+          el.classList.add('hidden');
+        }, 2500);
+      }
 
-            function renderStep1() {
-                const user = typeof getUser === 'function' ? getUser() : {};
-                const userName = user && user.name ? user.name : '?ъ슜??;
-                const box = document.getElementById('welcome-message');
-                if (box) {
-                    box.innerHTML = `<strong class="text-white">${escapeHtml(userName)}</strong>?? SoftFactory ?⑤낫?⑹뿉 ?ㅼ떊 寃껋쓣 ?섏쁺?⑸땲??<br><span class="text-sm">理쒖쟻 ?섍꼍?쇰줈 諛붾줈 ?쒖옉?????덇쾶 ?꾩??쒕┫寃뚯슂.</span>`;
-                }
-                state.name = state.name || userName;
-            }
+      function renderStep1() {}
 
-            function renderStep3() {
-                const nameInput = document.getElementById('profile-name');
-                const industryInput = document.getElementById('profile-industry');
-                if (nameInput && state.name) nameInput.value = state.name;
-                if (industryInput && state.industry) industryInput.value = state.industry;
-                updateAvatarPreview();
-            }
+      function renderStep3() {
+        const nameInput = document.getElementById('profile-name');
+        const industryInput = document.getElementById('profile-industry');
+        if (nameInput && state.name) nameInput.value = state.name;
+        if (industryInput && state.industry) industryInput.value = state.industry;
+        updateAvatarPreview();
+      }
 
-            function renderStep4() {
-                const container = document.getElementById('action-cards');
-                if (!container) return;
-                const selected = state.selectedServices.length > 0 ? state.selectedServices : Object.keys(serviceMap);
-                container.innerHTML = '';
-                selected.forEach((service) => {
-                    const row = serviceMap[service];
-                    if (!row) return;
-                    const card = document.createElement('a');
-                    card.className = 'flex items-center gap-4 p-4 bg-slate-800 border border-slate-700 rounded-xl hover:border-violet-500 transition';
-                    card.href = row.href;
-                    card.innerHTML = `
-                        <span class="text-2xl">${row.icon}</span>
-                        <div class="flex-1">
-                          <p class="font-semibold text-white">${row.label}</p>
-                          <p class="text-xs text-slate-400">${row.desc}</p>
-                        </div>
-                        <span class="text-xs text-violet-300">諛붾줈媛湲?/span>
-                    `;
-                    container.appendChild(card);
-                });
-            }
+      function renderStep4() {
+        const container = document.getElementById('action-cards');
+        if (!container) return;
+        const selected = state.selectedServices.length > 0 ? state.selectedServices : Object.keys(serviceMap);
+        container.innerHTML = '';
+        selected.forEach((service) => {
+          const row = serviceMap[service];
+          if (!row) return;
+          const card = document.createElement('a');
+          card.className = 'flex items-center gap-4 p-4 bg-slate-800 border border-slate-700 rounded-xl hover:border-violet-500 transition';
+          card.href = row.href;
+          card.innerHTML = `
+            <span class="text-2xl">${row.icon}</span>
+            <div class="flex-1">
+              <p class="font-semibold text-white">${row.label}</p>
+              <p class="text-xs text-slate-400">${row.desc}</p>
+            </div>
+            <span class="text-xs text-violet-300">바로가기</span>
+          `;
+          container.appendChild(card);
+        });
+      }
 
-            function renderStep5() {
-                const summary = document.getElementById('finish-summary');
-                if (!summary) return;
-                const serviceLabels = state.selectedServices.length ? state.selectedServices.map((key) => serviceMap[key] ? serviceMap[key].label : key).join(', ') : '?좏깮????ぉ ?놁쓬';
-                summary.innerHTML = [
-                    `<div class="flex items-center gap-2 text-slate-300"><span class="text-violet-300">??/span>?대쫫: <span class="text-white font-medium">${escapeHtml(state.name || '-')}</span></div>`,
-                    `<div class="flex items-center gap-2 text-slate-300"><span class="text-violet-300">??/span>?낆쥌: <span class="text-white font-medium">${state.industry || '-'}</span></div>`,
-                    `<div class="flex items-center gap-2 text-slate-300"><span class="text-violet-300">??/span>?좏깮 ?쒕퉬?? <span class="text-white font-medium">${serviceLabels}</span></div>`
-                ].join('');
-                launchConfetti();
-            }
+      function renderStep5() {
+        const summary = document.getElementById('finish-summary');
+        if (!summary) return;
+        const serviceLabels = state.selectedServices.length ? state.selectedServices.map((key) => serviceMap[key] ? serviceMap[key].label : key).join(', ') : '선택 없음';
+        summary.innerHTML = [
+          `<div class="flex items-center gap-2 text-slate-300"><span class="text-violet-300">이름</span>: <span class="text-white font-medium">${escapeHtml(state.name || '-')}</span></div>`,
+          `<div class="flex items-center gap-2 text-slate-300"><span class="text-violet-300">업종</span>: <span class="text-white font-medium">${escapeHtml(state.industry || '-')}</span></div>`,
+          `<div class="flex items-center gap-2 text-slate-300"><span class="text-violet-300">선택 서비스</span>: <span class="text-white font-medium">${serviceLabels}</span></div>`
+        ].join('');
+        launchConfetti();
+      }
 
-            function goToStep(next) {
-                if (next < 1 || next > state.totalSteps) return;
-                collectStepData();
-                if (next === 3 && state.currentStep === 2 && state.selectedServices.length === 0) {
-                    alert('理쒖냼 1媛??댁긽???쒕퉬?ㅻ? ?좏깮?댁＜?몄슂.');
-                    return;
-                }
-                if (next === 5 && state.currentStep === 4) {
-                    if (!state.name) {
-                        alert('?대쫫? ?꾩닔 ?낅젰 ??ぉ?낅땲??');
-                        goToStep(3);
-                        return;
-                    }
-                }
+      function goToStep(next) {
+        if (next < 1 || next > state.totalSteps) return;
+        collectStepData();
+        if (next === 3 && state.currentStep === 2 && state.selectedServices.length === 0) {
+          alert('최소 1개 이상 서비스를 선택해 주세요.');
+          return;
+        }
+        if (next === 5 && state.currentStep === 4 && !state.name) {
+          alert('이름은 필수 입력 항목입니다.');
+          goToStep(3);
+          return;
+        }
+        state.currentStep = next;
+        saveState();
+        renderStep(state.currentStep);
+      }
 
-                state.currentStep = next;
-                saveState();
-                renderStep(state.currentStep);
-            }
+      function handleCardSelection(e) {
+        const target = e.target.closest('.service-card');
+        if (!target) return;
+        const checkbox = target.querySelector('.service-checkbox');
+        if (!checkbox) return;
+        checkbox.checked = !checkbox.checked;
+        target.classList.toggle('selected', checkbox.checked);
+      }
 
-            function handleCardSelection(e) {
-                const target = e.target.closest('.service-card');
-                if (!target) return;
-                const checkbox = target.querySelector('.service-checkbox');
-                if (!checkbox) return;
-                checkbox.checked = !checkbox.checked;
-                target.classList.toggle('selected', checkbox.checked);
-            }
+      function updateAvatarPreview() {
+        const avatar = document.getElementById('avatar-preview');
+        if (!avatar) return;
+        if (state.avatarDataUrl) {
+          avatar.innerHTML = `<img src="${state.avatarDataUrl}" alt="avatar" />`;
+        } else {
+          const char = (state.name || 'S').trim().charAt(0).toUpperCase() || 'S';
+          avatar.textContent = char;
+        }
+      }
 
-            function updateAvatarPreview() {
-                const avatar = document.getElementById('avatar-preview');
-                if (!avatar) return;
-                if (state.avatarDataUrl) {
-                    avatar.innerHTML = `<img src="${state.avatarDataUrl}" alt="avatar" />`;
-                } else {
-                    const char = (state.name || 'S').trim().charAt(0).toUpperCase() || 'S';
-                    avatar.textContent = char;
-                }
-            }
+      function updateAvatar(e) {
+        const file = e.target.files && e.target.files[0];
+        if (!file || !file.type.startsWith('image/')) return;
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+          state.avatarDataUrl = evt.target.result;
+          updateAvatarPreview();
+        };
+        reader.readAsDataURL(file);
+      }
 
-            function updateAvatar(e) {
-                const file = e.target.files && e.target.files[0];
-                if (!file || !file.type.startsWith('image/')) return;
-                const reader = new FileReader();
-                reader.onload = (evt) => {
-                    state.avatarDataUrl = evt.target.result;
-                    updateAvatarPreview();
-                };
-                reader.readAsDataURL(file);
-            }
+      function escapeHtml(value) {
+        return String(value)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#39;');
+      }
 
-            function escapeHtml(value) {
-                return String(value)
-                    .replace(/&/g, '&amp;')
-                    .replace(/</g, '&lt;')
-                    .replace(/>/g, '&gt;')
-                    .replace(/"/g, '&quot;')
-                    .replace(/'/g, '&#39;');
-            }
+      function launchConfetti() {
+        const colors = ['#8b5cf6', '#a78bfa', '#f59e0b', '#10b981', '#60a5fa', '#f472b6'];
+        for (let i = 0; i < 50; i += 1) {
+          const piece = document.createElement('div');
+          piece.className = 'confetti';
+          piece.style.left = `${Math.random() * 100}vw`;
+          piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+          piece.style.animationDuration = `${1.4 + Math.random() * 1.8}s`;
+          piece.style.animationDelay = `${Math.random() * 0.4}s`;
+          piece.style.opacity = `${0.7 + Math.random() * 0.3}`;
+          piece.style.transform = `rotate(${Math.random() * 360}deg)`;
+          document.body.appendChild(piece);
+          setTimeout(() => piece.remove(), 3500);
+        }
+      }
 
-            function launchConfetti() {
-                const colors = ['#8b5cf6', '#a78bfa', '#f59e0b', '#10b981', '#60a5fa', '#f472b6'];
-                for (let i = 0; i < 50; i += 1) {
-                    const piece = document.createElement('div');
-                    piece.className = 'confetti';
-                    piece.style.left = `${Math.random() * 100}vw`;
-                    piece.style.background = colors[Math.floor(Math.random() * colors.length)];
-                    piece.style.animationDuration = `${1.4 + Math.random() * 1.8}s`;
-                    piece.style.animationDelay = `${Math.random() * 0.4}s`;
-                    piece.style.opacity = `${0.7 + Math.random() * 0.3}`;
-                    piece.style.transform = `rotate(${Math.random() * 360}deg)`;
-                    document.body.appendChild(piece);
-                    setTimeout(() => piece.remove(), 3500);
-                }
-            }
+      document.getElementById('start-btn')?.addEventListener('click', () => goToStep(2));
+      document.getElementById('step2-next')?.addEventListener('click', () => goToStep(3));
+      document.getElementById('step3-next')?.addEventListener('click', () => {
+        const name = document.getElementById('profile-name').value.trim();
+        if (!name) {
+          const n = document.getElementById('profile-name');
+          n.focus();
+          n.classList.add('border-red-400');
+          return showError(n, '이름은 필수 입력입니다.');
+        }
+        document.getElementById('profile-name').classList.remove('border-red-400');
+        goToStep(4);
+      });
+      document.getElementById('step4-next')?.addEventListener('click', () => goToStep(5));
+      document.getElementById('go-dashboard')?.addEventListener('click', () => {
+        localStorage.setItem('onboarding_complete', '1');
+        localStorage.setItem('onboarding_completed_at', new Date().toISOString());
+        localStorage.removeItem(STORAGE_KEY);
+        window.location.href = 'dashboard.html';
+      });
+      document.querySelectorAll('.prev-btn').forEach((btn) => {
+        btn.addEventListener('click', () => goToStep(state.currentStep - 1));
+      });
+      document.getElementById('service-list')?.addEventListener('click', handleCardSelection);
+      document.getElementById('avatar-input')?.addEventListener('change', updateAvatar);
+      document.getElementById('avatar-preview')?.addEventListener('click', () => {
+        document.getElementById('avatar-input').click();
+      });
+      document.getElementById('profile-name')?.addEventListener('input', (e) => {
+        state.name = e.target.value.trim();
+        updateAvatarPreview();
+      });
+      document.getElementById('profile-industry')?.addEventListener('change', (e) => {
+        state.industry = e.target.value;
+      });
 
-            document.getElementById('start-btn')?.addEventListener('click', () => goToStep(2));
-            document.getElementById('step2-next')?.addEventListener('click', () => goToStep(3));
-            document.getElementById('step3-next')?.addEventListener('click', () => {
-                const name = document.getElementById('profile-name').value.trim();
-                if (!name) {
-                    const n = document.getElementById('profile-name');
-                    n.focus();
-                    n.classList.add('border-red-400');
-                    return showError(n, '?대쫫? ?꾩닔?낅땲??');
-                }
-                document.getElementById('profile-name').classList.remove('border-red-400');
-                goToStep(4);
-            });
-            document.getElementById('step4-next')?.addEventListener('click', () => goToStep(5));
-            document.getElementById('go-dashboard')?.addEventListener('click', () => {
-                localStorage.setItem('onboarding_complete', '1');
-                localStorage.setItem('onboarding_completed_at', new Date().toISOString());
-                localStorage.removeItem(STORAGE_KEY);
-                window.location.href = 'dashboard.html';
-            });
-            document.getElementById('skip-btn')?.addEventListener('click', () => {
-                localStorage.setItem('onboarding_complete', '1');
-                window.location.href = 'dashboard.html';
-            });
-            document.querySelectorAll('.prev-btn').forEach((btn) => {
-                btn.addEventListener('click', () => goToStep(state.currentStep - 1));
-            });
-            document.getElementById('service-list')?.addEventListener('click', handleCardSelection);
-            document.getElementById('avatar-input')?.addEventListener('change', updateAvatar);
-            document.getElementById('avatar-preview')?.addEventListener('click', () => {
-                document.getElementById('avatar-input').click();
-            });
-            document.getElementById('profile-name')?.addEventListener('input', (e) => {
-                state.name = e.target.value.trim();
-                updateAvatarPreview();
-            });
-            document.getElementById('profile-industry')?.addEventListener('change', (e) => {
-                state.industry = e.target.value;
-            });
-
-            loadState();
-            renderStep(state.currentStep);
-            if (state.currentStep === 2 || state.currentStep === 3 || state.currentStep === 4 || state.currentStep === 5) {
-                collectStepData();
-            }
-
-            // Restore step-2 selection if resuming
-            if (state.selectedServices.length > 0) {
-                state.selectedServices.forEach((svc) => {
-                    const cb = document.querySelector(`.service-checkbox[value="${svc}"]`);
-                    if (cb) {
-                        cb.checked = true;
-                        cb.closest('.service-card')?.classList.add('selected');
-                    }
-                });
-            }
-        })();
-    </script>
+      loadState();
+      renderStep(state.currentStep);
+      if (state.selectedServices.length > 0) {
+        state.selectedServices.forEach((svc) => {
+          const cb = document.querySelector(`.service-checkbox[value="${svc}"]`);
+          if (cb) {
+            cb.checked = true;
+            cb.closest('.service-card')?.classList.add('selected');
+          }
+        });
+      }
+    })();
+  </script>
+  <script src="../mobile-optimization.js" defer></script>
 </body>
 </html>
-
