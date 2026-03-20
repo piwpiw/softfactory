@@ -1,57 +1,99 @@
-version: '3.8'
+# SoftFactory — Full Production Stack
+#
+# Services:
+#   web       Flask app (gunicorn, 4 workers)
+#   nginx     Reverse proxy + static files + SSL termination
+#   db        PostgreSQL 15
+#   redis     Session / task cache
+#   certbot   Let's Encrypt certificate renewal
+#
+# Usage:
+#   cp .env.example .env.production && vi .env.production
+#   docker compose -f docker-compose.production.yml up -d
+#   docker compose -f docker-compose.production.yml logs -f web
+#
+# Required .env.production variables:
+#   DB_USER, DB_PASSWORD, DB_NAME
+#   REDIS_PASSWORD
+#   JWT_SECRET, ENCRYPTION_KEY
+#   DOMAIN (e.g. softfactory.example.com)
+#   CERTBOT_EMAIL
+#   CORS_ALLOWED_ORIGIN (optional)
 
-# SoftFactory Production Stack
-# Services: Flask API, PostgreSQL, Redis, Nginx, Prometheus
-# Usage: docker-compose -f docker-compose-prod.yml up -d
+version: '3.9'
+
+x-logging: &default-logging
+  driver: "json-file"
+  options:
+    max-size: "10m"
+    max-file: "5"
+
+x-restart: &always-restart
+  restart: unless-stopped
 
 services:
 
-  # ============ NGINX REVERSE PROXY ============
+  # ─────────────────────────────────────────────
+  # NGINX — reverse proxy, SSL termination, static
+  # ─────────────────────────────────────────────
   nginx:
     image: nginx:1.25-alpine
     container_name: softfactory-nginx
-    restart: always
+    <<: *always-restart
     ports:
       - "80:80"
       - "443:443"
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./nginx/conf.d:/etc/nginx/conf.d:ro
-      - ./nginx/ssl:/etc/nginx/ssl:ro
-      - ./nginx/cache:/var/cache/nginx
+      - ./web:/usr/share/nginx/html/web:ro
+      - certbot_webroot:/var/www/certbot:ro
+      - certbot_certs:/etc/letsencrypt:ro
+      - nginx_cache:/var/cache/nginx
     networks:
       - softfactory
     depends_on:
-      - web
+      web:
+        condition: service_healthy
     healthcheck:
-      test: ["CMD", "wget", "--spider", "-q", "http://localhost/health"]
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost/ready"]
       interval: 30s
       timeout: 10s
       retries: 3
+      start_period: 10s
+    logging: *default-logging
     environment:
       - TZ=UTC
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
 
-  # ============ FLASK API ============
+  # ─────────────────────────────────────────────
+  # FLASK APP — gunicorn WSGI server
+  # ─────────────────────────────────────────────
   web:
+    image: ${DOCKER_IMAGE:-piwpiw99/softfactory:latest}
     build:
       context: .
       dockerfile: Dockerfile.prod
-    container_name: softfactory-api
-    restart: always
+      args:
+        - BUILD_DATE=${BUILD_DATE:-unknown}
+        - VCS_REF=${VCS_REF:-unknown}
+    container_name: softfactory-app
+    <<: *always-restart
     expose:
       - "8000"
     environment:
-      - FLASK_ENV=production
-      - DATABASE_URL=postgresql://${DB_USER:-postgres}:${DB_PASSWORD:-securepass}@db:5432/${DB_NAME:-softfactory}
-      - REDIS_URL=redis://redis:6379/0
-      - FLASK_LOG_LEVEL=info
-      - LOG_DIR=/app/logs
-      - WORKERS=4
+      APP_PORT: 8000
+      # Database
+      DATABASE_URL: postgresql://${DB_USER:-postgres}:${DB_PASSWORD}@db:5432/${DB_NAME:-softfactory}
+      # Redis
+      REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379/0
+      # Application
+      FLASK_ENV: production
+      JWT_SECRET: ${JWT_SECRET}
+      ENCRYPTION_KEY: ${ENCRYPTION_KEY}
+      CORS_ALLOWED_ORIGIN: ${CORS_ALLOWED_ORIGIN:-}
+      # Logging
+      LOG_LEVEL: info
+      LOG_DIR: /app/logs
     depends_on:
       db:
         condition: service_healthy
@@ -60,34 +102,36 @@ services:
     networks:
       - softfactory
     volumes:
-      - ./logs:/app/logs
-      - ./platform.db:/app/platform.db:ro
+      - app_logs:/app/logs
+      - app_uploads:/app/uploads
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      test: ["CMD-SHELL", "curl -f \"http://localhost:${APP_PORT:-8000}/ready\" || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 3
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "5"
-    # Performance tuning
-    cpu_shares: 1024
-    mem_limit: 512m
-    memswap_limit: 768m
+      start_period: 20s
+    logging: *default-logging
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 256M
 
-  # ============ POSTGRESQL DATABASE ============
+  # ─────────────────────────────────────────────
+  # POSTGRESQL 15 — primary database
+  # ─────────────────────────────────────────────
   db:
     image: postgres:15-alpine
     container_name: softfactory-db
-    restart: always
+    <<: *always-restart
     environment:
       POSTGRES_USER: ${DB_USER:-postgres}
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-securepass}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: ${DB_NAME:-softfactory}
-      # Performance tuning
-      POSTGRES_INITDB_ARGS: -c shared_buffers=256MB -c effective_cache_size=1GB -c max_connections=100
+      POSTGRES_INITDB_ARGS: "--encoding=UTF8 --locale=C"
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
@@ -95,81 +139,104 @@ services:
     networks:
       - softfactory
     ports:
-      - "127.0.0.1:5432:5432"  # Only accessible from localhost
+      - "127.0.0.1:5432:5432"   # bind only to localhost for security
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres}"]
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres} -d ${DB_NAME:-softfactory}"]
       interval: 10s
       timeout: 5s
       retries: 5
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
+      start_period: 10s
+    logging: *default-logging
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 512M
+    shm_size: 256mb                # shared_buffers support
 
-  # ============ REDIS CACHE ============
+  # ─────────────────────────────────────────────
+  # REDIS 7 — cache, session store
+  # ─────────────────────────────────────────────
   redis:
     image: redis:7-alpine
     container_name: softfactory-redis
-    restart: always
-    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-redispass}
+    <<: *always-restart
+    command: >
+      redis-server
+        --requirepass ${REDIS_PASSWORD}
+        --appendonly yes
+        --appendfsync everysec
+        --maxmemory 256mb
+        --maxmemory-policy allkeys-lru
+        --save 900 1
+        --save 300 10
     volumes:
       - redis_data:/data
     networks:
       - softfactory
     ports:
-      - "127.0.0.1:6379:6379"  # Only accessible from localhost
+      - "127.0.0.1:6379:6379"   # bind only to localhost
     healthcheck:
-      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "ping"]
       interval: 10s
       timeout: 5s
       retries: 5
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "5m"
-        max-file: "2"
+    logging: *default-logging
     sysctls:
       - net.core.somaxconn=1024
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 320M
 
-  # ============ PROMETHEUS METRICS ============
-  prometheus:
-    image: prom/prometheus:latest
-    container_name: softfactory-prometheus
-    restart: always
-    ports:
-      - "127.0.0.1:9090:9090"
+  # ─────────────────────────────────────────────
+  # CERTBOT — Let's Encrypt SSL certificate renewal
+  # ─────────────────────────────────────────────
+  certbot:
+    image: certbot/certbot:latest
+    container_name: softfactory-certbot
+    restart: "no"                  # run on-demand / via cron
     volumes:
-      - ./orchestrator/prometheus-config.yml:/etc/prometheus/prometheus.yml:ro
-      - ./orchestrator/alert-rules.yml:/etc/prometheus/alert-rules.yml:ro
-      - prometheus_data:/prometheus
-    command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
-      - '--storage.tsdb.path=/prometheus'
-      - '--storage.tsdb.retention.time=30d'
-    networks:
-      - softfactory
+      - certbot_certs:/etc/letsencrypt
+      - certbot_webroot:/var/www/certbot
+    entrypoint: >
+      /bin/sh -c '
+        trap exit TERM;
+        while :; do
+          certbot renew --webroot -w /var/www/certbot --quiet;
+          sleep 12h & wait $${!};
+        done
+      '
     depends_on:
-      - web
-    healthcheck:
-      test: ["CMD", "wget", "--spider", "-q", "http://localhost:9090"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "5m"
-        max-file: "2"
+      - nginx
+    logging: *default-logging
 
+# ─────────────────────────────────────────────
+# NETWORKS
+# ─────────────────────────────────────────────
 networks:
   softfactory:
     driver: bridge
+    ipam:
+      config:
+        - subnet: 172.28.0.0/16
 
+# ─────────────────────────────────────────────
+# VOLUMES
+# ─────────────────────────────────────────────
 volumes:
   postgres_data:
     driver: local
   redis_data:
     driver: local
-  prometheus_data:
+  app_logs:
+    driver: local
+  app_uploads:
+    driver: local
+  certbot_certs:
+    driver: local
+  certbot_webroot:
+    driver: local
+  nginx_cache:
     driver: local

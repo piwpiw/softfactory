@@ -45,6 +45,18 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
+def is_compatibility_wrapper(path: Path) -> bool:
+    if not path.is_file():
+        return False
+    try:
+        text = path.read_text(encoding="utf-8", errors="ignore")
+    except OSError:
+        return False
+    return "Compatibility wrapper. Canonical script lives under scripts/" in text or (
+        "Compatibility wrapper. Canonical script lives under scripts\\." in text
+    )
+
+
 def run_git(root: Path, *args: str) -> subprocess.CompletedProcess[str]:
     return subprocess.run(
         ["git", *args],
@@ -142,10 +154,16 @@ def build_report(root: Path) -> dict[str, object]:
         if top_level(path) == "<root>" and (is_modified or is_untracked):
             modified_root_configs.append(path)
 
-    root_script_duplicates = []
+    compatibility_wrappers = []
+    non_wrapper_duplicates = []
     for name in ROOT_SCRIPT_NAMES:
-        if (root / name).is_file() and (root / "scripts" / name).is_file():
-            root_script_duplicates.append(name)
+        root_path = root / name
+        scripts_path = root / "scripts" / name
+        if root_path.is_file() and scripts_path.is_file():
+            if is_compatibility_wrapper(root_path):
+                compatibility_wrappers.append(name)
+            else:
+                non_wrapper_duplicates.append(name)
 
     top_level_counts: dict[str, int] = defaultdict(int)
     for entry in status_entries:
@@ -160,7 +178,8 @@ def build_report(root: Path) -> dict[str, object]:
         "untracked_feature_paths": sorted(untracked_feature_paths),
         "modified_docs_and_meta": sorted(modified_docs_and_meta),
         "modified_root_configs": sorted(modified_root_configs),
-        "root_script_duplicates": root_script_duplicates,
+        "compatibility_wrappers": compatibility_wrappers,
+        "non_wrapper_duplicates": non_wrapper_duplicates,
         "top_level_counts": dict(sorted(top_level_counts.items())),
     }
     return report
@@ -183,7 +202,8 @@ def print_report(report: dict[str, object]) -> None:
     print(f"- untracked feature paths: {len(report['untracked_feature_paths'])}")
     print(f"- modified docs/meta paths: {len(report['modified_docs_and_meta'])}")
     print(f"- modified root configs/scripts: {len(report['modified_root_configs'])}")
-    print(f"- root/script duplicates: {len(report['root_script_duplicates'])}")
+    print(f"- compatibility wrappers: {len(report['compatibility_wrappers'])}")
+    print(f"- non-wrapper duplicates: {len(report['non_wrapper_duplicates'])}")
     print("")
     print("Formatting Preview")
     print(f"  {preview(report['formatting_issue_paths'])}")
@@ -194,7 +214,8 @@ def print_report(report: dict[str, object]) -> None:
     print("Untracked Feature Preview")
     print(f"  {preview(report['untracked_feature_paths'])}")
     print("Root Duplication Preview")
-    print(f"  {preview(report['root_script_duplicates'])}")
+    print(f"  wrappers: {preview(report['compatibility_wrappers'])}")
+    print(f"  duplicates: {preview(report['non_wrapper_duplicates'])}")
     print("Top-level Counts")
     for key, value in report["top_level_counts"].items():
         print(f"  - {key}: {value}")
