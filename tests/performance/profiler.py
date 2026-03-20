@@ -97,14 +97,17 @@ class PerformanceProfiler:
         }
 
         if times:
+            sorted_times = sorted(times)
+            p95_index = min(int(len(sorted_times) * 0.95), len(sorted_times) - 1)
+            p99_index = min(int(len(sorted_times) * 0.99), len(sorted_times) - 1)
             stats.update({
                 'min_ms': f"{min(times):.2f}",
                 'max_ms': f"{max(times):.2f}",
                 'mean_ms': f"{statistics.mean(times):.2f}",
                 'median_ms': f"{statistics.median(times):.2f}",
                 'stdev_ms': f"{statistics.stdev(times):.2f}" if len(times) > 1 else "N/A",
-                'p95_ms': f"{sorted(times)[int(len(times)*0.95)]:.2f}" if len(times) > 1 else "N/A",
-                'p99_ms': f"{sorted(times)[int(len(times)*0.99)] if int(len(times)*0.99) < len(times) else len(times)-1]:.2f}" if len(times) > 1 else "N/A",
+                'p95_ms': f"{sorted_times[p95_index]:.2f}" if len(times) > 1 else "N/A",
+                'p99_ms': f"{sorted_times[p99_index]:.2f}" if len(times) > 1 else "N/A",
             })
 
         self.results[endpoint] = stats
