@@ -1,0 +1,3864 @@
+{
+  "generated_at": "2026-03-11T12:29:32Z",
+  "generated_by": "scripts/generate_docs_catalog.py",
+  "entrypoints": {
+    "root_readme": "README.md",
+    "docs_index": "docs/INDEX.md",
+    "status": "STATUS.md"
+  },
+  "canonical_paths": {
+    "fixed_paths": [
+      "backend/",
+      "web/",
+      "tests/",
+      "scripts/",
+      "agents/",
+      "daemon/",
+      "orchestrator/",
+      "shared-intelligence/",
+      "n8n/",
+      "CLAUDE.md",
+      "DEPLOYMENT_EXECUTION_SCRIPT.sh",
+      "access_whitelist.json",
+      "continuous_improvement.sh",
+      "deploy-verify.sh",
+      "open_all_pages.bat",
+      "platform.db",
+      "start_server.py",
+      "start_platform.py",
+      "run.py",
+      "verify_m002_phase4_setup.bat",
+      "verify_m002_phase4_setup.sh"
+    ],
+    "deprecated_paths": [],
+    "root_allowed_files": [
+      ".clauderules",
+      ".commitlintrc.json",
+      ".dockerignore",
+      ".env",
+      ".env.example",
+      ".env.local",
+      ".gitignore",
+      ".mcp.core.json",
+      ".mcp.json",
+      ".mcp.optional.json",
+      ".n8nconfig.json",
+      ".ngrok.yml",
+      ".pre-commit-config.yaml",
+      ".semver.yaml",
+      ".vercelignore",
+      "CLAUDE.md",
+      "DEPLOYMENT_EXECUTION_SCRIPT.sh",
+      "Dockerfile",
+      "Dockerfile.prod",
+      "Makefile",
+      "Procfile",
+      "README.md",
+      "STATUS.md",
+      "access_whitelist.json",
+      "app.json",
+      "continuous_improvement.sh",
+      "deploy-verify.sh",
+      "docker-compose.monitoring.yml",
+      "docker-compose.production.yml",
+      "docker-compose.yml",
+      "open_all_pages.bat",
+      "orchestrator.py",
+      "platform.db",
+      "pyproject.toml",
+      "pytest.ini",
+      "railway.json",
+      "requirements-dev.txt",
+      "requirements.txt",
+      "run.py",
+      "run_all_agents.py",
+      "start_platform.py",
+      "start_server.py",
+      "subproject_autopilot.py",
+      "team_work_manager.py",
+      "vercel.json",
+      "verify_m002_phase4_setup.bat",
+      "verify_m002_phase4_setup.sh"
+    ],
+    "root_allowed_dirs": [
+      ".agent",
+      ".cache",
+      ".claude",
+      ".deploy",
+      ".git",
+      ".githooks",
+      ".github",
+      ".husky",
+      ".n8n",
+      ".playwright-cli",
+      ".pytest_cache",
+      ".vercel",
+      ".vscode",
+      ".workspace",
+      ".zap",
+      "__pycache__",
+      "agent_workspaces",
+      "agents",
+      "api",
+      "artifacts",
+      "backend",
+      "core",
+      "daemon",
+      "data",
+      "docs",
+      "htmlcov",
+      "infrastructure",
+      "instance",
+      "locales",
+      "logs",
+      "memory",
+      "migrations",
+      "monitoring",
+      "n8n",
+      "n8n-comfy",
+      "nginx",
+      "node_modules",
+      "nodejs",
+      "nvm",
+      "orchestrator",
+      "qa-mobile",
+      "scripts",
+      "shared-intelligence",
+      "skills",
+      "tests",
+      "tmp_logs",
+      "web"
+    ],
+    "workspace_local_paths": [
+      ".deploy/",
+      ".playwright-cli/",
+      ".pytest_cache/",
+      ".workspace/",
+      ".workspace/logs/",
+      ".workspace/reports/",
+      ".workspace/root-artifacts/",
+      "agent_workspaces/",
+      "artifacts/",
+      "docs/plans/execution/",
+      "htmlcov/",
+      "logs/",
+      "node_modules/",
+      "nodejs/",
+      "nvm/",
+      "tmp_logs/"
+    ]
+  },
+  "counts": {
+    "documents": 359,
+    "by_category": {
+      "api": 2,
+      "archive": 104,
+      "checklists": 12,
+      "docs": 142,
+      "generated": 7,
+      "plans-active": 1,
+      "plans-legacy": 6,
+      "quick-start": 5,
+      "reference": 14,
+      "root": 2,
+      "runbooks": 39,
+      "standards": 12,
+      "status": 12,
+      "templates": 1
+    }
+  },
+  "documents": [
+    {
+      "path": "docs/2FA_DELIVERY_REPORT.md",
+      "title": "2FA/TOTP Implementation — Delivery Report",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/2FA_IMPLEMENTATION.md",
+      "title": "📝 2FA/TOTP Implementation — Complete Security Enhancement",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/2FA_QUICK_START.md",
+      "title": "📘 2FA Implementation — Quick Start Guide",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/ACCESSIBILITY_IMPLEMENTATION_GUIDE.md",
+      "title": "📝 WCAG 2.1 AA 접근성 구현 가이드",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/ACCESSIBILITY_REPORT.md",
+      "title": "📝 WCAG 2.1 AA 접근성 감사 보고서",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/ADD_NEW_SERVICE.md",
+      "title": "📝 🎨 새 서비스 추가 가이드 (10-30분)",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/AGENT_SKILLS.md",
+      "title": "📝 Agent Skills Catalog",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/api/REVIEW_SCRAPER_API.md",
+      "title": "🔌 Review Scraper API - Complete Reference",
+      "category": "api",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/api/SNS_MONETIZE_API.md",
+      "title": "🔌 SNS Monetization v2.0 - Complete API Reference",
+      "category": "api",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/API-PERFORMANCE-GUIDE.md",
+      "title": "🔌 SNS Automation API — Performance & Optimization Guide",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/API.md",
+      "title": "🔌 CooCook API Specification v1.0",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/API_DOCUMENTATION_SUMMARY.md",
+      "title": "🔌 SoftFactory API Documentation Suite - Complete",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/API_ENDPOINTS.md",
+      "title": "🔌 SoftFactory Platform API Reference",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/API_FILE_STORAGE.md",
+      "title": "🔌 File Storage & S3 Integration API",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/API_PAYMENTS.md",
+      "title": "🔌 Payment & Billing API",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/API_QUICK_REFERENCE.md",
+      "title": "🔌 SoftFactory API - Quick Reference Card",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/API_REFERENCE.md",
+      "title": "🔌 SoftFactory Platform API Reference",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/API_REFERENCE_INDEX.md",
+      "title": "🔌 SoftFactory API Reference - Complete Index",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/API_SHOPPING_LIST_v2.md",
+      "title": "🔌 CooCook Shopping List API v2.0",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/ARCHITECTURE-ADVANCED.md",
+      "title": "Advanced Architecture Patterns — Production-Grade SNS Automation v2.0",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/ARCHITECTURE.md",
+      "title": "📝 🏗️ 시스템 아키텍처",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": true
+    },
+    {
+      "path": "docs/archive/CONSOLIDATION_SUMMARY.md",
+      "title": "📝 🎯 Master Consolidation — What Was Delivered",
+      "category": "archive",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/archive/INDEX.md",
+      "title": "📝 📖 MASTER INDEX — Start Here",
+      "category": "archive",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/archive/MASTER_SYSTEM.md",
+      "title": "📝 MASTER SYSTEM — Unified Organization Framework",
+      "category": "archive",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/archive/PROJECT_REGISTRY.md",
+      "title": "📈 PROJECT REGISTRY — Complete Status Dashboard",
+      "category": "archive",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/archive/QUICK_REFERENCE.md",
+      "title": "📝 QUICK REFERENCE — One-Page Cheat Sheets",
+      "category": "archive",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/archive/root-legacy/5-TASKS-PER-TEAM-ACTION-PLAN.md",
+      "title": "🤝 🎯 5 Critical Tasks Per Team — Error Mitigation & Production Readiness",
+      "category": "archive",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/archive/root-legacy/5AM_SPRINT_COMPLETION_REPORT.md",
+      "title": "🎯 5 AM Sprint Completion Report",
+      "category": "archive",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/archive/root-legacy/8-TEAM-EXECUTION-RESULTS.md",
+      "title": "8-Team Parallel Execution Results — 2026-02-26",
+      "category": "archive",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/archive/root-legacy/8TEAM_VALIDATION_FINAL_REPORT.md",
+      "title": "8-Team Parallel Validation & Error Correction Report",
+      "category": "archive",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/archive/root-legacy/API_INTEGRATION_REPORT_T10.md",
+      "title": "API Integration Report - Task #21: api.js Integration & Optimization",
+      "category": "archive",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/archive/root-legacy/AUTOMATION_AND_ANALYSIS_REPORT.md",
+      "title": "📊 SoftFactory Complete Automation & Analysis Report",
+      "category": "archive",
+      "status": "active",
+      "updated": "2026-03-09",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/archive/root-legacy/BLOCKER-ROOT-CAUSE-ANALYSIS.md",
+      "title": "🔴 Critical Blocker — Root Cause Analysis & Resolution",
+      "category": "archive",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/archive/root-legacy/CI_CD_IMPLEMENTATION_SUMMARY.md",
+      "title": "📝 CI/CD Pipeline Implementation — Completion Summary",
+      "category": "archive",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/archive/root-legacy/CONTINUOUS_IMPROVEMENT_FINAL_REPORT.md",
+      "title": "SoftFactory 30-Minute Continuous Improvement — Final Report",
+      "category": "archive",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/archive/root-legacy/COOCOOK_FRONTEND_DELIVERY.md",
+      "title": "📝 CooCook Frontend Implementation — 3 Pages Delivery",
+      "category": "archive",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/archive/root-legacy/DELIVERY-M-006-REPORT.md",
+      "title": "M-006 Delivery Report: Korean Experience Platform MVP",
+      "category": "archive",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/archive/root-legacy/DELIVERY_SUMMARY_PAYMENT_v2.md",
+      "title": "📝 Delivery Summary — Payment System v2.0",
+      "category": "archive",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/archive/root-legacy/DELIVERY_SUMMARY_REVIEW_SCRAPERS.md",
+      "title": "Team F: Review Scrapers — Delivery Summary",
+      "category": "archive",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/archive/root-legacy/DOCUMENTATION_DELIVERY_REPORT.md",
+      "title": "SoftFactory Platform - API Documentation Delivery Report",
+      "category": "archive",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/archive/root-legacy/ENCRYPTION_IMPLEMENTATION_SUMMARY.md",
+      "title": "📝 Field-Level Encryption Implementation — Summary",
+      "category": "archive",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/archive/root-legacy/extended-test-report.md",
+      "title": "Extended Test Coverage Report — SoftFactory Platform",
+      "category": "archive",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/archive/root-legacy/FEED_IMPLEMENTATION_COMPLETE.md",
+      "title": "📝 CooCook Social Feed Implementation - COMPLETE",
+      "category": "archive",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/archive/root-legacy/FINAL_COMPLETION_REPORT.md",
+      "title": "Multi-Agent Parallel Execution: FINAL COMPLETION REPORT",
+      "category": "archive",
+      "status": "active",
+      "updated": "2026-03-09",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/archive/root-legacy/FINAL_DELIVERY.md",
+      "title": "📊 🍽️ CooCook — Final Delivery Report",
+      "category": "archive",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/archive/root-legacy/FINAL_INTEGRATION_PHASE4_REPORT.md",
+      "title": "FINAL INTEGRATION PHASE 4 REPORT",
+      "category": "archive",
+      "status": "active",
+      "updated": "2026-03-09",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/archive/root-legacy/FINAL_INTEGRATION_REPORT.md",
+      "title": "Infrastructure Upgrade v1.0 — Final Integration Report",
+      "category": "archive",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/archive/root-legacy/FINAL_REVIEW_DELIVERY_SUMMARY.md",
+      "title": "Final Review Service Delivery Summary — Commit e877ad7a",
+      "category": "archive",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/archive/root-legacy/FINAL_SESSION_SUMMARY.md",
+      "title": "📝 SoftFactory Continuous Improvement — Complete Session Summary",
+      "category": "archive",
+      "status": "active",
+      "updated": "2026-03-09",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/archive/root-legacy/FINAL_SNS_REVENUE_IMPLEMENTATION_REPORT.md",
+      "title": "SNS Automation v2.0 — Revenue Monetization APIs Implementation Report",
+      "category": "archive",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/archive/root-legacy/GOVERNANCE_VALIDATION_INDEX.md",
+      "title": "📝 Governance Validation — Complete Documentation Index",
+      "category": "archive",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/archive/root-legacy/GOVERNANCE_VALIDATION_REPORT.md",
+      "title": "Infrastructure Improvement Plan — Governance Validation Report",
+      "category": "archive",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/archive/root-legacy/GOVERNANCE_VALIDATION_SUMMARY.md",
+      "title": "Governance Validation — Executive Summary",
+      "category": "archive",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/archive/root-legacy/HANDOFF_NOTES_T10_TO_T11.md",
+      "title": "📝 Handoff Notes: Task #10 → Task #11",
+      "category": "archive",
+      "status": "active",
+      "updated": "2026-03-09",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/archive/root-legacy/IMPLEMENTATION_REPORT_PAYMENT_v2.md",
+      "title": "Payment System v2.0 Implementation Report",
+      "category": "archive",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/archive/root-legacy/IMPLEMENTATION_SUMMARY.md",
+      "title": "📝 SoftFactory Platform - Complete Implementation Summary",
+      "category": "archive",
+      "status": "active",
+      "updated": "2026-03-09",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/archive/root-legacy/IMPLEMENTATION_VERIFICATION.md",
+      "title": "🤝 Implementation Verification Checklist — Team E Review Service",
+      "category": "archive",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/archive/root-legacy/INCOMPLETE_TASKS_SCAN.md",
+      "title": "📝 프로젝트 미완성 작업 전수 조사",
+      "category": "archive",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/archive/root-legacy/INFRASTRUCTURE_ENHANCEMENT_COMPLETE.md",
+      "title": "📝 Infrastructure Enhancement — COMPLETE ✅",
+      "category": "archive",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/archive/root-legacy/INSTAGRAM_IMPLEMENTATION_SUMMARY.md",
+      "title": "🔌 Instagram API Real Integration — Implementation Summary",
+      "category": "archive",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/archive/root-legacy/M-002_PHASE4_SUMMARY.md",
+      "title": "M-002 Phase 4: PostgreSQL Docker Deployment — Setup Complete",
+      "category": "archive",
+      "status": "active",
+      "updated": "2026-03-09",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/archive/root-legacy/MISSION_COMPLETE_DATABASE_MODELS.md",
+      "title": "Mission Complete: Database Models — SNS & Review Automation (2026-02-26)",
+      "category": "archive",
+      "status": "active",
+      "updated": "2026-03-09",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/archive/root-legacy/OAUTH_IMPLEMENTATION_AUDIT.md",
+      "title": "OAuth Social Login Implementation - Final Audit Report",
+      "category": "archive",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/archive/root-legacy/OAUTH_IMPLEMENTATION_REPORT.md",
+      "title": "OAuth Social Login Implementation — Final Report",
+      "category": "archive",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/archive/root-legacy/PAYMENT_SYSTEM_V2_COMPLETION.md",
+      "title": "Payment System v2.0 - Project Completion Report",
+      "category": "archive",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/archive/root-legacy/PERFORMANCE_DASHBOARD_SPEC.md",
+      "title": "📝 Performance & ROI Dashboard (performance.html) — 구현 완료",
+      "category": "archive",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/archive/root-legacy/PERFORMANCE_IMPLEMENTATION_SUMMARY.md",
+      "title": "📝 SoftFactory 성과 추적 및 ROI 대시보드 — 구현 완료 리포트",
+      "category": "archive",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/archive/root-legacy/PERFORMANCE_INDEX.md",
+      "title": "SoftFactory Performance Optimization - Complete Package Index",
+      "category": "archive",
+      "status": "active",
+      "updated": "2026-03-09",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/archive/root-legacy/PERFORMANCE_OPTIMIZATION_REPORT.md",
+      "title": "Performance Optimization Project — COMPLETION REPORT",
+      "category": "archive",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/archive/root-legacy/PERFORMANCE_SUMMARY.md",
+      "title": "🔌 SoftFactory API Performance Optimization — Complete Analysis",
+      "category": "archive",
+      "status": "active",
+      "updated": "2026-03-09",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/archive/root-legacy/PHASE2_FINAL_VERIFICATION.md",
+      "title": "📝 Phase 2: 최종 검증 보고서",
+      "category": "archive",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/archive/root-legacy/PHASE4_FINAL_VERIFICATION.md",
+      "title": "📊 Phase 4: Docker Compose Final Verification Report",
+      "category": "archive",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/archive/root-legacy/PHASE4_VALIDATION_COMPLETE.md",
+      "title": "PHASE 4: FINAL INTEGRATION VALIDATION COMPLETE ✅",
+      "category": "archive",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/archive/root-legacy/PHASE5_FINAL_VERIFICATION.md",
+      "title": "📝 Phase 5: Environment Configuration Verification",
+      "category": "archive",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/archive/root-legacy/PHASE6_FINAL_VERIFICATION.md",
+      "title": "📝 Phase 6: 배포가이드 완료 — 최종 검증 리포트",
+      "category": "archive",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/archive/root-legacy/PHASE7_FINAL_VERIFICATION.md",
+      "title": "Phase 7: CI/CD Pipeline Completion — Final Verification Report",
+      "category": "archive",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/archive/root-legacy/PHASE8_FINAL_VERIFICATION.md",
+      "title": "📝 Phase 8: Monitoring Setup Final Verification",
+      "category": "archive",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/archive/root-legacy/PHASE_8_DELIVERY_REPORT.md",
+      "title": "📊 Phase 8: Monitoring Stack — Final Delivery Report",
+      "category": "archive",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/archive/root-legacy/PHASE_8_MONITORING_COMPLETE.md",
+      "title": "Phase 8: Monitoring Stack Complete ✅",
+      "category": "archive",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/archive/root-legacy/PWA_IMPLEMENTATION_SUMMARY.md",
+      "title": "📝 SoftFactory PWA Implementation - Complete Summary",
+      "category": "archive",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/archive/root-legacy/README.md",
+      "title": "Root Legacy Archive",
+      "category": "archive",
+      "status": "active",
+      "updated": "2026-03-09",
+      "owner": "ops-engineering",
+      "keywords": [
+        "archive",
+        "root legacy",
+        "reports",
+        "summaries"
+      ],
+      "canonical": false
+    },
+    {
+      "path": "docs/archive/root-legacy/RESPONSIVE_DESIGN_COMPLETION_SUMMARY.md",
+      "title": "📝 SoftFactory Mobile & Responsive Design - Project Completion Summary",
+      "category": "archive",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/archive/root-legacy/REVIEW_AGGREGATOR_FRONTEND_SUMMARY.md",
+      "title": "📝 Review Module Frontend Implementation — Task #8 Completion",
+      "category": "archive",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/archive/root-legacy/REVIEW_API_JS_ANALYSIS.md",
+      "title": "api.js Review Functions — Task #9 Status Report",
+      "category": "archive",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/archive/root-legacy/REVIEW_SCRAPER_ANALYSIS.md",
+      "title": "Review Scraper - 5개 플랫폼 통합 분석 보고서",
+      "category": "archive",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/archive/root-legacy/REVIEW_SCRAPER_SUMMARY.md",
+      "title": "Review Scraper - 최종 요약 (Executive Summary)",
+      "category": "archive",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/archive/root-legacy/REVIEW_SCRAPERS_COMPLETION_REPORT.md",
+      "title": "Review Scrapers Implementation — Complete Report",
+      "category": "archive",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/archive/root-legacy/REVIEW_SCRAPERS_IMPLEMENTATION.md",
+      "title": "📝 Review Scrapers Implementation - Complete ✅",
+      "category": "archive",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/archive/root-legacy/SCRAPER_SECURITY_IMPLEMENTATION_REPORT.md",
+      "title": "Web Scraper Security & Resilience Implementation Report",
+      "category": "archive",
+      "status": "active",
+      "updated": "2026-03-09",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/archive/root-legacy/security-audit-report.md",
+      "title": "📊 security-audit-report",
+      "category": "archive",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/archive/root-legacy/SECURITY_FIX_COMPLETION_REPORT.md",
+      "title": "📊 CRITICAL SECURITY FIXES — COMPLETION REPORT",
+      "category": "archive",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/archive/root-legacy/SECURITY_REMEDIATION_REPORT.md",
+      "title": "📊 CRITICAL SECURITY REMEDIATION REPORT",
+      "category": "archive",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/archive/root-legacy/SHOPPING_LIST_SERVICE_SUMMARY.md",
+      "title": "📝 Shopping List Service v2.0 - Completion Summary",
+      "category": "archive",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/archive/root-legacy/SNS_AUTO_CREATE_ENHANCEMENT.md",
+      "title": "SNS Auto Create.html Enhancement — Team C Task #4",
+      "category": "archive",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/archive/root-legacy/SNS_AUTO_FINAL_DELIVERY.md",
+      "title": "Team C Task #4: SNS Auto create.html Final Delivery Report",
+      "category": "archive",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/archive/root-legacy/SNS_AUTO_V2_IMPLEMENTATION_SUMMARY.md",
+      "title": "📝 SNS Automation v2.0 — Implementation Summary",
+      "category": "archive",
+      "status": "active",
+      "updated": "2026-03-09",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/archive/root-legacy/SNS_AUTO_V2_TASK15_SUMMARY.md",
+      "title": "Task #15: SNS create.html Complete Redesign (3-Mode Content Creation)",
+      "category": "archive",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/archive/root-legacy/SNS_AUTOMATION_FRONTEND_DELIVERY_SUMMARY.md",
+      "title": "📝 SNS Automation v2.0 - Frontend Pages Delivery Summary",
+      "category": "archive",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/archive/root-legacy/SNS_AUTOMATION_FRONTEND_PAGES_REVIEW.md",
+      "title": "SNS Automation v2.0 - Frontend Pages Review & Enhancement Status",
+      "category": "archive",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/archive/root-legacy/SNS_AUTOMATION_TASK_COMPLETION.md",
+      "title": "🔌 Task #20: SNS Automation API v2.0 — Completion Report",
+      "category": "archive",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/archive/root-legacy/SNS_AUTOMATION_V2_PROJECT_COMPLETE.md",
+      "title": "📝 SNS Automation v2.0 — Complete Project Deliverables",
+      "category": "archive",
+      "status": "active",
+      "updated": "2026-03-09",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/archive/root-legacy/SNS_CREATE_IMPLEMENTATION.md",
+      "title": "📝 SNS Auto 3-Mode Content Creation Implementation Summary",
+      "category": "archive",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/archive/root-legacy/SNS_REVENUE_API_COMPLETE.md",
+      "title": "SNS Automation v2.0 — Revenue Monetization APIs (COMPLETE)",
+      "category": "archive",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/archive/root-legacy/SNS_REVENUE_API_DELIVERY_SUMMARY.md",
+      "title": "🔌 SNS Automation v2.0 — Revenue APIs Delivery Summary",
+      "category": "archive",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/archive/root-legacy/TASK17_FINAL_REPORT.md",
+      "title": "Task #17: Complete Review Experience Scraper Implementation",
+      "category": "archive",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/archive/root-legacy/TASK17_IMPLEMENTATION_SUMMARY.md",
+      "title": "📝 Task #17: Complete Review Experience Scraper Implementation",
+      "category": "archive",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/archive/root-legacy/TASK_13_COMPLETION_SUMMARY.md",
+      "title": "📝 TASK #13: FINAL INTEGRATION PHASE 4",
+      "category": "archive",
+      "status": "active",
+      "updated": "2026-03-09",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/archive/root-legacy/TASK_14_OAUTH_SUMMARY.md",
+      "title": "Task #14: SNS OAuth & Social Login Implementation — COMPLETE",
+      "category": "archive",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/archive/root-legacy/TASK_21_INDEX.md",
+      "title": "Task #21: api.js Integration & Optimization — Complete Index",
+      "category": "archive",
+      "status": "active",
+      "updated": "2026-03-09",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/archive/root-legacy/TASK_COMPLETION_REPORT.md",
+      "title": "SNS Automation v2.0 - Frontend Pages Task Completion Report",
+      "category": "archive",
+      "status": "active",
+      "updated": "2026-03-09",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/archive/root-legacy/TASK_T11_COMPLETION_REPORT.md",
+      "title": "Task T11: Comprehensive Integration Test Suite — COMPLETION REPORT",
+      "category": "archive",
+      "status": "active",
+      "updated": "2026-03-09",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/archive/root-legacy/TEAM_D_GOVERNANCE_CHECKPOINTS.md",
+      "title": "🤝 Team D — Governance Enforcement Checkpoints",
+      "category": "archive",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/archive/root-legacy/TEAM_E_COMPLETION.md",
+      "title": "Team E — DevOps Engineer Completion Report",
+      "category": "archive",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/archive/root-legacy/TEAM_E_IMPLEMENTATION_SUMMARY.md",
+      "title": "🤝 Team E: Review Service Backend Implementation",
+      "category": "archive",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/archive/root-legacy/TEAM_E_REVIEW_SERVICE_COMPLETION.md",
+      "title": "Team E: Review Service Backend — Final Completion Report",
+      "category": "archive",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/archive/root-legacy/TEAM_H_TASK_21_COMPLETION.md",
+      "title": "🔌 Team H (API Integration) — Task #21 Completion Report",
+      "category": "archive",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/archive/root-legacy/TEAM_I_FINAL_DELIVERY.md",
+      "title": "🧪 Team I: Final Integration Testing Delivery — SNS Automation v2.0",
+      "category": "archive",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/archive/root-legacy/TEAM_I_INTEGRATION_TESTS_SUMMARY.md",
+      "title": "Team I: Integration Test Suite — SNS Automation v2.0",
+      "category": "archive",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/archive/root-legacy/TEAM_I_WORK_COMPLETE.md",
+      "title": "🧪 TEAM I: Work Complete — Integration Test Suite Delivery",
+      "category": "archive",
+      "status": "active",
+      "updated": "2026-03-09",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/archive/root-legacy/TEAM_K_DELIVERY_SUMMARY.md",
+      "title": "🤝 Team K: Final Delivery Summary",
+      "category": "archive",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/archive/root-legacy/TELEGRAM_IMPLEMENTATION_SUMMARY.md",
+      "title": "📝 Telegram Bot Scheduler Integration — Implementation Summary",
+      "category": "archive",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/archive/root-legacy/TEST_DEMO.md",
+      "title": "🧪 SoftFactory Demo Mode - Complete Test Guide",
+      "category": "archive",
+      "status": "active",
+      "updated": "2026-03-09",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/archive/root-legacy/TEST_RESULTS_REPORT.md",
+      "title": "Test Results Report — 2026-02-26",
+      "category": "archive",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/archive/root-legacy/TESTING_REPORT.md",
+      "title": "🧪 SoftFactory Platform - Testing Report",
+      "category": "archive",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/archive/TEAM_STRUCTURE.md",
+      "title": "🤝 TEAM STRUCTURE — Agent Roles & Capabilities",
+      "category": "archive",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/Automation.md",
+      "title": "Automation",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-05",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/AWS_IAM_POLICY.md",
+      "title": "📝 AWS IAM Policy for SoftFactory File Storage",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/case-studies/CUSTOMER-CASE-STUDIES.md",
+      "title": "📝 SoftFactory Customer Case Studies",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/checklists/ACCESSIBILITY_CHECKLIST.md",
+      "title": "📝 WCAG 2.1 AA 접근성 준수 - 빠른 참조",
+      "category": "checklists",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/checklists/DELIVERY_CHECKLIST.md",
+      "title": "📝 Performance Optimization Delivery Checklist",
+      "category": "checklists",
+      "status": "active",
+      "updated": "2026-03-09",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/checklists/DEPLOYMENT_CHECKLIST.md",
+      "title": "🚢 M-002 Phase 4: PostgreSQL Docker Deployment Checklist",
+      "category": "checklists",
+      "status": "active",
+      "updated": "2026-03-09",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/checklists/DEPLOYMENT_CHECKLIST_PHASE4.md",
+      "title": "🚢 DEPLOYMENT CHECKLIST — PHASE 4",
+      "category": "checklists",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/checklists/DEPLOYMENT_FINAL_CHECKLIST.md",
+      "title": "🚢 Infrastructure Upgrade v1.0 — Deployment Final Checklist",
+      "category": "checklists",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/checklists/FIRST-7-DAYS-CHECKLIST.md",
+      "title": "📝 First 7 Days Checklist: Get the Most Out of SoftFactory",
+      "category": "checklists",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/checklists/PRODUCTION-DEPLOYMENT-CHECKLIST.md",
+      "title": "🚢 🚀 Production Deployment Checklist — SoftFactory v2.0",
+      "category": "checklists",
+      "status": "active",
+      "updated": "2026-03-09",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/checklists/PRODUCTION_DEPLOYMENT_CHECKLIST.md",
+      "title": "🚢 Production Deployment Checklist — SoftFactory v2.0",
+      "category": "checklists",
+      "status": "active",
+      "updated": "2026-03-09",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/checklists/pwa-test-checklist.md",
+      "title": "🧪 SoftFactory PWA - Test Verification Checklist",
+      "category": "checklists",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/checklists/README.md",
+      "title": "Checklists",
+      "category": "checklists",
+      "status": "active",
+      "updated": "2026-03-09",
+      "owner": "ops-engineering",
+      "keywords": [
+        "checklists",
+        "qa",
+        "release",
+        "migration"
+      ],
+      "canonical": false
+    },
+    {
+      "path": "docs/checklists/REVIEW_AGGREGATOR_QA_CHECKLIST.md",
+      "title": "🛡️ Review Module Frontend — QA Checklist",
+      "category": "checklists",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/checklists/TELEGRAM_DEPLOYMENT_CHECKLIST.md",
+      "title": "🚢 Telegram Bot Scheduler Integration — Deployment Checklist",
+      "category": "checklists",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/CI-CD-PIPELINE.md",
+      "title": "📝 CI/CD Pipeline Documentation",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/CLAUDE_API_ARCHITECTURE_DIAGRAM.md",
+      "title": "🔌 Claude API Integration — Architecture Diagrams",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/CLAUDE_API_DESIGN_DELIVERABLES.md",
+      "title": "Claude API Integration — Design Phase Deliverables Index",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/CLAUDE_API_IMPLEMENTATION_ROADMAP.md",
+      "title": "Claude API Integration — Implementation Roadmap & Cost Analysis",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/CLAUDE_API_INTEGRATION.md",
+      "title": "Claude API Integration Design — Sprint 2 Preparation",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/CLAUDE_API_INTEGRATION_SUMMARY.md",
+      "title": "🔌 Claude API Integration — Design Summary & Next Steps",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/CLAUDE_API_TESTING_STRATEGY.md",
+      "title": "Claude API Integration — Testing Strategy & QA Framework",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/CODE_NODES_API.md",
+      "title": "🔌 Custom Code Nodes - API Reference",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/CODE_NODES_GETTING_STARTED.md",
+      "title": "📝 Getting Started with Custom Code Nodes",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/CODE_NODES_GUIDE.md",
+      "title": "📘 Custom JavaScript Code Nodes Guide",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/CODE_NODES_IMPLEMENTATION.md",
+      "title": "📝 Custom JavaScript Code Nodes - Implementation Summary",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/CODE_NODES_QUICK_START.md",
+      "title": "📘 Custom Code Nodes - Quick Start Guide",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/COMPETITIVE_POSITIONING.md",
+      "title": "SoftFactory Competitive Positioning",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/CONSULTATION_PROTOCOL.md",
+      "title": "📝 Consultation Protocol",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/COOCOOK_FEED_API.md",
+      "title": "🔌 CooCook Feed API Documentation",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/COOCOOK_FEED_IMPLEMENTATION_SUMMARY.md",
+      "title": "CooCook Feed Implementation Summary",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/COOCOOK_PROTOCOL.md",
+      "title": "📝 🎯 CooCook Operations Protocol — Core Keywords & Workflow",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/CUSTOMER_ACQUISITION_STRATEGY.md",
+      "title": "SoftFactory Customer Acquisition Strategy",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/database-optimization-report.md",
+      "title": "Database Optimization & Query Performance Report",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/DATABASE-OPTIMIZATION.md",
+      "title": "📘 Database Optimization Guide — SoftFactory v2.0",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/DATABASE_OPTIMIZATION_INDEX.md",
+      "title": "📝 Database Optimization - Complete Index",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/DATABASE_OPTIMIZATION_QUICKSTART.md",
+      "title": "📘 Database Optimization - Quick Start Guide",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/DATABASE_SCHEMA.md",
+      "title": "📝 CooCook Database Schema",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/DataModel.md",
+      "title": "DataModel",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-05",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/DECISIONS.md",
+      "title": "📝 🎯 의사결정 트리",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": true
+    },
+    {
+      "path": "docs/DEPLOYMENT-PRODUCTION.md",
+      "title": "🚢 Production Deployment Runbook — SoftFactory Platform",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-09",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/DEPLOYMENT.md",
+      "title": "🚢 DEPLOYMENT GUIDE",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/DEPLOYMENT_CHECKLIST_PRODUCTION.md",
+      "title": "🚢 SoftFactory Production Deployment Checklist v2.0",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/DEPLOYMENT_RUNBOOK.md",
+      "title": "🚢 SoftFactory Deployment Runbook",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/documentation-maintenance-template.md",
+      "title": "documentation-maintenance-template",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/DOCUMENTATION_SUMMARY_2026-02.md",
+      "title": "📝 SoftFactory Documentation Summary",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/DoD.md",
+      "title": "DoD",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-05",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/EDUCATION-MATERIALS-SUMMARY.md",
+      "title": "📝 SoftFactory Customer Education Materials — Complete Suite",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/ELEVATOR_PITCH.md",
+      "title": "📝 SoftFactory Elevator Pitches",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/ENCRYPTION_GUIDE.md",
+      "title": "📘 Field-Level Encryption Implementation Guide",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/EventSpec.md",
+      "title": "EventSpec",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-05",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/EXTERNAL_ACCESS_SETUP.md",
+      "title": "📝 SoftFactory External Network Access Setup",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/FAQ-EXPANDED.md",
+      "title": "📝 SoftFactory Expanded FAQ (All Services)",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/FEATURE_COMPARISON_CHART.md",
+      "title": "📝 SoftFactory Feature Comparison Chart",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/FRONTEND_PERFORMANCE_OPTIMIZATIONS.md",
+      "title": "📘 Frontend Performance Optimization Guide",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/generated/adr/ADR-0001_Adopt_Clean_Architecture_with_Modular_Monolith_for_CooCook_MVP.md",
+      "title": "📝 ADR-0001: Adopt Clean Architecture with Modular Monolith for CooCook MVP",
+      "category": "generated",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/generated/prd/PRD_CooCook_2026-02-22.md",
+      "title": "Product Requirements Document (PRD)",
+      "category": "generated",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/generated/prd/PRD_CooCook_2026-03-02.md",
+      "title": "Product Requirements Document (PRD)",
+      "category": "generated",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/generated/runbooks/RUNBOOK_CooCook_API_v0.1.0_2026-02-22.md",
+      "title": "🔌 Deployment Runbook: CooCook API v0.1.0",
+      "category": "generated",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/generated/runbooks/RUNBOOK_CooCook_API_v0.1.0_2026-03-02.md",
+      "title": "🚢 Deployment Runbook: CooCook API v0.1.0",
+      "category": "generated",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/generated/test_plans/TEST_PLAN_CooCook_2026-02-22.md",
+      "title": "🧪 Test Plan: CooCook",
+      "category": "generated",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/generated/test_plans/TEST_PLAN_CooCook_2026-03-02.md",
+      "title": "🧪 Test Plan: CooCook",
+      "category": "generated",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/GO_TO_MARKET_TIMELINE.md",
+      "title": "📝 SoftFactory Go-to-Market Timeline",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/GROWTH_AUTOMATION_PARALLEL_UPDATE_2026-03-07.md",
+      "title": "Growth Automation Parallel Update",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-07",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/IA.md",
+      "title": "Growth Automation IA and Screen Design Spec",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-07",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/INDEX.md",
+      "title": "Docs Index",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-09",
+      "owner": "ops-engineering",
+      "keywords": [
+        "docs",
+        "index",
+        "repo layout",
+        "catalog",
+        "active paths"
+      ],
+      "canonical": true
+    },
+    {
+      "path": "docs/instagram_api_examples.md",
+      "title": "🔌 Instagram API — Practical Examples & Test Cases",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/instagram_api_integration.md",
+      "title": "🔌 Instagram API Real Integration Guide (v1.0)",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/INSTAGRAM_QUICK_START.md",
+      "title": "🔌 Instagram API — Quick Start Guide (5 Minutes)",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/INTEGRATION_GUIDE.md",
+      "title": "🔌 SoftFactory API Integration Guide",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/LAUNCH_CHECKLIST.md",
+      "title": "📝 SoftFactory Launch Checklist",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/LAUNCH_PACKAGE_INDEX.md",
+      "title": "📝 SoftFactory Launch Package — Complete Index",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/LOAD_TEST_EXECUTION_GUIDE.md",
+      "title": "🧪 Load Testing Execution Guide",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/M-006-QUICK-START.md",
+      "title": "📘 M-006 Experience Platform — Quick Start Guide",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/M-007-API-SPEC.md",
+      "title": "🔌 M-007 Complete API Specification (OpenAPI 3.1)",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/M-007-DEPLOYMENT.md",
+      "title": "🚢 M-007 Complete Deployment Guide",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/M-007-SETUP.md",
+      "title": "📘 M-007 Development Environment Setup Guide",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/M-007_REVIEW_API_COMPLETE_v2.0.md",
+      "title": "M-007: Review Service API — Complete Implementation v2.0",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/M-007_TEAM_E_IMPLEMENTATION_SUMMARY.md",
+      "title": "M-007: Team E (체험단 API) — Implementation Summary",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/MARKET_LAUNCH_README.md",
+      "title": "🌟 SoftFactory Market Launch Package — README",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/MARKET_LAUNCH_SUMMARY.md",
+      "title": "SoftFactory Market Launch Package — Executive Summary",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/MARKETING_COLLATERAL_ONE_PAGER.md",
+      "title": "📝 SoftFactory One-Pager",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/MASTER_EXECUTION_BLUEPRINT_2026-03-07.md",
+      "title": "Master Execution Blueprint",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-10",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/MASTER_REPORT.md",
+      "title": "📊 🏆 Deca-Agent Master Report",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/MESSAGING_FRAMEWORK.md",
+      "title": "📝 SoftFactory Messaging Framework",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/MISSION_LIFECYCLE.md",
+      "title": "📝 Mission Lifecycle",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/MONITORING-INTEGRATION.md",
+      "title": "📘 SoftFactory Monitoring Integration Guide",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/MONITORING-SETUP.md",
+      "title": "SoftFactory Monitoring & Logging Setup",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/MONITORING-VERIFICATION.md",
+      "title": "📝 Monitoring & Logging - Verification Checklist",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/MONITORING_GUIDE.md",
+      "title": "📘 SoftFactory Monitoring Guide",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/NUTRITION_ENGINE.md",
+      "title": "📝 CooCook Nutrition Engine Documentation",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/OAUTH_FLOW_GUIDE.md",
+      "title": "📘 OAuth 2.0 Social Login Flow - Complete Guide",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/OAUTH_SOCIAL_LOGIN_IMPLEMENTATION.md",
+      "title": "📝 OAuth Social Login Implementation — Task #14",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/PARTNERSHIP_OPPORTUNITIES.md",
+      "title": "📝 SoftFactory Partnership Opportunities",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/PAYMENT_API_REFERENCE.md",
+      "title": "🔌 Payment System API Reference v2.0",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/PAYMENT_IMPLEMENTATION_SUMMARY.md",
+      "title": "📝 Payment System v2.0 Implementation Summary",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/PERFORMANCE_AGENT_HANDOFF.md",
+      "title": "Performance Optimization Agent — Handoff & Next Steps",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/PERFORMANCE_ANALYSIS.md",
+      "title": "SoftFactory Performance Analysis Report",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/PERFORMANCE_BASELINES.md",
+      "title": "Performance Baselines — 2026-02-25 Infrastructure Upgrade",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/PERFORMANCE_OPTIMIZATION_CHECKLIST.md",
+      "title": "📝 Performance Optimization Checklist — 3-Week Implementation Plan",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/PERFORMANCE_REPORT.md",
+      "title": "SoftFactory API Performance Report",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/PERFORMANCE_SUMMARY.md",
+      "title": "Performance Optimization — Executive Summary",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/PERFORMANCE_TUNING.md",
+      "title": "📘 Performance Tuning Guide — SoftFactory Platform",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/plans/active/README.md",
+      "title": "Active Plans",
+      "category": "plans-active",
+      "status": "active",
+      "updated": "2026-03-09",
+      "owner": "ops-engineering",
+      "keywords": [
+        "plans",
+        "active",
+        "execution",
+        "backlog"
+      ],
+      "canonical": false
+    },
+    {
+      "path": "docs/plans/enterprise-autonomy-5h-guide.md",
+      "title": "5시간 자동 고도화 오토러너 실행 기록 (리뷰 작업리스트 우선)",
+      "category": "plans-legacy",
+      "status": "active",
+      "updated": "2026-03-03",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/plans/enterprise_upgrade_day_plan_2026-03-03.md",
+      "title": "Enterprise Upgrade Day Plan (2026-03-03)",
+      "category": "plans-legacy",
+      "status": "active",
+      "updated": "2026-03-09",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/plans/parallel_upgrade_execution_2026-03-05.md",
+      "title": "Parallel Upgrade Execution Plan (2026-03-05)",
+      "category": "plans-legacy",
+      "status": "active",
+      "updated": "2026-03-04",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/plans/platform_index_enhancement_review_2026-03-04.md",
+      "title": "Platform 사용자 대시보드 고도화 검토서 (2026-03-04)",
+      "category": "plans-legacy",
+      "status": "active",
+      "updated": "2026-03-03",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/plans/ui_screen_gap_backlog_2026-03-04.md",
+      "title": "UI Screen Gap Backlog (2026-03-04)",
+      "category": "plans-legacy",
+      "status": "active",
+      "updated": "2026-03-04",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/plans/uiux_consistency_parallel_review_5x.md",
+      "title": "UI/UX Consistency Parallel Review 5x",
+      "category": "plans-legacy",
+      "status": "active",
+      "updated": "2026-03-04",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/PRD.md",
+      "title": "PRD",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-05",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/PRICING_STRATEGY.md",
+      "title": "SoftFactory Pricing Strategy",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/PRODUCT_EXECUTION_TICKETS_2026-03-07.md",
+      "title": "Product Execution Tickets",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-07",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/PROJECTS.md",
+      "title": "📝 📊 프로젝트 현황판 (실시간 대시보드)",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": true
+    },
+    {
+      "path": "docs/PUBLIC_ACCESS_GUIDE.md",
+      "title": "📘 SoftFactory Public Access Guide",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/PUBLIC_ACCESS_INTEGRATION.md",
+      "title": "📘 Public Access Integration Guide",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/PUBLIC_ACCESS_SETUP_SUMMARY.md",
+      "title": "📝 Public Access Setup Summary",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/PWA_IMPLEMENTATION.md",
+      "title": "📝 SoftFactory PWA Implementation v1.0",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/quick-start/AI-AUTOMATION-QUICK-START.md",
+      "title": "📝 AI Automation: Create Your First Workflow (5-Minute Setup)",
+      "category": "quick-start",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/quick-start/COOCOOK-QUICK-START.md",
+      "title": "📝 CooCook: Book Your First Chef (5-Minute Setup)",
+      "category": "quick-start",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/quick-start/REVIEW-QUICK-START.md",
+      "title": "📝 Review: Launch Your First Campaign (5-Minute Setup)",
+      "category": "quick-start",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/quick-start/SNS-AUTO-QUICK-START.md",
+      "title": "📝 SNS Auto: Schedule Your First Post (5-Minute Setup)",
+      "category": "quick-start",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/quick-start/WEBAPP-BUILDER-QUICK-START.md",
+      "title": "📝 WebApp Builder: Build Your First Website (5-Minute Setup)",
+      "category": "quick-start",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/RBAC_IMPLEMENTATION.md",
+      "title": "📝 Role-Based Access Control (RBAC) Implementation",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/RBAC_QUICK_REFERENCE.md",
+      "title": "📝 RBAC Quick Reference",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/README.md",
+      "title": "Docs Overview",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-09",
+      "owner": "ops-engineering",
+      "keywords": [
+        "docs",
+        "overview",
+        "redirect",
+        "index"
+      ],
+      "canonical": false
+    },
+    {
+      "path": "docs/reference/active-paths.md",
+      "title": "Active Paths",
+      "category": "reference",
+      "status": "active",
+      "updated": "2026-03-10",
+      "owner": "ops-engineering",
+      "keywords": [
+        "paths",
+        "canonical",
+        "deprecated",
+        "runtime",
+        "compose"
+      ],
+      "canonical": true
+    },
+    {
+      "path": "docs/reference/legacy-root/API_ENDPOINT_QUICK_REFERENCE.md",
+      "title": "🔌 API Endpoint Quick Reference (Code-Verified)",
+      "category": "reference",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/reference/legacy-root/BOT_COMMANDS.md",
+      "title": "📝 🤖 CooCook Telegram Bot PRO — 100 Commands",
+      "category": "reference",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/reference/legacy-root/COOCOOK_RECIPE_ENDPOINTS_SUMMARY.md",
+      "title": "📊 CooCook Recipe Search Enhancement - Completion Report",
+      "category": "reference",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/reference/legacy-root/MODELS_QUICK_REFERENCE.md",
+      "title": "📘 Database Models — Quick Reference Guide",
+      "category": "reference",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/reference/legacy-root/README.md",
+      "title": "Legacy Root Reference",
+      "category": "reference",
+      "status": "active",
+      "updated": "2026-03-09",
+      "owner": "ops-engineering",
+      "keywords": [
+        "reference",
+        "legacy root",
+        "quick reference"
+      ],
+      "canonical": false
+    },
+    {
+      "path": "docs/reference/legacy-root/REVIEW_SCRAPER_INDEX.md",
+      "title": "📝 Review Scraper - 문서 색인 (Document Index)",
+      "category": "reference",
+      "status": "active",
+      "updated": "2026-03-09",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/reference/legacy-root/SNS_REVENUE_API_QUICK_REFERENCE.md",
+      "title": "🔌 SNS Revenue APIs — Quick Reference Guide",
+      "category": "reference",
+      "status": "active",
+      "updated": "2026-03-09",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/reference/legacy-root/SNS_REVIEW_MODELS_DELIVERABLE.md",
+      "title": "SNS & Review Database Models — Complete Deliverable",
+      "category": "reference",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/reference/legacy-root/TEAM_CHARTER_REFERENCE.md",
+      "title": "🤝 7-Team Infrastructure Improvement — Charter Reference",
+      "category": "reference",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/reference/legacy-root/USER_MANUAL.md",
+      "title": "📖 SoftFactory Platform — User Manual",
+      "category": "reference",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/reference/legacy-root/VALIDATION_QUICK_REFERENCE.md",
+      "title": "8-Team Validation — Quick Reference",
+      "category": "reference",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/reference/repo-layout.md",
+      "title": "Repo Layout Policy",
+      "category": "reference",
+      "status": "active",
+      "updated": "2026-03-10",
+      "owner": "ops-engineering",
+      "keywords": [
+        "repo layout",
+        "root policy",
+        "documentation",
+        "workspace",
+        "validation"
+      ],
+      "canonical": true
+    },
+    {
+      "path": "docs/reference/team-agent-doc-classification.md",
+      "title": "팀·에이전트 문서 분류표",
+      "category": "reference",
+      "status": "active",
+      "updated": "2026-03-10",
+      "owner": "ops-engineering",
+      "keywords": [
+        "team docs",
+        "agent docs",
+        "classification",
+        "archive",
+        "active",
+        "reference"
+      ],
+      "canonical": false
+    },
+    {
+      "path": "docs/RELEASE_SAFE_CHANGE_CHECKLIST.md",
+      "title": "Release Safe Change Checklist",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-05",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/ROI_CALCULATOR_GUIDE.md",
+      "title": "📝 SoftFactory ROI Calculator & Tool",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/RR_MATRIX.md",
+      "title": "📝 R&R Matrix — RACI",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/RULES.md",
+      "title": "📝 📋 10개 핵심 규칙",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": true
+    },
+    {
+      "path": "docs/RUNBOOK_GROWTH_AUTOMATION.md",
+      "title": "RUNBOOK_GROWTH_AUTOMATION",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-05",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/runbooks/COOCOOK_QUICK_START.md",
+      "title": "📘 CooCook Frontend Quick Start Guide",
+      "category": "runbooks",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/runbooks/DAILY_OPERATIONS_GUIDE.md",
+      "title": "📘 🎯 CooCook Daily Operations Guide",
+      "category": "runbooks",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/runbooks/DELIVERY_SUMMARY_N8N_READY.md",
+      "title": "📝 n8n Ready: Complete Delivery Summary",
+      "category": "runbooks",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/runbooks/DEMO_GUIDE.md",
+      "title": "📘 SoftFactory Demo Mode Guide",
+      "category": "runbooks",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/runbooks/DEPLOYMENT-INDEX.md",
+      "title": "🚢 📋 SoftFactory v2.0 — Deployment Documentation Index",
+      "category": "runbooks",
+      "status": "active",
+      "updated": "2026-03-09",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/runbooks/DEPLOYMENT-QUICK-START.md",
+      "title": "🚢 🚀 Deployment Quick-Start Guide",
+      "category": "runbooks",
+      "status": "active",
+      "updated": "2026-03-09",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/runbooks/DEPLOYMENT.md",
+      "title": "📝 🚀 JARVIS Heroku 배포 가이드",
+      "category": "runbooks",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/runbooks/DEPLOYMENT_COMPLETION_RECORD.md",
+      "title": "🚢 Production Deployment Completion Record",
+      "category": "runbooks",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/runbooks/DEPLOYMENT_COMPLETION_SUMMARY.md",
+      "title": "🚢 PRODUCTION DEPLOYMENT EXECUTION — FINAL SUMMARY",
+      "category": "runbooks",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/runbooks/DEPLOYMENT_GUIDE.md",
+      "title": "SoftFactory Deployment Guide",
+      "category": "runbooks",
+      "status": "active",
+      "updated": "2026-03-09",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/runbooks/DEPLOYMENT_MANIFEST_2026-02-26.md",
+      "title": "🚢 Deployment Manifest — 2026-02-26 04:55 UTC",
+      "category": "runbooks",
+      "status": "active",
+      "updated": "2026-03-09",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/runbooks/DOCKER_QUICK_START.md",
+      "title": "📘 Docker + PostgreSQL Quick Start Guide",
+      "category": "runbooks",
+      "status": "active",
+      "updated": "2026-03-09",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/runbooks/ELASTICSEARCH_QUICKSTART.md",
+      "title": "📘 Elasticsearch Quick Start Guide",
+      "category": "runbooks",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/runbooks/ENCRYPTION_QUICK_START.md",
+      "title": "📘 Field-Level Encryption — Quick Start Guide",
+      "category": "runbooks",
+      "status": "active",
+      "updated": "2026-03-09",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/runbooks/FINAL_SETUP.md",
+      "title": "📝 🚀 JARVIS 완전 자동화 설정",
+      "category": "runbooks",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/runbooks/INSTAGRAM_API_README.md",
+      "title": "🔌 Instagram API Real Integration — Complete Implementation",
+      "category": "runbooks",
+      "status": "active",
+      "updated": "2026-03-09",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/runbooks/JARVIS_GUIDE.md",
+      "title": "📝 🤖 JARVIS — Intelligent Telegram Bot for CooCook",
+      "category": "runbooks",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/runbooks/LOAD_TESTING_COMPLETION_SUMMARY.md",
+      "title": "SoftFactory Load Testing Suite — Completion Summary",
+      "category": "runbooks",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/runbooks/M-002-PHASE4-DEPLOYMENT.md",
+      "title": "🚢 M-002: Phase 4 DevOps Deployment Guide",
+      "category": "runbooks",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/runbooks/M-008-README.md",
+      "title": "🔌 M-008: Telegram Bot Scheduler + CooCook API Enhancement",
+      "category": "runbooks",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/runbooks/N8N_DEPLOYMENT_VISUAL_GUIDE.md",
+      "title": "🚢 n8n Deployment — Visual Reference Guide",
+      "category": "runbooks",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/runbooks/N8N_INTEGRATION_GUIDE.md",
+      "title": "🏗️ n8n Integration Guide — Complete Architecture & Deployment",
+      "category": "runbooks",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/runbooks/PERFORMANCE_TESTING_GUIDE.md",
+      "title": "🧪 SoftFactory Performance Testing & Optimization Guide",
+      "category": "runbooks",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/runbooks/PHASE4_EXECUTION_GUIDE.md",
+      "title": "📘 M-002 Phase 4 Execution Guide: PostgreSQL Docker Migration",
+      "category": "runbooks",
+      "status": "active",
+      "updated": "2026-03-09",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/runbooks/PORT_9000_SOLUTION.md",
+      "title": "📝 Port 9000 Solution - System Now Fully Operational ✅",
+      "category": "runbooks",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/runbooks/PRODUCTION_DEPLOYMENT_REPORT.md",
+      "title": "🚢 PRODUCTION DEPLOYMENT REPORT",
+      "category": "runbooks",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/runbooks/PWA_QUICK_START.md",
+      "title": "📘 SoftFactory PWA - Quick Start Guide",
+      "category": "runbooks",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/runbooks/PWA_README.md",
+      "title": "📝 SoftFactory PWA — Complete Implementation",
+      "category": "runbooks",
+      "status": "active",
+      "updated": "2026-03-09",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/runbooks/QUICK_DEPLOY.md",
+      "title": "📝 ⚡ 5분 안에 배포하기 (Heroku 무료)",
+      "category": "runbooks",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/runbooks/README.md",
+      "title": "Runbooks",
+      "category": "runbooks",
+      "status": "active",
+      "updated": "2026-03-09",
+      "owner": "ops-engineering",
+      "keywords": [
+        "runbooks",
+        "operations",
+        "deployment",
+        "recovery"
+      ],
+      "canonical": false
+    },
+    {
+      "path": "docs/runbooks/REVIEW_SCRAPER_IMPLEMENTATION_GUIDE.md",
+      "title": "📝 Review Scraper - 완전 구현 가이드",
+      "category": "runbooks",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/runbooks/REVIEW_SCRAPERS_QUICK_START.md",
+      "title": "📘 Review Scrapers — Quick Start Guide",
+      "category": "runbooks",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/runbooks/SAAS_AUTH_SETUP.md",
+      "title": "🔌 SaaS OAuth & API 인증 설정 완료 ✅",
+      "category": "runbooks",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/runbooks/SCRAPER_SETUP_QUICK_START.md",
+      "title": "📘 Web Scraper Security - Quick Start Guide",
+      "category": "runbooks",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/runbooks/SEND_TELEGRAM_INSTRUCTIONS.md",
+      "title": "📝 Telegram 배포 리포트 전송 방법",
+      "category": "runbooks",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/runbooks/SNS_AUTOMATION_FRONTEND_INTEGRATION_GUIDE.md",
+      "title": "📘 SNS Automation v2.0 - Frontend Integration Guide",
+      "category": "runbooks",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/runbooks/SOFTFACTORY_README.md",
+      "title": "📝 SoftFactory Platform",
+      "category": "runbooks",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/runbooks/TEST_EXECUTION_GUIDE.md",
+      "title": "🧪 SNS Automation v2.0 — Integration Test Execution Guide",
+      "category": "runbooks",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/runbooks/TESTING_GUIDE.md",
+      "title": "🧪 SoftFactory Testing Guide",
+      "category": "runbooks",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/S3_CDN_SETUP_GUIDE.md",
+      "title": "S3 & CloudFront Setup Guide",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/SAAS_AUTOMATION_ANALYSIS.md",
+      "title": "📝 One-Click SaaS Automation Solutions — Competitive Analysis",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/SALES_PLAYBOOK.md",
+      "title": "📝 SoftFactory Sales Playbook",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/SCRAPER_SECURITY.md",
+      "title": "📝 Web Scraper Security & Resilience Implementation",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/SECURITY_DEPLOYMENT_CHECKLIST.md",
+      "title": "🚢 Security Deployment Checklist — Phase 2 Complete",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/SECURITY_FIXES.md",
+      "title": "📝 Security Fixes - Phase 2 (2026-02-25)",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/SECURITY_HARDENING.md",
+      "title": "Security Hardening — Phase 2 (2026-02-25)",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/SECURITY_IMPLEMENTATION_SUMMARY.md",
+      "title": "Security Implementation Summary — Phase 2 Complete",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/sns-auto/SNS_PRD_v2.md",
+      "title": "SNS Automation v2.0 — Product Requirements Document",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/SNS_AUTOMATION_API.md",
+      "title": "🔌 SNS Automation API v2.0 — Complete Endpoint Reference",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/SOFTFACTORY_QUICKSTART.md",
+      "title": "📝 🚀 SoftFactory 빠른 시작",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": true
+    },
+    {
+      "path": "docs/standards/ADR_TEMPLATE.md",
+      "title": "📝 ADR-{{ADR_NUMBER}}: {{TITLE}}",
+      "category": "standards",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/standards/BUG_REPORT_TEMPLATE.md",
+      "title": "📊 Bug Report: {{TITLE}}",
+      "category": "standards",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/standards/COMMON_PROJECT_GUIDELINES.md",
+      "title": "📘 COMMON PROJECT GUIDELINES",
+      "category": "standards",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/standards/CROSS_VALIDATION_CHECKLIST.md",
+      "title": "📝 Cross-Validation Checklist (Master Template)",
+      "category": "standards",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/standards/DEPLOYMENT_CHECKLIST.md",
+      "title": "🚢 Deployment Checklist v2.0",
+      "category": "standards",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/standards/DEPLOYMENT_RUNBOOK_TEMPLATE.md",
+      "title": "🚢 Deployment Runbook: {{SERVICE}} v{{VERSION}}",
+      "category": "standards",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/standards/PRD_TEMPLATE.md",
+      "title": "Product Requirements Document (PRD)",
+      "category": "standards",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/standards/RFC_TEMPLATE.md",
+      "title": "📝 RFC-{{RFC_NUMBER}}: {{TITLE}}",
+      "category": "standards",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/standards/SECURITY_REPORT_TEMPLATE.md",
+      "title": "📊 Security Finding Report: {{FINDING_ID}}",
+      "category": "standards",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/standards/SUBPROJECT_CLAUDE_TEMPLATE.md",
+      "title": "📝 SUBPROJECT CLAUDE.md TEMPLATE",
+      "category": "standards",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/standards/TEST_PLAN_TEMPLATE.md",
+      "title": "🧪 Test Plan: {{PROJECT}}",
+      "category": "standards",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/standards/WORKFLOW_PROCESS.md",
+      "title": "📝 Unified Workflow Process",
+      "category": "standards",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/status/actual-functionality-audit.md",
+      "title": "Actual Functionality Audit",
+      "category": "status",
+      "status": "active",
+      "updated": "2026-03-11",
+      "owner": "ops-engineering",
+      "keywords": [
+        "actual functionality",
+        "audit",
+        "deployment",
+        "real api"
+      ],
+      "canonical": false
+    },
+    {
+      "path": "docs/status/ACTUAL_STATUS_REPORT.md",
+      "title": "📝 실제 시스템 상태 분석 — 2026-02-26",
+      "category": "status",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/status/DEPLOYMENT_STATUS.md",
+      "title": "🚢 Deployment Status Report",
+      "category": "status",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/status/DEPLOYMENT_STATUS_FINAL.md",
+      "title": "🚢 🚀 **SOFTFACTORY v1.0-infrastructure-upgrade — DEPLOYMENT STATUS**",
+      "category": "status",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/status/execution-queue-followups.md",
+      "title": "후속 실행 큐",
+      "category": "status",
+      "status": "active",
+      "updated": "2026-03-11",
+      "owner": "ops-engineering",
+      "keywords": [
+        "execution queue",
+        "ui first",
+        "follow-up",
+        "backlog"
+      ],
+      "canonical": false
+    },
+    {
+      "path": "docs/status/EXTERNAL_ACCESS_STATUS.md",
+      "title": "📊 SoftFactory External Access - Status Report",
+      "category": "status",
+      "status": "active",
+      "updated": "2026-03-09",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/status/long-running-followups.md",
+      "title": "장기/병렬 작업 백로그",
+      "category": "status",
+      "status": "active",
+      "updated": "2026-03-10",
+      "owner": "ops-engineering",
+      "keywords": [
+        "backlog",
+        "long running",
+        "parallel work",
+        "follow-up"
+      ],
+      "canonical": false
+    },
+    {
+      "path": "docs/status/overnight-screen-work-queue.md",
+      "title": "화면 우선 야간 작업 큐",
+      "category": "status",
+      "status": "active",
+      "updated": "2026-03-11",
+      "owner": "ops-engineering",
+      "keywords": [
+        "overnight",
+        "ui",
+        "queue",
+        "audit"
+      ],
+      "canonical": false
+    },
+    {
+      "path": "docs/status/README.md",
+      "title": "Status Docs",
+      "category": "status",
+      "status": "active",
+      "updated": "2026-03-10",
+      "owner": "ops-engineering",
+      "keywords": [
+        "status",
+        "reports",
+        "health",
+        "current state"
+      ],
+      "canonical": false
+    },
+    {
+      "path": "docs/status/repo-layout-baseline.md",
+      "title": "Repo Layout Baseline",
+      "category": "status",
+      "status": "active",
+      "updated": "2026-03-10",
+      "owner": "ops-engineering",
+      "keywords": [
+        "repo layout",
+        "baseline",
+        "root cleanup",
+        "structure audit"
+      ],
+      "canonical": false
+    },
+    {
+      "path": "docs/status/repo-structure-management-dashboard.md",
+      "title": "저장소 구조 관리 장표",
+      "category": "status",
+      "status": "active",
+      "updated": "2026-03-10",
+      "owner": "ops-engineering",
+      "keywords": [
+        "repo structure",
+        "management dashboard",
+        "documentation",
+        "operations",
+        "layout"
+      ],
+      "canonical": false
+    },
+    {
+      "path": "docs/status/TEAM_WORK_STATUS.md",
+      "title": "Team Work Status",
+      "category": "status",
+      "status": "active",
+      "updated": "2026-03-11",
+      "owner": "ops-engineering",
+      "keywords": [
+        "implementation status",
+        "deployment status",
+        "real api"
+      ],
+      "canonical": false
+    },
+    {
+      "path": "docs/TEAM.md",
+      "title": "📝 👥 팀 디렉토리",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": true
+    },
+    {
+      "path": "docs/TEAM_K_CI_CD_PIPELINE.md",
+      "title": "Team K: CI/CD Pipeline Documentation v1.0",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/TEAM_K_COMPLETION_REPORT.md",
+      "title": "📊 Team K: CI/CD, Security & Performance — Completion Report",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/TEAM_K_PERFORMANCE_MONITORING.md",
+      "title": "Team K: Performance Monitoring & Optimization v1.0",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/TEAM_K_SECURITY_AUDIT_HARDENING.md",
+      "title": "Team K: Security Audit & Hardening Guide v1.0",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/TEAM_SKILLS.md",
+      "title": "🤝 🎯 CooCook — Team Skills Matrix",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/TELEGRAM_BOT_INTEGRATION.md",
+      "title": "🔌 Telegram Bot Scheduler Integration — API Documentation",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/templates/TEMPLATES-LIBRARY.md",
+      "title": "📝 SoftFactory Templates Library",
+      "category": "templates",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/TROUBLESHOOTING.md",
+      "title": "📝 🔧 트러블슈팅 & FAQ",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": true
+    },
+    {
+      "path": "docs/TWITTER_API_INTEGRATION.md",
+      "title": "🔌 Twitter API v2 Integration — Complete Implementation Guide",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/VERCEL_DEPLOYMENT_GUARDRAILS.md",
+      "title": "Vercel Deployment Guardrails",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-09",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/video-scripts/VIDEO-SCRIPTS.md",
+      "title": "📝 SoftFactory Video Scripts (10 Videos, 2-3 min each)",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "docs/WEBSOCKET_INTEGRATION.md",
+      "title": "📘 WebSocket Real-Time Notification System — Integration Guide",
+      "category": "docs",
+      "status": "active",
+      "updated": "2026-03-02",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": false
+    },
+    {
+      "path": "README.md",
+      "title": "README",
+      "category": "root",
+      "status": "active",
+      "updated": "2026-03-03",
+      "owner": "ops-engineering",
+      "keywords": [
+        "softfactory",
+        "docs",
+        "search-index",
+        "bohemian-marketing",
+        "render",
+        "vercel"
+      ],
+      "canonical": true
+    },
+    {
+      "path": "STATUS.md",
+      "title": "?뱢 SoftFactory Platform Status",
+      "category": "root",
+      "status": "active",
+      "updated": "2026-03-10",
+      "owner": "unassigned",
+      "keywords": [],
+      "canonical": true
+    }
+  ],
+  "legacy_alias_of": "docs/CATALOG.json"
+}

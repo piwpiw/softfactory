@@ -1,25 +1,37 @@
-# claude.md
+# CLAUDE.md
 
 ## 0) Meta Policy
 - Status: ACTIVE
 - Version: 2026-03-02
-- Last Updated: 2026-03-02
-- Scope IN: Agent workflow governance, MCP execution policy, handoff + token control, PR/review/build quality gates
-- Scope OUT: Product feature specification writing
+- Last Updated: 2026-03-20
+- Scope IN: Claude-specific adapter behavior, MCP execution policy, handoff + token control, PR/review/build quality gates
+- Scope OUT: Shared project status, backlog ownership, and source-of-truth policy
 - Owner: T1/T2/T3/T4/T5/T6/T7/T8/T9/T10 governance
 - Rule: Must stay at 500 lines or less
 - T↔PA mapping: see `.agent/AGENT_SYSTEM.md §1`
 
 ## 1) Imports (Mandatory)
-1. claude.md
-2. .agent/AGENT_SYSTEM.md
-3. .agent/CONTEXT_ENGINE.md
-4. .agent/AGENT_PROTOCOLS.md
-5. .agent/COST_RULES.md
+1. AGENTS.md
+2. CLAUDE.md
+3. docs/status/CURRENT.md
+4. docs/status/BACKLOG.md
+5. .agent/AGENT_SYSTEM.md
+6. .agent/CONTEXT_ENGINE.md
+7. .agent/AGENT_PROTOCOLS.md
+8. .agent/COST_RULES.md
 
 ## 1a) File Naming Rule
-- Canonical policy file name is `claude.md`.
+- Canonical shared policy file name is `AGENTS.md`.
+- `CLAUDE.md` is the Claude-specific adapter file.
 - Do not create or use `claud.md` alias files.
+
+## 1b) Shared Source Of Truth
+
+- Shared policy: `AGENTS.md`
+- Current shared state: `docs/status/CURRENT.md`
+- Shared backlog: `docs/status/BACKLOG.md`
+- Live detailed journal: `STATUS.md`
+- Do not treat `CLAUDE.md` as the canonical project status document.
 
 ## 2) Technical Context
 - Backend: Flask monolith (`backend/app.py`, `backend/services/`, `backend/models.py`)
@@ -149,43 +161,3 @@ Research -> Think -> Execute -> Observe -> Memory Update -> Report
 13. **Error-Documented:** All errors logged in #errors tag with resolution
 14. **Pattern-Shared:** New patterns added to shared-intelligence/patterns.md
 15. **Verification-Explicit:** Done criteria (§11) met before marking complete
-
-| 2026-03-02 | Chief-Dispatcher | Dispatched mission M-002 to PM/Analyst (WSJF applied) |
-
-| 2026-03-02 | Product-Manager | PRD + RICE + OKR generated for mission M-002 |
-
-| 2026-03-02 | Market-Analyst | Full market analysis (SWOT/PESTLE/Porter's) for mission M-002 |
-
-| 2026-03-02 | Solution-Architect | Architecture designed for mission M-002 — ADR-0001, C4, OpenAPI spec |
-
-| 2026-03-02 | Backend-Developer | Backend 'Recipe Discovery API' implemented (TDD + Clean Architecture) — mission M-002 |
-
-| 2026-03-02 | Frontend-Developer | Frontend 'Recipe Discovery Page' implemented (Atomic Design + WCAG) — mission M-002 |
-
-| 2026-03-02 | QA-Engineer | QA PASSED for Recipe Discovery API — mission M-002 |
-
-| 2026-03-02 | Security-Auditor | Security audit CLEARED for Recipe Discovery API — 0C/0H — mission M-002 |
-
-| 2026-03-02 | DevOps-Engineer | Deployed 'CooCook API' v0.1.0 to staging — Blue-Green — mission M-002 |
-
-| 2026-03-02 | Telegram-Reporter | Telegram notification sent for mission M-001 [COMPLETE] |
-
-| 2026-03-02 | Chief-Dispatcher | Dispatched mission M-002 to PM/Analyst (WSJF applied) |
-
-| 2026-03-02 | Product-Manager | PRD + RICE + OKR generated for mission M-002 |
-
-| 2026-03-02 | Market-Analyst | Full market analysis (SWOT/PESTLE/Porter's) for mission M-002 |
-
-| 2026-03-02 | Solution-Architect | Architecture designed for mission M-002 — ADR-0001, C4, OpenAPI spec |
-
-| 2026-03-02 | Backend-Developer | Backend 'Recipe Discovery API' implemented (TDD + Clean Architecture) — mission M-002 |
-
-| 2026-03-02 | Frontend-Developer | Frontend 'Recipe Discovery Page' implemented (Atomic Design + WCAG) — mission M-002 |
-
-| 2026-03-02 | QA-Engineer | QA PASSED for Recipe Discovery API — mission M-002 |
-
-| 2026-03-02 | Security-Auditor | Security audit CLEARED for Recipe Discovery API — 0C/0H — mission M-002 |
-
-| 2026-03-02 | DevOps-Engineer | Deployed 'CooCook API' v0.1.0 to staging — Blue-Green — mission M-002 |
-
-| 2026-03-02 | Telegram-Reporter | Telegram notification sent for mission M-001 [COMPLETE] |

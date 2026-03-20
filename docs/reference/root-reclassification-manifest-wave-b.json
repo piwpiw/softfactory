@@ -1,0 +1,1312 @@
+{
+  "generated_at": "2026-03-09T13:49:33Z",
+  "wave": "wave-b",
+  "source_manifest": "docs/reference/root-reclassification-manifest-wave-a.json",
+  "entry_count": 82,
+  "entries": [
+    {
+      "source_path": "5AM_SPRINT_COMPLETION_REPORT.md",
+      "target_path": "docs/archive/root-legacy/5AM_SPRINT_COMPLETION_REPORT.md",
+      "destination_class": "archive-root-legacy",
+      "reference_count": 2,
+      "reference_sources": [
+        "DEPLOYMENT_MANIFEST_2026-02-26.md",
+        "DEPLOYMENT_MANIFEST_2026-02-26.md"
+      ],
+      "reason": "doc-only-safe-wave-b"
+    },
+    {
+      "source_path": "DELIVERY_SUMMARY_N8N_READY.md",
+      "target_path": "docs/runbooks/DELIVERY_SUMMARY_N8N_READY.md",
+      "destination_class": "runbooks",
+      "reference_count": 2,
+      "reference_sources": [
+        "N8N_DEPLOYMENT_VISUAL_GUIDE.md",
+        "N8N_DEPLOYMENT_VISUAL_GUIDE.md"
+      ],
+      "reason": "doc-only-safe-wave-b"
+    },
+    {
+      "source_path": "DEPLOYMENT_STATUS.md",
+      "target_path": "docs/status/DEPLOYMENT_STATUS.md",
+      "destination_class": "status",
+      "reference_count": 2,
+      "reference_sources": [
+        "DEPLOYMENT_GUIDE.md",
+        "DEPLOYMENT_GUIDE.md"
+      ],
+      "reason": "doc-only-safe-wave-b"
+    },
+    {
+      "source_path": "ENCRYPTION_IMPLEMENTATION_SUMMARY.md",
+      "target_path": "docs/archive/root-legacy/ENCRYPTION_IMPLEMENTATION_SUMMARY.md",
+      "destination_class": "archive-root-legacy",
+      "reference_count": 2,
+      "reference_sources": [
+        "ENCRYPTION_IMPLEMENTATION_SUMMARY.md",
+        "ENCRYPTION_QUICK_START.md"
+      ],
+      "reason": "doc-only-safe-wave-b"
+    },
+    {
+      "source_path": "FEED_IMPLEMENTATION_COMPLETE.md",
+      "target_path": "docs/archive/root-legacy/FEED_IMPLEMENTATION_COMPLETE.md",
+      "destination_class": "archive-root-legacy",
+      "reference_count": 2,
+      "reference_sources": [
+        "FEED_FILES_MANIFEST.txt",
+        "FEED_IMPLEMENTATION_COMPLETE.md"
+      ],
+      "reason": "doc-only-safe-wave-b"
+    },
+    {
+      "source_path": "FINAL_SESSION_SUMMARY.md",
+      "target_path": "docs/archive/root-legacy/FINAL_SESSION_SUMMARY.md",
+      "destination_class": "archive-root-legacy",
+      "reference_count": 2,
+      "reference_sources": [
+        "FINAL_SESSION_SUMMARY.md",
+        "SESSION_STATUS_REPORT.txt"
+      ],
+      "reason": "doc-only-safe-wave-b"
+    },
+    {
+      "source_path": "LOAD_TESTING_COMPLETION_SUMMARY.md",
+      "target_path": "docs/runbooks/LOAD_TESTING_COMPLETION_SUMMARY.md",
+      "destination_class": "runbooks",
+      "reference_count": 2,
+      "reference_sources": [
+        "LOAD_TESTING_COMPLETION_SUMMARY.md",
+        "LOAD_TEST_QUICK_START.txt"
+      ],
+      "reason": "doc-only-safe-wave-b"
+    },
+    {
+      "source_path": "PERFORMANCE_INDEX.md",
+      "target_path": "docs/archive/root-legacy/PERFORMANCE_INDEX.md",
+      "destination_class": "archive-root-legacy",
+      "reference_count": 2,
+      "reference_sources": [
+        "PERFORMANCE_INDEX.md",
+        "PERFORMANCE_INDEX.md"
+      ],
+      "reason": "doc-only-safe-wave-b"
+    },
+    {
+      "source_path": "REVIEW_AGGREGATOR_FRONTEND_SUMMARY.md",
+      "target_path": "docs/archive/root-legacy/REVIEW_AGGREGATOR_FRONTEND_SUMMARY.md",
+      "destination_class": "archive-root-legacy",
+      "reference_count": 2,
+      "reference_sources": [
+        "FINAL_INTEGRATION_PHASE4_REPORT.md",
+        "TASK_8_COMPLETION.txt"
+      ],
+      "reason": "doc-only-safe-wave-b"
+    },
+    {
+      "source_path": "REVIEW_AGGREGATOR_QA_CHECKLIST.md",
+      "target_path": "docs/checklists/REVIEW_AGGREGATOR_QA_CHECKLIST.md",
+      "destination_class": "checklists",
+      "reference_count": 2,
+      "reference_sources": [
+        "FINAL_INTEGRATION_PHASE4_REPORT.md",
+        "TASK_8_COMPLETION.txt"
+      ],
+      "reason": "doc-only-safe-wave-b"
+    },
+    {
+      "source_path": "SCRAPER_SECURITY_IMPLEMENTATION_REPORT.md",
+      "target_path": "docs/archive/root-legacy/SCRAPER_SECURITY_IMPLEMENTATION_REPORT.md",
+      "destination_class": "archive-root-legacy",
+      "reference_count": 2,
+      "reference_sources": [
+        "SCRAPER_SECURITY_IMPLEMENTATION_REPORT.md",
+        "SCRAPER_SECURITY_IMPLEMENTATION_REPORT.md"
+      ],
+      "reason": "doc-only-safe-wave-b"
+    },
+    {
+      "source_path": "SECURITY_FIX_COMPLETION_REPORT.md",
+      "target_path": "docs/archive/root-legacy/SECURITY_FIX_COMPLETION_REPORT.md",
+      "destination_class": "archive-root-legacy",
+      "reference_count": 2,
+      "reference_sources": [
+        "SECURITY_FIX_COMPLETION_REPORT.md",
+        "SECURITY_FIX_COMPLETION_REPORT.md"
+      ],
+      "reason": "doc-only-safe-wave-b"
+    },
+    {
+      "source_path": "SNS_AUTO_CREATE_ENHANCEMENT.md",
+      "target_path": "docs/archive/root-legacy/SNS_AUTO_CREATE_ENHANCEMENT.md",
+      "destination_class": "archive-root-legacy",
+      "reference_count": 2,
+      "reference_sources": [
+        "FINAL_INTEGRATION_PHASE4_REPORT.md",
+        "SNS_AUTO_FINAL_DELIVERY.md"
+      ],
+      "reason": "doc-only-safe-wave-b"
+    },
+    {
+      "source_path": "T14_FINAL_VALIDATION.txt",
+      "target_path": "docs/archive/root-legacy/T14_FINAL_VALIDATION.txt",
+      "destination_class": "archive-root-legacy",
+      "reference_count": 2,
+      "reference_sources": [
+        "SNS_AUTOMATION_V2_PROJECT_COMPLETE.md",
+        "SNS_AUTOMATION_V2_PROJECT_COMPLETE.md"
+      ],
+      "reason": "doc-only-safe-wave-b"
+    },
+    {
+      "source_path": "TASK_COMPLETION_REPORT.md",
+      "target_path": "docs/archive/root-legacy/TASK_COMPLETION_REPORT.md",
+      "destination_class": "archive-root-legacy",
+      "reference_count": 2,
+      "reference_sources": [
+        "DELIVERY_CHECKLIST.txt",
+        "DELIVERY_CHECKLIST.txt"
+      ],
+      "reason": "doc-only-safe-wave-b"
+    },
+    {
+      "source_path": "TEAM_E_REVIEW_SERVICE_COMPLETION.md",
+      "target_path": "docs/archive/root-legacy/TEAM_E_REVIEW_SERVICE_COMPLETION.md",
+      "destination_class": "archive-root-legacy",
+      "reference_count": 2,
+      "reference_sources": [
+        "FINAL_REVIEW_DELIVERY_SUMMARY.md",
+        "FINAL_REVIEW_DELIVERY_SUMMARY.md"
+      ],
+      "reason": "doc-only-safe-wave-b"
+    },
+    {
+      "source_path": "TEAM_I_WORK_COMPLETE.md",
+      "target_path": "docs/archive/root-legacy/TEAM_I_WORK_COMPLETE.md",
+      "destination_class": "archive-root-legacy",
+      "reference_count": 2,
+      "reference_sources": [
+        "FINAL_INTEGRATION_PHASE4_REPORT.md",
+        "TEAM_I_WORK_COMPLETE.md"
+      ],
+      "reason": "doc-only-safe-wave-b"
+    },
+    {
+      "source_path": "CONTINUOUS_IMPROVEMENT_FINAL_REPORT.md",
+      "target_path": "docs/archive/root-legacy/CONTINUOUS_IMPROVEMENT_FINAL_REPORT.md",
+      "destination_class": "archive-root-legacy",
+      "reference_count": 3,
+      "reference_sources": [
+        "CONTINUOUS_IMPROVEMENT_FINAL_REPORT.md",
+        "FINAL_SESSION_SUMMARY.md",
+        "SESSION_STATUS_REPORT.txt"
+      ],
+      "reason": "doc-only-safe-wave-b"
+    },
+    {
+      "source_path": "GOVERNANCE_VALIDATION_INDEX.md",
+      "target_path": "docs/archive/root-legacy/GOVERNANCE_VALIDATION_INDEX.md",
+      "destination_class": "archive-root-legacy",
+      "reference_count": 3,
+      "reference_sources": [
+        "GOVERNANCE_VALIDATION_INDEX.md",
+        "VALIDATION_STATUS.txt",
+        "VALIDATION_STATUS.txt"
+      ],
+      "reason": "doc-only-safe-wave-b"
+    },
+    {
+      "source_path": "PERFORMANCE_OPTIMIZATION_REPORT.md",
+      "target_path": "docs/archive/root-legacy/PERFORMANCE_OPTIMIZATION_REPORT.md",
+      "destination_class": "archive-root-legacy",
+      "reference_count": 3,
+      "reference_sources": [
+        "DELIVERY_CHECKLIST.md",
+        "DELIVERY_CHECKLIST.md",
+        "PERFORMANCE_OPTIMIZATION_REPORT.md"
+      ],
+      "reason": "doc-only-safe-wave-b"
+    },
+    {
+      "source_path": "PWA_IMPLEMENTATION_SUMMARY.md",
+      "target_path": "docs/archive/root-legacy/PWA_IMPLEMENTATION_SUMMARY.md",
+      "destination_class": "archive-root-legacy",
+      "reference_count": 3,
+      "reference_sources": [
+        "PWA_README.md",
+        "PWA_README.md",
+        "PWA_README.md"
+      ],
+      "reason": "doc-only-safe-wave-b"
+    },
+    {
+      "source_path": "SCRAPER_SETUP_QUICK_START.md",
+      "target_path": "docs/runbooks/SCRAPER_SETUP_QUICK_START.md",
+      "destination_class": "runbooks",
+      "reference_count": 3,
+      "reference_sources": [
+        "SCRAPER_SECURITY_IMPLEMENTATION_REPORT.md",
+        "SCRAPER_SECURITY_IMPLEMENTATION_REPORT.md",
+        "SCRAPER_SECURITY_IMPLEMENTATION_REPORT.md"
+      ],
+      "reason": "doc-only-safe-wave-b"
+    },
+    {
+      "source_path": "SNS_AUTO_FINAL_DELIVERY.md",
+      "target_path": "docs/archive/root-legacy/SNS_AUTO_FINAL_DELIVERY.md",
+      "destination_class": "archive-root-legacy",
+      "reference_count": 3,
+      "reference_sources": [
+        "FINAL_INTEGRATION_PHASE4_REPORT.md",
+        "SNS_AUTO_FINAL_DELIVERY.md",
+        "TASK_13_COMPLETION_SUMMARY.md"
+      ],
+      "reason": "doc-only-safe-wave-b"
+    },
+    {
+      "source_path": "TASK_13_COMPLETION_SUMMARY.md",
+      "target_path": "docs/archive/root-legacy/TASK_13_COMPLETION_SUMMARY.md",
+      "destination_class": "archive-root-legacy",
+      "reference_count": 3,
+      "reference_sources": [
+        "PHASE4_VALIDATION_COMPLETE.md",
+        "PHASE4_VALIDATION_COMPLETE.md",
+        "TASK_13_COMPLETION_SUMMARY.md"
+      ],
+      "reason": "doc-only-safe-wave-b"
+    },
+    {
+      "source_path": "TASK_T11_COMPLETION_REPORT.md",
+      "target_path": "docs/archive/root-legacy/TASK_T11_COMPLETION_REPORT.md",
+      "destination_class": "archive-root-legacy",
+      "reference_count": 3,
+      "reference_sources": [
+        "FINAL_INTEGRATION_PHASE4_REPORT.md",
+        "TEAM_I_WORK_COMPLETE.md",
+        "TEAM_I_WORK_COMPLETE.md"
+      ],
+      "reason": "doc-only-safe-wave-b"
+    },
+    {
+      "source_path": "FINAL_INTEGRATION_PHASE4_REPORT.md",
+      "target_path": "docs/archive/root-legacy/FINAL_INTEGRATION_PHASE4_REPORT.md",
+      "destination_class": "archive-root-legacy",
+      "reference_count": 4,
+      "reference_sources": [
+        "PHASE4_VALIDATION_COMPLETE.md",
+        "TASK_13_COMPLETION_SUMMARY.md",
+        "TASK_13_COMPLETION_SUMMARY.md",
+        "TASK_13_COMPLETION_SUMMARY.md"
+      ],
+      "reason": "doc-only-safe-wave-b"
+    },
+    {
+      "source_path": "SNS_AUTO_V2_IMPLEMENTATION_SUMMARY.md",
+      "target_path": "docs/archive/root-legacy/SNS_AUTO_V2_IMPLEMENTATION_SUMMARY.md",
+      "destination_class": "archive-root-legacy",
+      "reference_count": 4,
+      "reference_sources": [
+        "IMPLEMENTATION_COMPLETE.txt",
+        "IMPLEMENTATION_COMPLETE.txt",
+        "SNS_AUTOMATION_FRONTEND_DELIVERY_SUMMARY.md",
+        "SNS_AUTO_V2_IMPLEMENTATION_SUMMARY.md"
+      ],
+      "reason": "doc-only-safe-wave-b"
+    },
+    {
+      "source_path": "SNS_REVENUE_API_COMPLETE.md",
+      "target_path": "docs/archive/root-legacy/SNS_REVENUE_API_COMPLETE.md",
+      "destination_class": "archive-root-legacy",
+      "reference_count": 4,
+      "reference_sources": [
+        "FINAL_SNS_REVENUE_IMPLEMENTATION_REPORT.md",
+        "FINAL_SNS_REVENUE_IMPLEMENTATION_REPORT.md",
+        "SNS_REVENUE_API_DELIVERY_SUMMARY.md",
+        "SNS_REVENUE_API_QUICK_REFERENCE.md"
+      ],
+      "reason": "doc-only-safe-wave-b"
+    },
+    {
+      "source_path": "SNS_REVENUE_API_DELIVERY_SUMMARY.md",
+      "target_path": "docs/archive/root-legacy/SNS_REVENUE_API_DELIVERY_SUMMARY.md",
+      "destination_class": "archive-root-legacy",
+      "reference_count": 4,
+      "reference_sources": [
+        "FINAL_SNS_REVENUE_IMPLEMENTATION_REPORT.md",
+        "FINAL_SNS_REVENUE_IMPLEMENTATION_REPORT.md",
+        "SNS_REVENUE_API_QUICK_REFERENCE.md",
+        "SNS_REVENUE_API_DELIVERY_SUMMARY.md"
+      ],
+      "reason": "doc-only-safe-wave-b"
+    },
+    {
+      "source_path": "SNS_V2_PHASE_STATUS_UPDATE.txt",
+      "target_path": "docs/status/SNS_V2_PHASE_STATUS_UPDATE.txt",
+      "destination_class": "status",
+      "reference_count": 4,
+      "reference_sources": [
+        "DELIVERY_SUMMARY_REVIEW_SCRAPERS.md",
+        "DELIVERY_SUMMARY_REVIEW_SCRAPERS.md",
+        "SNS_V2_PHASE_STATUS_UPDATE.txt",
+        "SNS_V2_PHASE_STATUS_UPDATE.txt"
+      ],
+      "reason": "doc-only-safe-wave-b"
+    },
+    {
+      "source_path": "TASK_21_INDEX.md",
+      "target_path": "docs/archive/root-legacy/TASK_21_INDEX.md",
+      "destination_class": "archive-root-legacy",
+      "reference_count": 4,
+      "reference_sources": [
+        "HANDOFF_NOTES_T10_TO_T11.md",
+        "HANDOFF_NOTES_T10_TO_T11.md",
+        "HANDOFF_NOTES_T10_TO_T11.md",
+        "TASK_21_INDEX.md"
+      ],
+      "reason": "doc-only-safe-wave-b"
+    },
+    {
+      "source_path": "TEST_DEMO.md",
+      "target_path": "docs/archive/root-legacy/TEST_DEMO.md",
+      "destination_class": "archive-root-legacy",
+      "reference_count": 4,
+      "reference_sources": [
+        "IMPLEMENTATION_SUMMARY.md",
+        "IMPLEMENTATION_SUMMARY.md",
+        "IMPLEMENTATION_SUMMARY.md",
+        "IMPLEMENTATION_SUMMARY.md"
+      ],
+      "reason": "doc-only-safe-wave-b"
+    },
+    {
+      "source_path": "USER_MANUAL.md",
+      "target_path": "docs/reference/legacy-root/USER_MANUAL.md",
+      "destination_class": "reference-legacy",
+      "reference_count": 4,
+      "reference_sources": [
+        "AUTOMATION_AND_ANALYSIS_REPORT.md",
+        "AUTOMATION_AND_ANALYSIS_REPORT.md",
+        "SESSION_COMPLETION_REPORT.txt",
+        "docs/plans/enterprise_upgrade_day_plan_2026-03-03.md"
+      ],
+      "reason": "doc-only-safe-wave-b"
+    },
+    {
+      "source_path": "DEPLOYMENT_CHECKLIST_PHASE4.md",
+      "target_path": "docs/checklists/DEPLOYMENT_CHECKLIST_PHASE4.md",
+      "destination_class": "checklists",
+      "reference_count": 5,
+      "reference_sources": [
+        "PHASE4_VALIDATION_COMPLETE.md",
+        "PHASE4_VALIDATION_COMPLETE.md",
+        "TASK_13_COMPLETION_SUMMARY.md",
+        "TASK_13_COMPLETION_SUMMARY.md",
+        "TASK_13_COMPLETION_SUMMARY.md"
+      ],
+      "reason": "doc-only-safe-wave-b"
+    },
+    {
+      "source_path": "DEPLOYMENT_COMPLETION_SUMMARY.md",
+      "target_path": "docs/runbooks/DEPLOYMENT_COMPLETION_SUMMARY.md",
+      "destination_class": "runbooks",
+      "reference_count": 5,
+      "reference_sources": [
+        "DEPLOYMENT_COMPLETION_RECORD.md",
+        "DEPLOYMENT_COMPLETION_SUMMARY.md",
+        "DEPLOYMENT_COMPLETION_SUMMARY.md",
+        "DEPLOYMENT_FINAL_REPORT.txt",
+        "DEPLOYMENT_FINAL_REPORT.txt"
+      ],
+      "reason": "doc-only-safe-wave-b"
+    },
+    {
+      "source_path": "DEPLOYMENT_GUIDE.md",
+      "target_path": "docs/runbooks/DEPLOYMENT_GUIDE.md",
+      "destination_class": "runbooks",
+      "reference_count": 5,
+      "reference_sources": [
+        "DEPLOYMENT_GUIDE.md",
+        "PHASE6_FINAL_VERIFICATION.md",
+        "PHASE6_FINAL_VERIFICATION.md",
+        "PHASE6_FINAL_VERIFICATION.md",
+        "PHASE6_FINAL_VERIFICATION.md"
+      ],
+      "reason": "doc-only-safe-wave-b"
+    },
+    {
+      "source_path": "MISSION_COMPLETE_DATABASE_MODELS.md",
+      "target_path": "docs/archive/root-legacy/MISSION_COMPLETE_DATABASE_MODELS.md",
+      "destination_class": "archive-root-legacy",
+      "reference_count": 5,
+      "reference_sources": [
+        "MISSION_COMPLETE_DATABASE_MODELS.md",
+        "MISSION_COMPLETE_DATABASE_MODELS.md",
+        "MISSION_COMPLETE_DATABASE_MODELS.md",
+        "MODELS_QUICK_REFERENCE.md",
+        "MODELS_QUICK_REFERENCE.md"
+      ],
+      "reason": "doc-only-safe-wave-b"
+    },
+    {
+      "source_path": "PHASE4_EXECUTION_GUIDE.md",
+      "target_path": "docs/runbooks/PHASE4_EXECUTION_GUIDE.md",
+      "destination_class": "runbooks",
+      "reference_count": 5,
+      "reference_sources": [
+        "memory/M002_PHASE4_SETUP_COMPLETE.md",
+        "memory/M002_PHASE4_SETUP_COMPLETE.md",
+        "memory/M002_PHASE4_SETUP_COMPLETE.md",
+        "memory/M002_PHASE4_SETUP_COMPLETE.md",
+        "PHASE4_EXECUTION_GUIDE.md"
+      ],
+      "reason": "doc-only-safe-wave-b"
+    },
+    {
+      "source_path": "PHASE_8_DELIVERY_REPORT.md",
+      "target_path": "docs/archive/root-legacy/PHASE_8_DELIVERY_REPORT.md",
+      "destination_class": "archive-root-legacy",
+      "reference_count": 5,
+      "reference_sources": [
+        "PHASE_8_DELIVERY_REPORT.md",
+        "PHASE_8_DELIVERY_REPORT.md",
+        "PHASE_8_FINAL_SUMMARY.txt",
+        "PHASE_8_FINAL_SUMMARY.txt",
+        "PHASE_8_FINAL_SUMMARY.txt"
+      ],
+      "reason": "doc-only-safe-wave-b"
+    },
+    {
+      "source_path": "REVIEW_SCRAPER_PROJECT_STATUS.txt",
+      "target_path": "docs/status/REVIEW_SCRAPER_PROJECT_STATUS.txt",
+      "destination_class": "status",
+      "reference_count": 5,
+      "reference_sources": [
+        "REVIEW_SCRAPER_INDEX.md",
+        "REVIEW_SCRAPER_INDEX.md",
+        "REVIEW_SCRAPER_INDEX.md",
+        "REVIEW_SCRAPER_INDEX.md",
+        "REVIEW_SCRAPER_INDEX.md"
+      ],
+      "reason": "doc-only-safe-wave-b"
+    },
+    {
+      "source_path": "SOFTFACTORY_README.md",
+      "target_path": "docs/runbooks/SOFTFACTORY_README.md",
+      "destination_class": "runbooks",
+      "reference_count": 5,
+      "reference_sources": [
+        "docs/archive/INDEX.md",
+        "docs/archive/INDEX.md",
+        "docs/archive/INDEX.md",
+        "docs/archive/MASTER_SYSTEM.md",
+        "docs/archive/PROJECT_REGISTRY.md"
+      ],
+      "reason": "doc-only-safe-wave-b"
+    },
+    {
+      "source_path": "TEAM_E_IMPLEMENTATION_SUMMARY.md",
+      "target_path": "docs/archive/root-legacy/TEAM_E_IMPLEMENTATION_SUMMARY.md",
+      "destination_class": "archive-root-legacy",
+      "reference_count": 5,
+      "reference_sources": [
+        "FINAL_INTEGRATION_PHASE4_REPORT.md",
+        "docs/CATALOG.json",
+        "docs/doc-index.json",
+        "docs/M-007_TEAM_E_IMPLEMENTATION_SUMMARY.md",
+        "TEAM_E_IMPLEMENTATION_SUMMARY.md"
+      ],
+      "reason": "doc-only-safe-wave-b"
+    },
+    {
+      "source_path": "API_ENDPOINT_QUICK_REFERENCE.md",
+      "target_path": "docs/reference/legacy-root/API_ENDPOINT_QUICK_REFERENCE.md",
+      "destination_class": "reference-legacy",
+      "reference_count": 6,
+      "reference_sources": [
+        "DELIVERY_SUMMARY_N8N_READY.md",
+        "DELIVERY_SUMMARY_N8N_READY.md",
+        "DELIVERY_SUMMARY_N8N_READY.md",
+        "DELIVERY_SUMMARY_N8N_READY.md",
+        "N8N_DEPLOYMENT_VISUAL_GUIDE.md",
+        "PRODUCTION_DEPLOYMENT_CHECKLIST.md"
+      ],
+      "reason": "doc-only-safe-wave-b"
+    },
+    {
+      "source_path": "EXTERNAL_ACCESS_STATUS.md",
+      "target_path": "docs/status/EXTERNAL_ACCESS_STATUS.md",
+      "destination_class": "status",
+      "reference_count": 6,
+      "reference_sources": [
+        "CONTINUOUS_IMPROVEMENT_FINAL_REPORT.md",
+        "EXTERNAL_ACCESS_STATUS.md",
+        "EXTERNAL_ACCESS_STATUS.md",
+        "FINAL_SESSION_SUMMARY.md",
+        "SESSION_STATUS_REPORT.txt",
+        "SESSION_STATUS_REPORT.txt"
+      ],
+      "reason": "doc-only-safe-wave-b"
+    },
+    {
+      "source_path": "INSTAGRAM_IMPLEMENTATION_SUMMARY.md",
+      "target_path": "docs/archive/root-legacy/INSTAGRAM_IMPLEMENTATION_SUMMARY.md",
+      "destination_class": "archive-root-legacy",
+      "reference_count": 6,
+      "reference_sources": [
+        "INSTAGRAM_API_README.md",
+        "INSTAGRAM_API_README.md",
+        "INSTAGRAM_IMPLEMENTATION_SUMMARY.md",
+        "INSTAGRAM_STATUS_REPORT.txt",
+        "INSTAGRAM_STATUS_REPORT.txt",
+        "INSTAGRAM_STATUS_REPORT.txt"
+      ],
+      "reason": "doc-only-safe-wave-b"
+    },
+    {
+      "source_path": "PHASE_8_MONITORING_COMPLETE.md",
+      "target_path": "docs/archive/root-legacy/PHASE_8_MONITORING_COMPLETE.md",
+      "destination_class": "archive-root-legacy",
+      "reference_count": 6,
+      "reference_sources": [
+        "PHASE_8_FINAL_SUMMARY.txt",
+        "PHASE_8_FINAL_SUMMARY.txt",
+        "PHASE_8_FINAL_SUMMARY.txt",
+        "PHASE_8_DELIVERY_REPORT.md",
+        "PHASE_8_DELIVERY_REPORT.md",
+        "PHASE_8_DELIVERY_REPORT.md"
+      ],
+      "reason": "doc-only-safe-wave-b"
+    },
+    {
+      "source_path": "REVIEW_SCRAPER_SUMMARY.md",
+      "target_path": "docs/archive/root-legacy/REVIEW_SCRAPER_SUMMARY.md",
+      "destination_class": "archive-root-legacy",
+      "reference_count": 6,
+      "reference_sources": [
+        "REVIEW_SCRAPER_INDEX.md",
+        "REVIEW_SCRAPER_INDEX.md",
+        "REVIEW_SCRAPER_INDEX.md",
+        "REVIEW_SCRAPER_INDEX.md",
+        "REVIEW_SCRAPER_INDEX.md",
+        "REVIEW_SCRAPER_PROJECT_STATUS.txt"
+      ],
+      "reason": "doc-only-safe-wave-b"
+    },
+    {
+      "source_path": "pwa-test-checklist.md",
+      "target_path": "docs/checklists/pwa-test-checklist.md",
+      "destination_class": "checklists",
+      "reference_count": 6,
+      "reference_sources": [
+        "PWA_README.md",
+        "PWA_README.md",
+        "PWA_README.md",
+        "PWA_README.md",
+        "PWA_README.md",
+        "PWA_README.md"
+      ],
+      "reason": "doc-only-safe-wave-b"
+    },
+    {
+      "source_path": "5-TASKS-PER-TEAM-ACTION-PLAN.md",
+      "target_path": "docs/archive/root-legacy/5-TASKS-PER-TEAM-ACTION-PLAN.md",
+      "destination_class": "archive-root-legacy",
+      "reference_count": 7,
+      "reference_sources": [
+        "DEPLOYMENT-INDEX.md",
+        "DEPLOYMENT-INDEX.md",
+        "DEPLOYMENT-INDEX.md",
+        "DEPLOYMENT-INDEX.md",
+        "DEPLOYMENT-INDEX.md",
+        "DEPLOYMENT-QUICK-START.md",
+        "PRODUCTION-DEPLOYMENT-CHECKLIST.md"
+      ],
+      "reason": "doc-only-safe-wave-b"
+    },
+    {
+      "source_path": "M-002_PHASE4_SUMMARY.md",
+      "target_path": "docs/archive/root-legacy/M-002_PHASE4_SUMMARY.md",
+      "destination_class": "archive-root-legacy",
+      "reference_count": 7,
+      "reference_sources": [
+        "FINAL_COMPLETION_REPORT.md",
+        "M-002_PHASE4_SUMMARY.md",
+        "M-002_PHASE4_SUMMARY.md",
+        "memory/M002_PHASE4_SETUP_COMPLETE.md",
+        "memory/M002_PHASE4_SETUP_COMPLETE.md",
+        "memory/M002_PHASE4_SETUP_COMPLETE.md",
+        "PHASE4_EXECUTION_GUIDE.md"
+      ],
+      "reason": "doc-only-safe-wave-b"
+    },
+    {
+      "source_path": "PWA_QUICK_START.md",
+      "target_path": "docs/runbooks/PWA_QUICK_START.md",
+      "destination_class": "runbooks",
+      "reference_count": 7,
+      "reference_sources": [
+        "PWA_IMPLEMENTATION_SUMMARY.md",
+        "PWA_IMPLEMENTATION_SUMMARY.md",
+        "PWA_README.md",
+        "PWA_README.md",
+        "PWA_README.md",
+        "PWA_README.md",
+        "PWA_README.md"
+      ],
+      "reason": "doc-only-safe-wave-b"
+    },
+    {
+      "source_path": "REVIEW_SCRAPERS_COMPLETION_REPORT.md",
+      "target_path": "docs/archive/root-legacy/REVIEW_SCRAPERS_COMPLETION_REPORT.md",
+      "destination_class": "archive-root-legacy",
+      "reference_count": 7,
+      "reference_sources": [
+        "DELIVERY_SUMMARY_REVIEW_SCRAPERS.md",
+        "DELIVERY_SUMMARY_REVIEW_SCRAPERS.md",
+        "DELIVERY_SUMMARY_REVIEW_SCRAPERS.md",
+        "SNS_V2_PHASE_STATUS_UPDATE.txt",
+        "SNS_V2_PHASE_STATUS_UPDATE.txt",
+        "SNS_V2_PHASE_STATUS_UPDATE.txt",
+        "SNS_V2_PHASE_STATUS_UPDATE.txt"
+      ],
+      "reason": "doc-only-safe-wave-b"
+    },
+    {
+      "source_path": "REVIEW_SCRAPERS_QUICK_START.md",
+      "target_path": "docs/runbooks/REVIEW_SCRAPERS_QUICK_START.md",
+      "destination_class": "runbooks",
+      "reference_count": 7,
+      "reference_sources": [
+        "DELIVERY_SUMMARY_REVIEW_SCRAPERS.md",
+        "DELIVERY_SUMMARY_REVIEW_SCRAPERS.md",
+        "DELIVERY_SUMMARY_REVIEW_SCRAPERS.md",
+        "SNS_V2_PHASE_STATUS_UPDATE.txt",
+        "SNS_V2_PHASE_STATUS_UPDATE.txt",
+        "SNS_V2_PHASE_STATUS_UPDATE.txt",
+        "SNS_V2_PHASE_STATUS_UPDATE.txt"
+      ],
+      "reason": "doc-only-safe-wave-b"
+    },
+    {
+      "source_path": "SNS_AUTOMATION_FRONTEND_INTEGRATION_GUIDE.md",
+      "target_path": "docs/runbooks/SNS_AUTOMATION_FRONTEND_INTEGRATION_GUIDE.md",
+      "destination_class": "runbooks",
+      "reference_count": 7,
+      "reference_sources": [
+        "DELIVERY_CHECKLIST.txt",
+        "DELIVERY_CHECKLIST.txt",
+        "DELIVERY_CHECKLIST.txt",
+        "SNS_AUTOMATION_FRONTEND_DELIVERY_SUMMARY.md",
+        "TASK_COMPLETION_REPORT.md",
+        "TASK_COMPLETION_REPORT.md",
+        "TASK_COMPLETION_REPORT.md"
+      ],
+      "reason": "doc-only-safe-wave-b"
+    },
+    {
+      "source_path": "SNS_AUTOMATION_FRONTEND_PAGES_REVIEW.md",
+      "target_path": "docs/archive/root-legacy/SNS_AUTOMATION_FRONTEND_PAGES_REVIEW.md",
+      "destination_class": "archive-root-legacy",
+      "reference_count": 7,
+      "reference_sources": [
+        "DELIVERY_CHECKLIST.txt",
+        "DELIVERY_CHECKLIST.txt",
+        "DELIVERY_CHECKLIST.txt",
+        "SNS_AUTOMATION_FRONTEND_DELIVERY_SUMMARY.md",
+        "TASK_COMPLETION_REPORT.md",
+        "TASK_COMPLETION_REPORT.md",
+        "TASK_COMPLETION_REPORT.md"
+      ],
+      "reason": "doc-only-safe-wave-b"
+    },
+    {
+      "source_path": "security-audit-report.md",
+      "target_path": "docs/archive/root-legacy/security-audit-report.md",
+      "destination_class": "archive-root-legacy",
+      "reference_count": 7,
+      "reference_sources": [
+        "CONTINUOUS_IMPROVEMENT_FINAL_REPORT.md",
+        "FINAL_SESSION_SUMMARY.md",
+        "FINAL_SESSION_SUMMARY.md",
+        "FINAL_SESSION_SUMMARY.md",
+        "FINAL_SESSION_SUMMARY.md",
+        "SESSION_STATUS_REPORT.txt",
+        "SESSION_STATUS_REPORT.txt"
+      ],
+      "reason": "doc-only-safe-wave-b"
+    },
+    {
+      "source_path": "8-TEAM-EXECUTION-RESULTS.md",
+      "target_path": "docs/archive/root-legacy/8-TEAM-EXECUTION-RESULTS.md",
+      "destination_class": "archive-root-legacy",
+      "reference_count": 8,
+      "reference_sources": [
+        "DEPLOYMENT-INDEX.md",
+        "DEPLOYMENT-INDEX.md",
+        "DEPLOYMENT-INDEX.md",
+        "DEPLOYMENT-INDEX.md",
+        "DEPLOYMENT-INDEX.md",
+        "DEPLOYMENT-INDEX.md",
+        "DEPLOYMENT-QUICK-START.md",
+        "PRODUCTION-DEPLOYMENT-CHECKLIST.md"
+      ],
+      "reason": "doc-only-safe-wave-b"
+    },
+    {
+      "source_path": "API_QUICK_REFERENCE.txt",
+      "target_path": "docs/reference/legacy-root/API_QUICK_REFERENCE.txt",
+      "destination_class": "reference-legacy",
+      "reference_count": 8,
+      "reference_sources": [
+        "HANDOFF_NOTES_T10_TO_T11.md",
+        "HANDOFF_NOTES_T10_TO_T11.md",
+        "HANDOFF_NOTES_T10_TO_T11.md",
+        "TASK_21_INDEX.md",
+        "TASK_21_INDEX.md",
+        "TASK_21_INDEX.md",
+        "TASK_21_INDEX.md",
+        "TASK_21_INDEX.md"
+      ],
+      "reason": "doc-only-safe-wave-b"
+    },
+    {
+      "source_path": "PRODUCTION_DEPLOYMENT_REPORT.md",
+      "target_path": "docs/runbooks/PRODUCTION_DEPLOYMENT_REPORT.md",
+      "destination_class": "runbooks",
+      "reference_count": 8,
+      "reference_sources": [
+        "DEPLOYMENT_COMPLETION_RECORD.md",
+        "DEPLOYMENT_COMPLETION_RECORD.md",
+        "DEPLOYMENT_FINAL_REPORT.txt",
+        "DEPLOYMENT_FINAL_REPORT.txt",
+        "DEPLOYMENT_COMPLETION_SUMMARY.md",
+        "DEPLOYMENT_COMPLETION_SUMMARY.md",
+        "DEPLOYMENT_COMPLETION_SUMMARY.md",
+        "DEPLOYMENT_STATUS_FINAL.md"
+      ],
+      "reason": "doc-only-safe-wave-b"
+    },
+    {
+      "source_path": "SNS_AUTOMATION_FRONTEND_DELIVERY_SUMMARY.md",
+      "target_path": "docs/archive/root-legacy/SNS_AUTOMATION_FRONTEND_DELIVERY_SUMMARY.md",
+      "destination_class": "archive-root-legacy",
+      "reference_count": 8,
+      "reference_sources": [
+        "DELIVERY_CHECKLIST.txt",
+        "DELIVERY_CHECKLIST.txt",
+        "DELIVERY_CHECKLIST.txt",
+        "SNS_AUTOMATION_FRONTEND_DELIVERY_SUMMARY.md",
+        "TASK_COMPLETION_REPORT.md",
+        "TASK_COMPLETION_REPORT.md",
+        "TASK_COMPLETION_REPORT.md",
+        "TASK_COMPLETION_REPORT.md"
+      ],
+      "reason": "doc-only-safe-wave-b"
+    },
+    {
+      "source_path": "SNS_REVIEW_MODELS_DELIVERABLE.md",
+      "target_path": "docs/reference/legacy-root/SNS_REVIEW_MODELS_DELIVERABLE.md",
+      "destination_class": "reference-legacy",
+      "reference_count": 8,
+      "reference_sources": [
+        "MISSION_COMPLETE_DATABASE_MODELS.md",
+        "MISSION_COMPLETE_DATABASE_MODELS.md",
+        "MISSION_COMPLETE_DATABASE_MODELS.md",
+        "MISSION_COMPLETE_DATABASE_MODELS.md",
+        "MISSION_COMPLETE_DATABASE_MODELS.md",
+        "MODELS_QUICK_REFERENCE.md",
+        "MODELS_QUICK_REFERENCE.md",
+        "SNS_REVIEW_MODELS_DELIVERABLE.md"
+      ],
+      "reason": "doc-only-safe-wave-b"
+    },
+    {
+      "source_path": "TEAM_H_TASK_21_COMPLETION.md",
+      "target_path": "docs/archive/root-legacy/TEAM_H_TASK_21_COMPLETION.md",
+      "destination_class": "archive-root-legacy",
+      "reference_count": 8,
+      "reference_sources": [
+        "HANDOFF_NOTES_T10_TO_T11.md",
+        "HANDOFF_NOTES_T10_TO_T11.md",
+        "HANDOFF_NOTES_T10_TO_T11.md",
+        "TASK_21_INDEX.md",
+        "TASK_21_INDEX.md",
+        "TASK_21_INDEX.md",
+        "TASK_21_INDEX.md",
+        "TASK_21_INDEX.md"
+      ],
+      "reason": "doc-only-safe-wave-b"
+    },
+    {
+      "source_path": "TEAM_I_INTEGRATION_TESTS_SUMMARY.md",
+      "target_path": "docs/archive/root-legacy/TEAM_I_INTEGRATION_TESTS_SUMMARY.md",
+      "destination_class": "archive-root-legacy",
+      "reference_count": 8,
+      "reference_sources": [
+        "FINAL_INTEGRATION_PHASE4_REPORT.md",
+        "TASK_T11_COMPLETION_REPORT.md",
+        "TASK_T11_COMPLETION_REPORT.md",
+        "TEAM_I_FINAL_DELIVERY.md",
+        "TEAM_I_FINAL_DELIVERY.md",
+        "TEAM_I_WORK_COMPLETE.md",
+        "TEAM_I_WORK_COMPLETE.md",
+        "TEST_EXECUTION_GUIDE.md"
+      ],
+      "reason": "doc-only-safe-wave-b"
+    },
+    {
+      "source_path": "API_INTEGRATION_REPORT_T10.md",
+      "target_path": "docs/archive/root-legacy/API_INTEGRATION_REPORT_T10.md",
+      "destination_class": "archive-root-legacy",
+      "reference_count": 9,
+      "reference_sources": [
+        "HANDOFF_NOTES_T10_TO_T11.md",
+        "HANDOFF_NOTES_T10_TO_T11.md",
+        "HANDOFF_NOTES_T10_TO_T11.md",
+        "TASK_21_INDEX.md",
+        "TASK_21_INDEX.md",
+        "TASK_21_INDEX.md",
+        "TASK_21_INDEX.md",
+        "TASK_21_INDEX.md",
+        "TASK_21_INDEX.md"
+      ],
+      "reason": "doc-only-safe-wave-b"
+    },
+    {
+      "source_path": "N8N_INTEGRATION_GUIDE.md",
+      "target_path": "docs/runbooks/N8N_INTEGRATION_GUIDE.md",
+      "destination_class": "runbooks",
+      "reference_count": 9,
+      "reference_sources": [
+        "DELIVERY_SUMMARY_N8N_READY.md",
+        "DELIVERY_SUMMARY_N8N_READY.md",
+        "DELIVERY_SUMMARY_N8N_READY.md",
+        "DELIVERY_SUMMARY_N8N_READY.md",
+        "DELIVERY_SUMMARY_N8N_READY.md",
+        "N8N_DEPLOYMENT_VISUAL_GUIDE.md",
+        "N8N_DEPLOYMENT_VISUAL_GUIDE.md",
+        "PRODUCTION_DEPLOYMENT_CHECKLIST.md",
+        "PRODUCTION_DEPLOYMENT_CHECKLIST.md"
+      ],
+      "reason": "doc-only-safe-wave-b"
+    },
+    {
+      "source_path": "PRODUCTION-DEPLOYMENT-CHECKLIST.md",
+      "target_path": "docs/checklists/PRODUCTION-DEPLOYMENT-CHECKLIST.md",
+      "destination_class": "checklists",
+      "reference_count": 9,
+      "reference_sources": [
+        "DEPLOYMENT-INDEX.md",
+        "DEPLOYMENT-INDEX.md",
+        "DEPLOYMENT-INDEX.md",
+        "DEPLOYMENT-INDEX.md",
+        "DEPLOYMENT-INDEX.md",
+        "DEPLOYMENT-INDEX.md",
+        "DEPLOYMENT-INDEX.md",
+        "DEPLOYMENT-QUICK-START.md",
+        "DEPLOYMENT-QUICK-START.md"
+      ],
+      "reason": "doc-only-safe-wave-b"
+    },
+    {
+      "source_path": "PRODUCTION_DEPLOYMENT_CHECKLIST.md",
+      "target_path": "docs/checklists/PRODUCTION_DEPLOYMENT_CHECKLIST.md",
+      "destination_class": "checklists",
+      "reference_count": 9,
+      "reference_sources": [
+        "DELIVERY_SUMMARY_N8N_READY.md",
+        "DELIVERY_SUMMARY_N8N_READY.md",
+        "DELIVERY_SUMMARY_N8N_READY.md",
+        "DELIVERY_SUMMARY_N8N_READY.md",
+        "DELIVERY_SUMMARY_N8N_READY.md",
+        "DELIVERY_SUMMARY_N8N_READY.md",
+        "N8N_DEPLOYMENT_VISUAL_GUIDE.md",
+        "N8N_DEPLOYMENT_VISUAL_GUIDE.md",
+        "N8N_DEPLOYMENT_VISUAL_GUIDE.md"
+      ],
+      "reason": "doc-only-safe-wave-b"
+    },
+    {
+      "source_path": "REVIEW_SCRAPER_ANALYSIS.md",
+      "target_path": "docs/archive/root-legacy/REVIEW_SCRAPER_ANALYSIS.md",
+      "destination_class": "archive-root-legacy",
+      "reference_count": 9,
+      "reference_sources": [
+        "REVIEW_SCRAPER_INDEX.md",
+        "REVIEW_SCRAPER_INDEX.md",
+        "REVIEW_SCRAPER_INDEX.md",
+        "REVIEW_SCRAPER_INDEX.md",
+        "REVIEW_SCRAPER_INDEX.md",
+        "REVIEW_SCRAPER_INDEX.md",
+        "REVIEW_SCRAPER_INDEX.md",
+        "REVIEW_SCRAPER_INDEX.md",
+        "REVIEW_SCRAPER_PROJECT_STATUS.txt"
+      ],
+      "reason": "doc-only-safe-wave-b"
+    },
+    {
+      "source_path": "TEAM_D_GOVERNANCE_CHECKPOINTS.md",
+      "target_path": "docs/archive/root-legacy/TEAM_D_GOVERNANCE_CHECKPOINTS.md",
+      "destination_class": "archive-root-legacy",
+      "reference_count": 9,
+      "reference_sources": [
+        "GOVERNANCE_VALIDATION_INDEX.md",
+        "GOVERNANCE_VALIDATION_INDEX.md",
+        "GOVERNANCE_VALIDATION_INDEX.md",
+        "GOVERNANCE_VALIDATION_INDEX.md",
+        "GOVERNANCE_VALIDATION_INDEX.md",
+        "GOVERNANCE_VALIDATION_INDEX.md",
+        "GOVERNANCE_VALIDATION_INDEX.md",
+        "VALIDATION_STATUS.txt",
+        "VALIDATION_STATUS.txt"
+      ],
+      "reason": "doc-only-safe-wave-b"
+    },
+    {
+      "source_path": "TEAM_I_FINAL_DELIVERY.md",
+      "target_path": "docs/archive/root-legacy/TEAM_I_FINAL_DELIVERY.md",
+      "destination_class": "archive-root-legacy",
+      "reference_count": 9,
+      "reference_sources": [
+        "FINAL_INTEGRATION_PHASE4_REPORT.md",
+        "TASK_T11_COMPLETION_REPORT.md",
+        "TASK_T11_COMPLETION_REPORT.md",
+        "TEAM_I_FINAL_DELIVERY.md",
+        "TEAM_I_FINAL_DELIVERY.md",
+        "TEAM_I_FINAL_DELIVERY.md",
+        "TEAM_I_WORK_COMPLETE.md",
+        "TEAM_I_WORK_COMPLETE.md",
+        "TEST_EXECUTION_GUIDE.md"
+      ],
+      "reason": "doc-only-safe-wave-b"
+    },
+    {
+      "source_path": "GOVERNANCE_VALIDATION_SUMMARY.md",
+      "target_path": "docs/archive/root-legacy/GOVERNANCE_VALIDATION_SUMMARY.md",
+      "destination_class": "archive-root-legacy",
+      "reference_count": 10,
+      "reference_sources": [
+        "GOVERNANCE_VALIDATION_INDEX.md",
+        "GOVERNANCE_VALIDATION_INDEX.md",
+        "GOVERNANCE_VALIDATION_INDEX.md",
+        "GOVERNANCE_VALIDATION_INDEX.md",
+        "GOVERNANCE_VALIDATION_INDEX.md",
+        "GOVERNANCE_VALIDATION_INDEX.md",
+        "VALIDATION_STATUS.txt",
+        "VALIDATION_STATUS.txt",
+        "VALIDATION_STATUS.txt",
+        "VALIDATION_STATUS.txt"
+      ],
+      "reason": "doc-only-safe-wave-b"
+    },
+    {
+      "source_path": "BLOCKER-ROOT-CAUSE-ANALYSIS.md",
+      "target_path": "docs/archive/root-legacy/BLOCKER-ROOT-CAUSE-ANALYSIS.md",
+      "destination_class": "archive-root-legacy",
+      "reference_count": 11,
+      "reference_sources": [
+        "DEPLOYMENT-INDEX.md",
+        "DEPLOYMENT-INDEX.md",
+        "DEPLOYMENT-INDEX.md",
+        "DEPLOYMENT-INDEX.md",
+        "DEPLOYMENT-INDEX.md",
+        "DEPLOYMENT-INDEX.md",
+        "DEPLOYMENT-INDEX.md",
+        "DEPLOYMENT-QUICK-START.md",
+        "DEPLOYMENT-QUICK-START.md",
+        "DEPLOYMENT-QUICK-START.md",
+        "PRODUCTION-DEPLOYMENT-CHECKLIST.md"
+      ],
+      "reason": "doc-only-safe-wave-b"
+    },
+    {
+      "source_path": "DEPLOYMENT-QUICK-START.md",
+      "target_path": "docs/runbooks/DEPLOYMENT-QUICK-START.md",
+      "destination_class": "runbooks",
+      "reference_count": 11,
+      "reference_sources": [
+        "DEPLOYMENT-INDEX.md",
+        "DEPLOYMENT-INDEX.md",
+        "DEPLOYMENT-INDEX.md",
+        "DEPLOYMENT-INDEX.md",
+        "DEPLOYMENT-INDEX.md",
+        "DEPLOYMENT-INDEX.md",
+        "DEPLOYMENT-INDEX.md",
+        "DEPLOYMENT-INDEX.md",
+        "DEPLOYMENT-INDEX.md",
+        "DEPLOYMENT-INDEX.md",
+        "docs/VERCEL_DEPLOYMENT_GUARDRAILS.md"
+      ],
+      "reason": "doc-only-safe-wave-b"
+    },
+    {
+      "source_path": "GOVERNANCE_VALIDATION_REPORT.md",
+      "target_path": "docs/archive/root-legacy/GOVERNANCE_VALIDATION_REPORT.md",
+      "destination_class": "archive-root-legacy",
+      "reference_count": 11,
+      "reference_sources": [
+        "GOVERNANCE_VALIDATION_INDEX.md",
+        "GOVERNANCE_VALIDATION_INDEX.md",
+        "GOVERNANCE_VALIDATION_INDEX.md",
+        "GOVERNANCE_VALIDATION_INDEX.md",
+        "GOVERNANCE_VALIDATION_INDEX.md",
+        "GOVERNANCE_VALIDATION_INDEX.md",
+        "GOVERNANCE_VALIDATION_INDEX.md",
+        "GOVERNANCE_VALIDATION_SUMMARY.md",
+        "TEAM_CHARTER_REFERENCE.md",
+        "VALIDATION_STATUS.txt",
+        "VALIDATION_STATUS.txt"
+      ],
+      "reason": "doc-only-safe-wave-b"
+    },
+    {
+      "source_path": "FINAL_DELIVERY.md",
+      "target_path": "docs/archive/root-legacy/FINAL_DELIVERY.md",
+      "destination_class": "archive-root-legacy",
+      "reference_count": 12,
+      "reference_sources": [
+        "FINAL_INTEGRATION_PHASE4_REPORT.md",
+        "FINAL_INTEGRATION_PHASE4_REPORT.md",
+        "SNS_AUTO_FINAL_DELIVERY.md",
+        "TASK_13_COMPLETION_SUMMARY.md",
+        "TASK_T11_COMPLETION_REPORT.md",
+        "TASK_T11_COMPLETION_REPORT.md",
+        "TEAM_I_FINAL_DELIVERY.md",
+        "TEAM_I_FINAL_DELIVERY.md",
+        "TEAM_I_FINAL_DELIVERY.md",
+        "TEAM_I_WORK_COMPLETE.md",
+        "TEAM_I_WORK_COMPLETE.md",
+        "TEST_EXECUTION_GUIDE.md"
+      ],
+      "reason": "doc-only-safe-wave-b"
+    },
+    {
+      "source_path": "REVIEW_SCRAPER_IMPLEMENTATION_GUIDE.md",
+      "target_path": "docs/runbooks/REVIEW_SCRAPER_IMPLEMENTATION_GUIDE.md",
+      "destination_class": "runbooks",
+      "reference_count": 14,
+      "reference_sources": [
+        "REVIEW_SCRAPER_INDEX.md",
+        "REVIEW_SCRAPER_INDEX.md",
+        "REVIEW_SCRAPER_INDEX.md",
+        "REVIEW_SCRAPER_INDEX.md",
+        "REVIEW_SCRAPER_INDEX.md",
+        "REVIEW_SCRAPER_INDEX.md",
+        "REVIEW_SCRAPER_INDEX.md",
+        "REVIEW_SCRAPER_INDEX.md",
+        "REVIEW_SCRAPER_INDEX.md",
+        "REVIEW_SCRAPER_INDEX.md",
+        "REVIEW_SCRAPER_INDEX.md",
+        "REVIEW_SCRAPER_INDEX.md",
+        "REVIEW_SCRAPER_INDEX.md",
+        "REVIEW_SCRAPER_PROJECT_STATUS.txt"
+      ],
+      "reason": "doc-only-safe-wave-b"
+    },
+    {
+      "source_path": "TEAM_CHARTER_REFERENCE.md",
+      "target_path": "docs/reference/legacy-root/TEAM_CHARTER_REFERENCE.md",
+      "destination_class": "reference-legacy",
+      "reference_count": 14,
+      "reference_sources": [
+        "GOVERNANCE_VALIDATION_INDEX.md",
+        "GOVERNANCE_VALIDATION_INDEX.md",
+        "GOVERNANCE_VALIDATION_INDEX.md",
+        "GOVERNANCE_VALIDATION_INDEX.md",
+        "GOVERNANCE_VALIDATION_INDEX.md",
+        "GOVERNANCE_VALIDATION_INDEX.md",
+        "GOVERNANCE_VALIDATION_INDEX.md",
+        "GOVERNANCE_VALIDATION_INDEX.md",
+        "GOVERNANCE_VALIDATION_INDEX.md",
+        "GOVERNANCE_VALIDATION_INDEX.md",
+        "GOVERNANCE_VALIDATION_INDEX.md",
+        "VALIDATION_STATUS.txt",
+        "VALIDATION_STATUS.txt",
+        "VALIDATION_STATUS.txt"
+      ],
+      "reason": "doc-only-safe-wave-b"
+    },
+    {
+      "source_path": "PERFORMANCE_TESTING_GUIDE.md",
+      "target_path": "docs/runbooks/PERFORMANCE_TESTING_GUIDE.md",
+      "destination_class": "runbooks",
+      "reference_count": 15,
+      "reference_sources": [
+        "PERFORMANCE_INDEX.md",
+        "PERFORMANCE_INDEX.md",
+        "PERFORMANCE_INDEX.md",
+        "PERFORMANCE_INDEX.md",
+        "PERFORMANCE_INDEX.md",
+        "PERFORMANCE_INDEX.md",
+        "PERFORMANCE_INDEX.md",
+        "PERFORMANCE_INDEX.md",
+        "PERFORMANCE_INDEX.md",
+        "PERFORMANCE_SUMMARY.md",
+        "PERFORMANCE_SUMMARY.md",
+        "PERFORMANCE_SUMMARY.md",
+        "PERFORMANCE_SUMMARY.md",
+        "PERFORMANCE_SUMMARY.md",
+        "PERFORMANCE_TESTING_GUIDE.md"
+      ],
+      "reason": "doc-only-safe-wave-b"
+    },
+    {
+      "source_path": "DEPLOYMENT.md",
+      "target_path": "docs/runbooks/DEPLOYMENT.md",
+      "destination_class": "runbooks",
+      "reference_count": 16,
+      "reference_sources": [
+        "DEPLOYMENT_CHECKLIST_PHASE4.md",
+        "FINAL_INTEGRATION_PHASE4_REPORT.md",
+        "docs/CATALOG.json",
+        "docs/CATALOG.json",
+        "PHASE4_VALIDATION_COMPLETE.md",
+        "orchestrator/prompt-templates.md",
+        "docs/doc-index.json",
+        "docs/doc-index.json",
+        "docs/M-007-SETUP.md",
+        "shared-intelligence/DEPLOYMENT.md",
+        "TASK_13_COMPLETION_SUMMARY.md",
+        "TASK_13_COMPLETION_SUMMARY.md",
+        "shared-intelligence/SCALABILITY_IMPLEMENTATION_CHECKLIST.md",
+        "shared-intelligence/SCALABILITY_IMPLEMENTATION_CHECKLIST.md",
+        "docs/standards/COMMON_PROJECT_GUIDELINES.md",
+        "docs/standards/COMMON_PROJECT_GUIDELINES.md"
+      ],
+      "reason": "doc-only-safe-wave-b"
+    },
+    {
+      "source_path": "TESTING_GUIDE.md",
+      "target_path": "docs/runbooks/TESTING_GUIDE.md",
+      "destination_class": "runbooks",
+      "reference_count": 16,
+      "reference_sources": [
+        "PERFORMANCE_INDEX.md",
+        "PERFORMANCE_INDEX.md",
+        "PERFORMANCE_INDEX.md",
+        "PERFORMANCE_INDEX.md",
+        "PERFORMANCE_INDEX.md",
+        "PERFORMANCE_INDEX.md",
+        "PERFORMANCE_INDEX.md",
+        "PERFORMANCE_INDEX.md",
+        "PERFORMANCE_INDEX.md",
+        "PERFORMANCE_SUMMARY.md",
+        "PERFORMANCE_SUMMARY.md",
+        "PERFORMANCE_SUMMARY.md",
+        "PERFORMANCE_SUMMARY.md",
+        "PERFORMANCE_SUMMARY.md",
+        "PERFORMANCE_TESTING_GUIDE.md",
+        "TEST_COVERAGE_SUMMARY.txt"
+      ],
+      "reason": "doc-only-safe-wave-b"
+    },
+    {
+      "source_path": "PERFORMANCE_SUMMARY.md",
+      "target_path": "docs/archive/root-legacy/PERFORMANCE_SUMMARY.md",
+      "destination_class": "archive-root-legacy",
+      "reference_count": 24,
+      "reference_sources": [
+        "DELIVERY_CHECKLIST.md",
+        "DELIVERY_CHECKLIST.md",
+        "DELIVERY_CHECKLIST.md",
+        "DELIVERY_CHECKLIST.md",
+        "docs/CATALOG.json",
+        "PERFORMANCE_INDEX.md",
+        "PERFORMANCE_INDEX.md",
+        "PERFORMANCE_INDEX.md",
+        "PERFORMANCE_INDEX.md",
+        "PERFORMANCE_INDEX.md",
+        "PERFORMANCE_INDEX.md",
+        "PERFORMANCE_INDEX.md",
+        "PERFORMANCE_INDEX.md",
+        "PERFORMANCE_OPTIMIZATION_REPORT.md",
+        "PERFORMANCE_OPTIMIZATION_REPORT.md",
+        "PERFORMANCE_OPTIMIZATION_REPORT.md",
+        "PERFORMANCE_SUMMARY.md",
+        "PERFORMANCE_SUMMARY.md",
+        "docs/doc-index.json",
+        "docs/PERFORMANCE_AGENT_HANDOFF.md",
+        "docs/PERFORMANCE_AGENT_HANDOFF.md",
+        "docs/PERFORMANCE_AGENT_HANDOFF.md",
+        "docs/PERFORMANCE_SUMMARY.md",
+        "docs/PERFORMANCE_SUMMARY.md"
+      ],
+      "reason": "doc-only-safe-wave-b"
+    },
+    {
+      "source_path": "IMPLEMENTATION_SUMMARY.md",
+      "target_path": "docs/archive/root-legacy/IMPLEMENTATION_SUMMARY.md",
+      "destination_class": "archive-root-legacy",
+      "reference_count": 42,
+      "reference_sources": [
+        "ENCRYPTION_IMPLEMENTATION_SUMMARY.md",
+        "ENCRYPTION_QUICK_START.md",
+        "FEED_FILES_MANIFEST.txt",
+        "FEED_IMPLEMENTATION_COMPLETE.md",
+        "FEED_IMPLEMENTATION_COMPLETE.md",
+        "FINAL_INTEGRATION_PHASE4_REPORT.md",
+        "IMPLEMENTATION_COMPLETE.txt",
+        "IMPLEMENTATION_COMPLETE.txt",
+        "IMPLEMENTATION_SUMMARY.md",
+        "IMPLEMENTATION_SUMMARY.md",
+        "INSTAGRAM_API_README.md",
+        "INSTAGRAM_API_README.md",
+        "INSTAGRAM_STATUS_REPORT.txt",
+        "INSTAGRAM_STATUS_REPORT.txt",
+        "INSTAGRAM_STATUS_REPORT.txt",
+        "docs/CATALOG.json",
+        "docs/CATALOG.json",
+        "docs/CATALOG.json",
+        "docs/CATALOG.json",
+        "INSTAGRAM_IMPLEMENTATION_SUMMARY.md",
+        "PAYMENT_SYSTEM_V2_COMPLETION.md",
+        "PAYMENT_SYSTEM_V2_COMPLETION.md",
+        "PAYMENT_SYSTEM_V2_COMPLETION.md",
+        "PERFORMANCE_IMPLEMENTATION_SUMMARY.md",
+        "docs/doc-index.json",
+        "docs/doc-index.json",
+        "docs/doc-index.json",
+        "docs/doc-index.json",
+        "PWA_README.md",
+        "PWA_README.md",
+        "PWA_README.md",
+        "docs/M-007_TEAM_E_IMPLEMENTATION_SUMMARY.md",
+        "SECURITY_FIX_COMPLETION_REPORT.md",
+        "SECURITY_FIX_COMPLETION_REPORT.md",
+        "docs/PAYMENT_IMPLEMENTATION_SUMMARY.md",
+        "SNS_AUTOMATION_FRONTEND_DELIVERY_SUMMARY.md",
+        "SNS_AUTO_V2_IMPLEMENTATION_SUMMARY.md",
+        "docs/SECURITY_DEPLOYMENT_CHECKLIST.md",
+        "docs/SECURITY_IMPLEMENTATION_SUMMARY.md",
+        "TASK17_FINAL_REPORT.md",
+        "TEAM_E_IMPLEMENTATION_SUMMARY.md",
+        "TELEGRAM_DEPLOYMENT_CHECKLIST.md"
+      ],
+      "reason": "doc-only-safe-wave-b"
+    }
+  ],
+  "executed": true,
+  "updated_text_files": [
+    "docs/archive/root-legacy/HANDOFF_NOTES_T10_TO_T11.md",
+    "docs/archive/root-legacy/MISSION_COMPLETE_DATABASE_MODELS.md",
+    "docs/archive/root-legacy/PERFORMANCE_INDEX.md",
+    "docs/archive/root-legacy/PERFORMANCE_SUMMARY.md",
+    "docs/archive/root-legacy/SCRAPER_SECURITY_IMPLEMENTATION_REPORT.md",
+    "docs/archive/root-legacy/TASK_21_INDEX.md",
+    "docs/archive/root-legacy/TASK_COMPLETION_REPORT.md",
+    "docs/checklists/DELIVERY_CHECKLIST.md",
+    "docs/checklists/PRODUCTION-DEPLOYMENT-CHECKLIST.md",
+    "docs/plans/enterprise_upgrade_day_plan_2026-03-03.md",
+    "docs/reference/legacy-root/REVIEW_SCRAPER_INDEX.md",
+    "docs/reference/legacy-root/SNS_REVENUE_API_QUICK_REFERENCE.md",
+    "docs/runbooks/DEPLOYMENT-INDEX.md",
+    "docs/runbooks/DEPLOYMENT-QUICK-START.md",
+    "docs/runbooks/DEPLOYMENT_GUIDE.md",
+    "docs/runbooks/DEPLOYMENT_MANIFEST_2026-02-26.md",
+    "docs/runbooks/ENCRYPTION_QUICK_START.md",
+    "docs/runbooks/INSTAGRAM_API_README.md",
+    "docs/runbooks/PHASE4_EXECUTION_GUIDE.md",
+    "docs/runbooks/PWA_README.md",
+    "docs/VERCEL_DEPLOYMENT_GUARDRAILS.md"
+  ]
+}

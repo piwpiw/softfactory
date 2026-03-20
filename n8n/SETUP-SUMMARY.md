@@ -1,6 +1,6 @@
 # n8n Setup Completion Summary
 
-**Status:** ✅ COMPLETE & PRODUCTION READY
+**Status:** Package complete; local activation still depends on credential setup
 **Date:** 2026-02-25
 **Project:** SoftFactory Daily Report Automation
 **Version:** 2.0
@@ -18,6 +18,12 @@ A complete n8n automation system has been deployed with:
 - ✅ One-command startup script
 
 **Time to Deploy:** 30 minutes with provided setup script
+
+## Repository-Local Reality
+
+- This document summarizes the delivered package, not guaranteed live activation in every workspace.
+- As of 2026-03-20 in this repository, `.env.n8n` is absent and local n8n credentials are not configured.
+- Use this file as a setup summary until the local credentials, workflow activation, and execution checks are completed.
 
 ---
 

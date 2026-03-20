@@ -1,6 +1,6 @@
 # 📊 n8n Daily Report Automation System
 
-> **Purpose**: **Status:** Production Ready ✓
+> **Purpose**: Installable n8n package for daily reports.
 > **Status**: 🟢 ACTIVE (관리 중)
 > **Impact**: [Engineering / Operations]
 
@@ -13,9 +13,18 @@
 
 ---
 
-**Status:** Production Ready ✓
+**Status:** Package ready; local activation pending credentials
 **Last Updated:** 2026-02-25
 **Version:** 2.0
+
+---
+
+## Repository-Local Reality
+
+- This repository contains the n8n workflow package and setup docs.
+- As of 2026-03-20 in this workspace, `.env.n8n` is absent.
+- Local n8n credentials and execution history are not configured yet.
+- Treat this file as setup documentation, not proof that Gmail, Notion, and Telegram delivery are currently active.
 
 ---
 
