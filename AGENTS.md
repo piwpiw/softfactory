@@ -35,6 +35,10 @@ Use this order when facts conflict:
 - Keep model-specific docs limited to tool behavior, prompt/runtime constraints, or context-loading hints.
 - Prefer updating one shared source instead of repeating the same fact in multiple files.
 - Keep secrets out of docs, commits, and generated reports.
+- Keep `origin` on the canonical remote URL: `https://github.com/piwpiw/softfactory.git`.
+- Do not add GitHub URL rewrite rules such as `url.https://<user>@github.com/.insteadof=https://github.com/`.
+- Use `scripts/vercel_release.ps1` for Vercel production deploys instead of ad hoc `vercel --prod` commands.
+- Treat Vercel production state and `main` as a matched pair: deploy, verify, then commit and push the same baseline.
 
 ## History And Sync
 
@@ -48,3 +52,4 @@ Use this order when facts conflict:
 - When shared policy changes, update `AGENTS.md` and any affected adapter docs in the same change set.
 - When current facts change, update `docs/status/CURRENT.md` and optionally append evidence to `STATUS.md`.
 - When priorities change, update `docs/status/BACKLOG.md` and the supporting queue docs that implement it.
+- When Git or Vercel auth gets repaired, document the stable path in `docs/status/CURRENT.md` so the next operator starts from the fixed baseline.

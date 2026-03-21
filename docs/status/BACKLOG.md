@@ -5,7 +5,7 @@ id: prioritized-backlog
 type: status-backlog-summary
 owner: ops-engineering
 status: active
-updated: 2026-03-20
+updated: 2026-03-21
 keywords: backlog, priorities, remaining work
 scope: documentation, status, operations, qa
 -->
@@ -14,6 +14,7 @@ This is the shared backlog summary for active work that remains after the curren
 
 ## P0 Operational Follow-Ups
 
+- Keep Git and Vercel on the normalized baseline path in [../runbooks/GIT_VERCEL_BASELINE.md](../runbooks/GIT_VERCEL_BASELINE.md).
 - Restore the local Docker daemon and rerun container-based verification for `api + postgres + redis`.
 - Recheck container `GET /health` and `GET /api/health` plus key static pages after Docker recovery.
 - Rotate the exposed production Neon credentials and verify Vercel environment alignment after rotation.
