@@ -1,4 +1,4 @@
-﻿name: CI Test and Lint
+name: CI Test and Lint
 
 on:
   workflow_dispatch:
@@ -52,7 +52,7 @@ jobs:
 
       - name: Upload repo-layout report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: repo-layout-report
           retention-days: 14
@@ -248,7 +248,7 @@ jobs:
 
       - name: Archive test artifacts
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: test-results-py${{ matrix.python-version }}
           retention-days: 14

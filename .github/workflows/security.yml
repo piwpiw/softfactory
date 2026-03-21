@@ -131,7 +131,7 @@ jobs:
           safety check
 
       - name: Upload Safety results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v7
         with:
           name: safety-report
           path: safety-report.json
@@ -164,7 +164,7 @@ jobs:
         continue-on-error: true
 
       - name: Upload ZAP results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v7
         with:
           name: zap-report
           path: report_html.html
@@ -193,7 +193,7 @@ jobs:
           detect-secrets scan --all-files --baseline .baseline.json . || true
 
       - name: Upload secret scan results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v7
         with:
           name: secret-scan-results
           path: trufflehog-results.json
@@ -221,7 +221,7 @@ jobs:
         continue-on-error: true
 
       - name: Upload SAST results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v7
         with:
           name: sast-results
           path: pylint-report.json
