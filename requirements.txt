@@ -12,7 +12,7 @@ anthropic>=0.42.0
 psycopg2-binary>=2.9.0
 sqlalchemy==2.0.23
 python-socketio==5.9.0
-python-engineio==4.7.1
+python-engineio==4.13.1
 pyjwt==2.9.0
 stripe==5.4.0
 apscheduler==3.10.4
